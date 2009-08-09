@@ -10,68 +10,69 @@ using System;
 
 namespace JQuants {
 	
-  class Program :JQuants.CommandLineInterface {   
+  class Program :JQuants.IWrite {   
 		
-	Program() {
+	 Program() {
+		cli = new CommandLineInterface("JQuants", this);
 		LoadCommandLineInterface();
 	}
+		
+	private CommandLineInterface cli;
+	private bool ExitFlag;
 	
-	public override string Name {  
-		get { return "JQuants"; }  
-	}  
 
 	private void SetExitFlag() {
 		ExitFlag = true;
 	}
 		
 	protected void menu1cmd1Callback() {
-		PrintLine("Menu 1 Command 1 called");
+		WriteLine("Menu 1 Command 1 called");
 	}
 
 	protected void menu1cmd2Callback() {
-		PrintLine("Menu 1 Command 2 called");
+		WriteLine("Menu 1 Command 2 called");
 	}
 
 	protected void menu2cmd1Callback() {
-		PrintLine("Menu 2 Command 1 called");
+		WriteLine("Menu 2 Command 1 called");
 	}
 
 	protected void menu2cmd2Callback() {
-		PrintLine("Menu 2 Command 2 called");
+		WriteLine("Menu 2 Command 2 called");
 	}
 
 	protected void LoadCommandLineInterface() {  
-		SystemMenu.AddCommand("exit", "Exit from the program", "Clean and exit", this.SetExitFlag);
-		Menu menu1 = RootMenu.AddMenu("menu1", "Menu 1", "This is menu 1");
-		Menu menu2 = RootMenu.AddMenu("menu2", "Menu 2", "This is menu 2");
+		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Clean and exit", this.SetExitFlag);
+		Menu menu1 = cli.RootMenu.AddMenu("menu1", "Menu 1", "This is menu 1");
+		Menu menu2 = cli.RootMenu.AddMenu("menu2", "Menu 2", "This is menu 2");
 		menu1.AddCommand("cmd1", "Command 1", "This is command 1", menu1cmd1Callback);
 		menu1.AddCommand("cmd2", "Command 2", "This is command 2", menu1cmd2Callback);
 		menu2.AddCommand("cmd1", "Command 1", "This is command 1", menu2cmd1Callback);
 		menu2.AddCommand("cmd2", "Command 2", "This is command 2", menu2cmd2Callback);
 	}  
-   
-	protected override void PrintLine(string s) {
+
+	public void WriteLine(string s) {
 		Console.WriteLine(s);
 	}
 		
-	protected override void Print(string s) {
+	public void Write(string s) {
 		Console.Write(s);
 	}
 		
 	public void Run() {
 
-		PrintTitle();
+		cli.PrintTitle();
 
 		// While not exit command entered, process each command
 		while (true) {
 
-			PrintPrompt();
+			cli.PrintPrompt();
 			string input = Console.ReadLine();
 
 			if (input != "")
 			try {
 				// process command
-				ProcessCommand(input);
+				cli.ProcessCommand(input);
 				if (ExitFlag) break;
 
 			} catch (Exception ex) {
