@@ -29,19 +29,19 @@ namespace JQuants {
 	}
 		
 	protected void menu1cmd1Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-		WriteLine("Menu 1 Command 1 called");
+		iWrite.WriteLine("Menu 1 Command 1 called");
 	}
 
 	protected void menu1cmd2Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-		WriteLine("Menu 1 Command 2 called");
+		iWrite.WriteLine("Menu 1 Command 2 called");
 	}
 
 	protected void menu2cmd1Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-		WriteLine("Menu 2 Command 1 called");
+		iWrite.WriteLine("Menu 2 Command 1 called");
 	}
 
 	protected void menu2cmd2Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-		WriteLine("Menu 2 Command 2 called");
+		iWrite.WriteLine("Menu 2 Command 2 called");
 	}
 
 	protected void LoadCommandLineInterface() {  
@@ -74,15 +74,15 @@ namespace JQuants {
 
 			if (input != "")
 			try {
-				// process command
+				// process command - "this" is IWrite interface
 				cli.ProcessCommand(this, input);
 				if (ExitFlag) break;
 
 			} catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				WriteLine(ex.ToString());
 
 			} finally {
-				Console.WriteLine();
+				WriteLine("");
 			}
 		}
 			
