@@ -24,7 +24,6 @@ namespace JQuants {
 		}
 		
 		public virtual bool IsCommand() {
-			Console.WriteLine("Command's isCommand");
 			return true;
 		}
 		
@@ -56,7 +55,7 @@ namespace JQuants {
     public class Menu :Command{
 		public Menu(string name, string shortDesctiption, string description) 
 			:base(name, shortDesctiption, description) {
-			
+			Parent = this;
 			Callback = DummyCommand;
 			Commands = new List<Command>();
 		}
@@ -76,6 +75,7 @@ namespace JQuants {
 		public Menu AddMenu(string name, string shortDesctiption, string description) {
 			Menu menu = new Menu(name, shortDesctiption, description);
 			Commands.Add(menu);
+			menu.Parent = this;
 			return menu;
 		}
 
@@ -83,14 +83,19 @@ namespace JQuants {
 			get;
 			protected set;
 	    }
+		
+		public Menu Parent {
+			get;
+			set;
+		}
+		                    
 
-		public virtual bool IsCommand() {
-			Console.WriteLine("Menu's isCommand");
+		public override bool IsCommand() {
 			return false;
 		}
 
 		protected void DummyCommand() {
-			Console.WriteLine("Menu is called");
+			Console.WriteLine("Menu " + Name + ": callback is called. Probably should be command");
 		}
 		
 		public bool FindCommand(string name, out Command command) {
@@ -117,6 +122,8 @@ namespace JQuants {
 			CurrentMenu = RootMenu;
 			SystemMenu = new Menu("Commnad line interface system menu", "", "");
 			SystemMenu.AddCommand("help", "List commands", "", PrintCommands);
+			SystemMenu.AddCommand("..", "One level up", "", OneLevelUp);
+			SystemMenu.AddCommand("~", "Go to the main menu (root)", "", GotoRootMenu);
 		}
 	
 		public abstract string Name { get; }
@@ -139,7 +146,6 @@ namespace JQuants {
 		}
 	
 		protected void ProcessCommand(string cmdName) {
-			Action action = null;
 			Command cmd;
 				
 			if (cmdName.Equals("")) return;	
@@ -158,8 +164,19 @@ namespace JQuants {
 				PrintLine("Unknown command "+cmdName);
 			}
 		}
-	
+		
+		private void OneLevelUp() {
+			CurrentMenu = CurrentMenu.Parent;
+			PrintCommands();
+		}
+
+		private void GotoRootMenu() {
+			CurrentMenu = RootMenu;
+			PrintCommands();
+		}
+
 		protected void PrintCommands() {
+			PrintTitle();
 			int index = 0;
 			foreach ( Command cmd in CurrentMenu.Commands ) {
 				PrintLine(cmd.Name + " - " + cmd.ShortDescription);
@@ -175,10 +192,10 @@ namespace JQuants {
 		}
 	
 		protected void PrintTitle() {
-			PrintLine(Name);
+			PrintLine(Name + " - " + CurrentMenu.Name);
 			PrintLine("=====================================");
-			PrintLine("Type 'help' to get commands list");
-			PrintLine("Type 'exit' to exit");
+			PrintLine("help, exit, .., ~");
+			PrintLine("");
 		}
 		
 		protected abstract void PrintLine(string s);
