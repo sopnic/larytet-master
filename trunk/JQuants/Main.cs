@@ -21,7 +21,10 @@ namespace JQuants {
 	private bool ExitFlag;
 	
 
-	private void SetExitFlag() {
+	private void CleanupAndExit() {
+		// chance to clean some things before exiting
+			
+		// flag to break out of the loop forever
 		ExitFlag = true;
 	}
 		
@@ -42,7 +45,7 @@ namespace JQuants {
 	}
 
 	protected void LoadCommandLineInterface() {  
-		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Clean and exit", this.SetExitFlag);
+		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
 		Menu menu1 = cli.RootMenu.AddMenu("menu1", "Menu 1", "This is menu 1");
 		Menu menu2 = cli.RootMenu.AddMenu("menu2", "Menu 2", "This is menu 2");
 		menu1.AddCommand("cmd1", "Command 1", "This is command 1", menu1cmd1Callback);
@@ -63,7 +66,7 @@ namespace JQuants {
 
 		cli.PrintTitle();
 
-		// While not exit command entered, process each command
+		// While exit command not entered, process each command
 		while (true) {
 
 			cli.PrintPrompt();
@@ -82,11 +85,17 @@ namespace JQuants {
 				Console.WriteLine();
 			}
 		}
+			
+			
+		// last chance for the cleanup - close streams and so on
 
 	}
 		
 	static void Main(string[] args) {  
 		new Program().Run();  
+		
+		// very last chance for the cleanup - close streams and so on
+		// before i return control to the OS	
 	}
 
 		
