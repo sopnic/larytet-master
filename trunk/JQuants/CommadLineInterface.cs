@@ -24,6 +24,7 @@ namespace JQuants {
 		}
 		
 		public virtual bool IsCommand() {
+			Console.WriteLine("Command's isCommand");
 			return true;
 		}
 		
@@ -66,7 +67,13 @@ namespace JQuants {
 			return cmd;
 		}
 
-		public Menu AddMenu(string name, string shortDesctiption, string description, Action callback) {
+		public Command AddCommand(Command command) {
+			Command cmd = command;
+			Commands.Add(cmd);
+			return cmd;
+		}
+
+		public Menu AddMenu(string name, string shortDesctiption, string description) {
 			Menu menu = new Menu(name, shortDesctiption, description);
 			Commands.Add(menu);
 			return menu;
@@ -78,10 +85,12 @@ namespace JQuants {
 	    }
 
 		public virtual bool IsCommand() {
+			Console.WriteLine("Menu's isCommand");
 			return false;
 		}
 
 		protected void DummyCommand() {
+			Console.WriteLine("Menu is called");
 		}
 		
 		public bool FindCommand(string name, out Command command) {
@@ -146,31 +155,34 @@ namespace JQuants {
 				CurrentMenu = (Menu)cmd;
 				PrintCommands();
 			} else {
-				Console.WriteLine("Unknown command "+cmdName);
+				PrintLine("Unknown command "+cmdName);
 			}
 		}
 	
 		protected void PrintCommands() {
-			if (CurrentMenu.Commands.Count != 0) {
-				int index = 0;
-				foreach ( Command cmd in CurrentMenu.Commands ) {
-					Console.WriteLine("{00} "+cmd.Name + " " + cmd.ShortDescription, index);
-				}
-			} else {
-				Console.WriteLine("No commands are available here");
+			int index = 0;
+			foreach ( Command cmd in CurrentMenu.Commands ) {
+				PrintLine(cmd.Name + " - " + cmd.ShortDescription);
+				index++;
+			}
+			if (index == 0) {
+				PrintLine("No commands are available here");
 			}
 		}
 	
 		protected void PrintPrompt() {
-			Console.Write("$ ");
+			Print("$ ");
 		}
 	
 		protected void PrintTitle() {
-			Console.WriteLine(Name);
-			Console.WriteLine("=====================================");
-			Console.WriteLine("Type 'help' to get commands list");
-			Console.WriteLine("Type 'exit' to exit");
+			PrintLine(Name);
+			PrintLine("=====================================");
+			PrintLine("Type 'help' to get commands list");
+			PrintLine("Type 'exit' to exit");
 		}
+		
+		protected abstract void PrintLine(string s);
+		protected abstract void Print(string s);
 
 	}
 }
