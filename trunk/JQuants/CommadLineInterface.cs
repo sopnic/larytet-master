@@ -150,8 +150,7 @@ namespace JQuants {
 			get;
 			protected set;
 		}
-		
-	
+			
 		public void ProcessCommand(IWrite iWrite, string cmdName) {
 			Command cmd;
 				
@@ -185,12 +184,10 @@ namespace JQuants {
 
 		protected void PrintCommands(IWrite iWrite, string cmdName, object[] cmdArguments) {
 			PrintTitle(iWrite);
-			int index = 0;
 			foreach ( Command cmd in CurrentMenu.Commands ) {
 				iWrite.WriteLine(cmd.Name + " - " + cmd.ShortDescription);
-				index++;
 			}
-			if (index == 0) {
+			if (CurrentMenu.Commands.Count == 0) {
 				iWrite.WriteLine("No commands are available here");
 			}
 		}
@@ -202,13 +199,9 @@ namespace JQuants {
 		public void PrintTitle(IWrite iWrite) {
 			iWrite.WriteLine(Name + " - " + CurrentMenu.Name);
 			iWrite.WriteLine("=====================================");
-			iWrite.WriteLine("help, exit, .., ~");
+			iWrite.WriteLine("help, exit, one level up - .., main menu - ~");
 			iWrite.WriteLine("");
 		}
 		
-		// Print methods will be replaced by Read/Write I/O interface
-		// I want this part as flexible as possible to allow to work with 
-		// Console, Telnet, or just anything else.
-
 	}
 }
