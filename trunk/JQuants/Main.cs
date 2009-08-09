@@ -13,7 +13,7 @@ namespace JQuants {
   class Program :JQuants.IWrite {   
 		
 	 Program() {
-		cli = new CommandLineInterface("JQuants", this);
+		cli = new CommandLineInterface("JQuants");
 		LoadCommandLineInterface();
 	}
 		
@@ -21,26 +21,26 @@ namespace JQuants {
 	private bool ExitFlag;
 	
 
-	private void CleanupAndExit() {
+	private void CleanupAndExit(IWrite iWrite, string cmdName, object[] cmdArguments) {
 		// chance to clean some things before exiting
 			
 		// flag to break out of the loop forever
 		ExitFlag = true;
 	}
 		
-	protected void menu1cmd1Callback() {
+	protected void menu1cmd1Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
 		WriteLine("Menu 1 Command 1 called");
 	}
 
-	protected void menu1cmd2Callback() {
+	protected void menu1cmd2Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
 		WriteLine("Menu 1 Command 2 called");
 	}
 
-	protected void menu2cmd1Callback() {
+	protected void menu2cmd1Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
 		WriteLine("Menu 2 Command 1 called");
 	}
 
-	protected void menu2cmd2Callback() {
+	protected void menu2cmd2Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
 		WriteLine("Menu 2 Command 2 called");
 	}
 
@@ -64,18 +64,18 @@ namespace JQuants {
 		
 	public void Run() {
 
-		cli.PrintTitle();
+		cli.PrintTitle(this);
 
 		// While exit command not entered, process each command
 		while (true) {
 
-			cli.PrintPrompt();
+			cli.PrintPrompt(this);
 			string input = Console.ReadLine();
 
 			if (input != "")
 			try {
 				// process command
-				cli.ProcessCommand(input);
+				cli.ProcessCommand(this, input);
 				if (ExitFlag) break;
 
 			} catch (Exception ex) {
