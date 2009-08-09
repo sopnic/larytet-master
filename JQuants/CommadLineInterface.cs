@@ -110,13 +110,16 @@ namespace JQuants {
 		}
 	}
 	
-	/// <summary>
-	/// Base class for a command line interface
-	/// </summary>
-	public abstract class CommandLineInterface {
+	public interface IWrite {
+		void WriteLine(string s);
+		void Write(string s);
+	}
+	
+	public class CommandLineInterface {
 
-		public CommandLineInterface() {
-			ExitFlag = false;
+		public CommandLineInterface(string title, IWrite iWrite) {
+			WriteInterface = iWrite;
+			Name = title;
 			RootMenu = new Menu("Main menu", "JQuants main menu", "Main menu provides access to the Logging, Trading\n"+ 
 	                                                        "and other main system moudles");
 			CurrentMenu = RootMenu;
@@ -126,8 +129,7 @@ namespace JQuants {
 			SystemMenu.AddCommand("~", "Go to the main menu (root)", "", GotoRootMenu);
 		}
 	
-		public abstract string Name { get; }
-		protected bool ExitFlag;
+		public string Name { get; set;}
 	
 	
 		public Menu RootMenu {
@@ -144,8 +146,10 @@ namespace JQuants {
 			get;
 			protected set;
 		}
+		
+		protected IWrite WriteInterface;
 	
-		protected void ProcessCommand(string cmdName) {
+		public void ProcessCommand(string cmdName) {
 			Command cmd;
 				
 			if (cmdName.Equals("")) return;	
@@ -161,7 +165,7 @@ namespace JQuants {
 				CurrentMenu = (Menu)cmd;
 				PrintCommands();
 			} else {
-				PrintLine("Unknown command "+cmdName);
+				WriteInterface.WriteLine("Unknown command "+cmdName);
 			}
 		}
 		
@@ -179,27 +183,28 @@ namespace JQuants {
 			PrintTitle();
 			int index = 0;
 			foreach ( Command cmd in CurrentMenu.Commands ) {
-				PrintLine(cmd.Name + " - " + cmd.ShortDescription);
+				WriteInterface.WriteLine(cmd.Name + " - " + cmd.ShortDescription);
 				index++;
 			}
 			if (index == 0) {
-				PrintLine("No commands are available here");
+				WriteInterface.WriteLine("No commands are available here");
 			}
 		}
 	
-		protected void PrintPrompt() {
-			Print("$ ");
+		public void PrintPrompt() {
+			WriteInterface.Write("$ ");
 		}
 	
-		protected void PrintTitle() {
-			PrintLine(Name + " - " + CurrentMenu.Name);
-			PrintLine("=====================================");
-			PrintLine("help, exit, .., ~");
-			PrintLine("");
+		public void PrintTitle() {
+			WriteInterface.WriteLine(Name + " - " + CurrentMenu.Name);
+			WriteInterface.WriteLine("=====================================");
+			WriteInterface.WriteLine("help, exit, .., ~");
+			WriteInterface.WriteLine("");
 		}
 		
-		protected abstract void PrintLine(string s);
-		protected abstract void Print(string s);
+		// Print methods will be replaced by Read/Write I/O interface
+		// I want this part as flexible as possible to allow to work with 
+		// Console, Telnet, or just anything else.
 
 	}
 }
