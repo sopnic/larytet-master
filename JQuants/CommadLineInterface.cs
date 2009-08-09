@@ -6,30 +6,39 @@ using System.Text;
 
 
 namespace JQuants {
+
+	public interface IWrite {
+		void WriteLine(string s);
+		void Write(string s);
+	}
+	
 	
 	public class Command {
-		
-		public Command(string name, string shortDesctiption, string description, Action callback) {
+
+		public delegate void Callback(IWrite iWrite, string cmdName, object[] cmdArguments);
+
+		public Command(string name, string shortDesctiption, string description, Callback callback) {
 			Name = name;
 			ShortDescription = shortDesctiption;
 			Description = description;
-			Callback = callback;
+			Handler = callback;
 		}
 
 		public Command(string name, string shortDesctiption, string description) {
 			Name = name;
 			ShortDescription = shortDesctiption;
 			Description = description;
-			Callback = CallbackNotImplemented;
+			Handler = new Callback(Unsupported);
+		}
+		
+		void Unsupported(IWrite iWrite, string cmdName, object[] cmdArguments) {
+			iWrite.WriteLine("Unsupported command "+Name);
 		}
 		
 		public virtual bool IsCommand() {
 			return true;
 		}
 		
-		protected void CallbackNotImplemented() {
-		}
-
 		public string Name {
 			get;
 			protected set;
@@ -45,7 +54,7 @@ namespace JQuants {
 			protected set;
 		}
 		
-		public Action Callback {
+		public Callback Handler {
 			get;
 			protected set;
 		}
@@ -56,11 +65,11 @@ namespace JQuants {
 		public Menu(string name, string shortDesctiption, string description) 
 			:base(name, shortDesctiption, description) {
 			Parent = this;
-			Callback = DummyCommand;
+			Handler = new Callback(DummyCommand);
 			Commands = new List<Command>();
 		}
 		
-		public Command AddCommand(string name, string shortDesctiption, string description, Action callback) {
+		public Command AddCommand(string name, string shortDesctiption, string description, Callback callback) {
 			Command cmd = new Command(name, shortDesctiption, description, callback);
 			Commands.Add(cmd);
 			return cmd;
@@ -94,8 +103,9 @@ namespace JQuants {
 			return false;
 		}
 
-		protected void DummyCommand() {
-			Console.WriteLine("Menu " + Name + ": callback is called. Probably should be command");
+		protected void DummyCommand(IWrite iWrite, string cmdName, object[] cmdArguments) {
+			Console.WriteLine("Menu " + Name + 
+				": callback is called. Probably should be command");
 		}
 		
 		public bool FindCommand(string name, out Command command) {
@@ -110,15 +120,9 @@ namespace JQuants {
 		}
 	}
 	
-	public interface IWrite {
-		void WriteLine(string s);
-		void Write(string s);
-	}
-	
 	public class CommandLineInterface {
 
-		public CommandLineInterface(string title, IWrite iWrite) {
-			WriteInterface = iWrite;
+		public CommandLineInterface(string title) {
 			Name = title;
 			RootMenu = new Menu("Main menu", "JQuants main menu", "Main menu provides access to the Logging, Trading\n"+ 
 	                                                        "and other main system moudles");
@@ -147,9 +151,8 @@ namespace JQuants {
 			protected set;
 		}
 		
-		protected IWrite WriteInterface;
 	
-		public void ProcessCommand(string cmdName) {
+		public void ProcessCommand(IWrite iWrite, string cmdName) {
 			Command cmd;
 				
 			if (cmdName.Equals("")) return;	
@@ -160,46 +163,47 @@ namespace JQuants {
 			if (!found) found = CurrentMenu.FindCommand(cmdName, out cmd);
 				
 			if (found && cmd.IsCommand()) {
-				cmd.Callback();
+				// temporary no parsing for the arguments
+				cmd.Handler(iWrite, cmdName, null);
 			} else if (found && !cmd.IsCommand()) {
 				CurrentMenu = (Menu)cmd;
-				PrintCommands();
+				PrintCommands(iWrite, "", null);
 			} else {
-				WriteInterface.WriteLine("Unknown command "+cmdName);
+				iWrite.WriteLine("Unknown command "+cmdName);
 			}
 		}
 		
-		private void OneLevelUp() {
+		private void OneLevelUp(IWrite iWrite, string cmdName, object[] cmdArguments) {
 			CurrentMenu = CurrentMenu.Parent;
-			PrintCommands();
+			PrintCommands(iWrite, "", null);
 		}
 
-		private void GotoRootMenu() {
+		private void GotoRootMenu(IWrite iWrite, string cmdName, object[] cmdArguments) {
 			CurrentMenu = RootMenu;
-			PrintCommands();
+			PrintCommands(iWrite, "", null);
 		}
 
-		protected void PrintCommands() {
-			PrintTitle();
+		protected void PrintCommands(IWrite iWrite, string cmdName, object[] cmdArguments) {
+			PrintTitle(iWrite);
 			int index = 0;
 			foreach ( Command cmd in CurrentMenu.Commands ) {
-				WriteInterface.WriteLine(cmd.Name + " - " + cmd.ShortDescription);
+				iWrite.WriteLine(cmd.Name + " - " + cmd.ShortDescription);
 				index++;
 			}
 			if (index == 0) {
-				WriteInterface.WriteLine("No commands are available here");
+				iWrite.WriteLine("No commands are available here");
 			}
 		}
 	
-		public void PrintPrompt() {
-			WriteInterface.Write("$ ");
+		public void PrintPrompt(IWrite iWrite) {
+			iWrite.Write("$ ");
 		}
 	
-		public void PrintTitle() {
-			WriteInterface.WriteLine(Name + " - " + CurrentMenu.Name);
-			WriteInterface.WriteLine("=====================================");
-			WriteInterface.WriteLine("help, exit, .., ~");
-			WriteInterface.WriteLine("");
+		public void PrintTitle(IWrite iWrite) {
+			iWrite.WriteLine(Name + " - " + CurrentMenu.Name);
+			iWrite.WriteLine("=====================================");
+			iWrite.WriteLine("help, exit, .., ~");
+			iWrite.WriteLine("");
 		}
 		
 		// Print methods will be replaced by Read/Write I/O interface
