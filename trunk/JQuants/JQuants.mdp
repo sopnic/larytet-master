@@ -1,24 +1,24 @@
-<Project name="JQuants" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="JQuants" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="JQuants" />
       <Build debugmode="True" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="JQuants.Program" definesymbols="DEBUG" generatexmldocumentation="False" win32Icon="." additionalargs="/noconfig-" ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" additionalargs="/noconfig-" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="JQuants" />
       <Build debugmode="False" target="Exe" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="JQuants.Program" generatexmldocumentation="False" win32Icon="." ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
     <File name="Main.cs" subtype="Code" buildaction="Compile" />
-    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="CommadLineInterface.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
+  <LanguageParameters StartupObject="JQuants.Program" ApplicationIcon="." ctype="CSharpProjectParameters" />
 </Project>
