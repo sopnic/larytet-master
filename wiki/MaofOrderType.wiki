@@ -12,7 +12,7 @@
         BSTR ammount;
         [helpstring("מחיר")]
         BSTR price;
-        [helpstring("סוג פקודה")]
+        [helpstring("LMT/LMO/IOC סוג פקודה")]
         BSTR Sug_Pkuda;
         [helpstring("אסמכתא")]
         BSTR Asmachta;
