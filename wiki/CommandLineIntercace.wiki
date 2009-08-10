@@ -8,5 +8,5 @@ This article covers CSharp implementation of the simple Command Line Interface (
 Current implementation includes one file 
 [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/CommadLineInterface.cs CommadLineInterface.cs]
 
-Application created instance of class _CommandLineInterface_ and adds menus to the RootMenu of the CLI. 
-Application reads user commamds using some I/O, for example _Console._ReadLine() and calls _ProcessCommand() to handle the user commands
+Application created instance of class _CommandLineInterface _and adds menus to the _RootMenu _of the CLI. 
+Application reads user commands using some I/O, for example _Console.ReadLine() _and calls _ProcessCommand() _to handle the user commands
