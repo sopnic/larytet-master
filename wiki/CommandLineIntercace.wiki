@@ -5,6 +5,9 @@ This article covers CSharp implementation of the simple Command Line Interface (
 
 = Details =
 
+Current implementation includes one file 
+[http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/CommadLineInterface.cs CommadLineInterface.cs]
+
 Add your content here.  Format your content with:
   * Text in *bold* or _italic_
   * Headings, paragraphs, and lists
