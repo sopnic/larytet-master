@@ -7,5 +7,5 @@ Covers FMR simulation API
 
 = Details =
 
-* [DataStream Data stream]
-* [FillingOrder Filling order]
+ * [DataStream Data stream]
+ * [FillingOrder Filling order]
