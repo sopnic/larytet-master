@@ -1,0 +1,82 @@
+{{{
+    struct tagMOFINQType {
+        [helpstring("                  שגוי")]
+        BSTR ERR;
+        [helpstring("     סיסטם מקור הפקודה")]
+        BSTR SYS_TYPE;
+        [helpstring("            -מטרת השדר")]
+        BSTR SND_RCV;
+        [helpstring("MANA/ORDR  שיטת הפקודה")]
+        BSTR ORDR_TYPE;
+        [helpstring("         סיסמאת המשתמש")]
+        BSTR OPR_NAME;
+        [helpstring("0=DETAIL     סוג פירוט")]
+        BSTR SUG_INQ;
+        [helpstring("  FMR  -    ספרור שוטף")]
+        BSTR SEQ_PIC;
+        [helpstring("                      ")]
+        BSTR MANA_PIC;
+        [helpstring("         מספר נייר ערך")]
+        BSTR BNO_PIC;
+        [helpstring("               שם נייר")]
+        BSTR BNO_NAME;
+        [helpstring("      קוד קניה / מכירה")]
+        BSTR OP;
+        [helpstring("                  סניף")]
+        BSTR BRANCH_PIC;
+        [helpstring("                   תיק")]
+        BSTR TIK_PIC;
+        [helpstring("                      ")]
+        BSTR SUG_MAVR_PIC;
+        [helpstring("                      ")]
+        BSTR ID_MAVR_PIC;
+        [helpstring("                      ")]
+        BSTR SUG_PIC;
+        [helpstring("                      ")]
+        BSTR ID_PIC;
+        [helpstring("             שם החשבון")]
+        BSTR ID_NAME;
+        [helpstring("                      ")]
+        BSTR SUG_ID_PIC;
+        [helpstring("            קוד נוסטרו")]
+        BSTR NOSTRO;
+        [helpstring("           כמות מבוקשת")]
+        BSTR ORDR_NV_PIC;
+        [helpstring("             סוג פקודה")]
+        BSTR ORDR_SUG;
+        [helpstring("            מחיר הזמנה")]
+        BSTR ORDR_PRC_PIC;
+        [helpstring("      זמן קליטת ההזמנה")]
+        BSTR ORDR_TIME;
+        [helpstring("            כמות בעסקה")]
+        BSTR DIL_NV_PIC;
+        [helpstring("             מחיר עסקה")]
+        BSTR DIL_PRC_PIC;
+        [helpstring("             שעת העסקה")]
+        BSTR DIL_TIME_PIC;
+        [helpstring("        מספר הודעת חבר")]
+        BSTR MBR_SEQ_PIC;
+        [helpstring("        מספר הודעת רצף")]
+        BSTR RZF_SEQ_PIC;
+        [helpstring("       מספר פקודה ברצף")]
+        BSTR RZF_ORD_PIC;
+        [helpstring("    HOST - ספרור מיוחד")]
+        BSTR ORDER_NO_PIC;
+        [helpstring("       מספר אישור עסקה")]
+        BSTR DIL_PIC;
+        [helpstring("          סטטוס הפקודה")]
+        BSTR COD_UPD;
+        [helpstring("          סטטוס הפקודה")]
+        BSTR STS;
+        [helpstring("   נתונים חסרים/שגויים")
+        BSTR ERR_DATA;
+        [helpstring("                  שגוי")]
+        BSTR ERR_INQ;
+        [helpstring("                  שגוי")]
+        BSTR ERR_UPD;
+        [helpstring("0=ORDR  1=DIL  2=SUM  ")]
+        BSTR SUG_INFO;
+        [helpstring("            מצב הפקודה")]
+        BSTR DSP_FMR;
+    } MOFINQType;
+}}}
