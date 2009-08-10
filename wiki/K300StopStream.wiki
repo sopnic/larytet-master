@@ -1,3 +1,6 @@
+Ceases streaming of Market data into the Taskbar from the K300 server or AS/400. 
+
+
 {{{
 HRESULT K300StopStream([in] K300StreamType streamType, [out, retval] long* retVal);
 }}}
