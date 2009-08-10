@@ -1,0 +1,26 @@
+{{{
+    struct tagMaofOrderType {
+        [helpstring("סניף")]
+        BSTR Branch;
+        [helpstring("חשבון")]
+        BSTR Account;
+        [helpstring("מספר אופציה")]
+        BSTR Option;
+        [helpstring("פעולה")]
+        BSTR operation;
+        [helpstring("כמות")]
+        BSTR ammount;
+        [helpstring("מחיר")]
+        BSTR price;
+        [helpstring("סוג פקודה")]
+        BSTR Sug_Pkuda;
+        [helpstring("אסמכתא")]
+        BSTR Asmachta;
+        [helpstring("אסמכתא פ.מ.ר")]
+        BSTR AsmachtaFmr;
+        [helpstring("נקלט")]
+        long Pass;
+        [helpstring("זיהוי פקודה פנימי")]
+        long OrderID;
+    } MaofOrderType;
+}}}
