@@ -2,4 +2,7 @@
 
 
  * Create object of type MaofOrderType
+ * Call FMRLibTester.FMRUser.SendMaofOrder()
+ * Check ErrNo (should be zero if ok) and reenter order if appropriate
+ * Check order [OrderStatus order status] by calling FMRLibTester.FMRUser.GetOrdersMF()
  * 
