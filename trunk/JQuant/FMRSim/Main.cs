@@ -1,8 +1,7 @@
 //
-// To compile the example use line under Mono 2.4
-// /usr/bin/gmcs2 BaseConsole.cs Main.cs 
 //
-// This is a sample CLI application 
+// This is FMR Simulation project
+// Partial implementation of FMRLab API as in the defined in the fmrlib.idl
 	
 	
 	
@@ -46,12 +45,12 @@ namespace JQuant {
 
 	protected void LoadCommandLineInterface() {  
 		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
-		Menu menu1 = cli.RootMenu.AddMenu("menu1", "Menu 1", "This is menu 1");
-		Menu menu2 = cli.RootMenu.AddMenu("menu2", "Menu 2", "This is menu 2");
-		menu1.AddCommand("cmd1", "Command 1", "This is command 1", menu1cmd1Callback);
-		menu1.AddCommand("cmd2", "Command 2", "This is command 2", menu1cmd2Callback);
-		menu2.AddCommand("cmd1", "Command 1", "This is command 1", menu2cmd1Callback);
-		menu2.AddCommand("cmd2", "Command 2", "This is command 2", menu2cmd2Callback);
+		Menu menuFMRLib = cli.RootMenu.AddMenu("FMRLib", "Access to  FMRLib API", 
+			                  "  Allows to access the FMRLib API directly");
+		Menu menuFMRLibSim = cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation", 
+			                   "  Condiguration and debug of the FMR simulatoion");
+		menuFMRLib.AddCommand("cmd1", "Command 1", "This is command 1", menu1cmd1Callback);
+		menuFMRLibSim.AddCommand("cmd2", "Command 2", "This is command 2", menu1cmd2Callback);
 	}  
 
 	public void WriteLine(string s) {
@@ -65,6 +64,7 @@ namespace JQuant {
 	public void Run() {
 
 		cli.PrintTitle(this);
+		cli.PrintCommands(this);
 
 		// While exit command not entered, process each command
 		while (true) {
