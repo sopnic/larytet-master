@@ -1,6 +1,6 @@
 #summary How to fill order
 
-
+ * Call  OrdersStreamStart() to get access to the order status stream
  * Create object of type MaofOrderType
  * Call FMRLibTester.FMRUser.SendMaofOrder()
  * Check ErrNo (should be zero if ok) and reenter order if appropriate
