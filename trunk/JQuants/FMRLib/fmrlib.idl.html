@@ -1,3 +1,4 @@
+<pre>
 // Generated .IDL file (by the OLE/COM Object Viewer)
 // 
 // typelib filename: TaskBarService.exe
@@ -64,19 +65,19 @@ library TaskBarLib
 
     typedef [uuid(1D4DFB4E-5F79-4CDA-B7BE-7DDC4622540C), version(1.0), helpstring("Short Stock Structure ")]
     struct tagShortStockType {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨")        
+        [helpstring("ξρτψ πιιψ")        
 ]
         BSTR Stock;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨")        
+        [helpstring("ων πιιψ")        
 ]
         BSTR Name_Stock;
-        [helpstring("Χ΅Χ•Χ’ Χ Χ™Χ™Χ¨")        
+        [helpstring("ρεβ πιιψ")        
 ]
         BSTR Sug;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨ Χ‘Χ¤Χ•Χ¨ΧΧ Χ¨Χ’Χ™Χ")        
+        [helpstring("ων πιιψ ατεψξθ ψβιμ")        
 ]
         BSTR Name2;
-        [helpstring("Χ©Χ Χ¨Χ’Χ™Χ")        
+        [helpstring("ων ψβιμ")        
 ]
         BSTR Symbol;
         [helpstring("isin")        
@@ -101,7 +102,7 @@ library TaskBarLib
       oleautomation
     ]
     interface IUser : IDispatch {
-        [id(0x00000001), helpstring("message Χ›Χ Χ™Χ΅Χ” ΧΧΧΆΧ¨Χ›Χª ΧΆΧ Χ©Χ Χ•Χ΅Χ™Χ΅ΧΧ”. Χ‘ΧΧ§Χ¨Χ” Χ©Χ Χ›Χ©ΧΧ•Χ ΧªΧ ΧªΧ Χ”Χ•Χ“ΧΆΧ” Χ‘Χ¤Χ¨ΧΧΧ¨")]
+        [id(0x00000001), helpstring("message λπιρδ μξςψλϊ ςν ων εριρξδ. αξχψδ ωμ λωμεο ϊπϊο δεγςδ ατψξθψ")]
         HRESULT Login(
                         [in] BSTR username, 
                         [in] BSTR AS400Password, 
@@ -109,7 +110,7 @@ library TaskBarLib
                         [out] BSTR* message, 
                         [out] long* sessionId, 
                         [out, retval] long* retVal);
-        [id(0x00000041), helpstring("message Χ›Χ Χ™Χ΅Χ” ΧΧΧΆΧ¨Χ›Χª ΧΆΧ Χ©Χ Χ•Χ΅Χ™Χ΅ΧΧ” Χ‘Χ©ΧΧ‘Χ™Χ Χ©Χ Χ¨ΧΧ•Χª Χ”ΧªΧ—Χ‘Χ¨Χ•Χª . Χ‘ΧΧ§Χ¨Χ” Χ©Χ Χ›Χ©ΧΧ•Χ ΧªΧ ΧªΧ Χ”Χ•Χ“ΧΆΧ” Χ‘Χ¤Χ¨ΧΧΧ¨")]
+        [id(0x00000041), helpstring("message λπιρδ μξςψλϊ ςν ων εριρξδ αωμαιν ωμ ψξεϊ δϊηαψεϊ . αξχψδ ωμ λωμεο ϊπϊο δεγςδ ατψξθψ")]
         HRESULT LoginByLevel(
                         [in] BSTR username, 
                         [in] BSTR AS400Password, 
@@ -120,7 +121,7 @@ library TaskBarLib
                         [out] BSTR* message, 
                         [out] long* sessionId, 
                         [out, retval] long* retVal);
-        [id(0x00000002), helpstring("message Χ›Χ Χ™Χ΅Χ” ΧΧΧΆΧ¨Χ›Χª ΧΆΧ Χ©Χ Χ•Χ΅Χ™Χ΅ΧΧ” ΧΧ©Χ™Χ Χ•Χ™. Χ‘ΧΧ§Χ¨Χ” Χ©Χ Χ›Χ©ΧΧ•Χ ΧªΧ ΧªΧ Χ”Χ•Χ“ΧΆΧ” Χ‘Χ¤Χ¨ΧΧΧ¨")]
+        [id(0x00000002), helpstring("message λπιρδ μξςψλϊ ςν ων εριρξδ μωιπει. αξχψδ ωμ λωμεο ϊπϊο δεγςδ ατψξθψ")]
         HRESULT LoginAndChangePassword(
                         [in] BSTR username, 
                         [in] BSTR oldAS400Password, 
@@ -129,7 +130,7 @@ library TaskBarLib
                         [out] BSTR* message, 
                         [out] long* sessionId, 
                         [out, retval] long* retVal);
-        [id(0x00000042), helpstring("message Χ›Χ Χ™Χ΅Χ” ΧΧΧΆΧ¨Χ›Χª ΧΆΧ Χ©Χ, Χ΅Χ™Χ΅ΧΧ” ΧΧ©Χ™Χ Χ•Χ™ Χ•Χ¨ΧΧª Χ”ΧªΧ—Χ‘Χ¨Χ•Χª. Χ‘ΧΧ§Χ¨Χ” Χ©Χ Χ›Χ©ΧΧ•Χ ΧªΧ ΧªΧ Χ”Χ•Χ“ΧΆΧ” Χ‘Χ¤Χ¨ΧΧΧ¨")]
+        [id(0x00000042), helpstring("message λπιρδ μξςψλϊ ςν ων, ριρξδ μωιπει εψξϊ δϊηαψεϊ. αξχψδ ωμ λωμεο ϊπϊο δεγςδ ατψξθψ")]
         HRESULT LoginByLevelAndChangePassword(
                         [in] BSTR username, 
                         [in] BSTR oldAS400Password, 
@@ -141,41 +142,41 @@ library TaskBarLib
                         [out] BSTR* message, 
                         [out] long* sessionId, 
                         [out, retval] long* retVal);
-        [id(0x00000031), helpstring("Χ™Χ¦Χ™ΧΧ” ΧΧ”ΧΧΆΧ¨Χ›Χª")]
+        [id(0x00000031), helpstring("ιφιΰδ ξδξςψλϊ")]
         HRESULT Logout(
                         [in] long sessionId, 
                         [out, retval] long* retVal);
-        [id(0x00000021), propget, helpstring("ΧΧ—Χ–Χ™Χ¨ ΧΧª Χ”Χ©ΧΧ‘ Χ”Χ Χ•Χ›Χ—Χ™ Χ‘Χ›Χ Χ™Χ΅Χ” ΧΧΧΆΧ¨Χ›Χª")]
+        [id(0x00000021), propget, helpstring("ξηζιψ ΰϊ δωμα δπεληι αλπιρδ μξςψλϊ")]
         HRESULT LoginState(
                         long* sessionId, 
                         [out, retval] LoginStatus* val);
-        [id(0x00000043), helpstring("ΧΧ—Χ–Χ™Χ¨ ΧΧª Χ”Χ΅ΧΧΧ•Χ΅ Χ©Χ Χ›Χ Χ™Χ΅Χ” ΧΧΧΆΧ¨Χ›Χª ΧΧ¤Χ™ Χ©ΧΧ‘ Χ¨ΧΧª Χ”ΧªΧ—Χ‘Χ¨Χ•Χª")]
+        [id(0x00000043), helpstring("ξηζιψ ΰϊ δρθθερ ωμ λπιρδ μξςψλϊ μτι ωμα ψξϊ δϊηαψεϊ")]
         HRESULT LoginStateByLevel(
                         [in] long* sessionId, 
                         [in] LoginLevel req_level, 
                         [out, retval] LoginStatus* val);
-        [id(0x00000022), helpstring("Χ Χ•ΧªΧ ΧΧª ΧΧ—Χ•Χ– Χ”ΧΆΧ‘Χ•Χ“Χ” Χ©Χ”Χ•Χ©ΧΧ Χ‘ΧΧ•Χ’Χ™Χ Χ•ΧΧª ΧªΧ™ΧΧ•Χ¨ Χ”ΧΆΧ‘Χ•Χ“Χ” Χ”Χ Χ•Χ›Χ—Χ™Χª")]
+        [id(0x00000022), helpstring("πεϊο ΰϊ ΰηεζ δςαεγδ ωδεωμν αμεβιο εΰϊ ϊιΰεψ δςαεγδ δπεληιϊ")]
         HRESULT GetLoginActivity(
                         long* sessionId, 
                         [out] long* percent, 
                         [out] BSTR* description);
-        [id(0x00000029), propget, helpstring("ΧªΧΧ¨Χ™Χ Χ•Χ©ΧΆΧª Χ›Χ Χ™Χ΅Χª ΧΧ—Χ¨Χ•Χ Χ” ΧΧΧΆΧ¨Χ›Χª")]
+        [id(0x00000029), propget, helpstring("ϊΰψικ εωςϊ λπιρϊ ΰηψεπδ μξςψλϊ")]
         HRESULT LastLoginDateTime(
                         long* sessionId, 
                         [out, retval] BSTR* dataTime);
-        [id(0x0000002a), propget, helpstring("ΧΧ΅Χ¤Χ¨ Χ™ΧΧ™Χ ΧΧ¤Χ§Χ™ΧΆΧª Χ”Χ΅Χ™Χ΅ΧΧ”")]
+        [id(0x0000002a), propget, helpstring("ξρτψ ιξιν μτχιςϊ δριρξδ")]
         HRESULT PasswordDays(
                         long* sessionId, 
                         [out, retval] long* daysToExpiary);
-        [id(0x0000002c), propget, helpstring("Χ›ΧªΧ•Χ‘Χª Χ›Χ Χ™Χ΅Χ” ΧΧ—Χ¨Χ•Χ Χ” ΧΧΧΆΧ¨Χ›Χª")]
+        [id(0x0000002c), propget, helpstring("λϊεαϊ λπιρδ ΰηψεπδ μξςψλϊ")]
         HRESULT LastLoginAddress(
                         long* sessionId, 
                         [out, retval] BSTR* address);
-        [id(0x0000002d), propget, helpstring("Χ”Χ•Χ“ΧΆΧª Χ©Χ’Χ™ΧΧ” Χ›ΧΧ©Χ¨ Χ”Χ›Χ Χ™Χ΅Χ” ΧΧΧΆΧ¨Χ›Χª Χ Χ›Χ©ΧΧ”")]
+        [id(0x0000002d), propget, helpstring("δεγςϊ ωβιΰδ λΰωψ δλπιρδ μξςψλϊ πλωμδ")]
         HRESULT LoginErrorDesc(
                         long* sessionId, 
                         [out, retval] BSTR* desc);
-        [id(0x00000044), helpstring("Χ”Χ•Χ“ΧΆΧª Χ©Χ’Χ™ΧΧ” Χ›ΧΧ©Χ¨ Χ”Χ›Χ Χ™Χ΅Χ” ΧΧΧΆΧ¨Χ›Χª Χ Χ›Χ©ΧΧ” ΧΧ¤Χ™ Χ©ΧΧ‘ Χ¨ΧΧª Χ”ΧªΧ—Χ‘Χ¨Χ•Χª")]
+        [id(0x00000044), helpstring("δεγςϊ ωβιΰδ λΰωψ δλπιρδ μξςψλϊ πλωμδ μτι ωμα ψξϊ δϊηαψεϊ")]
         HRESULT LoginErrorDescByLevel(
                         [in] long* sessionId, 
                         [in] LoginLevel req_level, 
@@ -200,7 +201,7 @@ library TaskBarLib
                         [in, optional, defaultvalue("000")] BSTR strBranch, 
                         [in, optional, defaultvalue("00000000")] BSTR strOptionNumber, 
                         [out, retval] long* retVal);
-        [id(0x00000024), helpstring("ΧΧ©Χ™Χ›Χª Χ”Χ•Χ¨ΧΧ•Χª ΧΧΆΧ•''Χ£ ΧΧ”ΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ©Χ¨ΧªΧ™Χ")]
+        [id(0x00000024), helpstring("ξωιλϊ δεψΰεϊ ξςε''σ ξδξηωα δψΰωι ΰε ξωψϊιν")]
         HRESULT GetOrdersMF(
                         [in] long sessionId, 
                         [out] SAFEARRAY(MOFINQType)* vecRecords, 
@@ -208,7 +209,7 @@ library TaskBarLib
                         [in] BSTR Branch, 
                         [in, out, optional, defaultvalue("0")] BSTR* LastTime, 
                         [out, retval] long* retVal);
-        [id(0x00000027), helpstring("ΧΧ©Χ™Χ›Χª Χ”Χ•Χ¨ΧΧ•Χª Χ¨Χ¦Χ£ ΧΧ”ΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ©Χ¨ΧªΧ™Χ")]
+        [id(0x00000027), helpstring("ξωιλϊ δεψΰεϊ ψφσ ξδξηωα δψΰωι ΰε ξωψϊιν")]
         HRESULT GetOrdersRZ(
                         [in] long sessionId, 
                         [out] SAFEARRAY(RZFINQType)* vecRecords, 
@@ -216,14 +217,14 @@ library TaskBarLib
                         [in] BSTR Branch, 
                         [in, out, optional, defaultvalue("0")] BSTR* LastTime, 
                         [out, retval] long* retVal);
-        [id(0x00000025), helpstring("Χ”ΧªΧ—Χ Χ–Χ¨Χ™ΧΧª Χ ΧªΧ•Χ Χ™ Χ”Χ•Χ¨ΧΧ•Χª Χ•Χ‘Χ™Χ¦Χ•ΧΆΧ™Χ ΧΧªΧ•Χ Χ”ΧΧ΅Χ§Χ‘Χ¨ ΧΧ”ΧΧ—Χ©Χ‘ Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ”Χ©Χ¨ΧªΧ™Χ. ΧΆΧ¨Χ ΧΧ•Χ—Χ–Χ¨ 0 ΧΧ¦Χ™Χ™Χ Χ”Χ¦ΧΧ—Χ”")]
+        [id(0x00000025), helpstring("δϊημ ζψιξϊ πϊεπι δεψΰεϊ εαιφεςιν μϊεκ δθρχαψ ξδξηωα ψΰωι ΰε ξδωψϊιν. ςψκ ξεηζψ 0 ξφιιο δφμηδ")]
         HRESULT OrdersStreamStart(
                         [in] long sessionId, 
                         [in] BSTR Account, 
                         [in] BSTR Branch, 
                         [in] TradeType streamType, 
                         [out, retval] long* retVal);
-        [id(0x00000026), helpstring("Χ”Χ¤Χ΅Χ§ Χ–Χ¨Χ™ΧΧª Χ ΧªΧ•Χ Χ™ Χ”Χ•Χ¨ΧΧ•Χª Χ•Χ‘Χ™Χ¦Χ•ΧΆΧ™Χ ΧΧªΧ•Χ Χ”ΧΧ΅Χ§Χ‘Χ¨ ΧΧ”ΧΧ—Χ©Χ‘ Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ”Χ©Χ¨ΧªΧ™Χ. ΧΆΧ¨Χ ΧΧ•Χ—Χ–Χ¨ 0 ΧΧ¦Χ™Χ™Χ Χ”Χ¦ΧΧ—Χ”")]
+        [id(0x00000026), helpstring("δτρχ ζψιξϊ πϊεπι δεψΰεϊ εαιφεςιν μϊεκ δθρχαψ ξδξηωα ψΰωι ΰε ξδωψϊιν. ςψκ ξεηζψ 0 ξφιιο δφμηδ")]
         HRESULT OrdersStreamStop(
                         [in] long sessionId, 
                         [in] BSTR Account, 
@@ -257,7 +258,7 @@ library TaskBarLib
                         [in, out] SAFEARRAY(AccountType)* psaStrRecords, 
                         [in, out] BSTR* ErrMsg, 
                         [out, retval] long* retVal);
-        [id(0x0000000e), helpstring(".Χ¨Χ©Χ™ΧΧª Χ”Χ¨Χ©ΧΧ•Χª Χ©Χ Χ”ΧΧ©ΧªΧΧ©")]
+        [id(0x0000000e), helpstring(".ψωιξϊ δψωΰεϊ ωμ δξωϊξω")]
         HRESULT GetUserPermissions(
                         [in] long sessionId, 
                         [out] SAFEARRAY(UserPasswordType)* psaStrRecords, 
@@ -269,7 +270,7 @@ library TaskBarLib
                         [in] BSTR strNewPassword, 
                         [in] BSTR strUserNumber, 
                         [out, retval] long* retVal);
-        [id(0x0000002e), helpstring(".ΧΧ•Χ•Χ“Χ Χ΅Χ™Χ΅ΧΧ” ΧΧ¤ΧΧ™Χ§ΧΧ™Χ‘Χ™Χª (Χ΅Χ™Χ΅ΧΧ” Χ©Χ Χ™Χ™Χ”) ΧΆΧ‘Χ•Χ¨ ΧΧ©ΧªΧΧ©. ΧΆΧ¨Χ ΧΧ•Χ—Χ–Χ¨ 1 ΧΧ¦Χ™Χ™Χ Χ”Χ¦ΧΧ—Χ”")]
+        [id(0x0000002e), helpstring(".ξεεγΰ ριρξδ ΰτμιχθιαιϊ (ριρξδ ωπιιδ) ςαεψ ξωϊξω. ςψκ ξεηζψ 1 ξφιιο δφμηδ")]
         HRESULT UserAuthentication(
                         [in] long sessionId, 
                         [in] BSTR Password, 
@@ -314,14 +315,14 @@ library TaskBarLib
                         [in] BSTR ReEnteredValue, 
                         [in, optional, defaultvalue(0)] long SPCOrder, 
                         [out, retval] long* retVal);
-        [id(0x00000020), helpstring("Χ©ΧΧ™Χ—Χª Χ”Χ•Χ¨ΧΧ•Χª Χ΅Χ ΧΧΆΧ•''Χ£ ΧΧΧ§Χ•Χ— Χ¤ΧΧ ")]
+        [id(0x00000020), helpstring("ωμιηϊ δεψΰεϊ ρμ ξςε''σ μμχεη τμΰ ")]
         HRESULT SendMaofSpeedOrderPele(
                         [in] long sessionId, 
                         [in, out] SAFEARRAY(MaofOrderType)* Orders, 
                         [out] long* ErrNO, 
                         [in, optional, defaultvalue(0)] long SPCOrder, 
                         [out, retval] long* retVal);
-        [id(0x0000001a), helpstring("Χ—Χ™Χ©Χ•Χ‘ Χ‘ΧΧ—Χ•Χ Χ•Χª Χ¤ΧΧ")]
+        [id(0x0000001a), helpstring("ηιωεα αθηεπεϊ τμΰ")]
         HRESULT PeleSecurities(
                         [in] long sessionId, 
                         [in] SAFEARRAY(MaofOrderType)* Orders, 
@@ -330,7 +331,7 @@ library TaskBarLib
                         [in] BSTR Branch, 
                         [in] BSTR Tik, 
                         [out, retval] long* retVal);
-        [id(0x0000001b), helpstring("Χ§Χ‘ΧΧª ΧΧ΅Χ’Χ¨Χª ΧΆΧ‘Χ•Χ¨ Χ—Χ©Χ‘Χ•Χ ΧΧ¤Χ™ ΧΧ“Χ“")]
+        [id(0x0000001b), helpstring("χαμϊ ξρβψϊ ςαεψ ηωαεο μτι ξγγ")]
         HRESULT GetMargin(
                         [in] long sessionId, 
                         [in] BSTR Account, 
@@ -345,7 +346,7 @@ library TaskBarLib
                         [in] BSTR Location, 
                         [in] BSTR Trade_Type, 
                         [out, retval] long* retVal);
-        [id(0x0000001d), helpstring("ΧΧ’Χ‘ΧΧª Χ¤Χ¨ΧΧ™Χ” Χ™Χ•ΧΧ™Χª")]
+        [id(0x0000001d), helpstring("ξβαμϊ τψξιδ ιεξιϊ")]
         HRESULT GetPremium(
                         [in] long sessionId, 
                         [in] BSTR Account, 
@@ -353,7 +354,7 @@ library TaskBarLib
                         [in] BaseAssetTypes asset, 
                         [out] double* premia, 
                         [out, retval] long* retVal);
-        [id(0x0000001e), helpstring("Χ—Χ™Χ©Χ•Χ‘ Χ‘ΧΧ—Χ•Χ Χ•Χª ΧΆΧ‘Χ•Χ¨ Χ Χ›Χ΅Χ™Χ")]
+        [id(0x0000001e), helpstring("ηιωεα αθηεπεϊ ςαεψ πλριν")]
         HRESULT CalculateSecurities(
                         [in] long sessionId, 
                         [in] MaofOrderType* Order, 
@@ -362,7 +363,7 @@ library TaskBarLib
                         [in] BSTR Tik, 
                         [in, out] SAFEARRAY(AssetSecuritiesType)* psaAssets, 
                         [out, retval] long* retVal);
-        [id(0x0000001f), helpstring("Χ¤Χ¨ΧΧΧ¨Χ™Χ ΧΧ‘ΧΧ—Χ•Χ Χ•Χª ΧΧΆΧ•''Χ£")]
+        [id(0x0000001f), helpstring("τψξθψιν μαθηεπεϊ ξςε''σ")]
         HRESULT MaofOrderParams(
                         [in] long sessionId, 
                         [in] BSTR Account, 
@@ -378,7 +379,7 @@ library TaskBarLib
                         [out] double* OrdersPremium, 
                         [out] double* executionPermium, 
                         [out, retval] long* retVal);
-        [id(0x00000032), helpstring("Χ ΧªΧ•Χ Χ™Χ ΧΧ‘ΧΧ—Χ•Χ Χ•Χª ΧΧΆΧ•''Χ£")]
+        [id(0x00000032), helpstring("πϊεπιν μαθηεπεϊ ξςε''σ")]
         HRESULT MaofSecuritiesParams(
                         [in] long sessionId, 
                         [in] BSTR Account, 
@@ -465,23 +466,23 @@ library TaskBarLib
                         [out, retval] long* retVal);
         [id(0x00000008), propget, helpstring("The connection's current state"), helpcontext(0x000007d4)]
         HRESULT State([out, retval] ConnectionState* pVal);
-        [id(0x00000009), propget, helpstring("Χ©Χ Χ”ΧΧ©ΧªΧΧ© Χ”Χ¤ΧΆΧ™Χ"), helpcontext(0x000007e9)]
+        [id(0x00000009), propget, helpstring("ων δξωϊξω δτςιμ"), helpcontext(0x000007e9)]
         HRESULT username(
                         [in] long sessionId, 
                         [out, retval] BSTR* pVal);
-        [id(0x0000000b), propget, helpstring("ΧΧ΅Χ¤Χ¨ Χ”ΧΧ§Χ•Χ—"), helpcontext(0x000007e6)]
+        [id(0x0000000b), propget, helpstring("ξρτψ δμχεη"), helpcontext(0x000007e6)]
         HRESULT Cust([out, retval] BSTR* pVal);
         [id(0x0000000c), propget, helpstring("The AS/400 system where the user is registered"), helpcontext(0x000007e8)]
         HRESULT System([out, retval] BSTR* pVal);
-        [id(0x0000002b), propget, helpstring("Χ©Χ Χ—Χ‘Χ¨ Χ‘Χ•Χ¨Χ΅Χ”")]
+        [id(0x0000002b), propget, helpstring("ων ηαψ αεψρδ")]
         HRESULT SystemName([out, retval] BSTR* pVal);
-        [id(0x00000028), helpstring("Χ¨Χ©Χ™ΧΧª ΧΧ¤ΧΧ™Χ§Χ¦Χ™Χ•Χª Χ”ΧΧ•ΧªΧ¨Χ•Χª ΧΧΧ©ΧªΧΧ©")]
+        [id(0x00000028), helpstring("ψωιξϊ ΰτμιχφιεϊ δξεϊψεϊ μξωϊξω")]
         HRESULT GetUserApp(
                         [in] long sessionId, 
                         [out] SAFEARRAY(BSTR)* psaStrRecords, 
                         [in, optional, defaultvalue("")] BSTR AppName, 
                         [out, retval] long* retVal);
-        [id(0x0000002f), helpstring("Χ¨Χ™Χ›Χ•Χ– Χ”Χ•Χ¨ΧΧ•Χª Χ•Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ Χ‘ΧΧΆΧ•''Χ£")]
+        [id(0x0000002f), helpstring("ψιλεζ δεψΰεϊ επϊεπι ωεχ αξςε''σ")]
         HRESULT GetMaofCnt(
                         [in] long sessionId, 
                         [out] SAFEARRAY(K300MaofType)* vecK300, 
@@ -496,7 +497,7 @@ library TaskBarLib
                         [in] BSTR Branch, 
                         [in, out] BSTR* LastTime, 
                         [out, retval] long* retVal);
-        [id(0x00000030), helpstring("Χ¨Χ™Χ›Χ•Χ– Χ”Χ•Χ¨ΧΧ•Χª Χ•Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ Χ‘Χ¨Χ¦Χ£")]
+        [id(0x00000030), helpstring("ψιλεζ δεψΰεϊ επϊεπι ωεχ αψφσ")]
         HRESULT GetRezefCnt(
                         [in] long sessionId, 
                         [out] SAFEARRAY(K300RzfType)* vecK300, 
@@ -511,14 +512,14 @@ library TaskBarLib
                         [in] BSTR Branch, 
                         [in, out] BSTR* LastTime, 
                         [out, retval] long* retVal);
-        [id(0x00000033), helpstring("Χ©ΧΧ™Χ—Χª Χ”Χ•Χ¨ΧΧª Χ΅Χ¤Χ™Χ“ ΧΧ΅Χ™Χ Χ›Χ¨Χ•Χ Χ™Χª, ΧΧΧ Χ”ΧΧªΧ Χ” ΧΧªΧ©Χ•Χ‘Χª Χ§ΧΧ™ΧΧ”")]
+        [id(0x00000033), helpstring("ωμιηϊ δεψΰϊ ρτιγ ΰριπλψεπιϊ, μμΰ δξϊπδ μϊωεαϊ χμιθδ")]
         HRESULT SendMaofAsynchSpeedOrder(
                         [in] long sessionId, 
                         [in, out] SAFEARRAY(MaofOrderType)* Orders, 
                         [out] long* ErrNO, 
                         [in, optional, defaultvalue(0)] long SPCOrder, 
                         [out, retval] long* retVal);
-        [id(0x00000036), helpstring("Χ©ΧΧ™Χ—Χª Χ”Χ•Χ¨ΧΧ” Χ‘Χ¨Χ¦Χ£")]
+        [id(0x00000036), helpstring("ωμιηϊ δεψΰδ αψφσ")]
         HRESULT SendOrderRZ(
                         [in] long sessionId, 
                         [in] RezefSimpleOrder* Order, 
@@ -532,7 +533,7 @@ library TaskBarLib
                         [in] BSTR AuthPassword, 
                         [in] BSTR ReEnteredValue, 
                         [out, retval] long* retVal);
-        [id(0x0000003a), helpstring("Χ©ΧΧ™Χ—Χª Χ”Χ•Χ¨ΧΧ” ΧΧªΧΧ©Χ›Χª")]
+        [id(0x0000003a), helpstring("ωμιηϊ δεψΰδ ξϊξωλϊ")]
         HRESULT SendContOrderRZ(
                         [in] long sessionId, 
                         [in, out] RezefContinuousOrder* Order, 
@@ -546,7 +547,7 @@ library TaskBarLib
                         [in] BSTR AuthPassword, 
                         [in] BSTR ReEnteredValue, 
                         [out, retval] long* retVal);
-        [id(0x0000003b), helpstring("Χ©ΧΧ™Χ—Χª Χ”Χ•Χ¨ΧΧª Χ¨Χ¦Χ£ speed")]
+        [id(0x0000003b), helpstring("ωμιηϊ δεψΰϊ ψφσ speed")]
         HRESULT SendOrderSpeedRZ(
                         [in] long sessionId, 
                         [in, out] SAFEARRAY(RezefBasicOrder)* Orders, 
@@ -554,17 +555,17 @@ library TaskBarLib
                         [in] BSTR Trade_Type, 
                         [in, out] long* ErrNO, 
                         [out, retval] long* retVal);
-        [id(0x00000037), helpstring("ΧΧ™ΧªΧ—Χ•Χ ΧªΧ”ΧΧ™Χ Χ¨Χ§ΧΆ Χ©ΧΧ™Χ¤Χª Χ™ΧªΧ¨Χ•Χª ΧΧ•Χ-ΧΧ™Χ™Χ ΧΧΧ©ΧªΧΧ©")]
+        [id(0x00000037), helpstring("ΰιϊηεμ ϊδμικ ψχς ωμιτϊ ιϊψεϊ ΰεο-μιιο μξωϊξω")]
         HRESULT StartOnlineUserSession(
                         [in] long sessionId, 
                         [in] OnlineSessionType type, 
                         [out, retval] long* retVal);
-        [id(0x00000038), helpstring("Χ΅Χ™Χ•Χ ΧªΧ”ΧΧ™Χ Χ¨Χ§ΧΆ Χ©ΧΧ™Χ¤Χª Χ™ΧªΧ¨Χ•Χª ΧΧ•Χ-ΧΧ™Χ™Χ ΧΧΧ©ΧªΧΧ©")]
+        [id(0x00000038), helpstring("ριεν ϊδμικ ψχς ωμιτϊ ιϊψεϊ ΰεο-μιιο μξωϊξω")]
         HRESULT StopOnlineUserSession(
                         [in] long sessionId, 
                         [in] OnlineSessionType type, 
                         [out, retval] long* retVal);
-        [id(0x00000039), helpstring("ΧΧ©Χ™Χ›Χª Χ™ΧªΧ¨Χ•Χª ΧΧ•Χ-ΧΧ™Χ™Χ ΧΧΧ©ΧªΧΧ© ΧΧ”ΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™")]
+        [id(0x00000039), helpstring("ξωιλϊ ιϊψεϊ ΰεο-μιιο μξωϊξω ξδξηωα δψΰωι")]
         HRESULT GetOnlineSessionBalance(
                         [in] long sessionId, 
                         [in] OnlineSessionType type, 
@@ -573,7 +574,7 @@ library TaskBarLib
                         [in, optional, defaultvalue(0)] long Account, 
                         [in, out, optional, defaultvalue(0)] long* LastCounter, 
                         [out, retval] long* retVal);
-        [id(0x0000003c), helpstring("Χ©ΧΧ™Χ¤Χª ΧªΧ©Χ•ΧΧ” Χ™Χ•ΧΧ™Χª: ΧΧ™Χ“ΧΆ Χ¨ΧΧ©Χ•Χ Χ™")]
+        [id(0x0000003c), helpstring("ωμιτϊ ϊωεΰδ ιεξιϊ: ξιγς ψΰωεπι")]
         HRESULT GetAccountYieldInitial(
                         [in] long sessionId, 
                         [in, out] SAFEARRAY(AccountYieldInitial)* psaStrRecords, 
@@ -581,7 +582,7 @@ library TaskBarLib
                         [in, optional, defaultvalue(0)] long Account, 
                         [in, optional, defaultvalue(0)] long AccountYieldOnly, 
                         [out, retval] long* retVal);
-        [id(0x0000003d), helpstring("Χ©ΧΧ™Χ¤Χª ΧªΧ©Χ•ΧΧ” Χ™Χ•ΧΧ™Χª: ΧΧ™Χ“ΧΆ ΧΆ'Χ¤ Χ“Χ¨Χ™Χ©Χ”")]
+        [id(0x0000003d), helpstring("ωμιτϊ ϊωεΰδ ιεξιϊ: ξιγς ς'τ γψιωδ")]
         HRESULT GetAccountYieldByRequirement(
                         [in] long sessionId, 
                         [in, out] SAFEARRAY(AccountYieldByRequirement)* psaStrRecords, 
@@ -591,7 +592,7 @@ library TaskBarLib
                         [in] YieldDataType DataType, 
                         [in, optional, defaultvalue(0)] long AccountYieldOnly, 
                         [out, retval] long* retVal);
-        [id(0x0000003e), helpstring("Χ©ΧΧ™Χ¤Χª ΧªΧ©Χ•ΧΧ” Χ™Χ•ΧΧ™Χª: ΧΧ™Χ“ΧΆ ΧΧ¤Χ•Χ¨Χ")]
+        [id(0x0000003e), helpstring("ωμιτϊ ϊωεΰδ ιεξιϊ: ξιγς ξτεψθ")]
         HRESULT GetAccountYieldDetailed(
                         [in] long sessionId, 
                         [in, out] SAFEARRAY(AccountYieldDetailed)* psaStrRecords, 
@@ -601,14 +602,14 @@ library TaskBarLib
                         [in] long EndDate, 
                         [in, optional, defaultvalue(0)] long AccountYieldOnly, 
                         [out, retval] long* retVal);
-        [id(0x0000003f), helpstring("Χ©Χ•ΧΧ£ Χ—Χ©Χ‘Χ•Χ Χ•Χª Χ§Χ¨Χ Χ•Χª ΧΆΧ ΧΧ¤Χ©Χ¨Χ•Χª Χ¤Χ™ΧΧΧ•Χ¨ ΧΧ©ΧªΧΧ©")]
+        [id(0x0000003f), helpstring("ωεμσ ηωαεπεϊ χψπεϊ ςν ΰτωψεϊ τιμθεψ ξωϊξω")]
         HRESULT GetKranotAccounts(
                         [in] long sessionId, 
                         [in] BSTR strQuery, 
                         [in, out] SAFEARRAY(AccountType)* psaStrRecords, 
                         [in, out] BSTR* ErrMsg, 
                         [out, retval] long* retVal);
-        [id(0x00000045), helpstring("ΧΧ—Χ–Χ™Χ¨ Χ™ΧªΧ¨Χ•Χª ΧΆΧ‘Χ•Χ¨ Χ›Χ ΧΧ•Χ¤Χ¦Χ™Χ”")]
+        [id(0x00000045), helpstring("ξηζιψ ιϊψεϊ ςαεψ λμ ΰετφιδ")]
         HRESULT GetOnlineRmFromMaofSession(
                         [in] long sessionId, 
                         [in] BSTR Account, 
@@ -617,7 +618,7 @@ library TaskBarLib
                         [out, retval] long* retVal);
     };
 
-    typedef [uuid(52389AD5-6624-445A-AC5D-188285799188), version(1.0), helpstring("Login Level Χ¨ΧΧª Χ”ΧªΧ—Χ‘Χ¨Χ•Χª")]
+    typedef [uuid(52389AD5-6624-445A-AC5D-188285799188), version(1.0), helpstring("Login Level ψξϊ δϊηαψεϊ")]
     enum {
         LoginLevelPermissions = 1,
         LoginLevelOptionsStocks = 2,
@@ -625,7 +626,7 @@ library TaskBarLib
         LoginLevelMax = 50
     } LoginLevel;
 
-    typedef [uuid(6F67DB39-BC83-4655-A11B-EB9478FFF6E2), version(1.0), helpstring("ΧΧ¦Χ‘ Χ Χ•Χ›Χ—Χ™ Χ©Χ Χ›Χ Χ™Χ΅Χª ΧΧ©ΧªΧΧ©")]
+    typedef [uuid(6F67DB39-BC83-4655-A11B-EB9478FFF6E2), version(1.0), helpstring("ξφα πεληι ωμ λπιρϊ ξωϊξω")]
     enum {
         LoginSessionActive = 0,
         LoginSessionInProgress = 1,
@@ -643,127 +644,127 @@ library TaskBarLib
 
     typedef [uuid(D717A43B-4447-4506-95AD-992A486B6003), version(1.0), helpstring("RZF INQ Structure")]
     struct tagRZFINQType {
-        [helpstring("                  Χ©Χ’Χ•Χ™")        
+        [helpstring("                  ωβει")        
 ]
         BSTR ERR;
-        [helpstring("     Χ΅Χ™Χ΅ΧΧ ΧΧ§Χ•Χ¨ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("     ριρθν ξχεψ δτχεγδ")        
 ]
         BSTR SYS_TYPE;
-        [helpstring("            -ΧΧΧ¨Χª Χ”Χ©Χ“Χ¨")        
+        [helpstring("            -ξθψϊ δωγψ")        
 ]
         BSTR SND_RCV;
-        [helpstring("MANA/ORDR  Χ©Χ™ΧΧª Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("MANA/ORDR  ωιθϊ δτχεγδ")        
 ]
         BSTR ORDR_TYPE;
-        [helpstring("         Χ΅Χ™Χ΅ΧΧΧª Χ”ΧΧ©ΧªΧΧ©")        
+        [helpstring("         ριρξΰϊ δξωϊξω")        
 ]
         BSTR OPR_NAME;
-        [helpstring("0=DETAIL     Χ΅Χ•Χ’ Χ¤Χ™Χ¨Χ•Χ")        
+        [helpstring("0=DETAIL     ρεβ τιψεθ")        
 ]
         BSTR SUG_INQ;
-        [helpstring("  FMR  -    Χ΅Χ¤Χ¨Χ•Χ¨ Χ©Χ•ΧΧ£")        
+        [helpstring("  FMR  -    ρτψεψ ωεθσ")        
 ]
         BSTR SEQ_N;
-        [helpstring("   ΧΧ΅Χ¤Χ¨ ΧΧ Χ”/Χ©ΧΆΧ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("   ξρτψ ξπδ/ωςδ ΰηψεπδ")        
 ]
         BSTR MANA_N;
-        [helpstring("         ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("         ξρτψ πιιψ ςψκ")        
 ]
         BSTR BNO_N;
-        [helpstring("               Χ©Χ Χ Χ™Χ™Χ¨")        
+        [helpstring("               ων πιιψ")        
 ]
         BSTR BNO_NAME;
-        [helpstring("      Χ§Χ•Χ“ Χ§Χ Χ™Χ” / ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("      χεγ χπιδ / ξλιψδ")        
 ]
         BSTR OP;
-        [helpstring("                  Χ΅Χ Χ™Χ£")        
+        [helpstring("                  ρπισ")        
 ]
         BSTR BRANCH_N;
-        [helpstring("                   ΧªΧ™Χ§")        
+        [helpstring("                   ϊιχ")        
 ]
         BSTR TIK_N;
-        [helpstring("  Χ΅Χ•Χ’  Χ—Χ©Χ‘Χ•Χ ΧΧ¤Χ¦Χ/ΧΧΆΧ‘Χ¨")        
+        [helpstring("  ρεβ  ηωαεο ξτφμ/ξςαψ")        
 ]
         BSTR SUG_MAVR_N;
-        [helpstring("  ΧΧ΅Χ¤Χ¨ Χ—Χ©Χ‘Χ•Χ ΧΧ¤Χ¦Χ/ΧΧΆΧ‘Χ¨")        
+        [helpstring("  ξρτψ ηωαεο ξτφμ/ξςαψ")        
 ]
         BSTR ID_MAVR_N;
-        [helpstring("             Χ΅Χ•Χ’ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("             ρεβ ηωαεο")        
 ]
         BSTR SUG_N;
-        [helpstring("                 Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("                 ηωαεο")        
 ]
         BSTR ID_N;
-        [helpstring("             Χ©Χ Χ”Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("             ων δηωαεο")        
 ]
         BSTR ID_NAME;
-        [helpstring("             Χ΅Χ•Χ’ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("             ρεβ ηωαεο")        
 ]
         BSTR SUG_ID_N;
-        [helpstring("            Χ§Χ•Χ“ Χ Χ•Χ΅ΧΧ¨Χ•")        
+        [helpstring("            χεγ περθψε")        
 ]
         BSTR NOSTRO;
-        [helpstring("           Χ›ΧΧ•Χª ΧΧ‘Χ•Χ§Χ©Χª")        
+        [helpstring("           λξεϊ ξαεχωϊ")        
 ]
         BSTR ORDR_NV_N;
-        [helpstring("             Χ΅Χ•Χ’ Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("             ρεβ τχεγδ")        
 ]
         BSTR ORDR_SUG;
-        [helpstring("            ΧΧ—Χ™Χ¨ Χ”Χ–ΧΧ Χ”")        
+        [helpstring("            ξηιψ δζξπδ")        
 ]
         BSTR ORDR_PRC_N;
-        [helpstring("      Χ–ΧΧ Χ§ΧΧ™ΧΧª Χ”Χ”Χ–ΧΧ Χ”")        
+        [helpstring("      ζξο χμιθϊ δδζξπδ")        
 ]
         BSTR ORDR_TIME;
-        [helpstring("            Χ›ΧΧ•Χª Χ‘ΧΆΧ΅Χ§Χ”")        
+        [helpstring("            λξεϊ αςρχδ")        
 ]
         BSTR DIL_NV_N;
-        [helpstring("             ΧΧ—Χ™Χ¨ ΧΆΧ΅Χ§Χ”")        
+        [helpstring("             ξηιψ ςρχδ")        
 ]
         BSTR DIL_PRC_N;
-        [helpstring("             Χ©ΧΆΧª Χ”ΧΆΧ΅Χ§Χ”")        
+        [helpstring("             ωςϊ δςρχδ")        
 ]
         BSTR DIL_TIME_N;
-        [helpstring("        ΧΧ΅Χ¤Χ¨ Χ”Χ•Χ“ΧΆΧª Χ—Χ‘Χ¨")        
+        [helpstring("        ξρτψ δεγςϊ ηαψ")        
 ]
         BSTR MBR_SEQ_N;
-        [helpstring("        ΧΧ΅Χ¤Χ¨ Χ”Χ•Χ“ΧΆΧª Χ¨Χ¦Χ£")        
+        [helpstring("        ξρτψ δεγςϊ ψφσ")        
 ]
         BSTR RZF_SEQ_N;
-        [helpstring("       ΧΧ΅Χ¤Χ¨ Χ¤Χ§Χ•Χ“Χ” Χ‘Χ¨Χ¦Χ£")        
+        [helpstring("       ξρτψ τχεγδ αψφσ")        
 ]
         BSTR RZF_ORD_N;
-        [helpstring("    HOST - Χ΅Χ¤Χ¨Χ•Χ¨ ΧΧ™Χ•Χ—Χ“")        
+        [helpstring("    HOST - ρτψεψ ξιεηγ")        
 ]
         BSTR ORDER_NO_N;
-        [helpstring("       ΧΧ΅Χ¤Χ¨ ΧΧ™Χ©Χ•Χ¨ ΧΆΧ΅Χ§Χ”")        
+        [helpstring("       ξρτψ ΰιωεψ ςρχδ")        
 ]
         BSTR DIL_N;
-        [helpstring("          Χ΅ΧΧΧ•Χ΅ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("          ρθθερ δτχεγδ")        
 ]
         BSTR COD_UPD;
-        [helpstring("          Χ΅ΧΧΧ•Χ΅ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("          ρθθερ δτχεγδ")        
 ]
         BSTR STS;
-        [helpstring("   Χ ΧªΧ•Χ Χ™Χ Χ—Χ΅Χ¨Χ™Χ/Χ©Χ’Χ•Χ™Χ™Χ")        
+        [helpstring("   πϊεπιν ηρψιν/ωβειιν")        
 ]
         BSTR ERR_DATA;
-        [helpstring("                  Χ©Χ’Χ•Χ™")        
+        [helpstring("                  ωβει")        
 ]
         BSTR ERR_INQ;
-        [helpstring("                  Χ©Χ’Χ•Χ™")        
+        [helpstring("                  ωβει")        
 ]
         BSTR ERR_UPD;
         [helpstring("0=ORDR  1=DIL  2=SUM  ")        
 ]
         BSTR SUG_INFO;
-        [helpstring("           Χ”Χ•Χ“ΧΆΧ” Χ›ΧΧΧ™Χª")        
+        [helpstring("           δεγςδ λμμιϊ")        
 ]
         BSTR MSG1;
-        [helpstring("            ΧΧ¦Χ‘ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("            ξφα δτχεγδ")        
 ]
         BSTR STS_NAME;
-        [helpstring("            ΧΧ¦Χ‘ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("            ξφα δτχεγδ")        
 ]
         BSTR DSP_FMR;
     } RZFINQType;
@@ -776,43 +777,43 @@ library TaskBarLib
 
     typedef [uuid(D717A43A-4447-4506-95AD-992A486B6003), version(1.0), helpstring("Maof INQ Structure")]
     struct tagMOFINQType {
-        [helpstring("                  Χ©Χ’Χ•Χ™")        
+        [helpstring("                  ωβει")        
 ]
         BSTR ERR;
-        [helpstring("     Χ΅Χ™Χ΅ΧΧ ΧΧ§Χ•Χ¨ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("     ριρθν ξχεψ δτχεγδ")        
 ]
         BSTR SYS_TYPE;
-        [helpstring("            -ΧΧΧ¨Χª Χ”Χ©Χ“Χ¨")        
+        [helpstring("            -ξθψϊ δωγψ")        
 ]
         BSTR SND_RCV;
-        [helpstring("MANA/ORDR  Χ©Χ™ΧΧª Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("MANA/ORDR  ωιθϊ δτχεγδ")        
 ]
         BSTR ORDR_TYPE;
-        [helpstring("         Χ΅Χ™Χ΅ΧΧΧª Χ”ΧΧ©ΧªΧΧ©")        
+        [helpstring("         ριρξΰϊ δξωϊξω")        
 ]
         BSTR OPR_NAME;
-        [helpstring("0=DETAIL     Χ΅Χ•Χ’ Χ¤Χ™Χ¨Χ•Χ")        
+        [helpstring("0=DETAIL     ρεβ τιψεθ")        
 ]
         BSTR SUG_INQ;
-        [helpstring("  FMR  -    Χ΅Χ¤Χ¨Χ•Χ¨ Χ©Χ•ΧΧ£")        
+        [helpstring("  FMR  -    ρτψεψ ωεθσ")        
 ]
         BSTR SEQ_PIC;
         [helpstring("                      ")        
 ]
         BSTR MANA_PIC;
-        [helpstring("         ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("         ξρτψ πιιψ ςψκ")        
 ]
         BSTR BNO_PIC;
-        [helpstring("               Χ©Χ Χ Χ™Χ™Χ¨")        
+        [helpstring("               ων πιιψ")        
 ]
         BSTR BNO_NAME;
-        [helpstring("      Χ§Χ•Χ“ Χ§Χ Χ™Χ” / ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("      χεγ χπιδ / ξλιψδ")        
 ]
         BSTR OP;
-        [helpstring("                  Χ΅Χ Χ™Χ£")        
+        [helpstring("                  ρπισ")        
 ]
         BSTR BRANCH_PIC;
-        [helpstring("                   ΧªΧ™Χ§")        
+        [helpstring("                   ϊιχ")        
 ]
         BSTR TIK_PIC;
         [helpstring("                      ")        
@@ -827,70 +828,70 @@ library TaskBarLib
         [helpstring("                      ")        
 ]
         BSTR ID_PIC;
-        [helpstring("             Χ©Χ Χ”Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("             ων δηωαεο")        
 ]
         BSTR ID_NAME;
         [helpstring("                      ")        
 ]
         BSTR SUG_ID_PIC;
-        [helpstring("            Χ§Χ•Χ“ Χ Χ•Χ΅ΧΧ¨Χ•")        
+        [helpstring("            χεγ περθψε")        
 ]
         BSTR NOSTRO;
-        [helpstring("           Χ›ΧΧ•Χª ΧΧ‘Χ•Χ§Χ©Χª")        
+        [helpstring("           λξεϊ ξαεχωϊ")        
 ]
         BSTR ORDR_NV_PIC;
-        [helpstring("             Χ΅Χ•Χ’ Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("             ρεβ τχεγδ")        
 ]
         BSTR ORDR_SUG;
-        [helpstring("            ΧΧ—Χ™Χ¨ Χ”Χ–ΧΧ Χ”")        
+        [helpstring("            ξηιψ δζξπδ")        
 ]
         BSTR ORDR_PRC_PIC;
-        [helpstring("      Χ–ΧΧ Χ§ΧΧ™ΧΧª Χ”Χ”Χ–ΧΧ Χ”")        
+        [helpstring("      ζξο χμιθϊ δδζξπδ")        
 ]
         BSTR ORDR_TIME;
-        [helpstring("            Χ›ΧΧ•Χª Χ‘ΧΆΧ΅Χ§Χ”")        
+        [helpstring("            λξεϊ αςρχδ")        
 ]
         BSTR DIL_NV_PIC;
-        [helpstring("             ΧΧ—Χ™Χ¨ ΧΆΧ΅Χ§Χ”")        
+        [helpstring("             ξηιψ ςρχδ")        
 ]
         BSTR DIL_PRC_PIC;
-        [helpstring("             Χ©ΧΆΧª Χ”ΧΆΧ΅Χ§Χ”")        
+        [helpstring("             ωςϊ δςρχδ")        
 ]
         BSTR DIL_TIME_PIC;
-        [helpstring("        ΧΧ΅Χ¤Χ¨ Χ”Χ•Χ“ΧΆΧª Χ—Χ‘Χ¨")        
+        [helpstring("        ξρτψ δεγςϊ ηαψ")        
 ]
         BSTR MBR_SEQ_PIC;
-        [helpstring("        ΧΧ΅Χ¤Χ¨ Χ”Χ•Χ“ΧΆΧª Χ¨Χ¦Χ£")        
+        [helpstring("        ξρτψ δεγςϊ ψφσ")        
 ]
         BSTR RZF_SEQ_PIC;
-        [helpstring("       ΧΧ΅Χ¤Χ¨ Χ¤Χ§Χ•Χ“Χ” Χ‘Χ¨Χ¦Χ£")        
+        [helpstring("       ξρτψ τχεγδ αψφσ")        
 ]
         BSTR RZF_ORD_PIC;
-        [helpstring("    HOST - Χ΅Χ¤Χ¨Χ•Χ¨ ΧΧ™Χ•Χ—Χ“")        
+        [helpstring("    HOST - ρτψεψ ξιεηγ")        
 ]
         BSTR ORDER_NO_PIC;
-        [helpstring("       ΧΧ΅Χ¤Χ¨ ΧΧ™Χ©Χ•Χ¨ ΧΆΧ΅Χ§Χ”")        
+        [helpstring("       ξρτψ ΰιωεψ ςρχδ")        
 ]
         BSTR DIL_PIC;
-        [helpstring("          Χ΅ΧΧΧ•Χ΅ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("          ρθθερ δτχεγδ")        
 ]
         BSTR COD_UPD;
-        [helpstring("          Χ΅ΧΧΧ•Χ΅ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("          ρθθερ δτχεγδ")        
 ]
         BSTR STS;
-        [helpstring("   Χ ΧªΧ•Χ Χ™Χ Χ—Χ΅Χ¨Χ™Χ/Χ©Χ’Χ•Χ™Χ™Χ")        
+        [helpstring("   πϊεπιν ηρψιν/ωβειιν")        
 ]
         BSTR ERR_DATA;
-        [helpstring("                  Χ©Χ’Χ•Χ™")        
+        [helpstring("                  ωβει")        
 ]
         BSTR ERR_INQ;
-        [helpstring("                  Χ©Χ’Χ•Χ™")        
+        [helpstring("                  ωβει")        
 ]
         BSTR ERR_UPD;
         [helpstring("0=ORDR  1=DIL  2=SUM  ")        
 ]
         BSTR SUG_INFO;
-        [helpstring("            ΧΧ¦Χ‘ Χ”Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("            ξφα δτχεγδ")        
 ]
         BSTR DSP_FMR;
     } MOFINQType;
@@ -904,169 +905,169 @@ library TaskBarLib
 
     typedef [uuid(D717A43C-4447-4506-95AD-992A486B6003), version(1.0), helpstring("RM Structure")]
     struct tagRMType {
-        [helpstring("Χ΅Χ Χ™Χ£ Χ‘Χ Χ§")        
+        [helpstring("ρπισ απχ")        
 ]
         BSTR Sug;
-        [helpstring("ΧΧ΅ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ξρ ηωαεο")        
 ]
         BSTR ID;
-        [helpstring("ΧΧ΅ Χ‘Χ•Χ¨Χ΅Χ”")        
+        [helpstring("ξρ αεψρδ")        
 ]
         BSTR BNO;
-        [helpstring("Χ΅Χ•Χ’ Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ ψωεξδ")        
 ]
         BSTR SUG_RC;
-        [helpstring("ΧΧ΅ ΧªΧ™Χ§")        
+        [helpstring("ξρ ϊιχ")        
 ]
         BSTR Tik;
-        [helpstring("ΧΧ΅ Χ΅Χ Χ™Χ£")        
+        [helpstring("ξρ ρπισ")        
 ]
         BSTR Branch;
-        [helpstring("Χ©Χ Χ”Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ων δηωαεο")        
 ]
         BSTR ID_NAME;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ©Χ Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("ξρτψ ωμ πλρ αριρ")        
 ]
         BSTR BS_BNO;
-        [helpstring("Χ©Χ Χ”Χ Χ™"ΧΆ Χ‘ΧΧ Χ’ΧΧ™Χª")        
+        [helpstring("ων δπι"ς αΰπβμιϊ")        
 ]
         BSTR SYMBOL_NAM;
-        [helpstring("Χ©Χ Χ Χ™"ΧΆ")        
+        [helpstring("ων πι"ς")        
 ]
         BSTR BNO_NAME;
-        [helpstring("Χ΅Χ•Χ’ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ρεβ ηωαεο")        
 ]
         BSTR SUG_ID;
-        [helpstring("Χ΅Χ•Χ’ Χ Χ™"ΧΆ")        
+        [helpstring("ρεβ πι"ς")        
 ]
         BSTR SUG_BNO;
-        [helpstring("Χ¤ΧΆΧ•ΧΧ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("τςεμδ ΰηψεπδ")        
 ]
         BSTR LAST_OP;
-        [helpstring("Y.M.D Χª. Χ¤ΧΆΧ•ΧΧ”")        
+        [helpstring("Y.M.D ϊ. τςεμδ")        
 ]
         BSTR LAST_DT;
-        [helpstring("Y.M.D ΧªΧ—Χ™ΧΧª Χ”Χ©ΧΧΧ”")        
+        [helpstring("Y.M.D ϊηιμϊ δωΰμδ")        
 ]
         BSTR STRT_DT;
-        [helpstring("Y.M.D Χ΅Χ™Χ•Χ Χ”Χ©ΧΧΧ”")        
+        [helpstring("Y.M.D ριεν δωΰμδ")        
 ]
         BSTR END_DT;
-        [helpstring("ΧªΧ§Χ•Χ¤Χª Χ¤Χ“Χ™Χ•Χ ΧΧΧ•Χ¦ΧΆ")        
+        [helpstring("ϊχετϊ τγιεο ξξεφς")        
 ]
         BSTR AV_TERM;
-        [helpstring("ΧΧ“Χ•Χ¨")        
+        [helpstring("ξγεψ")        
 ]
         BSTR MDR;
-        [helpstring("ΧΧ Χ¤Χ™Χ§")        
+        [helpstring("ξπτιχ")        
 ]
         BSTR MANPIK;
-        [helpstring("Χ—ΧªΧ Χ Χ™Χ”Χ•ΧΧ™ ΧΧ“Χ•Χ•Χ—")        
+        [helpstring("ηϊκ πιδεμι μγεεη")        
 ]
         BSTR MNG_REP;
-        [helpstring("Χ΅Χ•Χ’ Χ Χ’Χ–Χ¨Χª")        
+        [helpstring("ρεβ πβζψϊ")        
 ]
         BSTR DERIV_COD;
-        [helpstring("ΧΧ΅ ΧΧ™Χ•Χ")        
+        [helpstring("ξρ ξιεο")        
 ]
         BSTR SORT;
-        [helpstring("Χ΅Χ•Χ’ Χ—Χ•ΧΧ¨")        
+        [helpstring("ρεβ ηεξψ")        
 ]
         BSTR SH;
-        [helpstring("Χ΅Χ•Χ’ Χ©ΧΆΧ¨")        
+        [helpstring("ρεβ ωςψ")        
 ]
         BSTR SUG_PR;
-        [helpstring("ΧΧ—Χ™Χ¨")        
+        [helpstring("ξηιψ")        
 ]
         BSTR PRC;
-        [helpstring("Χ”Χ©Χ Χ•Χ™ Χ‘ΧΧ—Χ™Χ¨")        
+        [helpstring("δωπει αξηιψ")        
 ]
         BSTR PRC_CHNG;
-        [helpstring("Χ΅Χ•Χ’ ΧΧΧ‘ΧΆ")        
+        [helpstring("ρεβ ξθας")        
 ]
         BSTR SUG_CUR;
-        [helpstring("Χ©ΧΆΧ¨ Χ”ΧΧΧ—")        
+        [helpstring("ωςψ δξθη")        
 ]
         BSTR PR_MATACH;
-        [helpstring("Χ”Χ•Χ Χ¨Χ©Χ•Χ")        
+        [helpstring("δεο ψωεν")        
 ]
         BSTR HON_RASHUM;
-        [helpstring("Χ™ΧªΧ¨Χª ΧΆΧ¨Χ Χ Χ§Χ•Χ‘")        
+        [helpstring("ιϊψϊ ςψκ πχεα")        
 ]
         BSTR NV;
-        [helpstring("ΧΆΧΧ•Χª")        
+        [helpstring("ςμεϊ")        
 ]
         BSTR COST;
-        [helpstring("ΧªΧΧ•Χ¨Χ”")        
+        [helpstring("ϊξεψδ")        
 ]
         BSTR VL;
-        [helpstring("Χ‘ΧΧ•Χ—Χ” Χ§Χ™Χ™ΧΧª")        
+        [helpstring("αθεηδ χιιξϊ")        
 ]
         BSTR EXT_MARGIN;
-        [helpstring("Χ‘ΧΧ•Χ—Χ” Χ Χ“Χ¨Χ©Χª")        
+        [helpstring("αθεηδ πγψωϊ")        
 ]
         BSTR REQ_MARGIN;
-        [helpstring("1-Χ΅Χ›Χ•Χ")        
+        [helpstring("1-ρλεν")        
 ]
         BSTR SUM1;
-        [helpstring("2-Χ΅Χ›Χ•Χ")        
+        [helpstring("2-ρλεν")        
 ]
         BSTR SUM2;
-        [helpstring("ΧΧ—Χ–Χ§Χ” Χ‘Χ—Χ©Χ‘Χ•Χ %")        
+        [helpstring("ΰηζχδ αηωαεο %")        
 ]
         BSTR ID_PCNT;
-        [helpstring("ΧΧ—Χ–Χ§Χ” Χ‘ΧªΧ™Χ§ %")        
+        [helpstring("ΰηζχδ αϊιχ %")        
 ]
         BSTR TK_PCNT;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ”- Χ Χ›Χ΅ Χ¤Χ™Χ ")        
+        [helpstring("χα.ρλιξδ- πλρ τιπ")        
 ]
         BSTR LVL1;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ”- Χ΅Χ•Χ’ Χ "ΧΆ")        
+        [helpstring("χα.ρλιξδ- ρεβ π"ς")        
 ]
         BSTR LVL2;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ”- Χ©. ΧΧ΅Χ—Χ¨")        
+        [helpstring("χα.ρλιξδ- ω. ξρηψ")        
 ]
         BSTR LVL3;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ”- Χ΅Χ§ΧΧ•Χ¨Χ™Χ")        
+        [helpstring("χα.ρλιξδ- ρχθεψιν")        
 ]
         BSTR LVL4;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ”- ΧΧ Χ¤Χ™Χ§Χ™Χ")        
+        [helpstring("χα.ρλιξδ- ξπτιχιν")        
 ]
         BSTR LVL5;
-        [helpstring("  Χ§Χ‘.Χ΅Χ›Χ™ΧΧ”- ΧªΧ§Χ Χ•Χª")        
+        [helpstring("  χα.ρλιξδ- ϊχπεϊ")        
 ]
         BSTR LVL6;
-        [helpstring("Y/N  MANG-ΧΧ©ΧªΧªΧ£ Χ‘")        
+        [helpstring("Y/N  MANG-ξωϊϊσ α")        
 ]
         BSTR MANG_COD;
-        [helpstring("ΧΧ΅ Χ‘Χ Χ§")        
+        [helpstring("ξρ απχ")        
 ]
         BSTR BANK;
-        [helpstring("Χ΅Χ Χ™Χ£ Χ‘Χ Χ§")        
+        [helpstring("ρπισ απχ")        
 ]
         BSTR BNK_BRANCH;
-        [helpstring("ΧΧ΅ Χ—Χ©Χ‘Χ•Χ Χ‘Χ‘Χ Χ§")        
+        [helpstring("ξρ ηωαεο ααπχ")        
 ]
         BSTR ID_BANK;
-        [helpstring("ΧΧ•Χ“Χ")        
+        [helpstring("ξεγμ")        
 ]
         BSTR MDL;
-        [helpstring("Χ§Χ‘Χ•Χ¦Χª ΧΧΧ–Χ")        
+        [helpstring("χαεφϊ ξΰζο")        
 ]
         BSTR BLC;
-        [helpstring("Χ§Χ‘Χ•Χ¦Χª ΧΧΧ–Χ ΧΧ™Χª.Χ—Χ•Χ‘Χ”")        
+        [helpstring("χαεφϊ ξΰζο μιϊ.ηεαδ")        
 ]
         BSTR BLC_NEG;
-        [helpstring("Χ΅ΧΆΧ™Χ£ ΧªΧ§Χ¦Χ™Χ‘Χ™")        
+        [helpstring("ρςισ ϊχφιαι")        
 ]
         BSTR BGT;
-        [helpstring("Χ΅Χ™Χ•Χ•Χ’")        
+        [helpstring("ριεεβ")        
 ]
         BSTR SIVUG;
-        [helpstring("Χ”ΧΧ Χ‘ΧΆΧ ΧΆΧ Χ™Χ")        
+        [helpstring("δΰν αςμ ςπιο")        
 ]
         BSTR INTRST_COD;
-        [helpstring("Χ”ΧΧ Χ’Χ•Χ‘Χ™Χ Χ“.Χ Χ”Χ•Χ ΧΆΧ‘Χ•Χ¨ Χ”Χ Χ™"ΧΆ")        
+        [helpstring("δΰν βεαιν γ.πδεμ ςαεψ δπι"ς")        
 ]
         BSTR PAY_MNG;
         [helpstring("FILLER")        
@@ -1076,28 +1077,28 @@ library TaskBarLib
 
     typedef [uuid(D717A438-4447-4506-95AD-992A486B6003), version(1.0), helpstring("Account Structure")]
     struct tagAccountType {
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         BSTR BRANCH_NO;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ξρτψ ηωαεο")        
 ]
         BSTR ID_NO;
                 
 BSTR ID_FIL;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧªΧ™Χ§")        
+        [helpstring("ξρτψ ϊιχ")        
 ]
         BSTR TIK_NO;
-        [helpstring("Χ©Χ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ων ηωαεο")        
 ]
         BSTR ID_NAME;
                 
 BSTR REQ_MRGN;
                 
 BSTR RCRDIT_MAOF;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΆΧ™Χ¨")        
+        [helpstring("ξρτψ ςιψ")        
 ]
         BSTR ID_TOWN;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΧΧ¤Χ•Χ")        
+        [helpstring("ξρτψ θμτεο")        
 ]
         BSTR ID_PHONE_NO;
                 
@@ -1118,7 +1119,7 @@ BSTR MAX_C_MAOF;
 BSTR MIN_C_FUTR;
                 
 BSTR MAX_C_FUTR;
-        [helpstring("Χ΅Χ™Χ•Χ•Χ’")        
+        [helpstring("ριεεβ")        
 ]
         BSTR SIVUG;
                 
@@ -1143,7 +1144,7 @@ BSTR COD_H_FUTR;
 BSTR COD_H_CURR;
                 
 BSTR ID_PCNT;
-        [helpstring("Χ΅Χ•Χ’")        
+        [helpstring("ρεβ")        
 ]
         BSTR SUG_ID;
                 
@@ -1166,7 +1167,7 @@ BSTR PRE_MAOF4;
 BSTR PRE_MAOF5;
                 
 BSTR MDL;
-        [helpstring("Χ§Χ•Χ“ Χ–Χ™Χ”Χ•Χ™ ΧΧΧ¤Χ•Χ Χ™")        
+        [helpstring("χεγ ζιδει θμτεπι")        
 ]
         BSTR TEL_PW;
                 
@@ -1175,37 +1176,37 @@ BSTR FIL;
 
     typedef [uuid(D717A436-4447-4506-95AD-992A486B6003), version(1.0), helpstring("User Password Structure")]
     struct tagUserPasswordType {
-        [helpstring("Χ΅Χ•Χ’ Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ ψωεξδ")        
 ]
         BSTR SUG_RC;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΧ©ΧªΧΧ©")        
+        [helpstring("ξρτψ ξωϊξω")        
 ]
         BSTR USR_NAME;
-        [helpstring("Χ΅Χ™Χ΅ΧΧ")        
+        [helpstring("ριρξΰ")        
 ]
         BSTR USR_PW;
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         BSTR Branch;
-        [helpstring("Χ΅Χ•Χ’")        
+        [helpstring("ρεβ")        
 ]
         BSTR Sug;
-        [helpstring("Χ—Χ©Χ‘Χ•Χ ΧΧ¤Χ¦Χ")        
+        [helpstring("ηωαεο ξτφμ")        
 ]
         BSTR MFZL_ID;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧªΧ™Χ§")        
+        [helpstring("ξρτψ ϊιχ")        
 ]
         BSTR TIK_N;
-        [helpstring("Χ©Χ ΧΧ©ΧªΧΧ©")        
+        [helpstring("ων ξωϊξω")        
 ]
         BSTR ID_N;
-        [helpstring("Χ©Χ ΧΧ¤ΧΧ™Χ§Χ¦Χ™Χ”")        
+        [helpstring("ων ΰτμιχφιδ")        
 ]
         BSTR APPL_N;
         [helpstring("Device Name")        
 ]
         BSTR DEVICE_N;
-        [helpstring("Χ¨ΧΧª ΧΧ™ΧΧ•Χª")        
+        [helpstring("ψξϊ ΰιξεϊ")        
 ]
         BSTR AUTH_LVL;
         [helpstring("Field")        
@@ -1217,16 +1218,16 @@ BSTR FIL;
         [helpstring("Value")        
 ]
         BSTR val;
-        [helpstring("ΧªΧΧ¨Χ™Χ ΧΆΧ“Χ›Χ•Χ ΧΧ—Χ¨Χ•Χ")        
+        [helpstring("ϊΰψικ ςγλεο ΰηψεο")        
 ]
         BSTR UPD_DAT;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ΅Χ™Χ•Χ")        
+        [helpstring("ϊΰψικ ριεν")        
 ]
         BSTR END_DAT;
-        [helpstring("Χ©Χ ΧΧ©ΧªΧΧ© ΧΧΆΧ“Χ›Χ")        
+        [helpstring("ων ξωϊξω ξςγλο")        
 ]
         BSTR UPD_USR_N;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΧ©ΧªΧΧ© ΧΧΆΧ“Χ›Χ")        
+        [helpstring("ξρτψ ξωϊξω ξςγλο")        
 ]
         BSTR FROM_USR_N;
         [helpstring("FIL")        
@@ -1288,59 +1289,59 @@ BSTR end_date;
 
     typedef [uuid(D717A432-4447-4506-95AD-992A486B6003), version(1.0), helpstring("Maof Basic Order Structure")]
     struct tagMaofOrderType {
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         BSTR Branch;
-        [helpstring("Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ηωαεο")        
 ]
         BSTR Account;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΧ•Χ¤Χ¦Χ™Χ”")        
+        [helpstring("ξρτψ ΰετφιδ")        
 ]
         BSTR Option;
-        [helpstring("Χ¤ΧΆΧ•ΧΧ”")        
+        [helpstring("τςεμδ")        
 ]
         BSTR operation;
-        [helpstring("Χ›ΧΧ•Χª")        
+        [helpstring("λξεϊ")        
 ]
         BSTR ammount;
-        [helpstring("ΧΧ—Χ™Χ¨")        
+        [helpstring("ξηιψ")        
 ]
         BSTR price;
-        [helpstring("Χ΅Χ•Χ’ Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("ρεβ τχεγδ")        
 ]
         BSTR Sug_Pkuda;
-        [helpstring("ΧΧ΅ΧΧ›ΧªΧ")        
+        [helpstring("ΰρξλϊΰ")        
 ]
         BSTR Asmachta;
-        [helpstring("ΧΧ΅ΧΧ›ΧªΧ Χ¤.Χ.Χ¨")        
+        [helpstring("ΰρξλϊΰ τ.ξ.ψ")        
 ]
         BSTR AsmachtaFmr;
-        [helpstring("Χ Χ§ΧΧ")        
+        [helpstring("πχμθ")        
 ]
         long Pass;
-        [helpstring("Χ–Χ™Χ”Χ•Χ™ Χ¤Χ§Χ•Χ“Χ” Χ¤Χ Χ™ΧΧ™")        
+        [helpstring("ζιδει τχεγδ τπιξι")        
 ]
         long OrderID;
     } MaofOrderType;
 
-    typedef [uuid(9FAA45D6-068B-4378-9537-BA102D832532), version(1.0), helpstring("Χ‘ΧΧ—Χ•Χ Χ•Χª Χ¤ΧΧ ΧΧ”Χ•Χ¨ΧΧª ΧΧΆΧ•Χ£")]
+    typedef [uuid(9FAA45D6-068B-4378-9537-BA102D832532), version(1.0), helpstring("αθηεπεϊ τμΰ μδεψΰϊ ξςεσ")]
     struct tagPeleSecurityType {
-        [helpstring("Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("πλρ αριρ")        
 ]
         int BaseAsset;
-        [helpstring("ΧΧ΅Χ’Χ¨Χª")        
+        [helpstring("ξρβψϊ")        
 ]
         double Margin;
-        [helpstring("Χ‘ΧΧ—Χ•Χ Χ•Χª")        
+        [helpstring("αθηεπεϊ")        
 ]
         double Security;
-        [helpstring("ΧΧ’Χ‘ΧΧª Χ¤Χ¨ΧΧ™Χ” Χ™Χ•ΧΧ™Χª")        
+        [helpstring("ξβαμϊ τψξιδ ιεξιϊ")        
 ]
         double dailyPremium;
-        [helpstring("Χ¤Χ¨ΧΧ™Χ™Χª Χ¤Χ§Χ•Χ“Χ•Χª")        
+        [helpstring("τψξιιϊ τχεγεϊ")        
 ]
         double OrdersPremium;
-        [helpstring("Χ”ΧΆΧ‘Χ¨Χ”")        
+        [helpstring("δςαψδ")        
 ]
         int Pass;
     } PeleSecurityType;
@@ -1387,206 +1388,206 @@ double NeededSec;
 
     typedef [uuid(1D4DFB4D-5F79-4CDA-B7BE-7DDC4622540C), version(1.0), helpstring("Short Account Structure")]
     struct tagShortAccountType {
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧªΧ™Χ§")        
+        [helpstring("ξρτψ ϊιχ")        
 ]
         BSTR Tik;
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         BSTR Branch;
-        [helpstring("Χ΅Χ•Χ’")        
+        [helpstring("ρεβ")        
 ]
         BSTR Sug;
-        [helpstring("Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ηωαεο")        
 ]
         BSTR ID;
-        [helpstring("Χ©Χ")        
+        [helpstring("ων")        
 ]
         BSTR AccountName;
-        [helpstring("Χ©Χ Χ Χ•Χ΅Χ£")        
+        [helpstring("ων περσ")        
 ]
         BSTR SortAccountName;
-        [helpstring("Χ§Χ•Χ“ ΧΧΆΧ•Χ£")        
+        [helpstring("χεγ ξςεσ")        
 ]
         BSTR MaofCode;
-        [helpstring("Χ§Χ•Χ“ ΧΆΧªΧ™Χ“Χ™")        
+        [helpstring("χεγ ςϊιγι")        
 ]
         BSTR FutureCode;
-        [helpstring("Χ§Χ•Χ“ Χ Χ™ΧΆ")        
+        [helpstring("χεγ πις")        
 ]
         BSTR BnoCode;
-        [helpstring("Χ§Χ•Χ“ Χ§Χ•Χ¤Χ”")        
+        [helpstring("χεγ χετδ")        
 ]
         BSTR CashCode;
-        [helpstring("ΧΆΧ•Χ‘Χ“ Χ—Χ‘Χ¨Χ”")        
+        [helpstring("ςεαγ ηαψδ")        
 ]
         BSTR CompanyEmployee;
-        [helpstring("Χ΅Χ™Χ•Χ•Χ’")        
+        [helpstring("ριεεβ")        
 ]
         BSTR SIVUG;
-        [helpstring("Χ§Χ•Χ“ Χ—Χ©Χ‘Χ•Χ ΧΧ¤Χ¦Χ")        
+        [helpstring("χεγ ηωαεο ξτφμ")        
 ]
         BSTR MefazelCode;
-        [helpstring("Χ΅Χ•Χ’ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ρεβ ηωαεο")        
 ]
         BSTR SugId;
-        [helpstring("ΧΧ•Χ“Χ")        
+        [helpstring("ξεγμ")        
 ]
         BSTR Model;
-        [helpstring("ΧªΧª ΧΧ•Χ“Χ")        
+        [helpstring("ϊϊ ξεγμ")        
 ]
         BSTR SubModel;
-        [helpstring("ΧΧ—Χ•Χ– ΧΧ Χ™Χ•Χª ΧΧ•ΧªΧ¨")        
+        [helpstring("ΰηεζ ξπιεϊ ξεϊψ")        
 ]
         BSTR PermittedStockPercent;
-        [helpstring("Χ΅ΧΧ™Χ™Χª ΧªΧ§Χ Χ©Χ ΧªΧ™Χª")        
+        [helpstring("ρθιιϊ ϊχο ωπϊιϊ")        
 ]
         BSTR YearlyStd;
-        [helpstring("ΧΧ Χ™Χ•Χª ΧΧ©Χ•Χ§ΧΧ")        
+        [helpstring("ξπιεϊ ξωεχμμ")        
 ]
         BSTR WeightedStocks;
-        [helpstring("Χ΅Χ™Χ΅ΧΧª ΧΧ™Χ ΧΧ¨Χ Χ")        
+        [helpstring("ριρξϊ ΰιπθψπθ")        
 ]
         BSTR InternetPswd;
-        [helpstring("ΧΧ©Χ¨ΧΧ™ Χ Χ™ΧΆ")        
+        [helpstring("ΰωψΰι πις")        
 ]
         BSTR BnoCredit;
-        [helpstring("ΧΆΧΧΧª ΧΧ Χ™Χ•Χª")        
+        [helpstring("ςξμϊ ξπιεϊ")        
 ]
         BSTR StocksCommission;
-        [helpstring("ΧΆΧΧΧª ΧΧ’Χ—")        
+        [helpstring("ςξμϊ ΰβη")        
 ]
         BSTR BondsCommission;
-        [helpstring("ΧΆΧΧΧª ΧΧ§Χ")        
+        [helpstring("ςξμϊ ξχξ")        
 ]
         BSTR MakamCommission;
-        [helpstring("ΧΆΧΧΧª Χ§Χ¨Χ Χ•Χª")        
+        [helpstring("ςξμϊ χψπεϊ")        
 ]
         BSTR FundsCommission;
-        [helpstring("Χ§Χ‘Χ•Χ¦Χª ΧΧΧ–Χ")        
+        [helpstring("χαεφϊ ξΰζο")        
 ]
         BSTR BLC;
-        [helpstring("Χ§Χ‘Χ•Χ¦Χª ΧΧΧ–Χ Χ Χ’Χ“Χ™Χª")        
+        [helpstring("χαεφϊ ξΰζο πβγιϊ")        
 ]
         BSTR BalanceGrp;
-        [helpstring("Χ΅ΧΆΧ™Χ£ ΧªΧ§Χ¦Χ™Χ‘Χ™")        
+        [helpstring("ρςισ ϊχφιαι")        
 ]
         BSTR BudgetSeif;
-        [helpstring("ΧΆΧΧΧ” ΧΧ™Χ Χ™ΧΧ•Χ ΧΧΆΧ•Χ£ Χ‘Χ©Χ—")        
+        [helpstring("ςξμδ ξιπιξεν ξςεσ αωη")        
 ]
         BSTR MinMaofCommission;
-        [helpstring("ΧªΧª Χ΅Χ™Χ•Χ•Χ’")        
+        [helpstring("ϊϊ ριεεβ")        
 ]
         BSTR TatSivug;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ¤ΧªΧ™Χ—Χª Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ϊΰψικ τϊιηϊ ηωαεο")        
 ]
         BSTR OpeningDate;
-        [helpstring("Χ—Χ©Χ‘Χ•Χ ΧΧΆΧ‘Χ¨")        
+        [helpstring("ηωαεο ξςαψ")        
 ]
         BSTR AccountMaavar;
-        [helpstring("Χ§Χ•Χ“ Χ–Χ™Χ”Χ•Χ™ ΧΧΧ¤Χ•Χ Χ™")        
+        [helpstring("χεγ ζιδει θμτεπι")        
 ]
         BSTR TelephoneCode;
     } ShortAccountType;
 
     typedef [uuid(73D20C57-FA21-4BFE-B71B-39A4E1F11900), version(1.0), helpstring("RM Online Header")]
     struct tagRmOnlineTotalInfoType {
-        [helpstring("ΧΧ–Χ•ΧΧ Χ‘Χ•Χ§Χ¨ = ΧΧ–Χ•ΧΧ Χ‘Χ¤ΧªΧ™Χ—Χ”")        
+        [helpstring("ξζεξο αεχψ = ξζεξο ατϊιηδ")        
 ]
         BSTR sBaseCash;
-        [helpstring("ΧΧ–Χ•ΧΧ Χ Χ•Χ›Χ—Χ™ = ΧΧ–Χ•ΧΧ ΧΧ—Χ¨Χ•Χ")        
+        [helpstring("ξζεξο πεληι = ξζεξο ΰηψεο")        
 ]
         BSTR sLastCash;
-        [helpstring("Χ©Χ™Χ Χ•Χ™ ΧΧ–Χ•ΧΧ")        
+        [helpstring("ωιπει ξζεξο")        
 ]
         BSTR sCashChange;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ‘Χ•Χ§Χ¨ =  Χ©Χ•Χ•Χ™ Χ‘Χ¤ΧªΧ™Χ—Χ”")        
+        [helpstring("ωεει αεχψ =  ωεει ατϊιηδ")        
 ]
         BSTR sBaseVL;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ Χ•Χ›Χ—Χ™ - Χ©Χ•Χ•Χ™ ΧΧ—Χ¨Χ•Χ")        
+        [helpstring("ωεει πεληι - ωεει ΰηψεο")        
 ]
         BSTR sLastVL;
-        [helpstring("Χ¨Χ•Χ•Χ—/Χ”Χ¤Χ΅Χ“ = Χ¨Χ•Χ•Χ— Χ•Χ”Χ¤Χ΅Χ“ Χ™Χ•ΧΧ™")        
+        [helpstring("ψεεη/δτργ = ψεεη εδτργ ιεξι")        
 ]
         BSTR sProfitLoss;
-        [helpstring("ΧªΧΧ¨Χ™Χ + Χ©ΧΆΧ”")        
+        [helpstring("ϊΰψικ + ωςδ")        
 ]
         BSTR sDate;
-        [helpstring("Χ©Χ™Χ Χ•Χ™ ΧΆΧΧ•Χª")        
+        [helpstring("ωιπει ςμεϊ")        
 ]
         BSTR sCngCost;
     } RmOnlineTotalInfoType;
 
     typedef [uuid(85B84A22-9EB6-4C76-9E96-561AB3D527D7), version(1.0), helpstring("RM Online Response Record")]
     struct tagRmOnlineRecordType {
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨")        
+        [helpstring("ων πιιψ")        
 ]
         BSTR sBnoName;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨")        
+        [helpstring("ξρτψ πιιψ")        
 ]
         BSTR sBnoNum;
-        [helpstring("Χ΅Χ•Χ’ Χ Χ™Χ™Χ¨")        
+        [helpstring("ρεβ πιιψ")        
 ]
         BSTR sSugBno;
-        [helpstring("Χ©ΧΆΧ¨ Χ‘Χ΅Χ™Χ΅ = ΧΧ—Χ™Χ¨ Χ‘Χ¤ΧªΧ™Χ—Χ”")        
+        [helpstring("ωςψ αριρ = ξηιψ ατϊιηδ")        
 ]
         BSTR sBasePrice;
-        [helpstring("Χ™ΧªΧ¨Χª Χ‘Χ•Χ§Χ¨ = Χ›ΧΧ•Χª Χ‘Χ¤ΧªΧ™Χ—Χ”")        
+        [helpstring("ιϊψϊ αεχψ = λξεϊ ατϊιηδ")        
 ]
         BSTR sBaseNV;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ‘Χ•Χ§Χ¨ = ΧΆΧ¨Χ Χ‘Χ¤ΧªΧ™Χ—Χ”")        
+        [helpstring("ωεει αεχψ = ςψκ ατϊιηδ")        
 ]
         BSTR sBaseVL;
-        [helpstring("Χ©ΧΆΧ¨ ΧΧ—Χ¨Χ•Χ")        
+        [helpstring("ωςψ ΰηψεο")        
 ]
         BSTR sLastPrice;
-        [helpstring("Χ›ΧΧ•Χª Χ Χ•Χ›Χ—Χ™Χª = Χ›ΧΧ•Χª ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("λξεϊ πεληιϊ = λξεϊ ΰηψεπδ")        
 ]
         BSTR sLastNV;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ Χ•Χ›Χ—Χ™ = ΧΆΧ¨Χ ΧΧ—Χ¨Χ•Χ")        
+        [helpstring("ωεει πεληι = ςψκ ΰηψεο")        
 ]
         BSTR sLastVL;
-        [helpstring("Χ©Χ™Χ Χ•Χ™ Χ‘Χ©Χ•Χ•Χ™ = Χ©Χ™Χ Χ•Χ™ ΧΆΧ¨Χ")        
+        [helpstring("ωιπει αωεει = ωιπει ςψκ")        
 ]
         BSTR sVLChange;
-        [helpstring("ΧªΧ–Χ¨Χ™Χ  = ΧªΧ Χ•ΧΆΧ” Χ›Χ΅Χ¤Χ™Χª")        
+        [helpstring("ϊζψιν  = ϊπεςδ λρτιϊ")        
 ]
         BSTR sMoneyMoved;
-        [helpstring("Χ¨Χ•Χ•Χ—/Χ”Χ¤Χ΅Χ“ = Χ¨Χ•Χ•Χ— Χ•Χ”Χ¤Χ΅Χ“ Χ™Χ•ΧΧ™")        
+        [helpstring("ψεεη/δτργ = ψεεη εδτργ ιεξι")        
 ]
         BSTR sProfitLoss;
-        [helpstring("ΧΆΧΧ•Χª")        
+        [helpstring("ςμεϊ")        
 ]
         BSTR sTotalCost;
-        [helpstring("Χ”Χ¤Χ¨Χ©/Χ©Χ™Χ Χ•Χ™ ΧΧΆΧΧ•Χª")        
+        [helpstring("δτψω/ωιπει ξςμεϊ")        
 ]
         BSTR sCngCost;
-        [helpstring("ΧΆΧΧ•Χª ΧΧΧ•Χ¦ΧΆΧª")        
+        [helpstring("ςμεϊ ξξεφςϊ")        
 ]
         BSTR sAverageCost;
-        [helpstring("Χ©Χ™Χ Χ•Χ™ ΧΧΆΧΧ•Χª Χ‘ΧΧ—Χ•Χ–Χ™Χ")        
+        [helpstring("ωιπει ξςμεϊ αΰηεζιν")        
 ]
         BSTR sCngCostPcnt;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ” Χ Χ›Χ΅ Χ¤Χ™Χ ")        
+        [helpstring("χα.ρλιξδ πλρ τιπ")        
 ]
         BSTR LVL1;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ” Χ΅Χ•Χ’ Χ Χ™''ΧΆ")        
+        [helpstring("χα.ρλιξδ ρεβ πι''ς")        
 ]
         BSTR LVL2;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ” Χ©.ΧΧ΅Χ—Χ¨")        
+        [helpstring("χα.ρλιξδ ω.ξρηψ")        
 ]
         BSTR LVL3;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ” Χ΅Χ§ΧΧ•Χ¨Χ™Χ")        
+        [helpstring("χα.ρλιξδ ρχθεψιν")        
 ]
         BSTR LVL4;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ” ΧΧ Χ¤Χ™Χ§Χ™Χ")        
+        [helpstring("χα.ρλιξδ ξπτιχιν")        
 ]
         BSTR LVL5;
-        [helpstring("Χ§Χ‘.Χ΅Χ›Χ™ΧΧ” ΧªΧ§Χ Χ•Χª")        
+        [helpstring("χα.ρλιξδ ϊχπεϊ")        
 ]
         BSTR LVL6;
     } RmOnlineRecordType;
 
-    typedef [uuid(C325EA95-9848-4FD6-9F6F-8284437C0CB8), version(1.0), helpstring("Χ΅Χ•Χ’ Χ©ΧΧ™Χ¤Χª Χ™ΧªΧ¨Χ•Χª ΧΧ•Χ-ΧΧ™Χ™Χ")]
+    typedef [uuid(C325EA95-9848-4FD6-9F6F-8284437C0CB8), version(1.0), helpstring("ρεβ ωμιτϊ ιϊψεϊ ΰεο-μιιο")]
     enum {
         OnlineSessionTypeAccounts = 0,
         OnlineSessionTypeAll = 1,
@@ -1597,76 +1598,76 @@ double NeededSec;
 
     typedef [uuid(0BF1B137-CBC7-44D4-8D96-3368DFADF981), version(1.0), helpstring("Online Session Structure")]
     struct tagOnlineSessionBalance {
-        [helpstring("Χ΅Χ•Χ’ Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ ψωεξδ")        
 ]
         int Onl_sug_rc;
-        [helpstring("Χ΅Χ Χ™Χ£ Χ‘Χ Χ§")        
+        [helpstring("ρπισ απχ")        
 ]
         int Onl_sug;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ξρτψ ηωαεο")        
 ]
         int Onl_id_number;
-        [helpstring("Χ©Χ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ων ηωαεο")        
 ]
         BSTR Onl_id_name;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧªΧ™Χ§")        
+        [helpstring("ξρτψ ϊιχ")        
 ]
         int Onl_tik;
-        [helpstring("Χ΅ΧΆΧ™Χ£ ΧªΧ§Χ¦Χ™Χ‘Χ™")        
+        [helpstring("ρςισ ϊχφιαι")        
 ]
         int Onl_bgt;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ΅Χ Χ™Χ£")        
+        [helpstring("ξρτψ ρπισ")        
 ]
         int Onl_branch;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ‘Χ Χ§")        
+        [helpstring("ξρτψ απχ")        
 ]
         int Onl_bank;
-        [helpstring("Χ©Χ™ΧΧª Χ Χ™Χ”Χ•Χ")        
+        [helpstring("ωιθϊ πιδεμ")        
 ]
         int Onl_sug_id;
-        [helpstring("ΧªΧΧ•Χ¨ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ϊΰεψ ηωαεο")        
 ]
         BSTR Onl_id_teur;
-        [helpstring("ΧΧ•Χ“Χ")        
+        [helpstring("ξεγμ")        
 ]
         int Onl_mdl;
-        [helpstring("Χ΅Χ™Χ•Χ•Χ’")        
+        [helpstring("ριεεβ")        
 ]
         BSTR Onl_sivug;
-        [helpstring("ΧªΧª Χ΅Χ™Χ•Χ•Χ’")        
+        [helpstring("ϊϊ ριεεβ")        
 ]
         BSTR Onl_tat_sivug;
-        [helpstring("Χ΅Χ Χ™Χ£ Χ—Χ©Χ‘Χ•Χ ΧΧ¤Χ¦Χ")        
+        [helpstring("ρπισ ηωαεο ξτφμ")        
 ]
         int Onl_sg_tik_mf;
-        [helpstring("ΧΧ΅ Χ—Χ©Χ‘Χ•Χ ΧΧ¤Χ¦Χ")        
+        [helpstring("ξρ ηωαεο ξτφμ")        
 ]
         int Onl_id_tik_mf;
-        [helpstring("Χ΅Χ Χ™Χ£ Χ‘Χ Χ§ ΧΧ¤Χ¦Χ ΧΧ‘Χ¦ΧΆ")        
+        [helpstring("ρπισ απχ ξτφμ ξαφς")        
 ]
         int Onl_sg_bgt_mf;
-        [helpstring("Χ—Χ ΧΧ¤Χ¦Χ Χ‘ΧΧ‘Χ¦ΧΆ")        
+        [helpstring("ηο ξτφμ αξαφς")        
 ]
         int Onl_id_bgt_mf;
-        [helpstring("ΧªΧ©Χ•ΧΧ” Χ©Χ ΧªΧ™Χª")        
+        [helpstring("ϊωεΰδ ωπϊιϊ")        
 ]
         double Onl_yld_id_yr;
-        [helpstring("ΧªΧ©Χ•ΧΧ” Χ—Χ•Χ“Χ©Χ™Χª")        
+        [helpstring("ϊωεΰδ ηεγωιϊ")        
 ]
         double Onl_yld_id_mon;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨")        
+        [helpstring("ξρτψ πιιψ")        
 ]
         int Onl_bno;
-        [helpstring("Χ΅Χ•Χ’ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ρεβ πιιψ ςψκ")        
 ]
         int Onl_sug_bno;
-        [helpstring("Χ΅Χ•Χ’ ΧΧΧ‘ΧΆ")        
+        [helpstring("ρεβ ξθας")        
 ]
         int Onl_sug_cur;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("ξρτψ πλρ αριρ")        
 ]
         int Onl_bs_bno;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™'ΧΆ Χ‘Χ‘Χ Χ§")        
+        [helpstring("ξρτψ πι'ς ααπχ")        
 ]
         int Onl_bno_bank;
         [helpstring("Symbol")        
@@ -1675,357 +1676,357 @@ double NeededSec;
         [helpstring("Isin")        
 ]
         BSTR Onl_isin;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨")        
+        [helpstring("ων πιιψ")        
 ]
         BSTR Onl_bno_name;
-        [helpstring("ΧªΧΧ•Χ¨ Χ Χ™Χ™Χ¨")        
+        [helpstring("ϊΰεψ πιιψ")        
 ]
         BSTR Onl_bno_teur;
-        [helpstring("ΧΧ“Χ•Χ¨")        
+        [helpstring("ξγεψ")        
 ]
         int Onl_mdr;
-        [helpstring("ΧΧ Χ¤Χ™Χ§")        
+        [helpstring("ξπτιχ")        
 ]
         int Onl_manpik;
-        [helpstring("Χ΅Χ•Χ’ Χ Χ’Χ–Χ¨Χª")        
+        [helpstring("ρεβ πβζψϊ")        
 ]
         int Onl_deriv_code;
-        [helpstring("ΧΧ΅ ΧΧ™Χ•Χ")        
+        [helpstring("ξρ ξιεο")        
 ]
         int Onl_sort;
-        [helpstring("Χ΅Χ•Χ’ Χ©ΧΆΧ¨")        
+        [helpstring("ρεβ ωςψ")        
 ]
         int Onl_sug_pr;
-        [helpstring("ΧΧ—Χ™Χ¨")        
+        [helpstring("ξηιψ")        
 ]
         double Onl_prc;
-        [helpstring("Χ©ΧΆΧ¨ Χ”ΧΧΧ—")        
+        [helpstring("ωςψ δξθη")        
 ]
         double Onl_pr_matach;
-        [helpstring("ΧΧ™Χ Χ“ ΧΧΧΧ—")        
+        [helpstring("ΰιπγ μξθη")        
 ]
         BSTR Onl_flag_mth;
-        [helpstring("Χ”Χ•Χ Χ¨Χ©Χ•Χ")        
+        [helpstring("δεο ψωεν")        
 ]
         double Onl_hon_rashum;
-        [helpstring("ΧΧ“Χ™Χ Χ™Χ•Χª Χ”Χ©Χ§ΧΆΧ”")        
+        [helpstring("ξγιπιεϊ δωχςδ")        
 ]
         int Onl_invst_plcy;
-        [helpstring("Χ”Χ¨Χ›Χ‘ Χ Χ›Χ΅Χ™Χ")        
+        [helpstring("δψλα πλριν")        
 ]
         int Onl_asset_cod;
-        [helpstring("Χ΅Χ§ΧΧ•Χ¨ ΧΧ¤Χ™ Χ‘Χ•Χ¨Χ΅Χ”")        
+        [helpstring("ρχθεψ μτι αεψρδ")        
 ]
         int Onl_sector;
         [helpstring("Mult")        
 ]
         double Onl_mult_prc;
-        [helpstring("ΧΧΧ‘ΧΆ Χ¨ΧΧ©Χ™")        
+        [helpstring("ξθας ψΰωι")        
 ]
         int Onl_main_cur;
-        [helpstring("ΧΧΧ‘ΧΆ ΧΧ©Χ Χ™")        
+        [helpstring("ξθας ξωπι")        
 ]
         int Onl_sub_cur;
-        [helpstring("ΧΧ‘ΧΧ•Χ—Χ” RATING")        
+        [helpstring("μαθεηδ RATING")        
 ]
         int Onl_rating;
-        [helpstring("Χ§Χ‘. Χ΅Χ›Χ™ΧΧ” Χ Χ›Χ΅ Χ¤Χ™")        
+        [helpstring("χα. ρλιξδ πλρ τι")        
 ]
         BSTR Onl_lvl1;
-        [helpstring("Χ§Χ‘. Χ΅Χ›Χ™ΧΧ” Χ΅Χ•Χ’ Χ Χ™Χ™Χ¨")        
+        [helpstring("χα. ρλιξδ ρεβ πιιψ")        
 ]
         BSTR Onl_lvl2;
-        [helpstring("Χ§Χ‘. Χ΅Χ›Χ™ΧΧ” Χ©.ΧΧ΅Χ—Χ¨")        
+        [helpstring("χα. ρλιξδ ω.ξρηψ")        
 ]
         BSTR Onl_lvl3;
-        [helpstring("Χ§Χ‘. Χ΅Χ›Χ™ΧΧ” Χ΅Χ§ΧΧ•Χ¨")        
+        [helpstring("χα. ρλιξδ ρχθεψ")        
 ]
         BSTR Onl_lvl4;
-        [helpstring("Χ§Χ‘. Χ΅Χ›Χ™ΧΧ” ΧΧ Χ¤Χ™Χ§")        
+        [helpstring("χα. ρλιξδ ξπτιχ")        
 ]
         BSTR Onl_lvl5;
-        [helpstring("Χ§Χ‘. Χ΅Χ›Χ™ΧΧ” ΧªΧ§Χ Χ•Χª")        
+        [helpstring("χα. ρλιξδ ϊχπεϊ")        
 ]
         BSTR Onl_lvl6;
-        [helpstring("Χ“Χ™Χ¨Χ•Χ’ ΧΧ’Χ—")        
+        [helpstring("γιψεβ ΰβη")        
 ]
         BSTR Onl_dirug_ag;
-        [helpstring("Χ΅Χ•Χ’ ΧΧ•Χ¤Χ¦Χ™Χ•Χª")        
+        [helpstring("ρεβ ΰετφιεϊ")        
 ]
         BSTR Onl_sug_opt;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ¤Χ§Χ™ΧΆΧ”")        
+        [helpstring("ξηιψ τχιςδ")        
 ]
         double Onl_exp_prc;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ¤Χ§Χ™ΧΆΧ”")        
+        [helpstring("ϊΰψικ τχιςδ")        
 ]
         BSTR Onl_exp_dat;
-        [helpstring("Χ΅ΧΧ™Χ™Χª ΧªΧ§Χ")        
+        [helpstring("ρθιιϊ ϊχο")        
 ]
         double Onl_std_dev;
-        [helpstring("Χ¨Χ™Χ‘Χ™Χª")        
+        [helpstring("ψιαιϊ")        
 ]
         double Onl_intrst;
         [helpstring("DELTA")        
 ]
         double Onl_delta;
-        [helpstring("Χ§Χ•Χ“ Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("χεγ πλρ αριρ")        
 ]
         int Onl_opt_basis;
-        [helpstring("Χ—Χ•Χ–Χ™Χ")        
+        [helpstring("ηεζιν")        
 ]
         int Onl_sum_hoze;
-        [helpstring("Χ–Χ™Χ”Χ•Χ™ Χ”ΧΧ΅ΧΧ§Χ”")        
+        [helpstring("ζιδει δξρμχδ")        
 ]
         int Onl_mislaka;
-        [helpstring("ΧΧ¨Χ¥ Χ”ΧªΧΧ’Χ“Χ•Χª")        
+        [helpstring("ΰψυ δϊΰβγεϊ")        
 ]
         BSTR Onl_cntr_rlt;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ΅Χ™Χ“Χ•Χ¨Χ™ Χ¨Χ¦Χ™Χ£")        
+        [helpstring("ξρτψ ριγεψι ψφισ")        
 ]
         int Onl_siduri;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ‘Χ¨ ΧΧ¤Χ™Χ¥")        
+        [helpstring("ξρτψ ηαψ ξτιυ")        
 ]
         int Onl_mbr_dst;
-        [helpstring("ΧΆΧ Χ£")        
+        [helpstring("ςπσ")        
 ]
         int Onl_anaf;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("ξηιψ αριρ")        
 ]
         double Onl_prc_basis;
         [helpstring("Beta")        
 ]
         double Onl_beta;
-        [helpstring("ΧΧ›Χ¤Χ™Χ")        
+        [helpstring("ξλτιμ")        
 ]
         double Onl_machpil;
-        [helpstring("ΧΧ—Χ•Χ– Χ”ΧΧΧ¦Χ”")        
+        [helpstring("ΰηεζ δξμφδ")        
 ]
         double Onl_amlza_pcnt;
-        [helpstring("ΧΧ©Χ§Χ Χ‘ΧΧ“Χ“")        
+        [helpstring("ξωχμ αξγγ")        
 ]
         double Onl_value_mdd;
-        [helpstring("Χ§Χ•Χ“ ΧΧ“Χ“")        
+        [helpstring("χεγ ξγγ")        
 ]
         int Onl_cod_mdd;
-        [helpstring("ΧΧ—Χ•Χ– ΧΆΧΧΧ”")        
+        [helpstring("ΰηεζ ςξμδ")        
 ]
         double Onl_com_pcnt;
-        [helpstring("Χ΅Χ›Χ•Χ ΧΆΧΧΧ”")        
+        [helpstring("ρλεν ςξμδ")        
 ]
         double Onl_com_sum;
-        [helpstring("Χ™ΧªΧ¨Χª ΧΆΧ¨Χ Χ Χ§Χ•Χ‘")        
+        [helpstring("ιϊψϊ ςψκ πχεα")        
 ]
         double Onl_nv_bkr;
-        [helpstring("ΧΆΧΧ•Χª Χ‘Χ•Χ§Χ¨")        
+        [helpstring("ςμεϊ αεχψ")        
 ]
         double Onl_cost_bkr;
-        [helpstring("Χ‘Χ•Χ§Χ¨ FIFO ΧΆΧΧ•Χª")        
+        [helpstring("αεχψ FIFO ςμεϊ")        
 ]
         double Onl_fifo_bkr;
-        [helpstring("ΧΆΧΧ•Χª Χ‘ΧΧΧ— Χ‘Χ•Χ§Χ¨")        
+        [helpstring("ςμεϊ αξθη αεχψ")        
 ]
         double Onl_cost_mth;
-        [helpstring("ΧªΧΧ•Χ¨Χ” Χ‘Χ•Χ§Χ¨")        
+        [helpstring("ϊξεψδ αεχψ")        
 ]
         double Onl_vl_bkr;
-        [helpstring("Χ”Χ©ΧΧΧ•Χª Χ Χ§Χ•Χ‘")        
+        [helpstring("δωΰμεϊ πχεα")        
 ]
         double Onl_nv_ashala;
-        [helpstring("Χ™ΧªΧ¨Χ•Χª Χ¦Χ")        
+        [helpstring("ιϊψεϊ φμ")        
 ]
         double Onl_nv_tzl_bkr;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ¦Χ")        
+        [helpstring("ωεει φμ")        
 ]
         double Onl_vl_tzl_bkr;
-        [helpstring("Χ‘ΧΧ•Χ—Χ” Χ§Χ™Χ™ΧΧª")        
+        [helpstring("αθεηδ χιιξϊ")        
 ]
         double Onl_mrgn_bkr;
-        [helpstring("ΧªΧ§Χ‘Χ•Χ Χ©Χ—")        
+        [helpstring("ϊχαεμ ωη")        
 ]
         double Onl_tkb_sm_bkr;
-        [helpstring("ΧªΧ§Χ‘Χ•Χ Χ›ΧΧ•Χª")        
+        [helpstring("ϊχαεμ λξεϊ")        
 ]
         double Onl_tkb_nv_bkr;
-        [helpstring("ΧªΧ§Χ‘Χ•Χ Χ©Χ•Χ•Χ™")        
+        [helpstring("ϊχαεμ ωεει")        
 ]
         double Onl_tkb_vl_bkr;
-        [helpstring("ΧΧ—Χ–Χ§Χ” Χ‘Χ—Χ©Χ‘Χ•Χ %")        
+        [helpstring("ΰηζχδ αηωαεο %")        
 ]
         double Onl_pcnt_bkr;
-        [helpstring("ΧªΧ©Χ•ΧΧ” Χ©Χ ΧªΧ™Χª")        
+        [helpstring("ϊωεΰδ ωπϊιϊ")        
 ]
         double Onl_yld_bn_yr;
-        [helpstring("ΧªΧ©Χ•ΧΧ” Χ—Χ•Χ“Χ©Χ™Χª")        
+        [helpstring("ϊωεΰδ ηεγωιϊ")        
 ]
         double Onl_yld_bn_mon;
-        [helpstring("Χ›ΧΧ•Χª ΧΧ•Χ–ΧΧ Χª Χ‘Χ§Χ Χ™Χ”")        
+        [helpstring("λξεϊ ξεζξπϊ αχπιδ")        
 ]
         double Onl_nv_ord_by;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ”Χ–ΧΧ Χ” Χ‘Χ§Χ Χ™Χ”")        
+        [helpstring("ξηιψ δζξπδ αχπιδ")        
 ]
         double Onl_pr_ord_by;
-        [helpstring("Χ©ΧΆΧ¨ ΧΧΧ— Χ”Χ–ΧΧ Χ” Χ‘Χ§Χ Χ™Χ”")        
+        [helpstring("ωςψ ξθη δζξπδ αχπιδ")        
 ]
         double Onl_pr_m_ord_b;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ”Χ–ΧΧ Χ” Χ‘Χ§Χ Χ™Χ”")        
+        [helpstring("ωεει δζξπδ αχπιδ")        
 ]
         double Onl_vl_ord_by;
-        [helpstring("Χ›ΧΧ•Χª Χ‘Χ™Χ¦Χ•ΧΆ Χ‘Χ§Χ Χ™Χ”")        
+        [helpstring("λξεϊ αιφες αχπιδ")        
 ]
         double Onl_nv_dil_by;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ‘Χ™Χ¦Χ•ΧΆ Χ‘Χ§Χ Χ™Χ”")        
+        [helpstring("ξηιψ αιφες αχπιδ")        
 ]
         double Onl_pr_dil_by;
-        [helpstring("Χ©ΧΆΧ¨ ΧΧΧ— Χ‘Χ™Χ¦Χ•ΧΆ Χ‘Χ§Χ Χ™Χ”")        
+        [helpstring("ωςψ ξθη αιφες αχπιδ")        
 ]
         double Onl_pr_m_dil_b;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ‘Χ™Χ¦Χ•ΧΆ Χ‘Χ§Χ Χ™Χ”")        
+        [helpstring("ωεει αιφες αχπιδ")        
 ]
         double Onl_vl_dil_by;
-        [helpstring("Χ”Χ¤Χ¨Χ© ΧΧ—Χ™Χ¨ Χ”Χ–.Χ‘Χ™Χ¦Χ•ΧΆ")        
+        [helpstring("δτψω ξηιψ δζ.αιφες")        
 ]
         double Onl_vl_def_by;
-        [helpstring("Χ›ΧΧ•Χª Χ”Χ–ΧΧ Χ” ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("λξεϊ δζξπδ ξλιψδ")        
 ]
         double Onl_nv_ord_sl;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ”Χ–ΧΧ Χ” ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("ξηιψ δζξπδ ξλιψδ")        
 ]
         double Onl_pr_ord_sl;
-        [helpstring("Χ©ΧΆΧ¨ Χ”Χ–ΧΧ Χ” ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("ωςψ δζξπδ ξλιψδ")        
 ]
         double Onl_pr_m_ord_s;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ”Χ–ΧΧ Χ” ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("ωεει δζξπδ ξλιψδ")        
 ]
         double Onl_vl_ord_sl;
-        [helpstring("Χ›ΧΧ•Χª Χ‘Χ™Χ¦Χ•ΧΆ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("λξεϊ αιφες ξλιψδ")        
 ]
         double Onl_nv_dil_sl;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ‘Χ™Χ¦Χ•ΧΆ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("ξηιψ αιφες ξλιψδ")        
 ]
         double Onl_pr_dil_sl;
-        [helpstring("Χ©ΧΆΧ¨ Χ‘Χ™Χ¦Χ•ΧΆ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("ωςψ αιφες ξλιψδ")        
 ]
         double Onl_pr_m_dil_s;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ‘Χ™Χ¦Χ•ΧΆ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("ωεει αιφες ξλιψδ")        
 ]
         double Onl_vl_dil_sl;
-        [helpstring("Χ”Χ¤Χ¨Χ© ΧΧ—Χ™Χ¨ Χ”Χ–.Χ‘Χ™Χ¦Χ•ΧΆ")        
+        [helpstring("δτψω ξηιψ δζ.αιφες")        
 ]
         double Onl_vl_def_sl;
-        [helpstring("Χ΅Χ”'Χ› Χ”Χ¤Χ§Χ“Χ•Χª")        
+        [helpstring("ρδ'λ δτχγεϊ")        
 ]
         double Onl_nv_hf;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ”Χ¤Χ§Χ“Χ”")        
+        [helpstring("ξηιψ δτχγδ")        
 ]
         double Onl_prc_hf;
-        [helpstring("Χ©ΧΆΧ¨ ΧΧΧ— Χ”Χ¤Χ§Χ“Χ”")        
+        [helpstring("ωςψ ξθη δτχγδ")        
 ]
         double Onl_pr_mth_hf;
-        [helpstring("Χ΅Χ”'Χ› Χ©Χ•Χ•Χ™ Χ”Χ¤Χ§Χ“Χ”")        
+        [helpstring("ρδ'λ ωεει δτχγδ")        
 ]
         double Onl_vl_hf;
-        [helpstring("Χ΅Χ”'Χ› ΧΧ©Χ™Χ›Χ•Χª")        
+        [helpstring("ρδ'λ ξωιλεϊ")        
 ]
         double Onl_nv_msh;
-        [helpstring("ΧΧ—Χ™Χ¨ ΧΧ©Χ™Χ›Χ”")        
+        [helpstring("ξηιψ ξωιλδ")        
 ]
         double Onl_prc_msh;
-        [helpstring("Χ©ΧΆΧ¨ ΧΧ'Χ— ΧΧ©Χ™Χ›Χ”")        
+        [helpstring("ωςψ ξθ'η ξωιλδ")        
 ]
         double Onl_pr_mth_msh;
-        [helpstring("Χ΅Χ”'Χ› Χ©Χ•Χ•Χ™ ΧΧ©Χ™Χ›Χ•Χª")        
+        [helpstring("ρδ'λ ωεει ξωιλεϊ")        
 ]
         double Onl_vl_msh;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ™Χ¦Χ™Χ¨Χ•Χª")        
+        [helpstring("ωεει ιφιψεϊ")        
 ]
         double Onl_vl_itzirot;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ¤Χ“Χ™Χ•Χ Χ•Χª")        
+        [helpstring("ωεει τγιεπεϊ")        
 ]
         double Onl_vl_pedion;
-        [helpstring("Χ©ΧΆΧ¨ ΧΧ'Χ— Χ΅Χ’Χ™Χ¨Χ”")        
+        [helpstring("ωςψ ξθ'η ρβιψδ")        
 ]
         double Onl_pr_mth_cls;
-        [helpstring("ΧªΧΧ•Χ¨Χ” Χ΅Χ’Χ™Χ¨Χ” RR")        
+        [helpstring("ϊξεψδ ρβιψδ RR")        
 ]
         double Onl_vl_cls;
-        [helpstring("Χ©ΧΆΧ¨ Χ΅Χ’Χ™Χ¨Χ” RR")        
+        [helpstring("ωςψ ρβιψδ RR")        
 ]
         double Onl_prc_cls;
-        [helpstring("Χ©ΧΆΧ¨ Χ΅Χ’Χ™Χ¨Χ” Χ”Χ™Χ•Χ")        
+        [helpstring("ωςψ ρβιψδ διεν")        
 ]
         double Onl_prc_cls_d;
-        [helpstring("Χ©. Χ΅Χ’Χ™Χ¨Χ” Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("ω. ρβιψδ πλρ αριρ")        
 ]
         double Onl_prc_bs_bno;
-        [helpstring("ΧªΧ§Χ‘Χ•Χ Χ΅Χ’Χ™Χ¨Χ” Χ©Χ—")        
+        [helpstring("ϊχαεμ ρβιψδ ωη")        
 ]
         double Onl_tkb_sm_cls;
-        [helpstring("ΧªΧ§Χ‘Χ•Χ Χ΅Χ’Χ™Χ¨Χ” Χ›ΧΧ•Χª")        
+        [helpstring("ϊχαεμ ρβιψδ λξεϊ")        
 ]
         double Onl_tkb_nv_cls;
-        [helpstring("ΧªΧ§Χ‘Χ•Χ Χ΅Χ’Χ™Χ¨Χ” Χ©Χ•Χ•Χ™")        
+        [helpstring("ϊχαεμ ρβιψδ ωεει")        
 ]
         double Onl_tkb_vl_cls;
-        [helpstring("Χ›ΧΧ•Χª Χ”Χ©ΧΧΧ•Χª Χ΅Χ’Χ™Χ¨Χ”")        
+        [helpstring("λξεϊ δωΰμεϊ ρβιψδ")        
 ]
         double Onl_nv_ash_cls;
-        [helpstring("ΧΆΧ¨Χ Χ—Χ©Χ™Χ¤Χ”")        
+        [helpstring("ςψκ ηωιτδ")        
 ]
         double Onl_val_hasifa;
-        [helpstring("Χ‘ΧΧ•Χ—Χ” Χ Χ“Χ¨Χ©Χª")        
+        [helpstring("αθεηδ πγψωϊ")        
 ]
         double Onl_req_mrgn;
-        [helpstring("Χ΅Χ”Χ› Χ©Χ•Χ•Χ™")        
+        [helpstring("ρδλ ωεει")        
 ]
         double Onl_tot_val;
-        [helpstring("Χ΅Χ”''Χ› ΧΆΧ¨Χ Χ Χ§Χ•Χ‘")        
+        [helpstring("ρδ''λ ςψκ πχεα")        
 ]
         double Onl_tot_nv;
-        [helpstring("Χ¤Χ§ΧΧ•Χ¨ ΧΧ”Χ›Χ¤ΧΧ”")        
+        [helpstring("τχθεψ μδλτμδ")        
 ]
         double Onl_factor;
-        [helpstring("Χ¨Χ•Χ•Χ— ΧΧ—Χ•Χ©Χ‘")        
+        [helpstring("ψεεη ξηεωα")        
 ]
         double Onl_stt_prof;
-        [helpstring("Χ¨Χ•Χ•Χ— Χ©ΧΧΧ•Χ©")        
+        [helpstring("ψεεη ωξξεω")        
 ]
         double Onl_real_prof;
-        [helpstring("ΧΧ—Χ©Χ‘ Χ‘Χ•Χ§Χ¨")        
+        [helpstring("ξηωα αεχψ")        
 ]
         BSTR Onl_clnt_bkr;
-        [helpstring("ΧΧ—Χ©Χ‘ ONL")        
+        [helpstring("ξηωα ONL")        
 ]
         BSTR Onl_clnt_onl;
-        [helpstring("Χ¤ΧΆΧ Χ‘ΧΧ΅Χ—Χ¨")        
+        [helpstring("τςμ αξρηψ")        
 ]
         BSTR Onl_id_pail;
-        [helpstring("Χ›Χ•ΧΧ Χ¨Χ©Χ•ΧΧ” WIF")        
+        [helpstring("λεμμ ψωεξδ WIF")        
 ]
         BSTR Onl_rec_40;
-        [helpstring("Χ΅ΧΧ Χ Χ™Χ™Χ¨ Χ–Χ¨")        
+        [helpstring("ρξμ πιιψ ζψ")        
 ]
         BSTR Onl_frgn_bno;
-        [helpstring("Χ Χ™Χ™Χ¨ Χ“Χ•ΧΧΧ™")        
+        [helpstring("πιιψ γεΰμι")        
 ]
         BSTR Onl_bno_duali;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ”ΧΆΧ™Χ“Χ›Χ•Χ")        
+        [helpstring("ϊΰψικ δςιγλεο")        
 ]
         int Onl_upd_date;
                 
 double Onl_duration;
-        [helpstring("Χ©ΧΆΧª Χ”ΧΆΧ™Χ“Χ›Χ•Χ")        
+        [helpstring("ωςϊ δςιγλεο")        
 ]
         int Onl_upd_time;
-        [helpstring("Χ©Χ Χ‘ΧΧ Χ’ΧΧ™Χª")        
+        [helpstring("ων αΰπβμιϊ")        
 ]
         BSTR Onl_eng_name;
-        [helpstring("ΧªΧ©Χ•ΧΧ” ΧΧ¤Χ“Χ™Χ•Χ")        
+        [helpstring("ϊωεΰδ μτγιεο")        
 ]
         double Onl_yld_ytm;
-        [helpstring("ΧΧ—"Χ Χ›ΧΧ›ΧΧ™")        
+        [helpstring("ξη"ξ λμλμι")        
 ]
         double Onl_dur_kalkali;
-        [helpstring("ΧΧ¨Χ¥ Χ”ΧªΧΧ’Χ“Χ•Χª")        
+        [helpstring("ΰψυ δϊΰβγεϊ")        
 ]
         int Onl_stk_type;
         [helpstring("FILLER")        
@@ -2045,190 +2046,190 @@ double Onl_duration;
 
     typedef [uuid(D717A43E-4447-4506-95AD-992A486B6003), version(1.0), helpstring("K300 Maof Structure")]
     struct tagK300MaofType {
-        [helpstring("Χ΅Χ•Χ’ Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ ψωεξδ")        
 ]
         BSTR SUG_REC;
-        [helpstring("Χ©Χ™ΧΧª ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωιθϊ ξρηψ")        
 ]
         BSTR TRADE_METH;
-        [helpstring("ΧΧ΅ Χ‘Χ•Χ¨Χ΅Χ”")        
+        [helpstring("ξρ αεψρδ")        
 ]
         BSTR BNO_Num;
-        [helpstring("Χ΅Χ™ΧΧ ΧΧ¨Χ©Χ•ΧΧ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("ριξο μψωεξδ ΰηψεπδ")        
 ]
         BSTR LAST_REC;
-        [helpstring("ΧΧ΅ Χ΅Χ“Χ•Χ¨Χ™")        
+        [helpstring("ξρ ργεψι")        
 ]
         BSTR SIDURI_Num;
-        [helpstring("Χ΅Χ™ΧΧ‘Χ•Χ ΧΧ Χ’ΧΧ™")        
+        [helpstring("ριξαεμ ΰπβμι")        
 ]
         BSTR SYMBOL_E;
-        [helpstring(" Χ΅Χ™ΧΧ‘Χ•Χ ΧΆΧ‘Χ¨Χ™")        
+        [helpstring(" ριξαεμ ςαψι")        
 ]
         BSTR Symbol;
-        [helpstring("Χ©Χ ΧΧ Χ’ΧΧ™")        
+        [helpstring("ων ΰπβμι")        
 ]
         BSTR BNO_NAME_E;
-        [helpstring("Χ©Χ ΧΆΧ‘Χ¨Χ™")        
+        [helpstring("ων ςαψι")        
 ]
         BSTR BNO_NAME;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΆΧ Χ£")        
+        [helpstring("ξρτψ ςπσ")        
 ]
         BSTR BRANCH_NO;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧªΧª ΧΆΧ Χ£")        
+        [helpstring("ξρτψ ϊϊ ςπσ")        
 ]
         BSTR BRANCH_U;
-        [helpstring("Χ΅Χ•Χ’ Χ—Χ•Χ–Χ”")        
+        [helpstring("ρεβ ηεζδ")        
 ]
         BSTR SUG_BNO;
-        [helpstring("MIN Χ’Χ•Χ“Χ Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("MIN βεγμ τχεγδ")        
 ]
         BSTR MIN_UNIT;
-        [helpstring("Χ’Χ‘Χ•Χ Χ¤Χ§Χ•Χ“Χ” Χ—Χ¨Χ™Χ’Χ”")        
+        [helpstring("βαεμ τχεγδ ηψιβδ")        
 ]
         BSTR HARIG_NV;
-        [helpstring("Χ©ΧΆΧ¨ Χ¨Χ¦Χ¤Χ”")        
+        [helpstring("ωςψ ψφτδ")        
 ]
         BSTR MIN_PR;
-        [helpstring("Χ©ΧΆΧ¨ ΧªΧ§Χ¨Χ”")        
+        [helpstring("ωςψ ϊχψδ")        
 ]
         BSTR MAX_PR;
-        [helpstring("Χ©ΧΆΧ¨ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("ωςψ αριρ")        
 ]
         BSTR BASIS_PRC;
-        [helpstring("Χ§Χ•Χ“ Χ΅Χ•Χ’ Χ©ΧΆΧ¨ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("χεγ ρεβ ωςψ αριρ")        
 ]
         BSTR BASIS_COD;
-        [helpstring("Χ§Χ•Χ“ ΧΧ¦Χ‘ Χ—Χ•Χ–Χ”")        
+        [helpstring("χεγ ξφα ηεζδ")        
 ]
         BSTR STATUS_COD;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ¤Χ§Χ™ΧΆΧ”")        
+        [helpstring("ϊΰψικ τχιςδ")        
 ]
         BSTR EX_DATE;
-        [helpstring("ΧΧ—Χ™Χ¨ ΧΧ™ΧΧ•Χ©")        
+        [helpstring("ξηιψ ξιξεω")        
 ]
         BSTR EX_PRC;
-        [helpstring("ΧΧ›Χ¤Χ™Χ ΧΧ—Χ™Χ©Χ•Χ‘ Χ Χ¤Χ—")        
+        [helpstring("ξλτιμ μηιωεα πτη")        
 ]
         BSTR VL_MULT;
-        [helpstring("Χ§Χ•Χ“ ΧΧ—Χ™Χ©Χ•Χ‘ Χ Χ¤Χ—")        
+        [helpstring("χεγ μηιωεα πτη")        
 ]
         BSTR VL_COD;
-        [helpstring("Χ§Χ•Χ“ ΧΧ™Χ¤Χ•Χ΅")        
+        [helpstring("χεγ ΰιτερ")        
 ]
         BSTR ZERO_COD;
-        [helpstring("Χ©ΧΧ‘ ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωμα ξρηψ")        
 ]
         BSTR shlav;
-        [helpstring("ΧΧ¦Χ‘ Χ Χ™ΧΆ")        
+        [helpstring("ξφα πις")        
 ]
         BSTR STATUS;
-        [helpstring("Χ§Χ•Χ“ Χ”Χ¤Χ΅Χ§Χª ΧΧ΅Χ—Χ¨")        
+        [helpstring("χεγ δτρχϊ ξρηψ")        
 ]
         BSTR TRD_STP_CD;
-        [helpstring("Χ΅Χ™Χ‘Χª Χ”Χ¤Χ΅Χ§Χª ΧΧ΅Χ—Χ¨")        
+        [helpstring("ριαϊ δτρχϊ ξρηψ")        
 ]
         BSTR TRD_STP_N;
-        [helpstring("Χ©ΧΆΧª Χ¤ΧªΧ™Χ—Χª Χ”Χ¤Χ΅Χ§Χ”")        
+        [helpstring("ωςϊ τϊιηϊ δτρχδ")        
 ]
         BSTR STP_OPN_TM;
-        [helpstring("1 ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("1 μιξιθ χπιδ")        
 ]
         BSTR LMT_BY1;
-        [helpstring("2 ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("2 μιξιθ χπιδ")        
 ]
         BSTR LMT_BY2;
-        [helpstring("3 ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("3 μιξιθ χπιδ")        
 ]
         BSTR LMT_BY3;
-        [helpstring("1Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("1λξεϊ μιξιθ χπιδ")        
 ]
         BSTR LMY_BY1_NV;
-        [helpstring("2Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("2λξεϊ μιξιθ χπιδ")        
 ]
         BSTR LMY_BY2_NV;
-        [helpstring("3Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("3λξεϊ μιξιθ χπιδ")        
 ]
         BSTR LMY_BY3_NV;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_FE;
-        [helpstring("1 ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("1 μιξιθ ξλιψδ")        
 ]
         BSTR LMT_SL1;
-        [helpstring("2 ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("2 μιξιθ ξλιψδ")        
 ]
         BSTR LMT_SL2;
-        [helpstring("3 ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("3 μιξιθ ξλιψδ")        
 ]
         BSTR LMT_SL3;
-        [helpstring("Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ” 1")        
+        [helpstring("λξεϊ μιξιθ ξλιψδ 1")        
 ]
         BSTR LMY_SL1_NV;
-        [helpstring("Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ” 2")        
+        [helpstring("λξεϊ μιξιθ ξλιψδ 2")        
 ]
         BSTR LMY_SL2_NV;
-        [helpstring("Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ” 3")        
+        [helpstring("λξεϊ μιξιθ ξλιψδ 3")        
 ]
         BSTR LMY_SL3_NV;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_FF;
-        [helpstring("Χ©ΧΆΧ¨")        
+        [helpstring("ωςψ")        
 ]
         BSTR PRC;
-        [helpstring("Χ§Χ•Χ“ Χ©ΧΆΧ¨")        
+        [helpstring("χεγ ωςψ")        
 ]
         BSTR COD_PRC;
-        [helpstring("Χ§Χ•Χ“ Χ΅Χ•Χ’ Χ©ΧΆΧ¨")        
+        [helpstring("χεγ ρεβ ωςψ")        
 ]
         BSTR SUG_PRC;
-        [helpstring("Χ©Χ™Χ Χ•Χ™  ΧΧ”Χ‘Χ΅Χ™Χ΅ %")        
+        [helpstring("ωιπει  ξδαριρ %")        
 ]
         BSTR LST_DF_BS;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_FG;
-        [helpstring("Χ©ΧΆΧ¨ ΧΆΧ΅Χ§Χ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("ωςψ ςρχδ ΰηψεπδ")        
 ]
         BSTR LST_DL_PR;
-        [helpstring("Χ©ΧΆΧª ΧΆΧ΅Χ§Χ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("ωςϊ ςρχδ ΰηψεπδ")        
 ]
         BSTR LST_DL_TM;
-        [helpstring("ΧΧ—Χ–Χ•Χ¨ ΧΆΧ΅Χ§Χ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("ξηζεψ ςρχδ ΰηψεπδ")        
 ]
         BSTR LST_DL_VL;
-        [helpstring("ΧΧ—Χ–Χ•Χ¨ ΧΧªΧ—Χ™ΧΧª Χ”Χ™Χ•Χ")        
+        [helpstring("ξηζεψ ξϊηιμϊ διεν")        
 ]
         BSTR DAY_VL;
-        [helpstring("ΧªΧΧ•Χ¨Χ” Χ‘Χ©Χ— Χ”Χ™Χ•Χ")        
+        [helpstring("ϊξεψδ αωη διεν")        
 ]
         BSTR DAY_VL_NIS;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΆΧ΅Χ§ΧΧ•Χª Χ”Χ™Χ•Χ")        
+        [helpstring("ξρτψ ςρχΰεϊ διεν")        
 ]
         BSTR DAY_DIL_NO;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_FH;
-        [helpstring("Χ©ΧΆΧ¨ Χ™Χ•ΧΧ™ Χ’Χ‘Χ•Χ”")        
+        [helpstring("ωςψ ιεξι βαεδ")        
 ]
         BSTR DAY_MAX_PR;
-        [helpstring("Χ©ΧΆΧ¨ Χ™Χ•ΧΧ™ Χ ΧΧ•Χ")        
+        [helpstring("ωςψ ιεξι πξεκ")        
 ]
         BSTR DAY_MIN_PR;
-        [helpstring("Χ¤Χ•Χ–Χ™Χ¦Χ™Χ•Χª Χ¤ΧªΧ•Χ—Χ•Χª")        
+        [helpstring("τεζιφιεϊ τϊεηεϊ")        
 ]
         BSTR POS_OPN;
-        [helpstring("ΧΧ—Χ•Χ– Χ©Χ™Χ Χ•Χ™ Χ¤Χ•Χ–Χ™Χ¦Χ™Χ•Χª")        
+        [helpstring("ΰηεζ ωιπει τεζιφιεϊ")        
 ]
         BSTR POS_OPN_DF;
-        [helpstring("ΧΧ¦Χ‘ ΧΧ™Χ•Χ Χ”Χ‘Χ")        
+        [helpstring("ξφα μιεν δαΰ")        
 ]
         BSTR STS_NXT_DY;
-        [helpstring("ΧªΧΧ¨Χ™Χ")        
+        [helpstring("ϊΰψικ")        
 ]
         BSTR UPD_DAT;
-        [helpstring("Χ©ΧΆΧ”")        
+        [helpstring("ωςδ")        
 ]
         BSTR UPD_TIME;
         [helpstring("  ")        
@@ -2255,217 +2256,217 @@ double Onl_duration;
 
     typedef [uuid(D717A43D-4447-4506-95AD-992A486B6003), version(1.0), helpstring("K300 Rezef Structure")]
     struct tagK300RzfType {
-        [helpstring("Χ΅Χ•Χ’ Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ ψωεξδ")        
 ]
         BSTR SUG_REC;
-        [helpstring("ΧΧ΅ Χ‘Χ•Χ¨Χ΅Χ”")        
+        [helpstring("ξρ αεψρδ")        
 ]
         BSTR BNO_Num;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨")        
+        [helpstring("ων πιιψ")        
 ]
         BSTR BNO_NAME;
-        [helpstring("Χ΅Χ™ΧΧ‘Χ•Χ")        
+        [helpstring("ριξαεμ")        
 ]
         BSTR Symbol;
-        [helpstring("Χ©Χ™ΧΧª ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωιθϊ ξρηψ")        
 ]
         BSTR TRADE_METH;
-        [helpstring("ΧΧ΅ Χ΅Χ“Χ•Χ¨Χ™")        
+        [helpstring("ξρ ργεψι")        
 ]
         BSTR SIDURI_Num;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_VA;
-        [helpstring("MIN Χ’Χ•Χ“Χ Χ¤Χ§Χ•Χ“Χ”")        
+        [helpstring("MIN βεγμ τχεγδ")        
 ]
         BSTR MIN_UNIT;
-        [helpstring("Χ’Χ‘Χ•Χ Χ¤Χ§Χ•Χ“Χ” Χ—Χ¨Χ™Χ’Χ”")        
+        [helpstring("βαεμ τχεγδ ηψιβδ")        
 ]
         BSTR HARIG_NV;
-        [helpstring("Χ©ΧΆΧ¨ Χ¨Χ¦Χ¤Χ”-Χ¤ΧªΧ™Χ—Χ”")        
+        [helpstring("ωςψ ψφτδ-τϊιηδ")        
 ]
         BSTR MIN_PR_OPN;
-        [helpstring("Χ©ΧΆΧ¨ ΧªΧ§Χ¨Χ”-Χ¤ΧªΧ™Χ—Χ”")        
+        [helpstring("ωςψ ϊχψδ-τϊιηδ")        
 ]
         BSTR MAX_PR_OPN;
-        [helpstring("Χ©ΧΆΧ¨ Χ¨Χ¦Χ¤Χ”-Χ¨Χ¦Χ™Χ£")        
+        [helpstring("ωςψ ψφτδ-ψφισ")        
 ]
         BSTR MIN_PR_CNT;
-        [helpstring("Χ©ΧΆΧ¨ ΧªΧ§Χ¨Χ”-Χ¨Χ¦Χ™Χ£")        
+        [helpstring("ωςψ ϊχψδ-ψφισ")        
 ]
         BSTR MAX_PR_CNT;
-        [helpstring("Χ©ΧΆΧ¨ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("ωςψ αριρ")        
 ]
         BSTR BASIS_PRC;
-        [helpstring("Χ§Χ•Χ“ ΧΧ¦Χ‘ Χ Χ™Χ™Χ¨")        
+        [helpstring("χεγ ξφα πιιψ")        
 ]
         BSTR STATUS;
-        [helpstring("EX Χ§Χ•Χ“")        
+        [helpstring("EX χεγ")        
 ]
         BSTR EX_COD;
-        [helpstring("EX ΧªΧΧ•Χ¨ Χ§Χ•Χ“")        
+        [helpstring("EX ϊΰεψ χεγ")        
 ]
         BSTR EX_DETAIL;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_VB;
-        [helpstring("Χ©ΧΧ‘ ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωμα ξρηψ")        
 ]
         BSTR shlav;
-        [helpstring("Χ©ΧΆΧ¨ ΧΧ—Χ¨Χ•Χ")        
+        [helpstring("ωςψ ΰηψεο")        
 ]
         BSTR LAST_PRC;
-        [helpstring("Χ΅Χ™Χ‘Χª Χ”Χ¤Χ΅Χ§Χª ΧΧ΅Χ—Χ¨")        
+        [helpstring("ριαϊ δτρχϊ ξρηψ")        
 ]
         BSTR TRD_STP_N;
-        [helpstring("Χ©ΧΆΧª Χ¤ΧªΧ™Χ—Χª Χ”Χ¤Χ΅Χ§Χ”")        
+        [helpstring("ωςϊ τϊιηϊ δτρχδ")        
 ]
         BSTR STP_OPN_TM;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_VD;
-        [helpstring("1 ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("1 μιξιθ χπιδ")        
 ]
         BSTR LMT_BY1;
-        [helpstring("2 ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("2 μιξιθ χπιδ")        
 ]
         BSTR LMT_BY2;
-        [helpstring("3 ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("3 μιξιθ χπιδ")        
 ]
         BSTR LMT_BY3;
-        [helpstring("1Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("1λξεϊ μιξιθ χπιδ")        
 ]
         BSTR LMY_BY1_NV;
-        [helpstring("2Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("2λξεϊ μιξιθ χπιδ")        
 ]
         BSTR LMY_BY2_NV;
-        [helpstring("3Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ Χ§Χ Χ™Χ”")        
+        [helpstring("3λξεϊ μιξιθ χπιδ")        
 ]
         BSTR LMY_BY3_NV;
-        [helpstring("Χ‘Χ©Χ•Χ§-Χ§Χ Χ™Χ”")        
+        [helpstring("αωεχ-χπιδ")        
 ]
         BSTR MKT_NV_BY;
-        [helpstring("Χ§Χ•Χ“ Χ‘Χ©Χ•Χ§-Χ§Χ Χ™Χ”")        
+        [helpstring("χεγ αωεχ-χπιδ")        
 ]
         BSTR MKT_NV_BY_NUM;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_VE;
-        [helpstring("1 ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("1 μιξιθ ξλιψδ")        
 ]
         BSTR LMT_SL1;
-        [helpstring("2 ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("2 μιξιθ ξλιψδ")        
 ]
         BSTR LMT_SL2;
-        [helpstring("3 ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("3 μιξιθ ξλιψδ")        
 ]
         BSTR LMT_SL3;
-        [helpstring("1Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("1λξεϊ μιξιθ ξλιψδ")        
 ]
         BSTR LMY_SL1_NV;
-        [helpstring("2Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("2λξεϊ μιξιθ ξλιψδ")        
 ]
         BSTR LMY_SL2_NV;
-        [helpstring("3Χ›ΧΧ•Χª ΧΧ™ΧΧ™Χ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("3λξεϊ μιξιθ ξλιψδ")        
 ]
         BSTR LMY_SL3_NV;
-        [helpstring("Χ‘Χ©Χ•Χ§-ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("αωεχ-ξλιψδ")        
 ]
         BSTR MKT_NV_SL;
-        [helpstring("Χ§Χ•Χ“ Χ‘Χ©Χ•Χ§-ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("χεγ αωεχ-ξλιψδ")        
 ]
         BSTR MKT_NV_SL_NUM;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_VF;
-        [helpstring("Χ©ΧΆΧ¨ ΧªΧΧ•Χ¨ΧΧ™")        
+        [helpstring("ωςψ ϊΰεψθι")        
 ]
         BSTR THEOR_PR;
-        [helpstring("ΧΧ—Χ–Χ•Χ¨ Χ©ΧΆΧ¨ ΧªΧΧ•Χ¨ΧΧ™")        
+        [helpstring("ξηζεψ ωςψ ϊΰεψθι")        
 ]
         BSTR THEOR_VL;
-        [helpstring("Χ©Χ™Χ“Χ•Χ¨ Χ—Χ•Χ–Χ¨/ΧªΧ™Χ§Χ•Χ")        
+        [helpstring("ωιγεψ ηεζψ/ϊιχεο")        
 ]
         BSTR RWR_VG;
-        [helpstring("Χ©ΧΆΧ¨ ΧΆΧ΅Χ§Χ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("ωςψ ςρχδ ΰηψεπδ")        
 ]
         BSTR LST_DL_PR;
-        [helpstring("Χ©ΧΆΧª ΧΆΧ΅Χ§Χ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("ωςϊ ςρχδ ΰηψεπδ")        
 ]
         BSTR LST_DL_TM;
-        [helpstring("ΧΆΧΧ™Χ” ΧΧ”Χ‘Χ΅Χ™Χ΅ %")        
+        [helpstring("ςμιδ ξδαριρ %")        
 ]
         BSTR LST_DF_BS;
-        [helpstring("ΧΆΧΧ™Χ” ΧΧ”Χ¤ΧªΧ™Χ—Χ” %")        
+        [helpstring("ςμιδ ξδτϊιηδ %")        
 ]
         BSTR LST_DF_OPN;
-        [helpstring("ΧΧ—Χ–Χ•Χ¨ ΧΆΧ΅Χ§Χ” ΧΧ—Χ¨Χ•Χ Χ”")        
+        [helpstring("ξηζεψ ςρχδ ΰηψεπδ")        
 ]
         BSTR LST_DL_VL;
-        [helpstring("ΧΧ—Χ–Χ•Χ¨ ΧΧªΧ—Χ™ΧΧª Χ”Χ™Χ•Χ")        
+        [helpstring("ξηζεψ ξϊηιμϊ διεν")        
 ]
         BSTR DAY_VL;
-        [helpstring("ΧΧ—Χ–Χ•Χ¨ Χ‘Χ©Χ— Χ”Χ™Χ•Χ")        
+        [helpstring("ξηζεψ αωη διεν")        
 ]
         BSTR DAY_VL_NIS;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΆΧ΅Χ§ΧΧ•Χª Χ”Χ™Χ•Χ")        
+        [helpstring("ξρτψ ςρχΰεϊ διεν")        
 ]
         BSTR DAY_DIL_NO;
-        [helpstring("Χ©ΧΆΧ¨ Χ™Χ•ΧΧ™ Χ’Χ‘Χ•Χ”")        
+        [helpstring("ωςψ ιεξι βαεδ")        
 ]
         BSTR DAY_MAX_PR;
-        [helpstring("Χ©ΧΆΧ¨ Χ™Χ•ΧΧ™ Χ ΧΧ•Χ")        
+        [helpstring("ωςψ ιεξι πξεκ")        
 ]
         BSTR DAY_MIN_PR;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨ ΧΧ Χ’ΧΧ™")        
+        [helpstring("ων πιιψ ΰπβμι")        
 ]
         BSTR BNO_NAME_E;
-        [helpstring("Χ΅Χ™ΧΧ‘Χ•Χ ΧΧ Χ’ΧΧ™")        
+        [helpstring("ριξαεμ ΰπβμι")        
 ]
         BSTR SYMBOL_E;
-        [helpstring("Χ§Χ•Χ“ Χ”Χ¤Χ΅Χ§Χª ΧΧ΅Χ—Χ¨")        
+        [helpstring("χεγ δτρχϊ ξρηψ")        
 ]
         BSTR STP_COD;
-        [helpstring("Χ§Χ•Χ“ Χ©ΧΆΧ¨ ΧªΧ/Χ¤Χª/Χ΅Χ’")        
+        [helpstring("χεγ ωςψ ϊΰ/τϊ/ρβ")        
 ]
         BSTR COD_SHAAR;
-        [helpstring("ΧªΧΧ¨Χ™Χ")        
+        [helpstring("ϊΰψικ")        
 ]
         BSTR UPD_DAT;
-        [helpstring("Χ©ΧΆΧ”")        
+        [helpstring("ωςδ")        
 ]
         BSTR UPD_TIME;
     } K300RzfType;
 
-    typedef [uuid(768A62AC-3D61-41F7-A439-DA65581AFB52), version(1.0), helpstring("ΧΧ‘Χ Χ” Χ¨Χ©Χ•ΧΧª Χ”Χ•Χ¨ΧΧ” Χ—Χ“Χ©Χ”")]
+    typedef [uuid(768A62AC-3D61-41F7-A439-DA65581AFB52), version(1.0), helpstring("ξαπδ ψωεξϊ δεψΰδ ηγωδ")]
     struct tagRezefSimpleOrder {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ξρτψ πιιψ ςψκ")        
 ]
         int BNO;
-        [helpstring("Χ›ΧΧ•Χª")        
+        [helpstring("λξεϊ")        
 ]
         int Amount;
-        [helpstring("ΧΧ—Χ™Χ¨")        
+        [helpstring("ξηιψ")        
 ]
         double price;
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         int Branch;
-        [helpstring("Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ηωαεο")        
 ]
         int Account;
-        [helpstring("Χ΅Χ•Χ’ Χ¤ΧΆΧ•ΧΧ”")        
+        [helpstring("ρεβ τςεμδ")        
 ]
         OrderOperation operation;
-        [helpstring("Χ΅Χ•Χ’ Χ”Χ•Χ¨ΧΧ”")        
+        [helpstring("ρεβ δεψΰδ")        
 ]
         RezefOrderKind OrderKind;
-        [helpstring("Χ”Χ•Χ¨ΧΧª Χ©ΧΧ™ΧΧªΧ")        
+        [helpstring("δεψΰϊ ωΰιμϊΰ")        
 ]
         long Query;
     } RezefSimpleOrder;
 
-    typedef [uuid(7DC7B7BF-4671-4171-A633-0D697A5F6803), version(1.0), helpstring("Χ¤ΧΆΧ•ΧΧ•Χª Χ§Χ Χ™Χ” Χ•ΧΧ›Χ™Χ¨Χ”")]
+    typedef [uuid(7DC7B7BF-4671-4171-A633-0D697A5F6803), version(1.0), helpstring("τςεμεϊ χπιδ εξλιψδ")]
     enum {
         OrderOperationNewBuy = 0,
         OrderOperationNewSell = 1,
@@ -2474,7 +2475,7 @@ double Onl_duration;
         OrderOperationDelete = 4
     } OrderOperation;
 
-    typedef [uuid(E2A5E70B-3138-484A-A113-B8BB1640ED12), version(1.0), helpstring("Χ΅Χ•Χ’Χ™ Χ¤Χ§Χ•Χ“Χ•Χª Χ‘Χ¨Χ¦Χ£")]
+    typedef [uuid(E2A5E70B-3138-484A-A113-B8BB1640ED12), version(1.0), helpstring("ρεβι τχεγεϊ αψφσ")]
     enum {
         RezefOrderKindLMT = 0,
         RezefOrderKindMKT = 1,
@@ -2484,118 +2485,118 @@ double Onl_duration;
         RezefOrderKindJMB = 5
     } RezefOrderKind;
 
-    typedef [uuid(67BADCB9-DD55-41EF-8D57-3C9FD785C9A1), version(1.0), helpstring("ΧΧ‘Χ Χ” Χ¨Χ©Χ•ΧΧª Χ”Χ•Χ¨ΧΧ” ΧΧªΧΧ©Χ›Χª")]
+    typedef [uuid(67BADCB9-DD55-41EF-8D57-3C9FD785C9A1), version(1.0), helpstring("ξαπδ ψωεξϊ δεψΰδ ξϊξωλϊ")]
     struct tagRezefContinuousOrder {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ξρτψ πιιψ ςψκ")        
 ]
         int BNO;
-        [helpstring("Χ›ΧΧ•Χª")        
+        [helpstring("λξεϊ")        
 ]
         int Amount;
-        [helpstring("ΧΧ—Χ™Χ¨")        
+        [helpstring("ξηιψ")        
 ]
         double price;
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         int Branch;
-        [helpstring("Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ηωαεο")        
 ]
         int Account;
-        [helpstring("Χ΅Χ•Χ’ Χ¤ΧΆΧ•ΧΧ”")        
+        [helpstring("ρεβ τςεμδ")        
 ]
         OrderOperation operation;
-        [helpstring("Χ΅Χ•Χ’ Χ”Χ•Χ¨ΧΧ”")        
+        [helpstring("ρεβ δεψΰδ")        
 ]
         RezefOrderKind OrderKind;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ”ΧªΧ—ΧΧ” Χ¤Χ§. ΧΧªΧΧ©Χ›Χª yyyymmdd")        
+        [helpstring("ϊΰψικ δϊημδ τχ. ξϊξωλϊ yyyymmdd")        
 ]
         int StartDate;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ΅Χ•Χ¤Χ™ Χ¤Χ§. ΧΧªΧΧ©Χ›Χª yyyymmdd")        
+        [helpstring("ϊΰψικ ρετι τχ. ξϊξωλϊ yyyymmdd")        
 ]
         int EndDate;
-        [helpstring("Χ›ΧΧ•Χª ΧΧ™Χ Χ™ΧΧ•Χ ΧΧ¤Χ§. ΧΧªΧΧ©Χ›Χª")        
+        [helpstring("λξεϊ ξιπιξεν μτχ. ξϊξωλϊ")        
 ]
         int MinAmount;
-        [helpstring("Χ›ΧΧ•Χª ΧΧ§Χ΅Χ™ΧΧ•Χ ΧΧ¤Χ§. ΧΧªΧΧ©Χ›Χª")        
+        [helpstring("λξεϊ ξχριξεν μτχ. ξϊξωλϊ")        
 ]
         int MaxAmount;
-        [helpstring("Χ¤Χ§Χ•Χ“Χ” ΧΧªΧΧ©Χ›Χª ΧΧ‘Χ™Χ¦Χ•ΧΆ ΧΧ™Χ™Χ“Χ™")        
+        [helpstring("τχεγδ ξϊξωλϊ μαιφες ξιιγι")        
 ]
         int ImmediateExecution;
     } RezefContinuousOrder;
 
     typedef [uuid(887F00A8-8B7E-4E2F-A7E4-486728E228B1), version(1.0), helpstring("Initial Yield Data Structure")]
     struct tagAccountYieldInitial {
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         int Yld_sug;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ξρτψ ηωαεο")        
 ]
         int Yld_id;
-        [helpstring("Χ Χ™'ΧΆ")        
+        [helpstring("πι'ς")        
 ]
         int Yld_bno;
-        [helpstring("ΧªΧΧ¨Χ™Χ")        
+        [helpstring("ϊΰψικ")        
 ]
         int Yld_date;
-        [helpstring("Χ©Χ™ΧΆΧ¨Χ Χ™Χ•ΧΧ™")        
+        [helpstring("ωιςψκ ιεξι")        
 ]
         double Yld_vl_dd;
-        [helpstring("ΧªΧ©Χ•ΧΧ” Χ™Χ•ΧΧ™Χª")        
+        [helpstring("ϊωεΰδ ιεξιϊ")        
 ]
         double Yld_yld_dd;
-        [helpstring("Χ©Χ™ΧΆΧ¨Χ Χ—Χ•Χ“Χ©Χ™")        
+        [helpstring("ωιςψκ ηεγωι")        
 ]
         double Yld_vl_mm;
-        [helpstring("ΧªΧ©Χ•ΧΧ” Χ—Χ•Χ“Χ©Χ™Χª")        
+        [helpstring("ϊωεΰδ ηεγωιϊ")        
 ]
         double Yld_yld_mm;
-        [helpstring("Χ©Χ™ΧΆΧ¨Χ 12 Χ—Χ•Χ“Χ©Χ™Χ")        
+        [helpstring("ωιςψκ 12 ηεγωιν")        
 ]
         double Yld_vl_12;
-        [helpstring("ΧªΧ©Χ•ΧΧ” 12 Χ—Χ•Χ“Χ©Χ™Χ")        
+        [helpstring("ϊωεΰδ 12 ηεγωιν")        
 ]
         double Yld_yld_12;
-        [helpstring("Χ©Χ™ΧΆΧ¨Χ 3 Χ—Χ•Χ“Χ©Χ™Χ")        
+        [helpstring("ωιςψκ 3 ηεγωιν")        
 ]
         double Yld_vl_3m;
-        [helpstring("ΧªΧ©Χ•ΧΧ” 3 Χ—Χ•Χ“Χ©Χ™Χ")        
+        [helpstring("ϊωεΰδ 3 ηεγωιν")        
 ]
         double Yld_yld_3m;
-        [helpstring("Χ©Χ™ΧΆΧ¨Χ Χ©Χ ΧªΧ™")        
+        [helpstring("ωιςψκ ωπϊι")        
 ]
         double Yld_vl_yy;
-        [helpstring("ΧªΧ©Χ•ΧΧ” Χ©Χ ΧªΧ™Χª")        
+        [helpstring("ϊωεΰδ ωπϊιϊ")        
 ]
         double Yld_yld_yy;
     } AccountYieldInitial;
 
     typedef [uuid(4D1CADC3-173E-4DF9-90A9-F9883E2AB861), version(1.0), helpstring(" Yield Data Structure by Request")]
     struct tagAccountYieldByRequirement {
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         int Yld_sug;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ξρτψ ηωαεο")        
 ]
         int Yld_id;
-        [helpstring("Χ Χ™'ΧΆ")        
+        [helpstring("πι'ς")        
 ]
         int Yld_bno;
-        [helpstring("ΧΧ•Χ Χ”")        
+        [helpstring("ξεπδ")        
 ]
         int Yld_count;
-        [helpstring("ΧªΧΧ¨Χ™Χ")        
+        [helpstring("ϊΰψικ")        
 ]
         int Yld_date;
-        [helpstring("Χ©Χ™ΧΆΧ¨Χ")        
+        [helpstring("ωιςψκ")        
 ]
         double Yld_vl_dd;
-        [helpstring("ΧªΧ©Χ•ΧΧ”")        
+        [helpstring("ϊωεΰδ")        
 ]
         double Yld_yld_dd;
     } AccountYieldByRequirement;
 
-    typedef [uuid(33548B33-F643-43C0-AD93-C87F23D06E15), version(1.0), helpstring("Χ΅Χ•Χ’ Χ“Χ¨Χ™Χ©Χª Χ ΧªΧ•Χ Χ™ ΧªΧ©Χ•ΧΧ”")]
+    typedef [uuid(33548B33-F643-43C0-AD93-C87F23D06E15), version(1.0), helpstring("ρεβ γψιωϊ πϊεπι ϊωεΰδ")]
     enum {
         YieldDataMonthbyDay = 1,
         YieldDataYearbyMonth = 2,
@@ -2606,32 +2607,32 @@ double Onl_duration;
 
     typedef [uuid(C9BB5DB8-D080-4CB3-9AAC-7CF20F45283C), version(1.0), helpstring(" Detailed Yield Data Structure")]
     struct tagAccountYieldDetailed {
-        [helpstring("Χ΅Χ Χ™Χ£")        
+        [helpstring("ρπισ")        
 ]
         int Yld_sug;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ξρτψ ηωαεο")        
 ]
         int Yld_id;
-        [helpstring("Χ Χ™'ΧΆ")        
+        [helpstring("πι'ς")        
 ]
         int Yld_bno;
-        [helpstring("ΧªΧΧ¨Χ™Χ")        
+        [helpstring("ϊΰψικ")        
 ]
         int Yld_date;
-        [helpstring("Χ©Χ™ΧΆΧ¨Χ")        
+        [helpstring("ωιςψκ")        
 ]
         double Yld_vl_dd;
-        [helpstring("ΧªΧ©Χ•ΧΧ”")        
+        [helpstring("ϊωεΰδ")        
 ]
         double Yld_yld_dd;
     } AccountYieldDetailed;
 
-    typedef [uuid(171EF2F6-6CF2-46F5-9065-E5591162C7BB), version(1.0), helpstring("Χ™ΧªΧ¨Χª Χ Χ™Χ™Χ¨Χ•Χª Χ¤Χ¨ ΧΧ•Χ¤Χ¦Χ™Χ”")]
+    typedef [uuid(171EF2F6-6CF2-46F5-9065-E5591162C7BB), version(1.0), helpstring("ιϊψϊ πιιψεϊ τψ ΰετφιδ")]
     struct tagNvPerOption {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ξρτψ πιιψ ςψκ")        
 ]
         int BNO;
-        [helpstring("Χ›ΧΧ•Χª")        
+        [helpstring("λξεϊ")        
 ]
         int NV;
     } NvPerOption;
@@ -2668,7 +2669,7 @@ double Onl_duration;
                         [in] BSTR strOptionNumber, 
                         [in, optional, defaultvalue(-1)] MadadTypes strMadad, 
                         [out, retval] long* retVal);
-        [id(0x00000002), helpstring("ΧΧ—Χ–Χ™Χ¨ Χ¨Χ©Χ™ΧΧª Χ ΧªΧ•Χ Χ™ Χ Χ›Χ΅Χ™ Χ‘Χ΅Χ™Χ΅. Χ Χ™ΧªΧ ΧΧ΅Χ Χ ΧΧ¤Χ™ Χ§Χ•Χ“ Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅"), helpcontext(0x000007db)]
+        [id(0x00000002), helpstring("ξηζιψ ψωιξϊ πϊεπι πλρι αριρ. πιϊο μρπο μτι χεγ πλρ αριρ"), helpcontext(0x000007db)]
         HRESULT GetBaseAssets(
                         [out] SAFEARRAY(BaseAssetInfo)* psaRecords, 
                         [in, optional, defaultvalue(-1)] long BaseAssetCode, 
@@ -2797,7 +2798,7 @@ double Onl_duration;
         HRESULT GetShortTradeOptions(
                         [in, out] SAFEARRAY(TradeOptionType)* psaStrRecords, 
                         [out, retval] long* retVal);
-        [id(0x00000020), helpstring("ΧΧ©Χ™Χ›Χª Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ Χ©Χ ΧΧ•Χ¤Χ¦Χ™Χ•Χª Χ•ΧΧ“Χ“Χ™Χ ΧΧ§Χ• 300. Χ Χ™ΧªΧ ΧΧ΅Χ Χ ΧΧ¤Χ™ Χ΅Χ•Χ’ Χ”ΧΧ“Χ“ ΧΧ• ΧΧ΅Χ¤Χ¨ ΧΧ•Χ¤Χ¦Χ™Χ”. ΧΧ Χ©Χ Χ™Χ”Χ Χ Χ™ΧªΧ Χ™Χ, Χ”Χ΅Χ™Χ Χ•Χ Χ™ΧªΧ‘Χ¦ΧΆ ΧΧ¤Χ™ Χ”ΧΧ•Χ¤Χ¦Χ™Χ”. Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ ΧΧªΧΆΧ“Χ›Χ Χ™Χ ΧΧ”ΧΧ—Χ©Χ‘  Χ”Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ©Χ¨ΧªΧ™ Χ”Χ”Χ¤Χ¦Χ”, Χ‘Χ”ΧªΧΧ ΧΧªΧ¦Χ•Χ¨Χª Χ”Χ”ΧªΧ§Χ Χ”")]
+        [id(0x00000020), helpstring("ξωιλϊ πϊεπι ωεχ ωμ ΰετφιεϊ εξγγιν ξχε 300. πιϊο μρπο μτι ρεβ δξγγ ΰε ξρτψ ΰετφιδ. ΰν ωπιδν πιϊπιν, δριπεο ιϊαφς μτι δΰετφιδ. πϊεπι ωεχ ξϊςγλπιν ξδξηωα  δψΰωι ΰε ξωψϊι δδτφδ, αδϊΰν μϊφεψϊ δδϊχπδ")]
         HRESULT GetK300MF(
                         [out] SAFEARRAY(K300MaofType)* vecRecords, 
                         [in, out] BSTR* LastTime, 
@@ -2805,7 +2806,7 @@ double Onl_duration;
                         [in, optional, defaultvalue(-1)] BaseAssetTypes strMadad, 
                         [in, optional, defaultvalue(-1)] MonthType Month, 
                         [out, retval] long* retVal);
-        [id(0x00000024), helpstring("ΧΧ©Χ™Χ›Χª Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ Χ©Χ ΧΧ Χ™Χ•Χª ΧΧ§Χ• 300. Χ Χ™ΧªΧ ΧΧ΅Χ Χ ΧΧ¤Χ™ Χ©Χ™Χ™Χ›Χ•Χª ΧΧΧ“Χ“, Χ΅Χ•Χ’ Χ”ΧΧ Χ™Χ™Χ” ΧΧ• ΧΧ΅Χ¤Χ¨ Χ”ΧΧ Χ™Χ”, ΧΧ¤Χ™ Χ΅Χ“Χ¨ Χ§Χ“Χ™ΧΧ•Χ™Χ•Χª Χ–Χ”. Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ ΧΧªΧΆΧ“Χ›Χ Χ™Χ ΧΧ”ΧΧ—Χ©Χ‘  Χ”Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ©Χ¨ΧªΧ™ Χ”Χ”Χ¤Χ¦Χ”, Χ‘Χ”ΧªΧΧ ΧΧªΧ¦Χ•Χ¨Χª Χ”Χ”ΧªΧ§Χ Χ”")]
+        [id(0x00000024), helpstring("ξωιλϊ πϊεπι ωεχ ωμ ξπιεϊ ξχε 300. πιϊο μρπο μτι ωιιλεϊ μξγγ, ρεβ δξπιιδ ΰε ξρτψ δξπιδ, μτι ργψ χγιξειεϊ ζδ. πϊεπι ωεχ ξϊςγλπιν ξδξηωα  δψΰωι ΰε ξωψϊι δδτφδ, αδϊΰν μϊφεψϊ δδϊχπδ")]
         HRESULT GetK300RZ(
                         [out] SAFEARRAY(K300RzfType)* vecRecords, 
                         [in, out] BSTR* LastTime, 
@@ -2813,20 +2814,20 @@ double Onl_duration;
                         [in, optional, defaultvalue(-1)] StockKind kind, 
                         [in, optional, defaultvalue(-1)] MadadTypes madadType, 
                         [out, retval] long* retVal);
-        [id(0x00000023), helpstring("ΧΧ©Χ™Χ›Χª ΧΧ“Χ“Χ™Χ ΧΧ§Χ• 300. Χ Χ™ΧªΧ ΧΧ΅Χ Χ ΧΧ¤Χ™ ΧΧ΅Χ¤Χ¨ Χ”ΧΧ“Χ“. Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ ΧΧªΧΆΧ“Χ›Χ Χ™Χ ΧΧ”ΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ©Χ¨ΧªΧ™ Χ”Χ”Χ¤Χ¦Χ”, Χ‘Χ”ΧªΧΧ ΧΧªΧ¦Χ•Χ¨Χª Χ”Χ”ΧªΧ§Χ Χ”")]
+        [id(0x00000023), helpstring("ξωιλϊ ξγγιν ξχε 300. πιϊο μρπο μτι ξρτψ δξγγ. πϊεπι ωεχ ξϊςγλπιν ξδξηωα δψΰωι ΰε ξωψϊι δδτφδ, αδϊΰν μϊφεψϊ δδϊχπδ")]
         HRESULT GetK300Madad(
                         [out] SAFEARRAY(K300MadadType)* vecRecords, 
                         [in, optional, defaultvalue("0")] BSTR BNO, 
                         [out, retval] long* retVal);
-        [id(0x00000021), helpstring("Χ”ΧªΧ—Χ Χ–Χ¨Χ™ΧΧª Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ ΧΧªΧ•Χ Χ”ΧΧ΅Χ§Χ‘Χ¨ ΧΧ”ΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ”Χ©Χ¨ΧªΧ™Χ. ΧΆΧ¨Χ ΧΧ•Χ—Χ–Χ¨ 0 ΧΧ¦Χ™Χ™Χ Χ”Χ¦ΧΧ—Χ”")]
+        [id(0x00000021), helpstring("δϊημ ζψιξϊ πϊεπι ωεχ μϊεκ δθρχαψ ξδξηωα δψΰωι ΰε ξδωψϊιν. ςψκ ξεηζψ 0 ξφιιο δφμηδ")]
         HRESULT K300StartStream(
                         [in] K300StreamType streamType, 
                         [out, retval] long* retVal);
-        [id(0x00000022), helpstring("Χ”Χ¤Χ΅Χ§ Χ–Χ¨Χ™ΧΧª Χ ΧªΧ•Χ Χ™ Χ©Χ•Χ§ ΧΧªΧ•Χ Χ”ΧΧ΅Χ§Χ‘Χ¨ ΧΧ”ΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™ ΧΧ• ΧΧ”Χ©Χ¨ΧªΧ™Χ. ΧΆΧ¨Χ ΧΧ•Χ—Χ–Χ¨ 0 ΧΧ¦Χ™Χ™Χ Χ”Χ¦ΧΧ—Χ”")]
+        [id(0x00000022), helpstring("δτρχ ζψιξϊ πϊεπι ωεχ μϊεκ δθρχαψ ξδξηωα δψΰωι ΰε ξδωψϊιν. ςψκ ξεηζψ 0 ξφιιο δφμηδ")]
         HRESULT K300StopStream(
                         [in] K300StreamType streamType, 
                         [out, retval] long* retVal);
-        [id(0x00000025), helpstring("Χ©Χ•ΧΧ¨ ΧΧª Χ›Χ ΧΧ™Χ¨Χ•ΧΆΧ™ Χ”Χ©Χ•Χ§ Χ‘Χ§Χ•Χ‘Χ¥. ΧΧ§Χ‘Χ ΧΧ—Χ™Χ¦Χ”, Χ‘Χ” Χ™Χ™Χ©ΧΧ¨Χ• Χ”Χ§Χ‘Χ¦Χ™Χ, Χ©Χ Χ§Χ•Χ‘Χ¥, ΧΧ΅Χ¤Χ¨ ΧΧ™Χ¨Χ•ΧΆΧ™Χ ΧΧ›Χ Χ§Χ•Χ‘Χ¥.")]
+        [id(0x00000025), helpstring("ωεξψ ΰϊ λμ ΰιψεςι δωεχ αχεαυ. ξχαμ ξηιφδ, αδ ιιωξψε δχαφιν, ων χεαυ, ξρτψ ΰιψεςιν μλμ χεαυ.")]
         HRESULT CreateK300EventsFile(
                         [in] BSTR CacheFolder, 
                         [in] BSTR DataFileName, 
@@ -2834,19 +2835,19 @@ double Onl_duration;
                         [in] K300StreamType streamType, 
                         [out] BSTR* ErrorMessage, 
                         [out, retval] long* retVal);
-        [id(0x00000026), helpstring("Χ¨Χ©Χ™ΧΧª ΧΧ’Χ—Χ™ Χ©Χ—Χ¨ Χ”ΧΧ¨Χ›Χ™Χ‘Χ™Χ Χ—Χ•Χ–Χ” Χ©Χ—Χ¨")]
+        [id(0x00000026), helpstring("ψωιξϊ ΰβηι ωηψ δξψλιαιν ηεζδ ωηψ")]
         HRESULT GetShacharBondsInFuture(
                         [in] BSTR BNO, 
                         [out] SAFEARRAY(ShacharBondInFutureType)* vecRecords, 
                         [out, retval] long* retVal);
-        [id(0x00000027), helpstring("Χ¨Χ©Χ™ΧΧª Χ ΧªΧ•Χ Χ™ Χ΅Χ•Χ’ Χ—Χ•ΧΧ¨ Χ—ΧΧ©-ΧΧΧ•Χª")]
+        [id(0x00000027), helpstring("ψωιξϊ πϊεπι ρεβ ηεξψ ηξω-ξΰεϊ")]
         HRESULT GetSH500(
                         [in, out] SAFEARRAY(SH500Type)* psaStrRecords, 
                         [in] BSTR Query, 
                         [out, retval] long* retVal);
-        [id(0x00000028), propput, helpstring("Χ§Χ‘Χ™ΧΆΧª ΧΧ–Χ”Χ” ΧΧ¦Χ•Χ¨Χ Χ”Χ—ΧΧª Χ”Χ¨Χ©ΧΧ•Χª ΧΆΧ Χ§Χ• 300")]
+        [id(0x00000028), propput, helpstring("χαιςϊ ξζδδ μφεψκ δημϊ δψωΰεϊ ςμ χε 300")]
         HRESULT K300SessionId([in] long rhs);
-        [id(0x00000029), helpstring("Χ΅Χ•Χ’ Χ—Χ•ΧΧ¨ 161")]
+        [id(0x00000029), helpstring("ρεβ ηεξψ 161")]
         HRESULT GetSH161(
                         [in, out] SAFEARRAY(SH161Type)* vecRecords, 
                         [in] MadadTypes MadadSymbol, 
@@ -2897,64 +2898,64 @@ double Onl_duration;
         CURRENCYLNKD = 23
     } MadadTypes;
 
-    typedef [uuid(24508459-EFB3-4C73-A616-D008A5422DE7), version(1.0), helpstring("Χ¤Χ¨ΧΧ™ Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")]
+    typedef [uuid(24508459-EFB3-4C73-A616-D008A5422DE7), version(1.0), helpstring("τψθι πλρ αριρ")]
     struct tagBaseAssetInfo {
-        [helpstring("Χ§Χ•Χ“ Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("χεγ πλρ αριρ")        
 ]
         int BaseAssetCode;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ™ΧΧ™Χ ΧΧ¤Χ§Χ™ΧΆΧ”")        
+        [helpstring("ξρτψ ιξιν μτχιςδ")        
 ]
         int DaysToExp;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ¤Χ§Χ™ΧΆΧ”")        
+        [helpstring("ϊΰψικ τχιςδ")        
 ]
         int ExpDate;
-        [helpstring("Χ¨Χ™Χ‘Χ™Χª")        
+        [helpstring("ψιαιϊ")        
 ]
         double Interest;
-        [helpstring("Χ΅ΧΧ™Χ™Χª ΧªΧ§Χ")        
+        [helpstring("ρθιιϊ ϊχο")        
 ]
         double IV;
-        [helpstring("Χ“Χ™Χ‘Χ™Χ“Χ Χ“")        
+        [helpstring("γιαιγπγ")        
 ]
         double Dividend;
-        [helpstring("ΧΧ—Χ•Χ– Χ©Χ™Χ Χ•Χ™ Χ‘ΧΧ“Χ“")        
+        [helpstring("ΰηεζ ωιπει αξγγ")        
 ]
         double MadadChange;
-        [helpstring("ΧΧ—Χ•Χ– Χ©Χ™Χ Χ•Χ™ Χ‘Χ΅ΧΧ™Χ™Χª ΧªΧ§Χ")        
+        [helpstring("ΰηεζ ωιπει αρθιιϊ ϊχο")        
 ]
         double IVChange;
-        [helpstring("ΧΧ“Χ“")        
+        [helpstring("ξγγ")        
 ]
         double Madad;
     } BaseAssetInfo;
 
     typedef [uuid(A479FFA8-4B4C-4042-8D03-6530FA4ECC26), version(1.0), helpstring("Indexes Info Type")]
     struct tagIndexInfoType {
-        [helpstring("Χ΅Χ•Χ’ Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ ψωεξδ")        
 ]
         BSTR SUG_REC;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΧ‘ΧΧ”")        
+        [helpstring("ξρτψ θαμδ")        
 ]
         BSTR TBL_NO;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ©Χ•Χ¨Χ” Χ‘ΧΧ‘ΧΧ”")        
+        [helpstring("ξρτψ ωεψδ αθαμδ")        
 ]
         BSTR LINE_NO;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΆΧΧ•Χ“Χ” Χ‘ΧΧ‘ΧΧ”")        
+        [helpstring("ξρτψ ςξεγδ αθαμδ")        
 ]
         BSTR COL_NO;
-        [helpstring("Χ§Χ•Χ“ ΧΧ“Χ“")        
+        [helpstring("χεγ ξγγ")        
 ]
         BSTR COD_MDD;
-        [helpstring("Χ©Χ Χ”ΧΧ“Χ“")        
+        [helpstring("ων δξγγ")        
 ]
         BSTR NAME_MDD;
-        [helpstring("ΧΆΧ¨Χ Χ”ΧΧ“Χ“")        
+        [helpstring("ςψκ δξγγ")        
 ]
         BSTR VAL_MDD;
-        [helpstring("ΧΧ—Χ•Χ– Χ”Χ©Χ™Χ Χ•Χ™ Χ”Χ™Χ•ΧΧ™")        
+        [helpstring("ΰηεζ δωιπει διεξι")        
 ]
         BSTR CHG_PCNT;
-        [helpstring("ΧΧ’ΧΧª ΧΧ—Χ•Χ– Χ”Χ©Χ™Χ Χ•Χ™")        
+        [helpstring("ξβξϊ ΰηεζ δωιπει")        
 ]
         BSTR CHG_DIRCT;
                 
@@ -2975,40 +2976,40 @@ BSTR FIL1;
         [helpstring("{")        
 ]
         BSTR POTEH;
-        [helpstring("Χ΅Χ•Χ’ Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ ψωεξδ")        
 ]
         BSTR SUG_REC;
-        [helpstring("Χ©Χ™ΧΧª ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωιθϊ ξρηψ")        
 ]
         BSTR TRADE_METH;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΆΧ΅Χ§ΧΧ•Χª")        
+        [helpstring("ξρτψ ςρχΰεϊ")        
 ]
         BSTR DIL_NO;
-        [helpstring("Χ΅Χ”"Χ› ΧΧ—Χ–Χ•Χ¨")        
+        [helpstring("ρδ"λ ξηζεψ")        
 ]
         BSTR TOT_MAHZOR;
-        [helpstring("ΧªΧΧ•Χ¨Χ” ΧΧ›Χ Χ”Χ©Χ•Χ§")        
+        [helpstring("ϊξεψδ μλμ δωεχ")        
 ]
         BSTR VL_NIS_MKT;
-        [helpstring("ΧªΧΧ•Χ¨Χ” ΧΧ Χ™"ΧΆ Χ©ΧΆΧΧ•")        
+        [helpstring("ϊξεψδ μπι"ς ωςμε")        
 ]
         BSTR VL_NIS_UP;
-        [helpstring("ΧªΧΧ•Χ¨Χ” ΧΧ Χ™"ΧΆ Χ©Χ™Χ¨Χ“Χ•")        
+        [helpstring("ϊξεψδ μπι"ς ωιψγε")        
 ]
         BSTR VL_NIS_DN;
-        [helpstring("ΧªΧΧ•Χ¨Χ” ΧΧ Χ™"ΧΆ ΧΧΧ Χ©Χ™Χ Χ•Χ™")        
+        [helpstring("ϊξεψδ μπι"ς μμΰ ωιπει")        
 ]
         BSTR VL_NIS_STT;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™"ΧΆ Χ©ΧΆΧΧ•")        
+        [helpstring("ξρτψ πι"ς ωςμε")        
 ]
         BSTR BNO_UP;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™"ΧΆ Χ©Χ™Χ¨Χ“Χ•")        
+        [helpstring("ξρτψ πι"ς ωιψγε")        
 ]
         BSTR BNO_DN;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™"ΧΆ ΧΧΧ Χ©Χ™Χ Χ•Χ™")        
+        [helpstring("ξρτψ πι"ς μμΰ ωιπει")        
 ]
         BSTR BNO_STT;
-        [helpstring("Χ©ΧΆΧª Χ”ΧΧΆΧ¨Χ›Χª")        
+        [helpstring("ωςϊ δξςψλϊ")        
 ]
         BSTR SYS_TIME;
         [helpstring("FIL")        
@@ -3017,100 +3018,100 @@ BSTR FIL1;
         [helpstring("}")        
 ]
         BSTR SOGER;
-        [helpstring("ΧªΧΧ¨Χ™Χ ΧΆΧ“Χ›Χ•Χ")        
+        [helpstring("ϊΰψικ ςγλεο")        
 ]
         BSTR UPD_DAT;
-        [helpstring("Χ–ΧΧ ΧΆΧ“Χ›Χ•Χ")        
+        [helpstring("ζξο ςγλεο")        
 ]
         BSTR UPD_TIME;
     } K300STSType;
 
     typedef [uuid(D5D1A5B2-8EB8-4A88-8592-11AD4446CDF2), version(1.0), helpstring("Madad History")]
     struct tagK300MadadHistType {
-        [helpstring("Χ¤Χ•ΧªΧ—")        
+        [helpstring("τεϊη")        
 ]
         BSTR POTEH;
-        [helpstring("Χ΅Χ•Χ’ Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ ψωεξδ")        
 ]
         BSTR SUG_REC;
-        [helpstring("Χ§Χ•Χ“ ΧΧ“Χ“")        
+        [helpstring("χεγ ξγγ")        
 ]
         BSTR MDD_COD;
-        [helpstring("Χ©Χ ΧΧ“Χ“")        
+        [helpstring("ων ξγγ")        
 ]
         BSTR MDD_NAME;
-        [helpstring("Χ΅Χ•Χ’ ΧΧ“Χ“")        
+        [helpstring("ρεβ ξγγ")        
 ]
         BSTR MDD_SUG;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ΅Χ“Χ•Χ¨Χ™")        
+        [helpstring("ξρτψ ργεψι")        
 ]
         BSTR MDD_NUM;
-        [helpstring("ΧΧ“Χ“")        
+        [helpstring("ξγγ")        
 ]
         BSTR MDD;
-        [helpstring("Χ©Χ™Χ Χ•Χ™ %")        
+        [helpstring("ωιπει %")        
 ]
         BSTR MDD_DF;
-        [helpstring("Χ–ΧΧ Χ—Χ™Χ©Χ•Χ‘")        
+        [helpstring("ζξο ηιωεα")        
 ]
         BSTR CALC_TIME;
-        [helpstring("Χ¤Χ™ΧΧ¨")        
+        [helpstring("τιμψ")        
 ]
         BSTR FIL;
-        [helpstring("Χ΅Χ•Χ’Χ¨")        
+        [helpstring("ρεβψ")        
 ]
         BSTR SOGER;
-        [helpstring("ΧªΧΧ¨Χ™Χ ΧΆΧ“Χ›Χ•Χ")        
+        [helpstring("ϊΰψικ ςγλεο")        
 ]
         BSTR UPD_DAT;
-        [helpstring("Χ–ΧΧ ΧΆΧ“Χ›Χ•Χ")        
+        [helpstring("ζξο ςγλεο")        
 ]
         BSTR UPD_TIME;
-        [helpstring("Χ©ΧΆΧ¨ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("ωςψ αριρ")        
 ]
         BSTR MDD_BASIS;
     } K300MadadHistType;
 
     typedef [uuid(94914BF5-A714-4AE7-BF5A-3CDE03B93BD4), version(1.0), helpstring("Stock Part In Index Type")]
     struct tagStockPartInIndexType {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ξρτψ πιιψ ςψκ")        
 ]
         BSTR BNO_NO;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ων πιιψ ςψκ")        
 ]
         BSTR BNO_NAME;
-        [helpstring("ΧΧ—Χ™Χ¨")        
+        [helpstring("ξηιψ")        
 ]
         BSTR PRC;
-        [helpstring("Χ”Χ•Χ Χ¨Χ©Χ•Χ")        
+        [helpstring("δεο ψωεν")        
 ]
         BSTR HON_RASHUM;
-        [helpstring("ΧΧ—Χ•Χ– Χ‘ΧΧ“Χ“")        
+        [helpstring("ΰηεζ αξγγ")        
 ]
         BSTR PCNT;
     } StockPartInIndexType;
 
     typedef [uuid(D717A433-4447-4506-95AD-992A486B6003), version(1.0), helpstring("Stocks Stage Structure")]
     struct tagStockStageType {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ξρτψ πιιψ ςψκ")        
 ]
         BSTR BNO_NO;
-        [helpstring("Χ©Χ™ΧΧª ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωιθϊ ξρηψ")        
 ]
         BSTR TRADE_METH;
-        [helpstring("Χ©ΧΧ‘ ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωμα ξρηψ")        
 ]
         BSTR TRADE_STAGE;
-        [helpstring("ΧΧ¦Χ‘ Χ Χ™"ΧΆ")        
+        [helpstring("ξφα πι"ς")        
 ]
         BSTR STOCK_STATE;
-        [helpstring("Χ΅Χ™Χ‘Χª Χ”Χ¤Χ΅Χ§Χª ΧΧ΅Χ—Χ¨")        
+        [helpstring("ριαϊ δτρχϊ ξρηψ")        
 ]
         BSTR RSN_TRADE_STP;
-        [helpstring("Χ©ΧΆΧª Χ”Χ¤Χ΅Χ§Χª ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωςϊ δτρχϊ ξρηψ")        
 ]
         BSTR TM_TRADE_STP;
-        [helpstring("Χ©ΧΆΧ¨ Χ‘Χ΅Χ™Χ΅ ΧΧ©ΧΧ‘")        
+        [helpstring("ωςψ αριρ μωμα")        
 ]
         BSTR BASE_RATE_STG;
     } StockStageType;
@@ -3215,27 +3216,27 @@ double dScenarios[45];
 
     typedef [uuid(ED565CC0-E9FA-4C49-A63C-744C780D0088), version(1.0), helpstring("Trade Option Type")]
     struct tagTradeOptionType {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨")        
+        [helpstring("ξρτψ πιιψ")        
 ]
         int BNO;
-        [helpstring("ΧΧ—Χ™Χ¨ ΧΧ™ΧΧ•Χ©")        
+        [helpstring("ξηιψ ξιξεω")        
 ]
         double ExpPrice;
-        [helpstring("ΧªΧΧ¨Χ™Χ ΧΧ™ΧΧ•Χ©")        
+        [helpstring("ϊΰψικ ξιξεω")        
 ]
         BSTR ExpDate;
-        [helpstring("Χ§Χ•Χ“ Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("χεγ πλρ αριρ")        
 ]
         int BaseAsset;
-        [helpstring("Χ¨Χ›Χ©/ΧΧ›Χ¨/ΧΆΧªΧ™Χ“Χ™")        
+        [helpstring("ψλω/ξλψ/ςϊιγι")        
 ]
         BSTR OpType;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨")        
+        [helpstring("ων πιιψ")        
 ]
         BSTR BnoName;
     } TradeOptionType;
 
-    typedef [uuid(24508459-71DF-41F8-9D02-30D6F692FD9D), version(1.0), helpstring("Χ΅Χ•Χ’Χ™ ΧΧ Χ™Χ™Χ”")]
+    typedef [uuid(24508459-71DF-41F8-9D02-30D6F692FD9D), version(1.0), helpstring("ρεβι ξπιιδ")]
     enum {
         StockKindAll = 0xffffffff,
         StockKindMenaya = 0,
@@ -3278,18 +3279,18 @@ BSTR UPD_DAT;
 BSTR UPD_TIME;
     } K300MadadType;
 
-    typedef [uuid(24508459-A714-4AE7-BF5A-3CDE03B93BD4), version(1.0), helpstring("Χ Χ™Χ™Χ¨ ΧΧ’Χ— Χ©Χ—Χ¨ Χ”ΧΧ¨Χ›Χ™Χ‘ Χ—Χ•Χ–Χ” Χ©Χ—Χ¨")]
+    typedef [uuid(24508459-A714-4AE7-BF5A-3CDE03B93BD4), version(1.0), helpstring("πιιψ ΰβη ωηψ δξψλια ηεζδ ωηψ")]
     struct tagShacharBondInFutureType {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ Χ—Χ•Χ–Χ”")        
+        [helpstring("ξρτψ πιιψ ηεζδ")        
 ]
         BSTR BNO_Future;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΧ’Χ—")        
+        [helpstring("ξρτψ πιιψ ΰβη")        
 ]
         BSTR BNO_Bond;
-        [helpstring("ΧΧ§Χ“Χ Χ”ΧΧ¨Χ”")        
+        [helpstring("ξχγν δξψδ")        
 ]
         BSTR ConvCoeff;
-        [helpstring("Χ¨Χ™Χ‘Χ™Χª Χ¦Χ‘Χ•Χ¨Χ”")        
+        [helpstring("ψιαιϊ φαεψδ")        
 ]
         BSTR AccumInterest;
     } ShacharBondInFutureType;
@@ -3414,31 +3415,31 @@ BSTR MDD_BINUI;
 
     typedef [uuid(3A1EFDB9-CB6F-4856-8917-4A0AE2F88472), version(1.0), helpstring("SH500 Stocks Structure")]
     struct tagSH161Type {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ξρτψ πιιψ ςψκ")        
 ]
         long BNO;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ων πιιψ ςψκ")        
 ]
         BSTR BNO_NAME;
-        [helpstring("ΧΧ—Χ™Χ¨")        
+        [helpstring("ξηιψ")        
 ]
         double PRC;
-        [helpstring("Χ”Χ•Χ Χ¨Χ©Χ•Χ")        
+        [helpstring("δεο ψωεν")        
 ]
         double HON_RASHUM;
-        [helpstring("ΧΧ—Χ•Χ–")        
+        [helpstring("ΰηεζ")        
 ]
         double PCNT;
-        [helpstring("Χ›ΧΧ•Χª ΧΧ™Χ Χ™ΧΧΧ™Χª")        
+        [helpstring("λξεϊ ξιπιξμιϊ")        
 ]
         long MIN_NV;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧΧ Χ™Χ•Χª Χ‘ΧΧ“Χ“ = ΧΧΧ")        
+        [helpstring("ξρτψ ξπιεϊ αξγγ = ξξξ")        
 ]
         double BNO_IN_MDD;
-        [helpstring("ΧΧ—Χ•Χ– ΧΧ—Χ–Χ§Χ•Χª Χ‘Χ¦Χ™Χ‘Χ•Χ¨")        
+        [helpstring("ΰηεζ ΰηζχεϊ αφιαεψ")        
 ]
         double PUBLIC_PRCNT;
-        [helpstring("Χ›ΧΧ•Χª Χ¦Χ¤Χ” = ΧΧΧ* ΧΧ—Χ•Χ– ΧΧ—Χ–Χ§Χ•Χª Χ‘Χ¦Χ™Χ‘Χ•Χ¨")        
+        [helpstring("λξεϊ φτδ = ξξξ* ΰηεζ ΰηζχεϊ αφιαεψ")        
 ]
         double NV_TZAFA;
     } SH161Type;
@@ -3536,7 +3537,7 @@ BSTR MDD_BINUI;
       oleautomation
     ]
     interface IFunds : IDispatch {
-        [id(0x00000001), helpstring("Χ§Χ‘ΧΧª Χ™Χ¦Χ™Χ¨Χ•Χª Χ•Χ¤Χ™Χ“Χ™Χ•Χ Χ•Χª Χ©Χ Χ§Χ¨Χ Χ•Χª Χ ΧΧΧ Χ•Χª")]
+        [id(0x00000001), helpstring("χαμϊ ιφιψεϊ ετιγιεπεϊ ωμ χψπεϊ πΰξπεϊ")]
         HRESULT GetKrnBizuim(
                         [in, out] SAFEARRAY(KrnBizuimType)* psaStrRecords, 
                         [in] BSTR strDateFrom, 
@@ -3544,13 +3545,13 @@ BSTR MDD_BINUI;
                         [in] BSTR strBNO_NO, 
                         [in] BSTR strMember, 
                         [out, retval] long* retVal);
-        [id(0x00000002), helpstring("Χ§Χ‘ΧΧª Χ¨Χ©Χ™ΧΧª Χ Χ™Χ™Χ¨Χ•Χª Χ§Χ¨Χ")]
+        [id(0x00000002), helpstring("χαμϊ ψωιξϊ πιιψεϊ χψο")]
         HRESULT GetKranot(
                         [in, out] SAFEARRAY(KerenBasicType)* psaStrRecords, 
                         [in] BSTR strBNO_NO, 
                         [out] BSTR* ERR_MSG, 
                         [out, retval] long* retVal);
-        [id(0x00000003), helpstring("Χ§Χ‘ΧΧª Χ™Χ¦Χ™Χ¨Χ•Χª Χ•Χ¤Χ™Χ“Χ™Χ•Χ Χ•Χª Χ©Χ Χ§Χ¨Χ Χ•Χª Χ ΧΧΧ Χ•Χª")]
+        [id(0x00000003), helpstring("χαμϊ ιφιψεϊ ετιγιεπεϊ ωμ χψπεϊ πΰξπεϊ")]
         HRESULT GetFundExecution(
                         [in] long sessionId, 
                         [in] int DateFrom, 
@@ -3562,123 +3563,123 @@ BSTR MDD_BINUI;
 
     typedef [uuid(4315A163-2DF4-4D42-9321-C99BD680117A), version(1.0), helpstring("Krn Type")]
     struct tagKrnBizuimType {
-        [helpstring("Χ΅Χ•Χ’-Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ-ψωεξδ")        
 ]
         BSTR SUGREC;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ©Χ‘Χ•Χ")        
+        [helpstring("ξρτψ ηωαεο")        
 ]
         BSTR BNO;
-        [helpstring("Χ΅ΧΧΧ•Χ΅ Χ Χ™Χ™Χ¨")        
+        [helpstring("ρθθερ πιιψ")        
 ]
         BSTR BNOSTS;
-        [helpstring("Χ©ΧΧ‘ Χ”Χ Χ™Χ™Χ¨")        
+        [helpstring("ωμα δπιιψ")        
 ]
         BSTR SHKAV;
-        [helpstring("Χ©Χ Χ”Χ Χ™Χ™Χ¨")        
+        [helpstring("ων δπιιψ")        
 ]
         BSTR BnoName;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ‘Χ¨ Χ‘Χ•Χ¨Χ΅Χ”")        
+        [helpstring("ξρτψ ηαψ αεψρδ")        
 ]
         BSTR MBR;
-        [helpstring("Χ©Χ Χ—Χ‘Χ¨ Χ‘Χ•Χ¨Χ΅Χ”")        
+        [helpstring("ων ηαψ αεψρδ")        
 ]
         BSTR MBRNAME;
-        [helpstring("ΧΆ"Χ  Χ©Χ Χ™Χ¦Χ™Χ¨Χ•Χª")        
+        [helpstring("ς"π ωμ ιφιψεϊ")        
 ]
         BSTR IZIROT;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ Χ™Χ™Χ¨ Χ©Χ Χ™Χ¦Χ™Χ¨Χ•Χª")        
+        [helpstring("ξηιψ πιιψ ωμ ιφιψεϊ")        
 ]
         BSTR IZIRAPRC;
-        [helpstring("ΧΆ"Χ  Χ©Χ Χ¤Χ“Χ™Χ•Χ Χ•Χª")        
+        [helpstring("ς"π ωμ τγιεπεϊ")        
 ]
         BSTR PIDYONOT;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ Χ™Χ™Χ¨ Χ©Χ Χ¤Χ“Χ™Χ•Χ Χ•Χª")        
+        [helpstring("ξηιψ πιιψ ωμ τγιεπεϊ")        
 ]
         BSTR PIDYPRC;
-        [helpstring("ΧΧ—Χ™Χ¨ Χ™Χ΅Χ•Χ“Χ™")        
+        [helpstring("ξηιψ ιρεγι")        
 ]
         BSTR BASICPRC;
-        [helpstring("Χ©ΧΆΧª Χ‘Χ™Χ¦Χ•ΧΆ")        
+        [helpstring("ωςϊ αιφες")        
 ]
         BSTR TIME;
-        [helpstring("Χ΅Χ”"Χ›")        
+        [helpstring("ρδ"λ")        
 ]
         BSTR TOTAL;
-        [helpstring("ΧªΧΧ¨Χ™Χ ΧΆΧ¨Χ")        
+        [helpstring("ϊΰψικ ςψκ")        
 ]
         BSTR DATE;
     } KrnBizuimType;
 
     typedef [uuid(0CAE5D87-2B25-4A58-80FA-FE4D43369DBD), version(1.0), helpstring("Keren Basic Type")]
     struct tagKerenBasicType {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ§Χ¨Χ")        
+        [helpstring("ξρτψ χψο")        
 ]
         int BNO_Num;
-        [helpstring("Χ΅Χ•Χ’-Χ¨Χ©Χ•ΧΧ”")        
+        [helpstring("ρεβ-ψωεξδ")        
 ]
         int NV_LMT_ERR;
-        [helpstring("Χ©Χ Χ§Χ¨Χ")        
+        [helpstring("ων χψο")        
 ]
         BSTR BNO_NAME;
-        [helpstring("Χ©Χ Χ§Χ¨Χ 2")        
+        [helpstring("ων χψο 2")        
 ]
         BSTR BNO_NAME2;
-        [helpstring("Χ©ΧΆΧ¨ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("ωςψ αριρ")        
 ]
         double BASIS_RATE;
-        [helpstring("Χ΅Χ•Χ’-Χ—Χ•ΧΧ¨")        
+        [helpstring("ρεβ-ηεξψ")        
 ]
         BSTR SH;
-        [helpstring("Χ©ΧΆΧª-Χ΅Χ’Χ™Χ¨Χ”")        
+        [helpstring("ωςϊ-ρβιψδ")        
 ]
         BSTR CLOS_TM;
-        [helpstring("Χ§Χ¨Χ Χ“Χ•ΧΧ¨Χ™")        
+        [helpstring("χψο γεμψι")        
 ]
         BSTR DOLLAR_FUND;
     } KerenBasicType;
 
     typedef [uuid(C9B70EF7-3769-4AF4-8A2B-D8A437B47B8F), version(1.0), helpstring("Krn Type")]
     struct tagFundExecutionType {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨")        
+        [helpstring("ξρτψ πιιψ")        
 ]
         int BNO;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ—Χ‘Χ¨ Χ‘Χ•Χ¨Χ΅Χ”")        
+        [helpstring("ξρτψ ηαψ αεψρδ")        
 ]
         int MemberNo;
-        [helpstring("Χ›ΧΧ•Χª Χ§Χ Χ™Χ”")        
+        [helpstring("λξεϊ χπιδ")        
 ]
         int NvBuy;
-        [helpstring("Χ©Χ•Χ•Χ™ Χ§Χ Χ™Χ”")        
+        [helpstring("ωεει χπιδ")        
 ]
         double VolBuy;
-        [helpstring("Χ›ΧΧ•Χª ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("λξεϊ ξλιψδ")        
 ]
         int NvSell;
-        [helpstring("Χ©Χ•Χ•Χ™ ΧΧ›Χ™Χ¨Χ”")        
+        [helpstring("ωεει ξλιψδ")        
 ]
         double VolSell;
-        [helpstring("Χ©ΧΧ‘ ΧΧ΅Χ—Χ¨")        
+        [helpstring("ωμα ξρηψ")        
 ]
         BSTR TrdStage;
-        [helpstring("ΧªΧΧ¨Χ™Χ ΧΧ• Χ©ΧΆΧ”")        
+        [helpstring("ϊΰψικ ΰε ωςδ")        
 ]
         int DateTime;
-        [helpstring("Χ©Χ Χ—Χ‘Χ¨ Χ‘Χ•Χ¨Χ΅Χ”")        
+        [helpstring("ων ηαψ αεψρδ")        
 ]
         BSTR MemberName;
-        [helpstring("Χ©Χ Χ Χ™Χ™Χ¨ ΧΆΧ¨Χ")        
+        [helpstring("ων πιιψ ςψκ")        
 ]
         BSTR BnoName;
-        [helpstring("Χ¤Χ“Χ™Χ•Χ Χ•Χª")        
+        [helpstring("τγιεπεϊ")        
 ]
         double PricePDN;
-        [helpstring("Χ™Χ¦Χ™Χ¨Χ•Χª")        
+        [helpstring("ιφιψεϊ")        
 ]
         double PriceIZR;
-        [helpstring("Χ΅Χ”Χ› Χ›ΧΧ•Χª")        
+        [helpstring("ρδλ λξεϊ")        
 ]
         int NvTotal;
-        [helpstring("Χ΅Χ”Χ› Χ©Χ•Χ•Χ™")        
+        [helpstring("ρδλ ωεει")        
 ]
         double VolTotal;
     } FundExecutionType;
@@ -3816,37 +3817,37 @@ double dPricePut;
 
     typedef [uuid(49B9AB93-F2B2-4E2B-996E-FB1FFEF2F44D), version(1.0), helpstring("External Option Record")]
     struct tagExtOptRecord {
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ Χ™Χ™Χ¨")        
+        [helpstring("ξρτψ πιιψ")        
 ]
         int BNO;
         [helpstring("isin     ")        
 ]
         BSTR Isin;
-        [helpstring("Χ Χ›Χ΅ Χ‘Χ΅Χ™Χ΅")        
+        [helpstring("πλρ αριρ")        
 ]
         int BaseAsset;
-        [helpstring("ΧΧ—Χ™Χ¨ ΧΧ™ΧΧ•Χ©")        
+        [helpstring("ξηιψ ξιξεω")        
 ]
         double Strike;
-        [helpstring("Χ™ΧΧ™Χ ΧΧ¤Χ§Χ™ΧΆΧ”")        
+        [helpstring("ιξιν μτχιςδ")        
 ]
         int DaysToExpiry;
-        [helpstring("Χ—Χ•Χ“Χ© Χ¤Χ§Χ™ΧΆΧ”")        
+        [helpstring("ηεγω τχιςδ")        
 ]
         int ExpMonth;
-        [helpstring("ΧªΧΧ¨Χ™Χ Χ¤Χ§Χ™ΧΆΧ”")        
+        [helpstring("ϊΰψικ τχιςδ")        
 ]
         BSTR ExpDate;
-        [helpstring("Χ΅Χ•Χ’ ΧΧ•Χ¤Χ¦Χ™Χ”")        
+        [helpstring("ρεβ ΰετφιδ")        
 ]
         int OptionType;
-        [helpstring("ΧΧ›Χ¤Χ™Χ")        
+        [helpstring("ξλτιμ")        
 ]
         double Mult;
-        [helpstring("ΧΧ›Χ¤Χ™Χ ΧΧ“Χ“")        
+        [helpstring("ξλτιμ ξγγ")        
 ]
         double IndexMult;
-        [helpstring("ΧΧ΅Χ¤Χ¨ Χ”ΧªΧΧΧ•Χª")        
+        [helpstring("ξρτψ δϊΰξεϊ")        
 ]
         int NumberFit;
     } ExtOptRecord;
@@ -3868,32 +3869,32 @@ double dPricePut;
       oleautomation
     ]
     interface IConfig : IDispatch {
-        [id(0x00000001), propget, helpstring("ΧΧ΅Χ¤Χ¨ Χ”ΧΧ§Χ•Χ—")]
+        [id(0x00000001), propget, helpstring("ξρτψ δμχεη")]
         HRESULT Cust([out, retval] BSTR* pVal);
-        [id(0x00000002), propget, helpstring("Χ©Χ Χ”ΧΧ—Χ©Χ‘ Χ”ΧΧ¨Χ›Χ–Χ™ Χ©Χ ΧΧ¤. ΧΧ. ΧΧ¨")]
+        [id(0x00000002), propget, helpstring("ων δξηωα δξψλζι ωμ ΰτ. ΰξ. ΰψ")]
         HRESULT System([out, retval] BSTR* pVal);
-        [id(0x00000003), propget, helpstring("ΧΧ—Χ–Χ™Χ¨ 1 ΧΧ Χ”ΧªΧ§Χ©Χ•Χ¨Χª ΧΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™ ΧΧ•Χ¦Χ¤Χ Χª ΧΧ• 0 ΧΧ ΧΧ")]
+        [id(0x00000003), propget, helpstring("ξηζιψ 1 ΰν δϊχωεψϊ μξηωα δψΰωι ξεφτπϊ ΰε 0 ΰν μΰ")]
         HRESULT UsesEncryption([out, retval] long* res);
-        [id(0x00000004), propget, helpstring("Χ©ΧΧ™Χ¤Χª ΧΧ–Χ”Χ”")]
+        [id(0x00000004), propget, helpstring("ωμιτϊ ξζδδ")]
         HRESULT sessionId([out, retval] long* res);
-        [id(0x00000004), propput, helpstring("Χ©ΧΧ™Χ¤Χª ΧΧ–Χ”Χ”")]
+        [id(0x00000004), propput, helpstring("ωμιτϊ ξζδδ")]
         HRESULT sessionId([in] long res);
-        [id(0x00000005), helpstring("Χ©ΧΧ™Χ¤Χª Χ ΧªΧ•Χ ΧΆΧ‘Χ•Χ¨ Χ©Χ“Χ” Χ§Χ•Χ Χ¤Χ™Χ’Χ•Χ¨Χ¦Χ™Χ” Χ΅Χ¤Χ¦Χ™Χ¤Χ™")]
+        [id(0x00000005), helpstring("ωμιτϊ πϊεο ςαεψ ωγδ χεπτιβεψφιδ ρτφιτι")]
         HRESULT ConfigFieldQuery(
                         [in] ConfigField FIELD, 
                         [out, retval] BSTR* TBConfigReply);
-        [id(0x00000006), helpstring("Χ©ΧΧ™Χ¤Χª Χ›Χ Χ ΧªΧ•Χ Χ™ Χ”Χ§Χ•Χ Χ¤Χ™Χ’Χ•Χ¨Χ¦Χ™Χ”")]
+        [id(0x00000006), helpstring("ωμιτϊ λμ πϊεπι δχεπτιβεψφιδ")]
         HRESULT ConfigFieldAll(
                         [in, out] SAFEARRAY(ConfigType)* pConfigRecords, 
                         [out, retval] long* retVal);
-        [id(0x00000007), helpstring(" ΧΧ§Χ‘Χ ΧªΧΧ¨Χ™Χ Χ•Χ©ΧΆΧ” ΧΧ“Χ•Χ™Χ§Χª ΧΧ”ΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™, Χ•Χ’Χ ΧΧª Χ”Χ–ΧΧ Χ©ΧΧ§Χ— ΧΧΧ™Χ“ΧΆ ΧΧ”Χ’Χ™ΧΆ-Χ›ΧΧ•ΧΧ¨ Χ”Χ”Χ¤Χ¨Χ© Χ‘Χ™Χ Χ”Χ©ΧΆΧ” Χ©Χ Χ“Χ’ΧΧ” ΧΧ©ΧΆΧ” Χ”Χ Χ•Χ›Χ—Χ™Χª ")]
+        [id(0x00000007), helpstring(" ξχαμ ϊΰψικ εωςδ ξγειχϊ ξδξηωα δψΰωι, εβν ΰϊ δζξο ωμχη μξιγς μδβις-λμεξψ δδτψω αιο δωςδ ωπγβξδ μωςδ δπεληιϊ ")]
         HRESULT GetAS400DateTime(
                         [out] AS400DateTime* dateTimeStruct, 
                         [out] long* latency, 
                         [out, retval] long* retVal);
     };
 
-    typedef [uuid(5F318EAA-968C-427B-8B09-50EA7FC572FE), version(1.0), helpstring("Χ©Χ“Χ•Χª Χ§Χ•Χ Χ¤Χ™Χ’Χ•Χ¨Χ¦Χ™Χ”")]
+    typedef [uuid(5F318EAA-968C-427B-8B09-50EA7FC572FE), version(1.0), helpstring("ωγεϊ χεπτιβεψφιδ")]
     enum {
         ConfigFieldCust = 1,
         ConfigFieldSystem = 2,
@@ -3909,37 +3910,37 @@ double dPricePut;
         ConfigFieldConnectionTimeout = 12
     } ConfigField;
 
-    typedef [uuid(2F0CE1AB-0793-4EB9-8B20-ED2195268681), version(1.0), helpstring("Χ©Χ“Χ•Χª Χ§Χ•Χ Χ¤Χ™Χ’Χ•Χ¨Χ¦Χ™Χ”")]
+    typedef [uuid(2F0CE1AB-0793-4EB9-8B20-ED2195268681), version(1.0), helpstring("ωγεϊ χεπτιβεψφιδ")]
     struct tagConfigType {
-        [helpstring("Χ©Χ“Χ” ΧΧ¤ΧªΧ—")        
+        [helpstring("ωγδ ξτϊη")        
 ]
         ConfigField FIELD;
-        [helpstring("ΧΧ΅Χ¤Χ¨ ΧªΧ™Χ§")        
+        [helpstring("ξρτψ ϊιχ")        
 ]
         BSTR TBConfigReply;
     } ConfigType;
 
-    typedef [uuid(C92AC032-EAF1-472C-8CAE-4BA5A648E6E8), version(1.0), helpstring("Χ©Χ“Χ•Χª ΧªΧΧ¨Χ™Χ Χ•Χ©ΧΆΧ”")]
+    typedef [uuid(C92AC032-EAF1-472C-8CAE-4BA5A648E6E8), version(1.0), helpstring("ωγεϊ ϊΰψικ εωςδ")]
     struct tagAS400DateTime {
-        [helpstring("Χ©Χ Χ”")        
+        [helpstring("ωπδ")        
 ]
         int year;
-        [helpstring("Χ—Χ•Χ“Χ©")        
+        [helpstring("ηεγω")        
 ]
         int Month;
-        [helpstring("Χ™Χ•Χ")        
+        [helpstring("ιεν")        
 ]
         int day;
-        [helpstring("Χ©ΧΆΧ”")        
+        [helpstring("ωςδ")        
 ]
         int hour;
-        [helpstring("Χ“Χ§Χ”")        
+        [helpstring("γχδ")        
 ]
         int minute;
-        [helpstring("Χ©Χ Χ™Χ”")        
+        [helpstring("ωπιδ")        
 ]
         int second;
-        [helpstring("ΧΧΧ¤Χ™Χ•Χª Χ©Χ Χ™Χ”")        
+        [helpstring("ΰμτιεϊ ωπιδ")        
 ]
         int ms;
     } AS400DateTime;
@@ -4028,19 +4029,19 @@ double dPricePut;
       oleautomation
     ]
     interface IPermissions : IDispatch {
-        [id(0x00000001), helpstring(".Χ¨Χ©Χ™ΧΧª Χ”Χ¨Χ©ΧΧ•Χª Χ©Χ Χ”ΧΧ©ΧªΧΧ©")]
+        [id(0x00000001), helpstring(".ψωιξϊ δψωΰεϊ ωμ δξωϊξω")]
         HRESULT GetUserPermissions(
                         [in] long sessionId, 
                         [out] SAFEARRAY(UserPasswordType)* psaStrRecords, 
                         [in, optional, defaultvalue(0)] long ReloadPermissions, 
                         [out, retval] long* retVal);
-        [id(0x00000002), helpstring("Χ¨Χ©Χ™ΧΧª ΧΧ¤ΧΧ™Χ§Χ¦Χ™Χ•Χª Χ”ΧΧ•ΧªΧ¨Χ•Χª ΧΧΧ©ΧªΧΧ©")]
+        [id(0x00000002), helpstring("ψωιξϊ ΰτμιχφιεϊ δξεϊψεϊ μξωϊξω")]
         HRESULT GetUserApp(
                         [in] long sessionId, 
                         [out] SAFEARRAY(BSTR)* psaStrRecords, 
                         [in, optional, defaultvalue("")] BSTR AppName, 
                         [out, retval] long* retVal);
-        [id(0x00000003), helpstring("Χ©Χ•ΧΧ£ ΧΧª Χ”Χ¨Χ©ΧΧ•Χª Χ”ΧΧ©ΧªΧΧ© ΧΧ—Χ“Χ© ΧΧ”ΧΧ—Χ©Χ‘ Χ”Χ¨ΧΧ©Χ™. ΧΧ—Χ–Χ™Χ¨ 0 Χ‘Χ”Χ¦ΧΧ—Χ”")]
+        [id(0x00000003), helpstring("ωεμσ ΰϊ δψωΰεϊ δξωϊξω ξηγω ξδξηωα δψΰωι. ξηζιψ 0 αδφμηδ")]
         HRESULT RefreshUserPermissions(
                         [in] long sessionId, 
                         [out, retval] long* retVal);
@@ -4101,4 +4102,5 @@ double dPricePut;
         HRESULT EventsFilterRegAccount([in] long pVal);
     };
 };
+</pre>
 
