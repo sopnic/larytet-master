@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary FMR Simulation subsystem
 
 = Introduction =
 
@@ -7,7 +7,6 @@ Covers FMR simulation API
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+To work with Maof data stream
+* Create object of type TaskBarLib.K300
+* Call method TaskBarLib.K300.K300StartStream(K300StreamType) with stream type MaofStream (48)
