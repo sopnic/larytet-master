@@ -1,3 +1,5 @@
+The K300 object represents a connection to the data source that provides on-line market information.The data source can be either AS400 or Kav 300 {{{(jquant-looks as outdated - only AS400 are in use today)}}} server depending on the configuration set for the user. From the point of view of the application the source of market data is unimportant since data received from both sources is identical.
+
 {{{
     coclass K300 {
         [default] interface IK300;
