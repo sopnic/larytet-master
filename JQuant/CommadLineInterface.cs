@@ -108,9 +108,12 @@ namespace JQuant {
 				": callback is called. Probably should be command");
 		}
 		
-		public bool FindCommand(string name, out Command command) {
+		public bool FindCommand(string cmdLine, out Command command) {
+			// case not sensitive - convert everything to lower case
+			string cmdLineLower = cmdLine.ToLower();
 			foreach ( Command cmd in Commands ) {
-				if (cmd.Name.Equals(name)) {
+				string cmdNameLower = cmd.Name.ToLower();
+				if (cmdNameLower.Equals(cmdLineLower)) {
 					command = cmd;
 					return true;
 				}				
@@ -128,7 +131,7 @@ namespace JQuant {
 	                                                        "and other main system moudles");
 			CurrentMenu = RootMenu;
 			SystemMenu = new Menu("Commnad line interface system menu", "", "");
-			SystemMenu.AddCommand("help", "List commands", "", PrintCommands);
+			SystemMenu.AddCommand("help", "List commands", "", PrintCommandsFull);
 			SystemMenu.AddCommand("..", "One level up", "", OneLevelUp);
 			SystemMenu.AddCommand("~", "Go to the main menu (root)", "", GotoRootMenu);
 		}
@@ -166,7 +169,7 @@ namespace JQuant {
 				cmd.Handler(iWrite, cmdName, null);
 			} else if (found && !cmd.IsCommand()) {
 				CurrentMenu = (Menu)cmd;
-				PrintCommands(iWrite, "", null);
+				PrintCommands(iWrite);
 			} else {
 				iWrite.WriteLine("Unknown command "+cmdName);
 			}
@@ -174,24 +177,40 @@ namespace JQuant {
 		
 		private void OneLevelUp(IWrite iWrite, string cmdName, object[] cmdArguments) {
 			CurrentMenu = CurrentMenu.Parent;
-			PrintCommands(iWrite, "", null);
+			PrintCommands(iWrite);
 		}
 
 		private void GotoRootMenu(IWrite iWrite, string cmdName, object[] cmdArguments) {
 			CurrentMenu = RootMenu;
-			PrintCommands(iWrite, "", null);
+			PrintCommands(iWrite);
 		}
 
-		protected void PrintCommands(IWrite iWrite, string cmdName, object[] cmdArguments) {
+		public void PrintCommandsFull(IWrite iWrite, string cmdName, object[] cmdArguments) {
+			PrintCommands(iWrite, cmdName, cmdArguments, true);
+		}
+		
+		public void PrintCommands(IWrite iWrite, string cmdName, object[] cmdArguments) {
+			PrintCommands(iWrite, cmdName, cmdArguments, false);
+		}
+
+		public void PrintCommands(IWrite iWrite, string cmdName, object[] cmdArguments, bool longDescr) {
 			PrintTitle(iWrite);
 			foreach ( Command cmd in CurrentMenu.Commands ) {
 				iWrite.WriteLine(cmd.Name + " - " + cmd.ShortDescription);
+				if (longDescr) {
+					iWrite.WriteLine(cmd.Description);
+					iWrite.WriteLine("");
+				}
 			}
 			if (CurrentMenu.Commands.Count == 0) {
 				iWrite.WriteLine("No commands are available here");
 			}
 		}
-	
+
+		public void PrintCommands(IWrite iWrite) {
+			PrintCommands(iWrite, "", null, false);
+		}
+
 		public void PrintPrompt(IWrite iWrite) {
 			iWrite.Write("$ ");
 		}
