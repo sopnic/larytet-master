@@ -30,4 +30,8 @@ K300EventsObj.EventsFilterMadad = True
 
 
 Log file
-HRESULT CreateK300EventsFile([in] BSTR CacheFolder, [in] BSTR DataFileName, [in] long EventsPerFile, [in] K300StreamType streamType, [out] BSTR* ErrorMessage, [out, retval] long* retVal);
+{{{
+HRESULT CreateK300EventsFile([in] BSTR CacheFolder, [in] BSTR DataFileName, 
+[in] long EventsPerFile, [in] K300StreamType streamType, [out] BSTR* ErrorMessage, 
+[out, retval] long* retVal);
+}}}
