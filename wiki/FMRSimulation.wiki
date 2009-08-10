@@ -19,10 +19,10 @@ Stop Maof stream
 Get events
  * Create object of type TaskBarLib.K300Events
  * Set event filters, for example
-`
-        K3Events.EventsFilterBno = OptionNumber
-        K3Events.EventsFilterMaof = True
-        K3Events.EventsFilterBaseAsset = BaseAsset
-        K3Events.EventsFilterMonth = mon
-        K3Events.EventsFilterMadad = True
-`
+{{{
+        K300EventsObj.EventsFilterBno = OptionNumber
+        K300EventsObj.EventsFilterMaof = True
+        K300EventsObj.EventsFilterBaseAsset = BaseAsset
+        K300EventsObj.EventsFilterMonth = mon
+        K300EventsObj.EventsFilterMadad = True
+}}}
