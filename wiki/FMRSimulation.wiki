@@ -28,6 +28,7 @@ K300EventsObj.EventsFilterMadad = True
 }}}
  * Create object of the new type 
 
+Even handler gets a single argument K300MaofType
 
 Log file
 {{{
