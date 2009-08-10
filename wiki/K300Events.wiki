@@ -1,0 +1,6 @@
+{{{
+    coclass K300Events {
+        [default] interface IK300Events;
+        [default, source] dispinterface _IK300EventsEvents;
+    };
+}}}
