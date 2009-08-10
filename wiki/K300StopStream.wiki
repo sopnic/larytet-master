@@ -1,0 +1,3 @@
+{{{
+HRESULT K300StopStream([in] K300StreamType streamType, [out, retval] long* retVal);
+}}}
