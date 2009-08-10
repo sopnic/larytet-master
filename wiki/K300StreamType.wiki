@@ -1,3 +1,4 @@
+*Numerical definition of the type of market data to be imported into the taskbar.*
 {{{
     enum {
         MaofStream = 48,
