@@ -1,3 +1,5 @@
+#summary Command line interface
+
 = Introduction =
 
 This article covers CSharp implementation of the simple Command Line Interface (CLI)
