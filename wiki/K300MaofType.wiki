@@ -1,193 +1,130 @@
 {{{
     struct tagK300MaofType {
-        [helpstring("סוג רשומה")        
-]
+        [helpstring("סוג רשומה")]
         BSTR SUG_REC;
-        [helpstring("שיטת מסחר")        
-]
+        [helpstring("שיטת מסחר")]
         BSTR TRADE_METH;
-        [helpstring("מס בורסה")        
-]
+        [helpstring("מס בורסה")]
         BSTR BNO_Num;
-        [helpstring("סימן לרשומה אחרונה")        
-]
+        [helpstring("סימן לרשומה אחרונה")]
         BSTR LAST_REC;
-        [helpstring("מס סדורי")        
-]
+        [helpstring("מס סדורי")]
         BSTR SIDURI_Num;
-        [helpstring("סימבול אנגלי")        
-]
+        [helpstring("סימבול אנגלי")]
         BSTR SYMBOL_E;
-        [helpstring(" סימבול עברי")        
-]
+        [helpstring(" סימבול עברי")]
         BSTR Symbol;
-        [helpstring("שם אנגלי")        
-]
+        [helpstring("שם אנגלי")]
         BSTR BNO_NAME_E;
-        [helpstring("שם עברי")        
-]
+        [helpstring("שם עברי")]
         BSTR BNO_NAME;
-        [helpstring("מספר ענף")        
-]
+        [helpstring("מספר ענף")]
         BSTR BRANCH_NO;
-        [helpstring("מספר תת ענף")        
-]
+        [helpstring("מספר תת ענף")]
         BSTR BRANCH_U;
-        [helpstring("סוג חוזה")        
-]
+        [helpstring("סוג חוזה")]
         BSTR SUG_BNO;
-        [helpstring("MIN גודל פקודה")        
-]
+        [helpstring("MIN גודל פקודה")]
         BSTR MIN_UNIT;
-        [helpstring("גבול פקודה חריגה")        
-]
+        [helpstring("גבול פקודה חריגה")]
         BSTR HARIG_NV;
-        [helpstring("שער רצפה")        
-]
+        [helpstring("שער רצפה")]
         BSTR MIN_PR;
-        [helpstring("שער תקרה")        
-]
+        [helpstring("שער תקרה")]
         BSTR MAX_PR;
-        [helpstring("שער בסיס")        
-]
+        [helpstring("שער בסיס")]
         BSTR BASIS_PRC;
-        [helpstring("קוד סוג שער בסיס")        
-]
+        [helpstring("קוד סוג שער בסיס")]
         BSTR BASIS_COD;
-        [helpstring("קוד מצב חוזה")        
-]
+        [helpstring("קוד מצב חוזה")]
         BSTR STATUS_COD;
-        [helpstring("תאריך פקיעה")        
-]
+        [helpstring("תאריך פקיעה")]
         BSTR EX_DATE;
-        [helpstring("מחיר מימוש")        
-]
+        [helpstring("מחיר מימוש")]
         BSTR EX_PRC;
-        [helpstring("מכפיל לחישוב נפח")        
-]
+        [helpstring("מכפיל לחישוב נפח")]
         BSTR VL_MULT;
-        [helpstring("קוד לחישוב נפח")        
-]
+        [helpstring("קוד לחישוב נפח")]
         BSTR VL_COD;
-        [helpstring("קוד איפוס")        
-]
+        [helpstring("קוד איפוס")]
         BSTR ZERO_COD;
-        [helpstring("שלב מסחר")        
-]
+        [helpstring("שלב מסחר")]
         BSTR shlav;
-        [helpstring("מצב ניע")        
-]
+        [helpstring("מצב ניע")]
         BSTR STATUS;
-        [helpstring("קוד הפסקת מסחר")        
-]
+        [helpstring("קוד הפסקת מסחר")]
         BSTR TRD_STP_CD;
-        [helpstring("סיבת הפסקת מסחר")        
-]
+        [helpstring("סיבת הפסקת מסחר")]
         BSTR TRD_STP_N;
-        [helpstring("שעת פתיחת הפסקה")        
-]
+        [helpstring("שעת פתיחת הפסקה")]
         BSTR STP_OPN_TM;
-        [helpstring("1 לימיט קניה")        
-]
+        [helpstring("1 לימיט קניה")]
         BSTR LMT_BY1;
-        [helpstring("2 לימיט קניה")        
-]
+        [helpstring("2 לימיט קניה")]
         BSTR LMT_BY2;
-        [helpstring("3 לימיט קניה")        
-]
+        [helpstring("3 לימיט קניה")]
         BSTR LMT_BY3;
-        [helpstring("1כמות לימיט קניה")        
-]
+        [helpstring("1כמות לימיט קניה")]
         BSTR LMY_BY1_NV;
-        [helpstring("2כמות לימיט קניה")        
-]
+        [helpstring("2כמות לימיט קניה")]
         BSTR LMY_BY2_NV;
-        [helpstring("3כמות לימיט קניה")        
-]
+        [helpstring("3כמות לימיט קניה")]
         BSTR LMY_BY3_NV;
-        [helpstring("שידור חוזר/תיקון")        
-]
+        [helpstring("שידור חוזר/תיקון")]
         BSTR RWR_FE;
-        [helpstring("1 לימיט מכירה")        
-]
+        [helpstring("1 לימיט מכירה")]
         BSTR LMT_SL1;
-        [helpstring("2 לימיט מכירה")        
-]
+        [helpstring("2 לימיט מכירה")]
         BSTR LMT_SL2;
-        [helpstring("3 לימיט מכירה")        
-]
+        [helpstring("3 לימיט מכירה")]
         BSTR LMT_SL3;
-        [helpstring("כמות לימיט מכירה 1")        
-]
+        [helpstring("כמות לימיט מכירה 1")]
         BSTR LMY_SL1_NV;
-        [helpstring("כמות לימיט מכירה 2")        
-]
+        [helpstring("כמות לימיט מכירה 2")]
         BSTR LMY_SL2_NV;
-        [helpstring("כמות לימיט מכירה 3")        
-]
+        [helpstring("כמות לימיט מכירה 3")]
         BSTR LMY_SL3_NV;
-        [helpstring("שידור חוזר/תיקון")        
-]
+        [helpstring("שידור חוזר/תיקון")]
         BSTR RWR_FF;
-        [helpstring("שער")        
-]
+        [helpstring("שער")]
         BSTR PRC;
-        [helpstring("קוד שער")        
-]
+        [helpstring("קוד שער")]
         BSTR COD_PRC;
-        [helpstring("קוד סוג שער")        
-]
+        [helpstring("קוד סוג שער")]
         BSTR SUG_PRC;
-        [helpstring("שינוי  מהבסיס %")        
-]
+        [helpstring("שינוי  מהבסיס %")]
         BSTR LST_DF_BS;
-        [helpstring("שידור חוזר/תיקון")        
-]
+        [helpstring("שידור חוזר/תיקון")]
         BSTR RWR_FG;
-        [helpstring("שער עסקה אחרונה")        
-]
+        [helpstring("שער עסקה אחרונה")]
         BSTR LST_DL_PR;
-        [helpstring("שעת עסקה אחרונה")        
-]
+        [helpstring("שעת עסקה אחרונה")]
         BSTR LST_DL_TM;
-        [helpstring("מחזור עסקה אחרונה")        
-]
+        [helpstring("מחזור עסקה אחרונה")]
         BSTR LST_DL_VL;
-        [helpstring("מחזור מתחילת היום")        
-]
+        [helpstring("מחזור מתחילת היום")]
         BSTR DAY_VL;
-        [helpstring("תמורה בשח היום")        
-]
+        [helpstring("תמורה בשח היום")]
         BSTR DAY_VL_NIS;
-        [helpstring("מספר עסקאות היום")        
-]
+        [helpstring("מספר עסקאות היום")]
         BSTR DAY_DIL_NO;
-        [helpstring("שידור חוזר/תיקון")        
-]
+        [helpstring("שידור חוזר/תיקון")]
         BSTR RWR_FH;
-        [helpstring("שער יומי גבוה")        
-]
+        [helpstring("שער יומי גבוה")]
         BSTR DAY_MAX_PR;
-        [helpstring("שער יומי נמוך")        
-]
+        [helpstring("שער יומי נמוך")]
         BSTR DAY_MIN_PR;
-        [helpstring("פוזיציות פתוחות")        
-]
+        [helpstring("פוזיציות פתוחות")]
         BSTR POS_OPN;
-        [helpstring("אחוז שינוי פוזיציות")        
-]
+        [helpstring("אחוז שינוי פוזיציות")]
         BSTR POS_OPN_DF;
-        [helpstring("מצב ליום הבא")        
-]
+        [helpstring("מצב ליום הבא")]
         BSTR STS_NXT_DY;
-        [helpstring("תאריך")        
-]
+        [helpstring("תאריך")]
         BSTR UPD_DAT;
-        [helpstring("שעה")        
-]
+        [helpstring("שעה")]
         BSTR UPD_TIME;
-        [helpstring("  ")        
-]
+        [helpstring("  ")]
         BSTR FILER;
     } K300MaofType;
 }}}
