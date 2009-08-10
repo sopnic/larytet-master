@@ -1,0 +1,10 @@
+{{{
+    coclass K300 {
+        [default] interface IK300;
+        [default, source] interface IK300Event;
+    };
+}}}
+
+See also:
+ * [IK300]
+ * [IK300Event]
