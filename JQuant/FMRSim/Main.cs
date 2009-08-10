@@ -8,12 +8,12 @@
 	
 using System;
 
-namespace JQuants {
+namespace JQuant {
 	
-  class Program :JQuants.IWrite {   
+  class Program :JQuant.IWrite {   
 		
 	 Program() {
-		cli = new CommandLineInterface("JQuants");
+		cli = new CommandLineInterface("Jerusalem Quant");
 		LoadCommandLineInterface();
 	}
 		

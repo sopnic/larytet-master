@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 
-namespace JQuants {
+namespace JQuant {
 
 	public interface IWrite {
 		void WriteLine(string s);
