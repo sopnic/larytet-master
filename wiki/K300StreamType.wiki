@@ -1,0 +1,9 @@
+{{{
+    enum {
+        MaofStream = 48,
+        RezefStream = 49,
+        MaofCNTStream = 50,
+        RezefCNTStream = 51,
+        IndexStream = 52
+    } K300StreamType;
+}}}
