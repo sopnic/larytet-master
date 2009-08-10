@@ -2,9 +2,12 @@
         [id(0x00000024), helpstring("משיכת הוראות מעו''ף מהמחשב הראשי או משרתים")]
         HRESULT GetOrdersMF(
                         [in] long sessionId, 
-                        [out] SAFEARRAY([MOFINQType])* vecRecords, 
+                        [out] SAFEARRAY(MOFINQType)* vecRecords, 
                         [in] BSTR Account, 
                         [in] BSTR Branch, 
                         [in, out, optional, defaultvalue("0")] BSTR* LastTime, 
                         [out, retval] long* retVal);
 }}}
+
+See also:
+ * [MOFINQType]
