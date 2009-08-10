@@ -17,7 +17,7 @@ Stop Maof stream
  * Call K300Obj.K300StopStream(K300StreamType type) for MaofStream stream type
 
 Get events
- * Subclass TaskBarLib.K300Events, implement OnMaof and OnMadad event handlers
+ * Subclass TaskBarLib.K300Events, implement OnMaof, OnMadad, OnRezef event handlers
  * In the constructor set filters
 {{{
 K300EventsObj.EventsFilterBno = OptionNumber
@@ -27,4 +27,7 @@ K300EventsObj.EventsFilterMonth = mon
 K300EventsObj.EventsFilterMadad = True
 }}}
  * Create object of the new type 
- * Set event filters, for example
+
+
+Log file
+HRESULT CreateK300EventsFile([in] BSTR CacheFolder, [in] BSTR DataFileName, [in] long EventsPerFile, [in] K300StreamType streamType, [out] BSTR* ErrorMessage, [out, retval] long* retVal);
