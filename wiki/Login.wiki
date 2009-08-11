@@ -24,4 +24,4 @@ int Login (
  * It is therefore necessary to sample the [LoginState] property, giving a true picture of the current status and outcome upon completion, and an explanation into why the login may have failed. 
 
 *See Also:*
- [Login And Change Password] | [GetLoginActivity] | [LoginState]
+ [LoginAndChangePassword] | [GetLoginActivity] | [LoginState]
