@@ -8,3 +8,7 @@
         IndexStream = 52
     } K300StreamType;
 }}}
+
+*Remarks:*
+ * [MaofStream  K300StreamType] is Maof options trading
+ * [MaofCNTStream K300StreamType] and [RezefCNTStream K300StreamType] are probably not used 
