@@ -12,4 +12,4 @@
 *Remarks:*
  * [MaofStream] is Maof options trading data stream. Its value is required to receive market data on derivatives (maof) and indexes (madad).
  * [RezefStream] is rezef (stocks) trading data stream. Its value is required in order to receive market data on stocks (shares).
- * [MaofCNTStream] and [RezefCNTStream] are obsolete and not in use anymore
+ * MaofCNTStream and RezefCNTStream are obsolete and not in use anymore
