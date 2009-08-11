@@ -10,5 +10,6 @@
 }}}
 
 *Remarks:*
- * [MaofStream  K300StreamType] is Maof options trading
- * [K300StreamType MaofCNTStream] and [K300StreamType RezefCNTStream] are probably not used 
+ * [MaofStream] is Maof options trading data stream. Its value is required to receive market data on derivatives (maof) and indexes (madad).
+ * [RezefStream] is rezef (stocks) trading data stream. Its value is required in order to receive market data on stocks (shares).
+ * [MaofCNTStream] and [RezefCNTStream] are obsolete and not in use anymore
