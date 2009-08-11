@@ -11,4 +11,4 @@
 
 *Remarks:*
  * [MaofStream  K300StreamType] is Maof options trading
- * [MaofCNTStream K300StreamType] and [RezefCNTStream K300StreamType] are probably not used 
+ * [K300StreamType MaofCNTStream] and [K300StreamType RezefCNTStream] are probably not used 
