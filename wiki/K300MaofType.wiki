@@ -1,5 +1,6 @@
 Maof market data records structure, used to parse the raw records.
-*K300 MAOF structure*
+
+ *K300 MAOF structure*
 
 ||	No.	||	 Record Name	|| Description	||	   Comments	||
 ||	1	||	 SUG_REC	||	סוג רשומה	||	   	||
