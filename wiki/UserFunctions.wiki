@@ -28,12 +28,12 @@
 ||	25	||	GetStockHistory	||	Retrieves Stock History	||	Retrieves Stock History	||		||
 ||	26	||	GetUserApp	||	Retrieves a list of all applications for which the user has adequate authorization.	||	רשימת אפליקציות המותרות למשתמש	||		||
 ||	27	||	GetUserPermissions	||	Retrieves a list of the user's permissions.	||	רשימת הרשאות של המשתמש	||		||
-||	28	||	Login	||	Carries out the AS400 login process.	||	message כניסה למערכת עם שם וסיסמה. במקרה של כשלון תנתן הודעה בפרמטר	||		||
+||	28	||	[Login]	||	Carries out the AS400 login process.	||	message כניסה למערכת עם שם וסיסמה. במקרה של כשלון תנתן הודעה בפרמטר	||		||
 ||	29	||	LoginAndChangePassword	||	Carries out the AS400 login process and changes the user's password.	||	message כניסה למערכת עם שם וסיסמה לשינוי. במקרה של כשלון תנתן הודעה בפרמטר	||		||
 ||	30	||	LoginByLevel	||		||	כניסה למערכת עם שם וסיסמה בשלבים של רמות התחברות . במקרה של כשלון תנתן הודעה בפרמטר message	||	Not documented in the manual	||
 ||	31	||	LoginByLevelAndChangePassword	||		||	כניסה למערכת עם שם, סיסמה לשינוי ורמת התחברות. במקרה של כשלון תנתן הודעה בפרמטר message	||	Not documented in the manual	||
 ||	32	||	LoginErrorDescByLevel	||		||	הודעת שגיאה כאשר הכניסה למערכת נכשלה לפי שלב רמת התחברות	||	Not documented in the manual	||
-||	33	||	Logout	||	Carries out the AS400 logout process.	||	יציאה מהמערכת	||		||
+||	33	||	[Logout]	||	Carries out the AS400 logout process.	||	יציאה מהמערכת	||		||
 ||	34	||	MaofOrderParams	||	Retrieves Maof security parameters for specified asset.	||	פרמטרים לבטחונות מעו''ף	||	wrong description?	||
 ||	35	||	MaofSecuritiesParams	||	Retrieves Maof security parameters for specified asset.	||	נתונים לבטחונות מעו''ף	||		||
 ||	36	||	OrdersStreamStart	||	Begins streaming of Orders and executions into the Taskbar from the orders server or AS/400, for the specifed branch and account.	||	התחל זרימת נתוני הוראות וביצועים לתוך הטסקבר מהמחשב ראשי או מהשרתים. ערך מוחזר 0 מציין הצלחה	||		||
