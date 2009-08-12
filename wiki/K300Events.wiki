@@ -7,4 +7,4 @@
 
 See also 
  * [IK300Events]
- * [_IK300EventsEvents]
+ * [IK300EventsEvents]
