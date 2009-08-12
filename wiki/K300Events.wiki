@@ -4,3 +4,7 @@
         [default, source] dispinterface _IK300EventsEvents;
     };
 }}}
+
+See also 
+ * [IK300Events]
+ * [_IK300EventsEvents]
