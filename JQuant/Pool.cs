@@ -170,14 +170,13 @@ namespace JQuant
                         return _freeOk;
                 }
                
-               
-               
+
+				// statistics 
                 private int _capacity;
                 private string _name;
                 private int _minCount;
                 private int _allocOk;
                 private int _allocFailed;
-                private int _freeOk;
-               
+                private int _freeOk;               
         }
 }
