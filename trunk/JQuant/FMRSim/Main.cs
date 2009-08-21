@@ -7,6 +7,7 @@
 	
 using System;
 
+
 namespace JQuant {
 	
   class Program :JQuant.IWrite {   
@@ -27,30 +28,67 @@ namespace JQuant {
 		ExitFlag = true;
 	}
 		
-	protected void menu1cmd1Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-		iWrite.WriteLine("Menu 1 Command 1 called");
+	protected void debugMbxShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
+        iWrite.WriteLine(OutputUtils.FormatField("Name", 10)+
+			OutputUtils.FormatField("Count", 8)+
+			OutputUtils.FormatField("Capacity", 8)+
+			OutputUtils.FormatField("MaxCount", 8)+
+			OutputUtils.FormatField("MaxCount", 8)+
+			OutputUtils.FormatField("Dropped", 8)+
+			OutputUtils.FormatField("Sent", 8)+
+			OutputUtils.FormatField("Received", 8)+
+			OutputUtils.FormatField("Timeouts", 8)
+		);
+        iWrite.WriteLine("------------------------------------------------------------------------------");
+		bool isEmpty = true;
+		foreach (IMailbox iMbx in Resources.Mailboxes) 
+		{
+				isEmpty = false;
+				iWrite.WriteLine(
+					OutputUtils.FormatField(iMbx.GetName(), 10)+
+					OutputUtils.FormatField(iMbx.GetCount(), 8)+
+					OutputUtils.FormatField(iMbx.GetCapacity(), 8)+
+					OutputUtils.FormatField(iMbx.GetMaxCount(), 8)+
+					OutputUtils.FormatField(iMbx.GetDropped(), 8)+
+					OutputUtils.FormatField(iMbx.GetSent(), 8)+
+					OutputUtils.FormatField(iMbx.GetReceived(), 8)+
+					OutputUtils.FormatField(iMbx.GetTimeouts(), 8)
+				);
+				                 
+		}		
+		if (isEmpty) 
+		{
+			iWrite.WriteLine("No mailboxes");
+		}
 	}
 
-	protected void menu1cmd2Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-		iWrite.WriteLine("Menu 1 Command 2 called");
+	protected void debugMbxTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
+		Mailbox<bool> mbx = new Mailbox<bool>("TestMbx", 2);
+		bool message = true;
+		mbx.Send(message);
+		bool result = mbx.Receive(message);
+		if (!result) {
+			iWrite.WriteLine("Mailbox.Receive returned false");
+		}
+		if (!message) {
+			iWrite.WriteLine("I did not get what i sent");
+		}
+		debugMbxShowCallback(iWrite, cmdName, cmdArguments);
 	}
-
-	protected void menu2cmd1Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-		iWrite.WriteLine("Menu 2 Command 1 called");
-	}
-
-	protected void menu2cmd2Callback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-		iWrite.WriteLine("Menu 2 Command 2 called");
-	}
-
+		
 	protected void LoadCommandLineInterface() {  
 		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
 		Menu menuFMRLib = cli.RootMenu.AddMenu("FMRLib", "Access to  FMRLib API", 
-			                  "  Allows to access the FMRLib API directly");
+			                  " Allows to access the FMRLib API directly");
 		Menu menuFMRLibSim = cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation", 
-			                   "  Condiguration and debug of the FMR simulatoion");
-		menuFMRLib.AddCommand("cmd1", "Command 1", "This is command 1", menu1cmd1Callback);
-		menuFMRLibSim.AddCommand("cmd2", "Command 2", "This is command 2", menu1cmd2Callback);
+			                   " Condiguration and debug of the FMR simulatoion");
+		Menu menuDebug = cli.RootMenu.AddMenu("Debug", "System debug info", 
+			                   " Created objetcs, access to the system statistics");
+		menuDebug.AddCommand("mbxTest", "Run simple mailbox tests", 
+                              " Create a mailbox, send a message, receive a message, print debug info", debugMbxTestCallback);
+		menuDebug.AddCommand("mbxShow", "Show mailboxes", 
+                              " List of created mailboxes with the current status and statistics", debugMbxShowCallback);
 	}  
 
 	public void WriteLine(string s) {
