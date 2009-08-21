@@ -67,6 +67,18 @@ namespace JQuant
 		string GetName();
 	}
 	
+	/// <summary>
+	/// objects implementing Pool interface
+	/// </summary>
+	public interface IPool {
+		string GetName();
+		int GetCapacity();
+		int GetCount();
+		int GetMinCount();
+		int GetAllocOk();
+		int GetAllocFailed();
+		int GetFreeOk();
+	}
 	
 	/// <summary>
 	/// a storage of all created objects
@@ -79,6 +91,7 @@ namespace JQuant
 		{
 			Mailboxes = new List<IMailbox>(10);
 			Threads = new List<IThread>(10);
+			Pools = new List<IPool>(10);
 		}
 		
 		static public void Init() {
@@ -92,6 +105,7 @@ namespace JQuant
 		/// </summary>
 		public static List<IMailbox> Mailboxes;
 		public static List<IThread> Threads;
+		public static List<IPool> Pools;
 		
 		static protected Resources r;
 	}
