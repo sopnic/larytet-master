@@ -22,8 +22,7 @@ namespace JQuant
 			_sent = 0;
 			_received = 0;
 			_timeouts = 0;
-			
-			
+
 			// add myself to the list of created mailboxes
 			Resources.Mailboxes.Add(this);
 		}
