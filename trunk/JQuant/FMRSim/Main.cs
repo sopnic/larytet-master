@@ -29,30 +29,30 @@ namespace JQuant {
 	}
 		
 	protected void debugMbxShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
-        iWrite.WriteLine(OutputUtils.FormatField("Name", 10)+
-			OutputUtils.FormatField("Count", 8)+
-			OutputUtils.FormatField("Capacity", 8)+
-			OutputUtils.FormatField("MaxCount", 8)+
-			OutputUtils.FormatField("MaxCount", 8)+
-			OutputUtils.FormatField("Dropped", 8)+
-			OutputUtils.FormatField("Sent", 8)+
-			OutputUtils.FormatField("Received", 8)+
-			OutputUtils.FormatField("Timeouts", 8)
+        iWrite.WriteLine(
+            OutputUtils.FormatField("Name", 10)+
+			OutputUtils.FormatField("Count", 10)+
+			OutputUtils.FormatField("Capacity", 10)+
+			OutputUtils.FormatField("MaxCount", 10)+
+			OutputUtils.FormatField("Dropped", 10)+
+			OutputUtils.FormatField("Sent", 10)+
+			OutputUtils.FormatField("Received", 10)+
+			OutputUtils.FormatField("Timeouts", 10)
 		);
-        iWrite.WriteLine("------------------------------------------------------------------------------");
+        iWrite.WriteLine("---------------------------------------------------------------------------------");
 		bool isEmpty = true;
 		foreach (IMailbox iMbx in Resources.Mailboxes) 
 		{
 				isEmpty = false;
 				iWrite.WriteLine(
 					OutputUtils.FormatField(iMbx.GetName(), 10)+
-					OutputUtils.FormatField(iMbx.GetCount(), 8)+
-					OutputUtils.FormatField(iMbx.GetCapacity(), 8)+
-					OutputUtils.FormatField(iMbx.GetMaxCount(), 8)+
-					OutputUtils.FormatField(iMbx.GetDropped(), 8)+
-					OutputUtils.FormatField(iMbx.GetSent(), 8)+
-					OutputUtils.FormatField(iMbx.GetReceived(), 8)+
-					OutputUtils.FormatField(iMbx.GetTimeouts(), 8)
+					OutputUtils.FormatField(iMbx.GetCount(), 10)+
+					OutputUtils.FormatField(iMbx.GetCapacity(), 10)+
+					OutputUtils.FormatField(iMbx.GetMaxCount(), 10)+
+					OutputUtils.FormatField(iMbx.GetDropped(), 10)+
+					OutputUtils.FormatField(iMbx.GetSent(), 10)+
+					OutputUtils.FormatField(iMbx.GetReceived(), 10)+
+					OutputUtils.FormatField(iMbx.GetTimeouts(), 10)
 				);
 				                 
 		}		
@@ -65,9 +65,14 @@ namespace JQuant {
 	protected void debugMbxTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
 	{
 		Mailbox<bool> mbx = new Mailbox<bool>("TestMbx", 2);
+
+		iWrite.WriteLine("TestMbx created");
 		bool message = true;
-		mbx.Send(message);
-		bool result = mbx.Receive(message);
+		bool result = mbx.Send(message);
+		if (!result) {
+			iWrite.WriteLine("Mailbox.Send returned false");
+		}
+		result = mbx.Receive(message);
 		if (!result) {
 			iWrite.WriteLine("Mailbox.Receive returned false");
 		}
@@ -130,6 +135,7 @@ namespace JQuant {
 	}
 		
 	static void Main(string[] args) {  
+		Resources.Init();
 		new Program().Run();  
 		
 		// very last chance for the cleanup - close streams and so on

@@ -41,16 +41,26 @@ namespace JQuant
 	/// <summary>
 	/// a storage of all created objects
 	/// an object central
+	/// this guy is singleton - application calls Init() only once to initialize the class
 	/// </summary>
 	public class Resources
 	{
 		protected Resources()
 		{
+			Mailboxes = new List<IMailbox>(10);
+		}
+		
+		static public void Init() {
+			if (r == null) {
+				r = new Resources();
+			}
 		}
 		
 		/// <summary>
 		/// created in the system mailboxes
 		/// </summary>
 		public static List<IMailbox> Mailboxes;
+		
+		static protected Resources r;
 	}
 }
