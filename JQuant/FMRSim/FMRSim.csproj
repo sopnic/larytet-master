@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1F07937C-E866-4616-81B9-82BC9F7F28FF}</ProjectGuid>
+    <ProjectGuid>{98340754-A22F-4B5C-BBF5-2BF97BA2B627}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>FMRSim</AssemblyName>
   </PropertyGroup>
