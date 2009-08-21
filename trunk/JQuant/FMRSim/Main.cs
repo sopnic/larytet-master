@@ -81,6 +81,47 @@ namespace JQuant {
 		}
 		debugMbxShowCallback(iWrite, cmdName, cmdArguments);
 	}
+
+		
+	protected void debugThreadTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
+		MailboxThread<bool> thr = new MailboxThread<bool>("TestMbx", 2);
+		debugThreadShowCallback(iWrite, cmdName, cmdArguments);
+		thr.Start();
+		debugThreadShowCallback(iWrite, cmdName, cmdArguments);
+		bool message = true;
+		bool result = thr.Send(message);
+		if (!result) {
+			iWrite.WriteLine("Thread.Send returned false");
+		}
+		thr.Stop();
+		debugThreadShowCallback(iWrite, cmdName, cmdArguments);
+		thr = null;
+	}
+		
+		
+	protected void debugThreadShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
+        iWrite.WriteLine(
+            OutputUtils.FormatField("Name", 10)+
+			OutputUtils.FormatField("State", 14)
+		);
+        iWrite.WriteLine("---------------------------------");
+		bool isEmpty = true;
+		foreach (IThread iThread in Resources.Threads) 
+		{
+				isEmpty = false;
+				iWrite.WriteLine(
+					OutputUtils.FormatField(iThread.GetName(), 10)+
+					OutputUtils.FormatField(EnumUtils.GetDescription(iThread.GetState()), 14)
+				);
+				                 
+		}		
+		if (isEmpty) 
+		{
+			iWrite.WriteLine("No mailboxes");
+		}
+	}
+		
 		
 	protected void LoadCommandLineInterface() {  
 		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
@@ -94,6 +135,10 @@ namespace JQuant {
                               " Create a mailbox, send a message, receive a message, print debug info", debugMbxTestCallback);
 		menuDebug.AddCommand("mbxShow", "Show mailboxes", 
                               " List of created mailboxes with the current status and statistics", debugMbxShowCallback);
+		menuDebug.AddCommand("threadTest", "Run simple thread", 
+                              " Create a mailbox thread, send a message, print debug info", debugThreadTestCallback);
+		menuDebug.AddCommand("threadShow", "Show threads", 
+                              " List of created threads and thread states", debugThreadShowCallback);
 	}  
 
 	public void WriteLine(string s) {

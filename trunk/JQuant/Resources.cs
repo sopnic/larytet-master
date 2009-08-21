@@ -1,6 +1,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.ComponentModel;
 
 namespace JQuant
 {
@@ -28,14 +30,42 @@ namespace JQuant
 		/// <summary>
 		/// mailbox capacity
 		/// </summary>
-		int GetCapacity();
 		
-		int GetDropped();
+		int GetCapacity();
 		int GetSent();
+		int GetDropped();
 		int GetReceived();
 		int GetTimeouts();
 	}
 	
+	class EnumUtils 
+	{
+		public static string GetDescription(System.Enum value)
+		{
+			FieldInfo fi = value.GetType().GetField(value.ToString()); 
+			DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+			if (attributes.Length > 0)
+				return attributes[0].Description;
+			else 
+				return value.ToString();
+		}
+	}
+
+	
+	public enum ThreadState {
+		[Description("Initialized")] Initialized,
+		[Description("Satrted")] Started,
+		[Description("Stoped")] Stoped,
+		[Description("Destroyed")] Destroyed
+	};
+	
+	/// <summary>
+	/// objects implement MailboxThread
+	/// </summary>
+	public interface IThread {
+		ThreadState GetState();
+		string GetName();
+	}
 	
 	
 	/// <summary>
@@ -48,6 +78,7 @@ namespace JQuant
 		protected Resources()
 		{
 			Mailboxes = new List<IMailbox>(10);
+			Threads = new List<IThread>(10);
 		}
 		
 		static public void Init() {
@@ -60,6 +91,7 @@ namespace JQuant
 		/// created in the system mailboxes
 		/// </summary>
 		public static List<IMailbox> Mailboxes;
+		public static List<IThread> Threads;
 		
 		static protected Resources r;
 	}
