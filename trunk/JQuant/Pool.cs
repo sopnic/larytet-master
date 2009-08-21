@@ -181,21 +181,3 @@ namespace JQuant
                
         }
 }
-
-Show details Hide details
-
-Change log
-r142 by larytet on Today (11 minutes ago)   Diff
-
-Pools are supported
-
-Go to: 	
-Publish your comments
-Double click a line to add a comment
-
-Older revisions
-All revisions of this file
-
-File info
-Size: 3280 bytes, 184 lines
-View raw file
