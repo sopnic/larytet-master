@@ -8,7 +8,7 @@ namespace JQuant
 	/// <summary>
 	/// Thread waiting forever for a message
 	/// </summary>
-	public class MailboxThread<Message> :IThread
+	public class MailboxThread<Message> :IThread, IDisposable
 	{
 		
 		public MailboxThread(string name, int mailboxCapacity)
@@ -22,16 +22,23 @@ namespace JQuant
 			_state = ThreadState.Initialized;
 		}
 		
-		~ MailboxThread()
+		public void Dispose()
 		{
-			// no point in the mailbox if there is nobody to get message from it
-			// may be different application will not need this 
+			_mailbox.Dispose();
 			_mailbox = null;
-			
-			// remove myself from the list of created mailboxes
-			Resources.Threads.Remove(this);			
 
 			_state = ThreadState.Destroyed;
+			
+			// remove myself from the list of created mailboxes
+			Resources.Threads.Remove(this);	
+			
+			_thread.Interrupt();
+			_thread = null;
+		}
+		
+		~ MailboxThread()
+		{
+			Console.WriteLine("MailboxThread "+GetName()+" destroyed");
 		}
 		
 		public void Run()
@@ -41,12 +48,13 @@ namespace JQuant
 			while (_isAlive) 
 			{
 				Message msg;
-				bool result = _mailbox.Receive(msg);
+				bool result = _mailbox.Receive(out msg);
 				if (result) {
 					HandleMessage(msg);
 				}
 			}
 			
+			Console.WriteLine("MailboxThread "+GetName()+" is out of the loop");
 			_state = ThreadState.Stoped;
 		}
 		
@@ -80,7 +88,7 @@ namespace JQuant
 		public void Start()
 		{
 			_isAlive = true;
-			_thread = new Thread(new ThreadStart(this.Run));
+			_thread = new Thread(this.Run);
 			_thread.Start();
 		}
 		
@@ -89,6 +97,12 @@ namespace JQuant
 			return _state;
 		}
 
+		public void WaitForTermination()
+		{
+			_thread.Join();
+		}
+		
+		
 		public string GetName()
 		{
 			return _mailbox.GetName();
