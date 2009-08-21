@@ -7,12 +7,19 @@ using System.Text;
 
 namespace JQuant {
 
+	/// <summary>
+	/// objects implementing this interface will be forwarded to all commands 
+	/// to allow output to the correct I/O
+	/// </summary>
 	public interface IWrite {
 		void WriteLine(string s);
 		void Write(string s);
 	}
 	
 	
+	/// <summary>
+	/// Class defines a command of the command line interface
+	/// </summary>
 	public class Command {
 
 		public delegate void Callback(IWrite iWrite, string cmdName, object[] cmdArguments);
@@ -53,7 +60,10 @@ namespace JQuant {
 			get;
 			protected set;
 		}
-		
+
+		/// <value>
+		/// this guy will be reloaded by the specific application command 
+		/// </value>
 		public Callback Handler {
 			get;
 			protected set;
@@ -61,6 +71,9 @@ namespace JQuant {
 		
 	}
 	
+	/// <summary>
+	/// Class defines a menu (kind of command) of the command line interface
+	/// </summary>
     public class Menu :Command{
 		public Menu(string name, string shortDesctiption, string description) 
 			:base(name, shortDesctiption, description) {
@@ -108,6 +121,22 @@ namespace JQuant {
 				": callback is called. Probably should be command");
 		}
 		
+		/// <summary>
+		/// look in the list of commands 
+		/// </summary>
+		/// <param name="cmdLine">
+		/// A <see cref="System.String"/>
+		/// look for a command specified by this command line
+		/// currently no arguments are expected, case not sensitive
+		/// </param>
+		/// <param name="command">
+		/// A <see cref="Command"/>
+		/// returns found command
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Boolean"/>
+		/// returns true if command is found
+		/// </returns>
 		public bool FindCommand(string cmdLine, out Command command) {
 			// case not sensitive - convert everything to lower case
 			string cmdLineLower = cmdLine.ToLower();
@@ -123,6 +152,11 @@ namespace JQuant {
 		}
 	}
 	
+	/// <summary>
+	/// enigne behind command line interface
+	/// application will usually create a single object of ths type
+	/// the object keeps tree of commands and menus
+	/// </summary>
 	public class CommandLineInterface {
 
 		public CommandLineInterface(string title) {
