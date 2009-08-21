@@ -32,6 +32,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="..\CommadLineInterface.cs" />
+    <Compile Include="..\Mailbox.cs" />
+    <Compile Include="..\Resources.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
