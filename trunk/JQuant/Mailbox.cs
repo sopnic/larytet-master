@@ -10,7 +10,7 @@ namespace JQuant
 	/// this guy is a simple Queue base implemenation of mailbox - queue of messages with
 	/// send and receive methods
 	/// </summary>
-	public class Mailbox<Message> :Queue<Message>, IMailbox
+	public class Mailbox<Message> :Queue<Message>, IMailbox, IDisposable
 	{
 		public Mailbox(string name, int capacity) : base(capacity)
 		{
@@ -27,13 +27,17 @@ namespace JQuant
 			Resources.Mailboxes.Add(this);
 		}
 		
-		~Mailbox() 
+		public void Dispose()
 		{
-			// clean up - remove all object from the queue
 			Clear();
 			
 			// remove myself from the list of created mailboxes
 			Resources.Mailboxes.Remove(this);			
+		}
+		
+		~Mailbox() 
+		{
+			Console.WriteLine("Mailbox "+GetName()+" destroyed");
 		}
 		
 		/// <summary>
@@ -68,6 +72,17 @@ namespace JQuant
 		}
 
 		/// <summary>
+		/// Send pulse and unblock the thread waiting for the message
+		/// 
+		/// </summary>
+		public void Pulse()
+		{
+			lock (this) {
+				Monitor.Pulse(this);
+			}
+		}
+		
+		/// <summary>
 		/// blocking call - wait for a message 
 		/// </summary>
 		/// <param name="message">
@@ -77,15 +92,17 @@ namespace JQuant
 		/// A <see cref="System.Boolean"/>
 		/// True - if a new message arrived
 		/// </returns>
-		public bool Receive(Message message)
+		public bool Receive(out Message message)
 		{
 			bool result = false;
 			
 			lock(this) {
-				while (Count == 0) Monitor.Wait(this);
-				_received++;
-				message = Dequeue();
-				result = true;
+				if (Count == 0) Monitor.Wait(this);
+				if (Count != 0) {
+					_received++;
+					message = Dequeue();
+					result = true;
+				}
 			}
 			
 			return result;

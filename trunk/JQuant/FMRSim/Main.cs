@@ -72,19 +72,30 @@ namespace JQuant {
 		if (!result) {
 			iWrite.WriteLine("Mailbox.Send returned false");
 		}
-		result = mbx.Receive(message);
+		else {
+			iWrite.WriteLine("Mailbox.Send message sent");
+		}
+		result = mbx.Receive(out message);
 		if (!result) {
 			iWrite.WriteLine("Mailbox.Receive returned false");
+		}
+		else {
+			iWrite.WriteLine("Mailbox.Send message received");
 		}
 		if (!message) {
 			iWrite.WriteLine("I did not get what i sent");
 		}
 		debugMbxShowCallback(iWrite, cmdName, cmdArguments);
+			
+		mbx.Dispose();
+			
+		System.GC.Collect();
 	}
 
 		
 	protected void debugThreadTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
 	{
+		debugThreadShowCallback(iWrite, cmdName, cmdArguments);
 		MailboxThread<bool> thr = new MailboxThread<bool>("TestMbx", 2);
 		debugThreadShowCallback(iWrite, cmdName, cmdArguments);
 		thr.Start();
@@ -96,7 +107,10 @@ namespace JQuant {
 		}
 		thr.Stop();
 		debugThreadShowCallback(iWrite, cmdName, cmdArguments);
-		thr = null;
+			
+		thr.Dispose();
+			
+		System.GC.Collect();
 	}
 		
 		
@@ -118,10 +132,20 @@ namespace JQuant {
 		}		
 		if (isEmpty) 
 		{
-			iWrite.WriteLine("No mailboxes");
+			iWrite.WriteLine("No threads");
 		}
+		int workerThreads;
+		int completionPortThreads;
+		System.Threading.ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+        iWrite.WriteLine("workerThreads="+workerThreads+",completionPortThreads="+completionPortThreads);
+			
 	}
 		
+	protected void debugGcCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
+		System.GC.Collect();			
+		System.GC.WaitForPendingFinalizers();
+        iWrite.WriteLine("Garbage collection done");
+	}
 		
 	protected void LoadCommandLineInterface() {  
 		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
@@ -131,6 +155,8 @@ namespace JQuant {
 			                   " Condiguration and debug of the FMR simulatoion");
 		Menu menuDebug = cli.RootMenu.AddMenu("Debug", "System debug info", 
 			                   " Created objetcs, access to the system statistics");
+		menuDebug.AddCommand("GC", "Run garbage collector", 
+                              " Forces garnage collection", debugGcCallback);
 		menuDebug.AddCommand("mbxTest", "Run simple mailbox tests", 
                               " Create a mailbox, send a message, receive a message, print debug info", debugMbxTestCallback);
 		menuDebug.AddCommand("mbxShow", "Show mailboxes", 
