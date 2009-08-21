@@ -24,6 +24,10 @@ namespace JQuant
 		
 		public void Dispose()
 		{
+			if (_isAlive) {
+				Console.WriteLine("MailboxThread "+GetName()+" disposed but not stopped");
+			}
+			
 			_mailbox.Dispose();
 			_mailbox = null;
 
@@ -32,7 +36,7 @@ namespace JQuant
 			// remove myself from the list of created mailboxes
 			Resources.Threads.Remove(this);	
 			
-			_thread.Interrupt();
+			_thread.Abort();
 			_thread = null;
 		}
 		
@@ -54,7 +58,6 @@ namespace JQuant
 				}
 			}
 			
-			Console.WriteLine("MailboxThread "+GetName()+" is out of the loop");
 			_state = ThreadState.Stoped;
 		}
 		
@@ -79,6 +82,7 @@ namespace JQuant
 		{
 			_isAlive = false;
 			_mailbox.Pulse();
+			_thread.Join();
 		}
 					
 		/// <summary>

@@ -31,8 +31,8 @@ namespace JQuant {
 	protected void debugMbxShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
         iWrite.WriteLine(
             OutputUtils.FormatField("Name", 10)+
-			OutputUtils.FormatField("Count", 10)+
 			OutputUtils.FormatField("Capacity", 10)+
+			OutputUtils.FormatField("Count", 10)+
 			OutputUtils.FormatField("MaxCount", 10)+
 			OutputUtils.FormatField("Dropped", 10)+
 			OutputUtils.FormatField("Sent", 10)+
@@ -46,8 +46,8 @@ namespace JQuant {
 				isEmpty = false;
 				iWrite.WriteLine(
 					OutputUtils.FormatField(iMbx.GetName(), 10)+
-					OutputUtils.FormatField(iMbx.GetCount(), 10)+
 					OutputUtils.FormatField(iMbx.GetCapacity(), 10)+
+					OutputUtils.FormatField(iMbx.GetCount(), 10)+
 					OutputUtils.FormatField(iMbx.GetMaxCount(), 10)+
 					OutputUtils.FormatField(iMbx.GetDropped(), 10)+
 					OutputUtils.FormatField(iMbx.GetSent(), 10)+
@@ -146,6 +146,62 @@ namespace JQuant {
 		System.GC.WaitForPendingFinalizers();
         iWrite.WriteLine("Garbage collection done");
 	}
+
+	protected void debugPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
+        iWrite.WriteLine(
+            OutputUtils.FormatField("Name", 10)+
+			OutputUtils.FormatField("Capacity", 10)+
+			OutputUtils.FormatField("Count", 10)+
+			OutputUtils.FormatField("MinCount", 10)+
+			OutputUtils.FormatField("AllocOk", 10)+
+			OutputUtils.FormatField("AllocFail", 10)+
+			OutputUtils.FormatField("Free", 10)
+		);
+        iWrite.WriteLine("---------------------------------------------------------------------------------");
+		bool isEmpty = true;
+		foreach (IPool iPool in Resources.Pools) 
+		{
+				isEmpty = false;
+				iWrite.WriteLine(
+					OutputUtils.FormatField(iPool.GetName(), 10)+
+					OutputUtils.FormatField(iPool.GetCapacity(), 10)+
+					OutputUtils.FormatField(iPool.GetCount(), 10)+
+					OutputUtils.FormatField(iPool.GetMinCount(), 10)+
+					OutputUtils.FormatField(iPool.GetAllocOk(), 10)+
+					OutputUtils.FormatField(iPool.GetAllocFailed(), 10)+
+					OutputUtils.FormatField(iPool.GetFreeOk(), 10)
+				);
+				                 
+		}		
+		if (isEmpty) 
+		{
+			iWrite.WriteLine("No pools");
+		}
+	}
+
+	protected void debugPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
+		Pool<bool> pool = new Pool<bool>("TestPool", 2);
+
+		bool message1 = true;
+		bool message2 = false;
+		pool.Fill(message1);pool.Fill(message2);
+			
+		bool result = pool.Get(out message1);
+		if (!result) {
+			iWrite.WriteLine("Pool.Get returned false");
+		}
+		if (message1) {
+			iWrite.WriteLine("I did not get what i stored");
+		}
+		pool.Free(message1);
+		debugPoolShowCallback(iWrite, cmdName, cmdArguments);
+			
+		pool.Dispose();
+			
+		System.GC.Collect();
+	}
+		
 		
 	protected void LoadCommandLineInterface() {  
 		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
@@ -165,6 +221,10 @@ namespace JQuant {
                               " Create a mailbox thread, send a message, print debug info", debugThreadTestCallback);
 		menuDebug.AddCommand("threadShow", "Show threads", 
                               " List of created threads and thread states", debugThreadShowCallback);
+		menuDebug.AddCommand("poolTest", "Run simple pool tests", 
+                              " Create a pool, add object, allocate object, free object", debugPoolTestCallback);
+		menuDebug.AddCommand("poolShow", "Show pools", 
+                              " List of created pools with the current status and statistics", debugPoolShowCallback);
 	}  
 
 	public void WriteLine(string s) {
