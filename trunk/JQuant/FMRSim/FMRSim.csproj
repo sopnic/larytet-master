@@ -36,6 +36,7 @@
     <Compile Include="..\Resources.cs" />
     <Compile Include="..\MailboxThread.cs" />
     <Compile Include="..\Pool.cs" />
+    <Compile Include="..\Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

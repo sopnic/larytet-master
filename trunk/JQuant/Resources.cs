@@ -5,9 +5,7 @@ using System.Reflection;
 using System.ComponentModel;
 
 namespace JQuant
-{
-
-	
+{	
 	/// <summary>
 	/// objects implement Mailbox
 	/// </summary>
@@ -38,25 +36,13 @@ namespace JQuant
 		int GetTimeouts();
 	}
 	
-	class EnumUtils 
-	{
-		public static string GetDescription(System.Enum value)
-		{
-			FieldInfo fi = value.GetType().GetField(value.ToString()); 
-			DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-			if (attributes.Length > 0)
-				return attributes[0].Description;
-			else 
-				return value.ToString();
-		}
-	}
-
 	
 	public enum ThreadState {
 		[Description("Initialized")] Initialized,
 		[Description("Satrted")] Started,
 		[Description("Stoped")] Stoped,
 		[Description("Destroyed")] Destroyed
+		
 	};
 	
 	/// <summary>

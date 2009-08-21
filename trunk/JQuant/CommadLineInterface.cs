@@ -16,43 +16,6 @@ namespace JQuant {
 		void Write(string s);
 	}
 	
-	public class OutputUtils 
-	{
-		/// <summary>
-		/// add trailing blanks to the integer if neccessary 
-		/// </summary>
-		static public string FormatField(int value, int fieldSize)
-		{
-			StringBuilder s = new StringBuilder(""+value, fieldSize);
-				
-			int count = s.Length;
-			for (int i = count;i < fieldSize;i++)
-			{
-				s.Insert(0, ' ');
-			}
-			
-		    return s.ToString();
-		}
-		
-		/// <summary>
-		/// add trailing blanks to the string if neccessary 
-		/// </summary>
-		static public string FormatField(string value, int fieldSize)
-		{
-			StringBuilder s = new StringBuilder(""+value, fieldSize);
-				
-			int count = s.Length;
-			for (int i = count;i < fieldSize;i++)
-			{
-				s.Insert(0, ' ');
-			}
-			
-		    return s.ToString();
-		}
-	}
-	
-	
-	
 	
 	/// <summary>
 	/// Class defines a command of the command line interface
