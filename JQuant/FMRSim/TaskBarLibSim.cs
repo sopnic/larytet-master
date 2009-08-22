@@ -86,6 +86,81 @@ namespace TaskBarLibSim
         StockKindMenaya = 0
     }
 	
+    public enum LoginStatus
+    {
+        LoginSessionActive,
+        LoginSessionInProgress,
+        LoginSessionInactive,
+        LoginSessionDBInitFailure,
+        LoginSessionAS400Failure,
+        LoginSessionPasswordExpired,
+        LoginSessionPasswordChangeFailure,
+        LoginSessionPasswordChangedToday,
+        LoginSessionWrongUserOrPassword,
+        LoginSessionMaxUsersLimit,
+        LoginSessionReLogin,
+        LoginSessionTaskBarBlocked
+    }
+	
+    public enum OnlineSessionType
+    {
+        OnlineSessionTypeAccounts,
+        OnlineSessionTypeAll,
+        OnlineSessionTypeCustodian,
+        OnlineSessionTypeKranot,
+        OnlineSessionTypeKupa
+    }
+	
+    public enum OrderOperation
+    {
+        OrderOperationNewBuy,
+        OrderOperationNewSell,
+        OrderOperationUpdBuy,
+        OrderOperationUpdSell,
+        OrderOperationDelete
+    }
+	
+    public enum OrdersErrorTypes
+    {
+        Alert = 0x34,
+        Confirmation = 0x31,
+        Fatal = 0x30,
+        NoError = 0x35,
+        PasswordReq = 0x33,
+        ReEnter = 50
+    }
+	
+    public enum QueryType
+    {
+        qtDetailed = 0x30,
+        qtSummary = 0x31
+    }
+
+    public enum YieldDataType
+    {
+        YieldData5YearsbyYear = 4,
+        YieldDataMonthbyDay = 1,
+        YieldDataTwelveMonths = 3,
+        YieldDataYearbyMonth = 2,
+        YieldDataYearbyQuater = 5
+    }
+	
+    public enum ConnectionState
+    {
+        csOpen,
+        csProcessing,
+        csClosed
+    }
+
+    public enum LoginLevel
+    {
+        LoginLevelAccounts = 3,
+        LoginLevelMax = 50,
+        LoginLevelOptionsStocks = 2,
+        LoginLevelPermissions = 1
+    }
+
+	
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
 
     public delegate void IK300Event_FireMaofEventHandler(ref Array psaStrRecords, ref int nRecords);
