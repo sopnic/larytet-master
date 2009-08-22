@@ -68,8 +68,5 @@ namespace JQuant
 		protected System.DateTime _stampOldest; 
 	}
 	
-	public class Logger<DataType> :ISink<DataType>, ILogger, IDisposable
-	{
-	}
 	
 }
