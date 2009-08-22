@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace JQuant
 {
     /// <summary>
-    /// objects implement Mailbox
+    /// objects implementing Mailbox
     /// </summary>
     public interface IMailbox
     {
@@ -52,7 +52,7 @@ namespace JQuant
     };
 
     /// <summary>
-    /// objects implement MailboxThread
+    /// objects implementing MailboxThread
     /// </summary>
     public interface IThread
     {
@@ -74,6 +74,65 @@ namespace JQuant
         int GetFreeOk();
     }
 
+    public enum LogType
+    {
+        [Description("Dynamic memory")]
+        RAM,
+        [Description("Serialization")]
+        BinarySerialization,
+        [Description("Binary")]
+        Binary,
+        [Description("ASCII")]
+        Ascii,
+        [Description("HTML")]
+        HTML,
+        [Description("XML")]
+        XML,
+        [Description("SQL")]
+        SQL
+    };
+	
+	
+    /// <summary>
+    /// System logs will register in the central data base
+    /// </summary>
+    public interface ILogger
+    {		
+		/// <summary>
+		/// returns name of the logger 
+		/// </summary>
+        string GetName();
+		
+		/// <summary>
+		///returns number of records 
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.Int32"/>
+		/// number of records in the log
+		/// </returns>
+        int GetCount();
+		
+        LogType GetLogType();
+		
+		/// <summary>
+		/// returns true if the log entries are time stamped by the producer. 
+		/// Logs can and will time stamp the entries. So in some cases there are going to be two
+		/// time stamps - by the producer and by the logger.
+		/// </summary>
+		bool TimeStamped();
+		
+		/// <summary>
+		/// returns time of the most recent log entry
+		/// </summary>
+		System.DateTime GetLatest();
+
+		/// <summary>
+		/// returns time of the oldest log entry
+		/// </summary>
+		System.DateTime GetOldest();
+	}
+
+	
     /// <summary>
     /// a storage of all created objects
     /// an object central
@@ -86,6 +145,7 @@ namespace JQuant
             Mailboxes = new List<IMailbox>(10);
             Threads = new List<IThread>(10);
             Pools = new List<IPool>(10);
+            Loggers = new List<ILogger>(10);
         }
 
         static public void Init()
@@ -104,8 +164,19 @@ namespace JQuant
         /// created in the system mailboxes
         /// </summary>
         public static List<IMailbox> Mailboxes;
+		
+		/// <summary>
+		/// i expect that creation of threads is not an often operation
+		/// if this is not the case one can construct threads which do not register at all
+		/// or a thread pool where all threads are registered after boot.  
+		/// Adding a thread will not take too much time, but thread deletion will 
+		/// consume some CPU cycles.
+		/// </summary>
         public static List<IThread> Threads;
+		
         public static List<IPool> Pools;
+		
+        public static List<ILogger> Loggers;
 
         static protected Resources r;
     }

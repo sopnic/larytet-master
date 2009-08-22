@@ -11,6 +11,10 @@ namespace JQuant
 {
 
 
+	/// <summary>
+	/// C# enum does not allow to reload ToString method
+	/// I need patch here 
+	/// </summary>
     class EnumUtils
     {
         /// <summary>
@@ -28,6 +32,9 @@ namespace JQuant
     }
 
 
+	/// <summary>
+	/// format output - add blanks, remove trailing blanks, etc.
+	/// </summary>
     public class OutputUtils
     {
         /// <summary>

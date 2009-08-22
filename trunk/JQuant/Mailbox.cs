@@ -192,13 +192,13 @@ namespace JQuant
             return _timeouts;
         }
 
-        private string _name;
-        private int _capacity;
-        private int _maxCount;
-        private int _dropped;
-        private int _sent;
-        private int _received;
-        private int _timeouts;
+        protected string _name;
+        protected int _capacity;
+        protected int _maxCount;
+        protected int _dropped;
+        protected int _sent;
+        protected int _received;
+        protected int _timeouts;
 
     }
 }
