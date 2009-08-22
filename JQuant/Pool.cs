@@ -185,11 +185,11 @@ namespace JQuant
 
 
         // statistics 
-        private int _capacity;
-        private string _name;
-        private int _minCount;
-        private int _allocOk;
-        private int _allocFailed;
-        private int _freeOk;
+        protected int _capacity;
+        protected string _name;
+        protected int _minCount;
+        protected int _allocOk;
+        protected int _allocFailed;
+        protected int _freeOk;
     }
 }

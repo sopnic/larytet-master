@@ -114,10 +114,10 @@ namespace JQuant
             return _mailbox.GetName();
         }
 
-        private Mailbox<Message> _mailbox;
-        private bool _isAlive;
-        private ThreadState _state;
-        private Thread _thread;
-        private string _name;
+        protected Mailbox<Message> _mailbox;
+        protected bool _isAlive;
+        protected ThreadState _state;
+        protected Thread _thread;
+        protected string _name;
     }
 }
