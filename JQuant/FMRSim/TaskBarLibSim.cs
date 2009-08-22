@@ -126,11 +126,34 @@ namespace TaskBarLibSim
         public event IK300Event_FireRezefCNTEventHandler FireRezefCNT;
 
         // Methods
-        public virtual extern int GetMAOF(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad);
-        public virtual extern int GetMAOFRaw(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad);
-        public virtual extern int K300StartStream(K300StreamType streamType);
-        public virtual extern int K300StopStream(K300StreamType streamType);
-        public virtual extern int StartStream(K300StreamType streamType, string strStockNumber, MadadTypes strMadad, int withEvents);
-        public virtual extern void StopUpdate(int pnID);
+        public virtual int GetMAOF(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad)
+		{
+			return 0;
+		}
+		
+        public virtual int GetMAOFRaw(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad)
+		{
+			return 0;
+		}
+		
+        public virtual int K300StartStream(K300StreamType streamType)
+		{
+			return 0;
+		}
+		
+        public virtual int K300StopStream(K300StreamType streamType)
+		{
+			return 0;
+		}
+		
+        public virtual int StartStream(K300StreamType streamType, string strStockNumber, MadadTypes strMadad, int withEvents)
+		{
+			return 0;
+		}
+		
+        public virtual void StopUpdate(int pnID)
+		{
+		}
+		
     }
 }
