@@ -39,6 +39,7 @@
     <Compile Include="..\Utils.cs" />
     <Compile Include="..\IProducer.cs" />
     <Compile Include="..\Logger.cs" />
+    <Compile Include="TaskBarLibSim.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
