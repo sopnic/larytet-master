@@ -162,11 +162,8 @@ namespace TaskBarLibSim
 
 	
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
-
     public delegate void IK300Event_FireMaofEventHandler(ref Array psaStrRecords, ref int nRecords);
-
     public delegate void IK300Event_FireRezefCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
-
     public delegate void IK300Event_FireRezefEventHandler(ref Array psaStrRecords, ref int nRecords);
 
 	public interface IK300

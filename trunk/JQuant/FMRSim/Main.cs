@@ -205,9 +205,11 @@ namespace JQuant {
 		
 	protected void LoadCommandLineInterface() {  
 		cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
-		Menu menuFMRLib = cli.RootMenu.AddMenu("FMRLib", "Access to  FMRLib API", 
+		// Menu menuFMRLib = 
+				cli.RootMenu.AddMenu("FMRLib", "Access to  FMRLib API", 
 			                  " Allows to access the FMRLib API directly");
-		Menu menuFMRLibSim = cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation", 
+		// Menu menuFMRLibSim = 
+				cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation", 
 			                   " Condiguration and debug of the FMR simulatoion");
 		Menu menuDebug = cli.RootMenu.AddMenu("Debug", "System debug info", 
 			                   " Created objetcs, access to the system statistics");
