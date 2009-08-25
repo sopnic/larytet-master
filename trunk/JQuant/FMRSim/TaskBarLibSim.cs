@@ -228,4 +228,17 @@ namespace TaskBarLibSim
 		}
 		
     }
+	
+	
+	public class UserClass
+	{
+		public int Login(string username, string AS400Password, string AppPassword, out string message, out int sessionId)
+		{
+			message = "";
+			sessionId = 0;
+			
+			return 0;
+		}
+	}
+		
 }
