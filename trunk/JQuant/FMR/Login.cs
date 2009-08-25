@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Threading;
  
 using System.Reflection;
 using System.ComponentModel;
@@ -14,6 +14,19 @@ using System.ComponentModel;
 /// </summary>
 namespace FMRShell
 {
+	public enum ConnectionState
+	{
+        [Description("Idle")]
+        Idle,                              // never opened yet
+        [Description("Established")]       
+        Established, 
+        [Description("Trying")]
+        Trying,
+        [Description("Closed")]
+        Closed,
+        [Description("Disposed")]           
+        Disposed                           // Dispose() called
+	}
 	
 	/// <summary>
 	/// this guy logins to the remote server
@@ -44,7 +57,7 @@ namespace FMRShell
                                                 "abc123", // password
                                                 ""       // app passsword
 		                                                );
-			userClass = new TaskBarLibSim.UserClass();
+			Init();
 		}
 		
 		/// <summary>
@@ -59,6 +72,16 @@ namespace FMRShell
 		{
 			xmlFileName = filename;
 			useXmlFile = true;
+			Init();
+		}
+		
+		/// <summary>
+		/// do some general initialization common for all constructors
+		/// </summary>
+		private void Init()
+		{
+			stateListeners = new List<JQuant.ISink<ConnectionState>> (5);
+			state = ConnectionState.Idle;
 			userClass = new TaskBarLibSim.UserClass();
 		}
 		
@@ -68,6 +91,11 @@ namespace FMRShell
 		/// </summary>
 		public void Dispose()
 		{
+			// call userClass.Logout here
+			
+			// set userClass to null
+			
+			state = ConnectionState.Disposed;
 		}
 		
 		~Connection()
@@ -96,7 +124,7 @@ namespace FMRShell
 		/// A <see cref="System.Boolean"/>
 		/// True - if XML parse is Ok
 		/// </returns>
-        protected bool Open(string xmlFileName)
+        protected bool ReadXml(string xmlFileName, out ConnectionParameters parameters)
         {
 			bool result = false;
 			do{
@@ -115,6 +143,9 @@ namespace FMRShell
 		
 		/// <summary>
 		/// return fals if the open connection fails 
+		/// normally application will call Open() without arguments - blocking Open
+		/// or Keep() - which runs a thread and attempts to keep the connection
+		/// alive. 
 		/// </summary>
 		/// <param name="returnCode">
 		/// A <see cref="System.Int32"/>
@@ -132,25 +163,96 @@ namespace FMRShell
 			
 			// should I read login credentials from XML file ?
 			if (useXmlFile) {
-				result = Open(xmlFileName);
+				result = ReadXml(xmlFileName, out parameters);
 			}
 			
 			if (result)
 			{
-	            returnCode = userClass.Login(parameters.userName, 
-				                             parameters.userPassword, 
-				                             parameters.appPassword, 
-				                             out  errMsg,
-				                             out  sessionId);
+	            returnCode = userClass.Login(parameters.userName, parameters.userPassword, parameters.appPassword, 
+				                             out  errMsg, out  sessionId);
+				if (returnCode >= 0)
+				{
+					// according to the documentation returnCode == sessionId
+					if (sessionId != returnCode)
+					{
+						Console.WriteLine("Session Id="+sessionId+",returnCode="+returnCode+" are not equal after Login");
+					}
+					// at this point userClass object is completely initialized and 
+					// ready for work
+					state = ConnectionState.Established;
+				}
+				else  // Login failed - application will try again later
+				{
+					state = ConnectionState.Trying;			
+					result = false;
+				}
 			}
 			
             return result;
         }			
 		
+		/// <summary>
+		/// the calling thread will be blocked by this method until Login to the
+		/// remote server succeeds 
+		/// </summary>
+        public void Open()
+        {
+			state = ConnectionState.Trying;
+			// loop until login succeeds
+			do {
+				int returnCode;
+				bool openResult = Open(out returnCode);
+				if (openResult)
+				{
+					state = ConnectionState.Established;
+					break;
+				}
+				// i need a short delay here before next attempt - 5s
+				Thread.Sleep(5*1000);
+			}
+			while (true);
+		}
+
+		
+		/// <summary>
+		/// this method spawns a thread which will attemp to establish the connection
+		/// and keep the connection alive
+		/// the call to Keep() is non-blocking. 
+		/// Before calling to Keep() application should call AddStateListener() and register 
+		/// interface allowing to listen to changes in the connection state
+		/// </summary>
+        public void Keep()
+        {
+		}
+		
+		/// <summary>
+		/// Application will call this method to install listeners - callback functions 
+		/// which should be called when the state of the connection changed
+		/// Class Connection will call Notify() for all registered sinks
+		/// </summary>
+		public void AddStateListener(JQuant.ISink<ConnectionState> sink)
+		{
+			stateListeners.Add(sink);
+		}
+		
+		/// <summary>
+		/// this is remove from the list and if the list is large the method can be quite 
+		/// expensive
+		/// </summary>
+		public void RemoveStateListener(JQuant.ISink<ConnectionState> sink)
+		{
+			stateListeners.Remove(sink);
+		}
 		
 		public string GetUserName()
 		{
 			return parameters.userName;
+		}
+		
+		public ConnectionState state
+		{
+			get;
+			protected set;
 		}
 		
         protected int sessionId;
@@ -158,6 +260,7 @@ namespace FMRShell
 		protected string xmlFileName;
 		protected bool useXmlFile;
 		protected ConnectionParameters parameters;
+        protected List<JQuant.ISink<ConnectionState>> stateListeners;
 
 	
 		/// <value>
