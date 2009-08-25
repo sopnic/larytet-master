@@ -202,7 +202,7 @@ namespace JQuant {
 		}
 		else
 		{
-			iWrite.WriteLine("Connection failed ");
+			iWrite.WriteLine("Connection failed errResult="+errResult);
 		}
 			
 		// final cleanup
