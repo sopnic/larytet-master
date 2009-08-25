@@ -21,7 +21,7 @@ namespace FMRShell
 		/// <returns>
 		/// A <see cref="System.Int32"/>
 		/// </returns>
-		class ConnectionParameters
+		public class ConnectionParameters
 		{
 			public ConnectionParameters(string name, string password, string apassw)
 			{
@@ -54,7 +54,7 @@ namespace FMRShell
 		/// this guy keeps connection and eventually will run state machine keeping the connection
 		/// alive and kicking
 		/// </summary>
-		class Connection : IDisposable
+		public class Connection : IDisposable
 		{
 			/// <summary>
 			/// use default hard coded user name and password
@@ -100,7 +100,7 @@ namespace FMRShell
 				return sessionId;
 			}
 			
-			public string GetErrMsg()
+			public string GetErrorMsg()
 			{
 				return errMsg;
 			}
@@ -134,4 +134,27 @@ namespace FMRShell
 		
 
     }
+
+	/// <summary>
+	/// Example of usage of the class, Main_ should be replaced by Main in the real application
+	/// </summary>
+    class FMRShellTest
+    {
+        public static void Main_(string[] args)
+        {
+			// use default hard coded settings
+            FMRShell.Connection newConn = new FMRShell.Connection();
+			int returnCode;
+            bool result  = newConn.Open(out returnCode);
+			if (! result) {
+	            Console.WriteLine("Connection start failed: return code=" + returnCode +
+				                  ", errorMsg=" + newConn.GetErrorMsg());
+	            Console.WriteLine();
+	            Console.ReadLine();
+			}
+        }
+    }
+
 }
+	
+
