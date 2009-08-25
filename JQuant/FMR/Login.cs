@@ -4,34 +4,134 @@ using System.Linq;
 using System.Text;
 
 
-namespace ConsoleApplication1
+namespace FMRShell
 {
-    class Connector
+	/// <summary>
+	/// This is a thin shell above TaskLib/FMRSim
+	/// lot of ifdefs are going to be here - depending on the compilation falg TaskLib 
+	/// or FMRSim are going to be used
+	/// </summary>
+    class FMRShell
     {
-        string MyUserName = "aryeh";
-        string MyAS400PassWord = "abc123";
-        string AppPassword ="";     // an empty string, this parameter is not in use, but the method requires it anyway
-        public string ErrMsg = "";    // not sure if I need to initialize its value
-        int MySessionId;
-        TaskBarLib.User MyUserClass = new TaskBarLib.UserClass();
+		
+		/// <summary>
+		/// User login credentials, IP address and everything else required
+		/// to establish and keep connection. This is just a data holder
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.Int32"/>
+		/// </returns>
+		class ConnectionParameters
+		{
+			public ConnectionParameters(string name, string password, string apassw)
+			{
+				userName = name;
+				userPassword = password;
+				appPassword = apassw;
+			}
+			
+	        public string userName
+	        {
+	            get;
+	            protected set;
+	        }
+			
+	        public string userPassword
+	        {
+	            get;
+	            protected set;
+	        }
+			
+			
+	        public string appPassword
+	        {
+				get;
+				set;
+			}				
+		}
+		
+		/// <summary>
+		/// this guy keeps connection and eventually will run state machine keeping the connection
+		/// alive and kicking
+		/// </summary>
+		class Connection : IDisposable
+		{
+			/// <summary>
+			/// use default hard coded user name and password
+			/// </summary>
+			public Connection()
+			{
+				//  set defaults
+				parameters = new ConnectionParameters("aryeh", // user name
+				                                                "abc123", // password
+				                                                ""       // app passsword
+				                                                );
+				userClass = new TaskBarLibSim.UserClass();
+			}
+			
+			/// <summary>
+			/// open connection based on the login information storedin the specified XML file
+			/// </summary>
+			public Connection(string filename)
+			{
+			}
+			
+			/// <summary>
+			/// application have to call this emthod to get rid of the 
+			/// connection (close sockets, etc.)
+			/// </summary>
+			public void Dispose()
+			{
+			}
+			
+			~Connection()
+			{
+			}
+				
+			public ConnectionParameters parameters
+			{
+				get;
+				protected set;
+			}
+			
+			
+			public int GetSessionId()
+			{
+				return sessionId;
+			}
+			
+			public string GetErrMsg()
+			{
+				return errMsg;
+			}
+			
+            public TaskBarLibSim.UserClass userClass
+			{
+				get;
+				protected set;
+			}
+			
+			/// <summary>
+			/// return fals if the open connection fails 
+			/// </summary>
+	        public bool Open(out int returnCode)
+	        {
+	            returnCode = userClass.Login(parameters.userName, 
+				                               parameters.userPassword, 
+				                               parameters.appPassword, 
+				                             out  errMsg,
+				                             out  sessionId);
+				
+				// handle the return code here and return false/true here correctly
+				
+	            return true;
+	        }			
+			
+			
+	        protected int sessionId;
+	        protected string errMsg;
+		}
+		
 
-        public int StartConn()
-        {
-            int LoginReturnCode = this.MyUser.Login(this.MyUserName, this.MyAS400PassWord, AppPassword, out this.ErrMsg, out this.MySessionId);
-            return LoginReturnCode;
-        }
-
-    }
-
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Connector NewConn = new Connector();
-            int x = NewConn.StartConn();
-            Console.WriteLine("return code: " + x);
-            Console.WriteLine("ErrorMsg: " + NewConn.ErrMsg);
-            Console.ReadLine();
-        }
     }
 }
