@@ -114,7 +114,8 @@ namespace JQuant {
 	}
 		
 		
-	protected void debugThreadShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
+	protected void debugThreadShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
         iWrite.WriteLine(
             OutputUtils.FormatField("Name", 10)+
 			OutputUtils.FormatField("State", 14)
@@ -141,13 +142,15 @@ namespace JQuant {
 			
 	}
 		
-	protected void debugGcCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
+	protected void debugGcCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
 		System.GC.Collect();			
 		System.GC.WaitForPendingFinalizers();
         iWrite.WriteLine("Garbage collection done");
 	}
 
-	protected void debugPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
+	protected void debugPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
         iWrite.WriteLine(
             OutputUtils.FormatField("Name", 10)+
 			OutputUtils.FormatField("Capacity", 10)+
@@ -176,6 +179,26 @@ namespace JQuant {
 		if (isEmpty) 
 		{
 			iWrite.WriteLine("No pools");
+		}
+	}
+		
+		
+	protected void debugLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
+		FMRShell.Connection connection = new FMRShell.Connection("ConnectionParameters.xml");
+
+		bool openResult;
+		int errResult;
+		openResult = connection.Open(out errResult);
+
+		if (openResult)
+		{
+			iWrite.WriteLine("Connection openned for "+connection.GetUserName());
+			iWrite.WriteLine("errResult="+errResult);
+		}
+		else
+		{
+			iWrite.WriteLine("Connection failed ");
 		}
 	}
 
@@ -227,6 +250,8 @@ namespace JQuant {
                               " Create a pool, add object, allocate object, free object", debugPoolTestCallback);
 		menuDebug.AddCommand("poolShow", "Show pools", 
                               " List of created pools with the current status and statistics", debugPoolShowCallback);
+		menuDebug.AddCommand("loginTest", "Run simple test of the login", 
+                              " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
 	}  
 
 	public void WriteLine(string s) {
