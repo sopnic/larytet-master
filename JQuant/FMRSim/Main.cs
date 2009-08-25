@@ -10,9 +10,11 @@ using System;
 
 namespace JQuant {
 	
-  class Program :JQuant.IWrite {   
+  class Program :JQuant.IWrite
+  {   
 		
-	 Program() {
+	 Program() 
+	{
 		cli = new CommandLineInterface("Jerusalem Quant");
 		LoadCommandLineInterface();
 	}
@@ -21,14 +23,16 @@ namespace JQuant {
 	private bool ExitFlag;
 	
 
-	private void CleanupAndExit(IWrite iWrite, string cmdName, object[] cmdArguments) {
+	private void CleanupAndExit(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
 		// chance to clean some things before exiting
 			
 		// flag to break out of the loop forever
 		ExitFlag = true;
 	}
 		
-	protected void debugMbxShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) {
+	protected void debugMbxShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+	{
         iWrite.WriteLine(
             OutputUtils.FormatField("Name", 10)+
 			OutputUtils.FormatField("Capacity", 10)+
@@ -200,6 +204,9 @@ namespace JQuant {
 		{
 			iWrite.WriteLine("Connection failed ");
 		}
+			
+		// final cleanup
+		connection.Dispose();
 	}
 
 	protected void debugPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
@@ -254,15 +261,18 @@ namespace JQuant {
                               " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
 	}  
 
-	public void WriteLine(string s) {
+	public void WriteLine(string s) 
+	{
 		Console.WriteLine(s);
 	}
 		
-	public void Write(string s) {
+	public void Write(string s) 
+	{
 		Console.Write(s);
 	}
 		
-	public void Run() {
+	public void Run() 
+	{
 
 		cli.PrintTitle(this);
 		cli.PrintCommands(this);
