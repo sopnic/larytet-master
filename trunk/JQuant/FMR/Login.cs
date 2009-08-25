@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 
+
 namespace FMRShell
 {
 	/// <summary>
@@ -72,12 +73,16 @@ namespace FMRShell
 			/// <summary>
 			/// open connection based on the login information storedin the specified XML file
 			/// </summary>
+			/// <param name="filename">
+			/// A <see cref="System.String"/>
+			/// Name of the XML file where the user login credentials can be found
+			/// </param>
 			public Connection(string filename)
 			{
 			}
 			
 			/// <summary>
-			/// application have to call this emthod to get rid of the 
+			/// application have to call this method to get rid of the 
 			/// connection (close sockets, etc.)
 			/// </summary>
 			public void Dispose()
@@ -105,12 +110,22 @@ namespace FMRShell
 				return errMsg;
 			}
 			
+			/// <value>
+			/// in the real code TaskBar instead of TaskBarSim will be used
+			/// </value>
+#if USEFMRSIM
             public TaskBarLibSim.UserClass userClass
 			{
 				get;
 				protected set;
 			}
-			
+#else			
+            public TaskBarLib.UserClass userClass
+			{
+				get;
+				protected set;
+			}
+#endif			
 			/// <summary>
 			/// return fals if the open connection fails 
 			/// </summary>
