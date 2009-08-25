@@ -142,7 +142,7 @@ namespace FMRShell
 		}
 		
 		/// <summary>
-		/// return fals if the open connection fails 
+		/// return false if the open connection fails 
 		/// normally application will call Open() without arguments - blocking Open
 		/// or Keep() - which runs a thread and attempts to keep the connection
 		/// alive. 
