@@ -16,45 +16,13 @@ namespace FMRShell
 {
 	
 	/// <summary>
-	/// User login credentials, IP address and everything else required
-	/// to establish and keep connection. This is just a data holder
-	/// </summary>
-	/// <returns>
-	/// A <see cref="System.Int32"/>
-	/// </returns>
-	public class ConnectionParameters
-	{
-		public ConnectionParameters(string name, string password, string apassw)
-		{
-			userName = name;
-			userPassword = password;
-			appPassword = apassw;
-		}
-		
-        public string userName
-        {
-            get;
-            protected set;
-        }
-		
-        public string userPassword
-        {
-            get;
-            protected set;
-        }
-		
-		
-        public string appPassword
-        {
-			get;
-			set;
-		}				
-	}
-	
-		
-	/// <summary>
 	/// this guy keeps connection and eventually will run state machine keeping the connection
 	/// alive and kicking
+	/// Normally application will do something like
+	/// FMRShell.Connection connection = new FMRShell.Connection("xmlfilename")
+	/// bool openResult = connection.Open(errCode)
+	/// do work with connection.userClass  of type TaskLib.UserClass
+	/// connection.Dispose();
 	/// </summary>
 	public class Connection : IDisposable
 	{
@@ -322,6 +290,44 @@ namespace FMRShell
 		}
 			
 	}
+
+	/// <summary>
+	/// User login credentials, IP address and everything else required
+	/// to establish and keep connection. This is just a data holder
+	/// </summary>
+	/// <returns>
+	/// A <see cref="System.Int32"/>
+	/// </returns>
+	public class ConnectionParameters
+	{
+		public ConnectionParameters(string name, string password, string apassw)
+		{
+			userName = name;
+			userPassword = password;
+			appPassword = apassw;
+		}
+		
+        public string userName
+        {
+            get;
+            protected set;
+        }
+		
+        public string userPassword
+        {
+            get;
+            protected set;
+        }
+		
+		
+        public string appPassword
+        {
+			get;
+			set;
+		}				
+	}
+	
+		
 
 	/// <summary>
 	/// Example of usage of the class, Main_ should be replaced by Main in the real application
