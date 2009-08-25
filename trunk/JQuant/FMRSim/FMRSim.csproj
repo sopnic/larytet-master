@@ -40,6 +40,8 @@
     <Compile Include="..\IProducer.cs" />
     <Compile Include="..\Logger.cs" />
     <Compile Include="TaskBarLibSim.cs" />
+    <Compile Include="..\FMR\K300Stream.cs" />
+    <Compile Include="..\FMR\Login.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
