@@ -16,8 +16,16 @@ namespace FMRShell
 {
 	
 	/// <summary>
-	/// this guy keeps connection and eventually will run state machine keeping the connection
-	/// alive and kicking
+	/// this guy logins to the remote server
+	/// and eventually will run state machine keeping the connection alive and kicking 
+	/// and will notify other subsystems if and when the connection goes down
+	/// this little guy is one of the most important. there are two sources of information
+	/// related to the connection status
+	/// - periodic attempts to read data stream
+	/// - TaskLib.UserClass 
+	/// This class handles all included in the TaskLib.UserClass and login related
+	/// When there is no real TaskLib the class calls TaskLibSim
+	/// 
 	/// Normally application will do something like
 	/// FMRShell.Connection connection = new FMRShell.Connection("xmlfilename")
 	/// bool openResult = connection.Open(errCode)
