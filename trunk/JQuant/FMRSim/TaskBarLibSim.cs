@@ -160,7 +160,72 @@ namespace TaskBarLibSim
         LoginLevelPermissions = 1
     }
 
-	
+    public struct K300MaofType
+    {
+        public string SUG_REC;
+        public string TRADE_METH;
+        public string BNO_Num;
+        public string LAST_REC;
+        public string SIDURI_Num;
+        public string SYMBOL_E;
+        public string Symbol;
+        public string BNO_NAME_E;
+        public string BNO_NAME;
+        public string BRANCH_NO;
+        public string BRANCH_U;
+        public string SUG_BNO;
+        public string MIN_UNIT;
+        public string HARIG_NV;
+        public string MIN_PR;
+        public string MAX_PR;
+        public string BASIS_PRC;
+        public string BASIS_COD;
+        public string STATUS_COD;
+        public string EX_DATE;
+        public string EX_PRC;
+        public string VL_MULT;
+        public string VL_COD;
+        public string ZERO_COD;
+        public string shlav;
+        public string STATUS;
+        public string TRD_STP_CD;
+        public string TRD_STP_N;
+        public string STP_OPN_TM;
+        public string LMT_BY1;
+        public string LMT_BY2;
+        public string LMT_BY3;
+        public string LMY_BY1_NV;
+        public string LMY_BY2_NV;
+        public string LMY_BY3_NV;
+        public string RWR_FE;
+        public string LMT_SL1;
+        public string LMT_SL2;
+        public string LMT_SL3;
+        public string LMY_SL1_NV;
+        public string LMY_SL2_NV;
+        public string LMY_SL3_NV;
+        public string RWR_FF;
+        public string PRC;
+        public string COD_PRC;
+        public string SUG_PRC;
+        public string LST_DF_BS;
+        public string RWR_FG;
+        public string LST_DL_PR;
+        public string LST_DL_TM;
+        public string LST_DL_VL;
+        public string DAY_VL;
+        public string DAY_VL_NIS;
+        public string DAY_DIL_NO;
+        public string RWR_FH;
+        public string DAY_MAX_PR;
+        public string DAY_MIN_PR;
+        public string POS_OPN;
+        public string POS_OPN_DF;
+        public string STS_NXT_DY;
+        public string UPD_DAT;
+        public string UPD_TIME;
+        public string FILER;
+    }	
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireMaofEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireRezefCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
@@ -187,6 +252,24 @@ namespace TaskBarLibSim
         event IK300Event_FireMaofCNTEventHandler FireMaofCNT;
         event IK300Event_FireRezefEventHandler FireRezef;
         event IK300Event_FireRezefCNTEventHandler FireRezefCNT;
+    }
+
+	
+    public interface IK300Events
+    {
+    }
+	
+    public interface K300Events : IK300Events, _IK300EventsEvents_Event
+    {
+    }	
+
+    public delegate void _IK300EventsEvents_OnMaofEventHandler(ref K300MaofType data);
+
+	
+    public interface _IK300EventsEvents_Event
+    {
+        // Events
+        event _IK300EventsEvents_OnMaofEventHandler OnMaof;
     }
 	
 	public class K300Class : IK300, K300, IK300Event_Event
@@ -229,6 +312,14 @@ namespace TaskBarLibSim
 		
     }
 	
+    public class K300EventsClass : IK300Events, K300Events, _IK300EventsEvents_Event
+    {
+        // Events
+        public event _IK300EventsEvents_OnMaofEventHandler OnMaof;
+
+		// Properties
+    }
+
 	
 	public class UserClass
 	{
