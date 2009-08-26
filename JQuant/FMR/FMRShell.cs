@@ -7,6 +7,17 @@ using System.Threading;
 using System.Reflection;
 using System.ComponentModel;
 
+/// <summary>
+/// depending on the compilation flags i am going to use
+/// simulation or real TaskBar namespace
+/// the rest of the application is using FMRShell and is not aware if 
+/// this is simulation running
+/// </summary>
+#if USEFMRSIM
+using TaskBarLibSim;
+#else
+using TaskBarLib;
+#endif
 
 /// <summary>
 /// thin shell around TaskLib 
@@ -94,7 +105,7 @@ namespace FMRShell
 		{
 			stateListeners = new List<JQuant.ISink<ConnectionState>> (5);
 			state = ConnectionState.Idle;
-			userClass = new TaskBarLibSim.UserClass();
+			userClass = new UserClass();
 		}
 		
 		/// <summary>
@@ -252,19 +263,12 @@ namespace FMRShell
 		/// <value>
 		/// in the real code TaskBar instead of TaskBarSim will be used
 		/// </value>
-#if USEFMRSIM
-        public TaskBarLibSim.UserClass userClass
+        public UserClass userClass
 		{
 			get;
 			protected set;
 		}
-#else			
-        public TaskBarLib.UserClass userClass
-		{
-			get;
-			protected set;
-		}
-#endif			
+		
 	}
 
 	
@@ -312,15 +316,40 @@ namespace FMRShell
 	/// </summary>
 	public class Collector: JQuant.IProducer<MarketData>
 	{
+		
+		public Collector()
+		{
+			_listeners = new List<JQuant.ISink<MarketData>>(5);
+		}
+		
+		/// <summary>
+		/// default start - only Maof events
+		/// </summary>
+		public void Start()
+		{
+			// create a couple of TaskLib objects required for access
+			// to the data stream 
+			k300 = new K300Class();
+			k300Events = new K300EventsClass();
+		}
+		
         public bool AddSink(JQuant.ISink<MarketData> sink)
 		{
+			_listeners.Add(sink);
 			return true;
 		}
 		
         public bool RemoveSink(JQuant.ISink<MarketData> sink)
 		{
+			_listeners.Remove(sink);
 			return true;
 		}
+		
+		
+		protected static List<JQuant.ISink<MarketData>> _listeners;
+		protected K300Class k300;
+		protected K300EventsClass k300Events;
+
 	}
 	
 	/// <summary>
