@@ -6,6 +6,15 @@ using System;
 /// I want to run TaskLib simulation. I am going to implement API using prerecorded 
 /// or generated in some other way log files as a data feed
 /// Only small part of the API is implemented 
+/// This class is used by the FMRShell and allows to simulate different scenarios 
+/// and play back previously recorded log files
+/// In the future this class will contain engines which simulate behaviour of the 
+/// real system
+/// 
+/// Side note. Another approach to the simulation is to install a real server running 
+/// simulator and let the rest of the application including 3rd party code (DLLs from 
+/// FMR) use the simulation server. At this point it looks like an overkill. Thanks to 
+/// the time stamps i can simulate the system behaviour fairly close.
 /// </summary>
 namespace TaskBarLibSim
 {
