@@ -11,7 +11,7 @@ using System.ComponentModel;
 /// depending on the compilation flags i am going to use
 /// simulation or real TaskBar namespace
 /// the rest of the application is using FMRShell and is not aware if 
-/// this is simulation running
+/// this is a simulation or a real server connected
 /// </summary>
 #if USEFMRSIM
 using TaskBarLibSim;
