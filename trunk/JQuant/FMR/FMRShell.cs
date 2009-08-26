@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define USEFMRSIM
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
@@ -20,7 +22,7 @@ using TaskBarLib;
 #endif
 
 /// <summary>
-/// thin shell around TaskLib 
+/// thin shell around either TaskBarLib 
 /// or around FMRSym if compiler directive USEFMRSIM is defined 
 /// </summary>
 namespace FMRShell
@@ -45,15 +47,15 @@ namespace FMRShell
 	/// and will notify other subsystems if and when the connection goes down
 	/// this little guy is one of the most important. there are two sources of information
 	/// related to the connection status
-	/// - periodic attempts to read data stream
-	/// - TaskLib.UserClass 
-	/// This class handles all included in the TaskLib.UserClass and login related
-	/// When there is no real TaskLib the class calls TaskLibSim
+	/// - periodic attempts to read data stream through TaskBarLib.K300Class
+	/// - TaskBarLib.UserClass 
+	/// This class handles all included in the TasBarkLib.UserClass and login related
+	/// When there is no real TaskBarLib the class calls TasBarkLibSim
 	/// 
 	/// Normally application will do something like
 	/// FMRShell.Connection connection = new FMRShell.Connection("xmlfilename")
 	/// bool openResult = connection.Open(errCode)
-	/// do work with connection.userClass  of type TaskLib.UserClass
+	/// do work with connection.userClass  of type TaskBarLib.UserClass
 	/// connection.Dispose();
 	/// </summary>
 	public class Connection : IDisposable
@@ -64,10 +66,11 @@ namespace FMRShell
 		public Connection()
 		{
 			//  set defaults
-			_parameters = new ConnectionParameters("aryeh", // user name
-                                                "abc123", // password
-                                                ""       // app passsword
-		                                                );
+			_parameters = new ConnectionParameters(
+                "aryeh",    // user name
+                "abc123",   // password
+                ""          // app passsword
+                );
 			Init();
 		}
 
@@ -84,7 +87,7 @@ namespace FMRShell
 		}
 		
 		/// <summary>
-		/// open connection based on the login information storedin the specified XML file
+		/// open connection based on the login information stored in the specified XML file
 		/// See example of the XML file in the ConnectionParameters.xml
 		/// </summary>
 		/// <param name="filename">
@@ -146,7 +149,7 @@ namespace FMRShell
 		/// </param>
 		/// <returns>
 		/// A <see cref="System.Boolean"/>
-		/// True if Ok and returnCode is set to somethign meaningful
+		/// True if Ok and returnCode is set to something meaningful
 		/// Application will check that the method retruned true and only 
 		/// after that analyze returnCode
 		/// </returns>
@@ -165,8 +168,12 @@ namespace FMRShell
 			
 			if (result)
 			{
-	            returnCode = userClass.Login(_parameters.userName, _parameters.userPassword, _parameters.appPassword, 
-				                             out  errMsg, out  sessionId);
+	            returnCode = userClass.Login(
+                    _parameters.userName, 
+                    _parameters.userPassword, 
+                    _parameters.appPassword, 
+				    out  errMsg, out  sessionId);
+
 				if (returnCode >= 0)
 				{
 					// according to the documentation returnCode == sessionId
@@ -174,8 +181,7 @@ namespace FMRShell
 					{
 						Console.WriteLine("Session Id="+sessionId+",returnCode="+returnCode+" are not equal after Login");
 					}
-					// at this point userClass object is completely initialized and 
-					// ready for work
+					// at this point userClass object is completely initialized and ready for work
 					state = ConnectionState.Established;
 				}
 				else  // Login failed - application will try again later
@@ -184,7 +190,6 @@ namespace FMRShell
 					result = false;
 				}
 			}
-			
             return result;
         }			
 		
@@ -210,9 +215,8 @@ namespace FMRShell
 			while (true);
 		}
 
-		
-		/// <summary>
-		/// this method spawns a thread which will attemp to establish the connection
+        /// <summary>
+		/// this method spawns a thread which will attempt to establish the connection
 		/// and keep the connection alive
 		/// the call to Keep() is non-blocking. 
 		/// Before calling to Keep() application should call AddStateListener() and register 
@@ -261,7 +265,7 @@ namespace FMRShell
 
 	
 		/// <value>
-		/// in the real code TaskBar instead of TaskBarSim will be used
+		/// in the real code TaskBarLib instead of TaskBarLibSim will be used
 		/// </value>
         public UserClass userClass
 		{
@@ -271,8 +275,7 @@ namespace FMRShell
 		
 	}
 
-	
-	/// <summary>
+    /// <summary>
 	/// generic class 
 	/// data container for the trading/market data
 	/// can hold fields like time stamp, bid/ask, last price, etc.
@@ -281,11 +284,11 @@ namespace FMRShell
 	public struct MarketData :ICloneable
 	{
 		public K300MaofType k3Maof;
-		
-		public object Clone()
-		{
-			return new MarketData();
-		}
+        
+        public object Clone()
+        {
+            return new MarketData();
+        }
 	}
 	
 	/// <summary>
@@ -560,13 +563,20 @@ namespace FMRShell
 	/// </returns>
 	public class ConnectionParameters
 	{
-		public ConnectionParameters(string name, string password, string apassw)
+        public ConnectionParameters(string name, string password)
+        {
+            userName = name;
+            userPassword = password;
+            appPassword = "";
+        }
+        
+        public ConnectionParameters(string name, string password, string apassw)
 		{
 			userName = name;
 			userPassword = password;
 			appPassword = apassw;
 		}
-		
+
         public string userName
         {
             get;
@@ -578,37 +588,36 @@ namespace FMRShell
             get;
             protected set;
         }
-		
-		
+
         public string appPassword
         {
 			get;
 			set;
 		}				
 	}
-	
-		
 
-	/// <summary>
+    
+    
+    /// <summary>
 	/// Example of usage of the class, Main_ should be replaced by Main in the real application
 	/// </summary>
     class FMRShellTest
     {
-        public static void Main_(string[] args)
+        public static void Main(string[] args)
         {
 			// use default hard coded settings
             Connection newConn = new FMRShell.Connection();
 			int returnCode;
             bool result  = newConn.Open(out returnCode);
-			if (! result) {
-	            Console.WriteLine("Connection start failed: return code=" + returnCode +
-				                  ", errorMsg=" + newConn.GetErrorMsg());
-	            Console.WriteLine();
-	            Console.ReadLine();
-			}
+            if (!result)
+            {
+                Console.WriteLine("Connection start failed: return code=" + returnCode +
+                                  ", errorMsg=" + newConn.GetErrorMsg());
+                Console.WriteLine();
+                Console.ReadLine();
+            }
+            else Console.WriteLine("Successfull connection, SessionId=" + returnCode);
         }
     }
 
 }
-	
-
