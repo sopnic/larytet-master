@@ -42,7 +42,7 @@
     <Compile Include="..\IProducer.cs" />
     <Compile Include="..\Logger.cs" />
     <Compile Include="TaskBarLibSim.cs" />
-    <Compile Include="..\FMR\Login.cs" />
+    <Compile Include="..\FMR\FMRShell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
