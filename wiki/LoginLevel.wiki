@@ -1,4 +1,4 @@
-# Numerical definition of the required login level for use in login functions.
+#summary Numerical definition of the required login level for use in login functions.
 
 Code:
 {{{
@@ -25,4 +25,3 @@ public enum LoginLevel {
 
 *See Also:*
 [LoginByLevel] | [LoginByLevelAndChangePassword] | [LoginStateByLevel]
-
