@@ -17,6 +17,9 @@ namespace JQuant
 		/// Producer calls the method to notfy consumer that there is new data available
 		/// Notify() should be non-blocking - there are more than one sink to be served 
 		/// by the producer
+		/// Important ! If sink postpones the processing of the data sink should clone 
+		/// the data (call data.Clone()) and use the copy for further processing.
+		/// Sink should not modify data
 		/// </summary>
 		/// <param name="count">
 		/// A <see cref="System.Int32"/>
