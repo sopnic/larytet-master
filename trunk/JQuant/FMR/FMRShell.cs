@@ -53,10 +53,22 @@ namespace FMRShell
 		public Connection()
 		{
 			//  set defaults
-			parameters = new ConnectionParameters("aryeh", // user name
+			_parameters = new ConnectionParameters("aryeh", // user name
                                                 "abc123", // password
                                                 ""       // app passsword
 		                                                );
+			Init();
+		}
+
+		/// <summary>
+		/// create connection using provided by application connection parameters
+		/// </summary>
+		/// <param name="parameters">
+		/// A <see cref="ConnectionParameters"/>
+		/// </param>
+		public Connection(ConnectionParameters parameters)
+		{
+			_parameters = parameters;
 			Init();
 		}
 		
@@ -113,35 +125,6 @@ namespace FMRShell
 		}
 		
 		/// <summary>
-		/// not supposed to be called by application (protected)
-		/// read login credentials from the XML file
-		/// </summary>
-		/// <param name="xmlFileName">
-		/// A <see cref="System.String"/>
-		/// File name of the XML file 
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.Boolean"/>
-		/// True - if XML parse is Ok
-		/// </returns>
-        protected bool ReadXml(string xmlFileName, out ConnectionParameters parameters)
-        {
-			bool result = false;
-			do{
-				ReadConnectionParameters reader = new ReadConnectionParameters(xmlFileName);
-				
-				// let's try to read the file 
-				result = reader.Parse(out parameters);
-				if (!result) break;
-	
-				result = true;
-			}	
-			while (false);
-			
-			return result;
-		}
-		
-		/// <summary>
 		/// return false if the open connection fails 
 		/// normally application will call Open() without arguments - blocking Open
 		/// or Keep() - which runs a thread and attempts to keep the connection
@@ -163,12 +146,15 @@ namespace FMRShell
 			
 			// should I read login credentials from XML file ?
 			if (useXmlFile) {
-				result = ReadXml(xmlFileName, out parameters);
+				ReadConnectionParameters reader = new ReadConnectionParameters(xmlFileName);
+				
+				// let's try to read the file 
+				result = reader.Parse(out _parameters);
 			}
 			
 			if (result)
 			{
-	            returnCode = userClass.Login(parameters.userName, parameters.userPassword, parameters.appPassword, 
+	            returnCode = userClass.Login(_parameters.userName, _parameters.userPassword, _parameters.appPassword, 
 				                             out  errMsg, out  sessionId);
 				if (returnCode >= 0)
 				{
@@ -246,7 +232,7 @@ namespace FMRShell
 		
 		public string GetUserName()
 		{
-			return parameters.userName;
+			return _parameters.userName;
 		}
 		
 		public ConnectionState state
@@ -259,7 +245,7 @@ namespace FMRShell
         protected string errMsg;
 		protected string xmlFileName;
 		protected bool useXmlFile;
-		protected ConnectionParameters parameters;
+		protected ConnectionParameters _parameters;
         protected List<JQuant.ISink<ConnectionState>> stateListeners;
 
 	
@@ -280,6 +266,100 @@ namespace FMRShell
 		}
 #endif			
 	}
+
+	
+	/// <summary>
+	/// generic class 
+	/// data container for the trading/market data
+	/// can hold fields like time stamp, bid/ask, last price, etc.
+	/// this class is not going to be used directly but inherited
+	/// </summary>
+	public class MarketData
+	{
+	}
+	
+	/// <summary>
+	/// this class used by the RxDataValidator to let the application know that
+	/// something wrong with the incoming data
+	/// </summary>
+	public class DataValidatorEvent
+	{
+		public MarketData sync
+		{
+			get;
+			set;
+		}
+		public MarketData async
+		{
+			get;
+			set;
+		}
+	}
+	
+	/// <summary>
+	/// This is a producer (see IProducer) 
+	/// Given Connection object will open data stream and notify registered 
+	/// data sinks (ISink)
+	/// The class operates simultaneously in asynchronous and synchronous fashion. 
+	/// The class installs an event listener by calling K300Class.K300StartStream
+	/// Additonally class spawns a thread which does polling of the remote server 
+	/// in case notification does not work correctly and to ensure that the data is 
+	/// consistent. 
+	/// There is a tricky part. We want to make sure that the data which we get by 
+	/// polling and via asynchronous API is the same. Collector uses for this purpose
+	/// a dedicated sink - thread which polls the servers and compares the received 
+	/// data with the one sent to it by the collector
+	/// </summary>
+	public class Collector: JQuant.IProducer<MarketData>
+	{
+        public bool AddSink(JQuant.ISink<MarketData> sink)
+		{
+			return true;
+		}
+		
+        public bool RemoveSink(JQuant.ISink<MarketData> sink)
+		{
+			return true;
+		}
+	}
+	
+	/// <summary>
+	/// The class also is a sink registered with the Collector. When Collector sends 
+	/// a new notification validator pushes the data to FIFO 
+	/// 
+	/// this is also a thread which polls API and gets market data synchronously. 
+	/// looks for the data in the FIFO and if found removes 
+	/// the entry from the FIFO. Validator expects that order of the events is the same 
+	/// and if there is no match (miss) notifies all registered listeners (sinks) about
+	/// data mismatch
+	/// </summary>
+	public class RxDataValidator: JQuant.IProducer<DataValidatorEvent>, JQuant.ISink<MarketData>
+	{
+        public bool AddSink(JQuant.ISink<DataValidatorEvent> sink)
+		{
+			return true;
+		}
+		
+        public bool RemoveSink(JQuant.ISink<DataValidatorEvent> sink)
+		{
+			return true;
+		}
+		
+		
+		/// <summary>
+		/// called by Collector to notify about incoming event. Add the event to the FIFO
+		/// </summary>
+		/// <param name="count">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="data">
+		/// A <see cref="MarketData"/>
+		/// </param>
+		public void Notify(int count, MarketData data)
+		{
+		}
+	}
+	
 	
 	/// <summary>
 	/// handle XML file containing connection parameters
