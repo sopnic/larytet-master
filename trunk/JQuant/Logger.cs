@@ -7,9 +7,9 @@ using System.Collections.Generic;
 namespace JQuant
 {
 	/// <summary>
-	/// base class for all system logs
+	/// base class for all system loggers
 	/// </summary>
-	public abstract class Logger<DataType> :ISink<DataType>, ILogger, IDisposable
+	public abstract class Logger<DataType> : IDisposable, ILogger
 	{
         public Logger(string name)
         {
@@ -32,8 +32,6 @@ namespace JQuant
         {
             Console.WriteLine("Mailbox " + GetName() + " destroyed");
         }
-		
-		public abstract void Notify(int count, DataType data);
 		
         public string GetName()
 		{
@@ -74,8 +72,103 @@ namespace JQuant
 		protected System.DateTime _stampOldest; 
 	}
 	
+	/// <summary>
+	/// write log to file
+	/// base class for all loggers working with output streams
+	/// </summary>
+	public abstract class FileLogger<DataType> :Logger<DataType>
+	{
+		public FileLogger(string name, string filename): base(name)
+		{
+			FileName = filename;
+			notStoped = false;
+		}
+			
+		/// <summary>
+		/// start write file
+		/// </summary>
+		public void Start()
+		{
+			// open file for writing 
+		}
 
-	
+		/// <summary>
+		/// application will call this method for clean up
+		/// remove registration from the producer
+		/// close the file, remove registration of the data sync from the producer
+		/// </summary>
+		public void Stop()
+		{
+			notStoped = false;
+            lock (this)
+			{
+				incomingData.Clear();
+			}			
+		}
+		
+		/// <summary>
+		/// FMRShell collector calls this method to notify about incoming events
+		/// push the evet into FIFO and let low priority background thread to write 
+		/// the data into the file
+		/// </summary>
+		public void Notify(object data)
+		{
+            lock (this)  // protect access to FIFO
+			{
+				// push the data to the FIFO
+				incomingData.Enqueue(data);
+			}
+		}
+		
+		/// <summary>
+		/// low priority thread writing the data to the file
+		/// </summary>
+		protected void FileWriter()
+		{
+			object data = null;
+			while (notStoped)
+			{
+				bool dataSet = false;
+				if (incomingData.Count == 0)
+				{
+					Thread.Sleep(1000);
+				}
+				lock (this)  // protect access to FIFO
+				{
+					if (incomingData.Count != 0)
+					{
+						data = incomingData.Dequeue();
+						dataSet = true;
+					}
+				}
+				if (dataSet) 
+				{
+					// TODO write data the file 
+					Console.WriteLine(" "+data);
+				}
+			}
+		}
+		
+		public string FileName
+		{
+			get;
+			protected set;
+		}
+		
+		protected bool notStoped;
+		
+		/// <summary>
+		/// Notify() pushes the incoming data here
+		/// Thread FileWriter() pulls objects from the list and writes them to the file
+		/// Under normal conditions the list is going to be empty most of the time
+		/// </summary>
+		protected Queue incomingData;
+	}
+
+	/// <summary>
+	/// this class will get the data from specified data producer and write the data to the 
+	/// specified file.
+	/// </summary>
 	public class MarketDataLoggerAscii :Logger<FMRShell.MarketData>, ISink<FMRShell.MarketData>
 	{
 		public MarketDataLoggerAscii(string name, string filename, 
@@ -86,14 +179,6 @@ namespace JQuant
 			notStoped = false;
 		}
 			
-		/// <summary>
-		/// application will call this method to let .NET to destroy the object
-		/// </summary>
-        public override void Dispose()
-        {
-			base.Dispose();			
-        }
-		
 		/// <summary>
 		/// register notifier in the producer, start write file
 		/// </summary>
@@ -123,7 +208,7 @@ namespace JQuant
 		/// push the evet into FIFO and let low priority background thread to write 
 		/// the data into the file
 		/// </summary>
-		public override void Notify(int count, FMRShell.MarketData data)
+		public void Notify(int count, FMRShell.MarketData data)
 		{
 			// producer can reuse the same object again and again
 			// i have to clone it before pushing to the FIFO
