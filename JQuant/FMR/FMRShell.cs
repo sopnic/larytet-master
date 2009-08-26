@@ -278,9 +278,14 @@ namespace FMRShell
 	/// can hold fields like time stamp, bid/ask, last price, etc.
 	/// this class is not going to be used directly but inherited
 	/// </summary>
-	public struct MarketData
+	public struct MarketData :ICloneable
 	{
 		public K300MaofType k3Maof;
+		
+		public object Clone()
+		{
+			return new MarketData();
+		}
 	}
 	
 	/// <summary>
