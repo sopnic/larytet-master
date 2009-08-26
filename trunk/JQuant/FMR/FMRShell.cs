@@ -278,8 +278,9 @@ namespace FMRShell
 	/// can hold fields like time stamp, bid/ask, last price, etc.
 	/// this class is not going to be used directly but inherited
 	/// </summary>
-	public class MarketData
+	public struct MarketData
 	{
+		public K300MaofType k3Maof;
 	}
 	
 	/// <summary>
@@ -319,7 +320,38 @@ namespace FMRShell
 		
 		public Collector()
 		{
-			_listeners = new List<JQuant.ISink<MarketData>>(5);
+			listeners = new List<JQuant.ISink<MarketData>>(5);
+
+			countOnMaof = 0;
+			
+			marketDataOnMaof = new MarketData();
+			
+			// create a couple of TaskLib objects required for access
+			// to the data stream 
+			k300Class = new K300Class();
+			k300EventsClass = new K300EventsClass();
+            k300EventsClass.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
+		}
+
+		/// <summary>
+		/// Called by TaskBarLib. This method calls registered listeners and gets out 
+		/// The idea behind it to be as fast as possible
+		/// this is the point where some basic processing can be done like filter obvious
+		/// errors
+		/// </summary>
+		/// <param name="data">
+		/// A <see cref="K300MaofType"/>
+		/// </param>
+        protected void OnMaof(ref K300MaofType data)
+        {
+			// no memory allocation here - i am using allready created object 
+			marketDataOnMaof.k3Maof = data;
+			
+			foreach (JQuant.ISink<MarketData> sink in listeners)
+			{
+				// sink should not modify the data
+				sink.Notify(countOnMaof, marketDataOnMaof);
+			}
 		}
 		
 		/// <summary>
@@ -327,28 +359,31 @@ namespace FMRShell
 		/// </summary>
 		public void Start()
 		{
-			// create a couple of TaskLib objects required for access
-			// to the data stream 
-			k300 = new K300Class();
-			k300Events = new K300EventsClass();
+			k300Class.K300StartStream(K300StreamType.MaofStream);
 		}
 		
         public bool AddSink(JQuant.ISink<MarketData> sink)
 		{
-			_listeners.Add(sink);
+			listeners.Add(sink);
 			return true;
 		}
 		
         public bool RemoveSink(JQuant.ISink<MarketData> sink)
 		{
-			_listeners.Remove(sink);
+			listeners.Remove(sink);
 			return true;
 		}
 		
 		
-		protected static List<JQuant.ISink<MarketData>> _listeners;
-		protected K300Class k300;
-		protected K300EventsClass k300Events;
+		protected static List<JQuant.ISink<MarketData>> listeners;
+		protected K300Class k300Class;
+		protected K300EventsClass k300EventsClass;
+		protected MarketData marketDataOnMaof;
+		
+		/// <summary>
+		/// count calls to the notifiers
+		/// </summary>
+		protected int countOnMaof; 
 
 	}
 	
