@@ -9,7 +9,7 @@ namespace JQuant
 	/// <summary>
 	/// base class for all system loggers
 	/// </summary>
-	public abstract class Logger<DataType> : IDisposable, ILogger
+	public abstract class Logger :IDisposable, ILogger
 	{
         public Logger(string name)
         {
@@ -27,6 +27,8 @@ namespace JQuant
             // remove myself from the list of created loggers
             Resources.Loggers.Remove(this);
         }
+		
+		public abstract void AddEntry(object o);
 
         ~Logger()
         {
@@ -75,21 +77,27 @@ namespace JQuant
 	/// <summary>
 	/// write log to file
 	/// base class for all loggers working with output streams
+	/// the class implments asynchronous (postponned) writing and will be
+	/// used when there large amounts of data to write or when the data should be
+	/// processed before writing and the thread generating the data is 
+	/// sensitive to the performance 
 	/// </summary>
-	public abstract class FileLogger<DataType> :Logger<DataType>
+	public abstract class AsyncLogger :Logger
 	{
-		public FileLogger(string name, string filename): base(name)
+		public AsyncLogger(string name): base(name)
 		{
-			FileName = filename;
 			notStoped = false;
+			writer = new Thread(this.Writer);
+			writer.Priority = ThreadPriority.Lowest;
 		}
 			
 		/// <summary>
 		/// start write file
 		/// </summary>
-		public void Start()
+		public virtual void Start()
 		{
-			// open file for writing 
+			// start Writer (writing thread)
+			writer.Start();
 		}
 
 		/// <summary>
@@ -97,7 +105,7 @@ namespace JQuant
 		/// remove registration from the producer
 		/// close the file, remove registration of the data sync from the producer
 		/// </summary>
-		public void Stop()
+		public virtual void Stop()
 		{
 			notStoped = false;
             lock (this)
@@ -111,49 +119,48 @@ namespace JQuant
 		/// push the evet into FIFO and let low priority background thread to write 
 		/// the data into the file
 		/// </summary>
-		public void Notify(object data)
+		public override void AddEntry(object data)
 		{
             lock (this)  // protect access to FIFO
 			{
 				// push the data to the FIFO
 				incomingData.Enqueue(data);
+				Monitor.Pulse(this);
 			}
 		}
 		
 		/// <summary>
 		/// low priority thread writing the data to the file
 		/// </summary>
-		protected void FileWriter()
+		protected void Writer()
 		{
+			bool dataSet = false;
 			object data = null;
+			
 			while (notStoped)
 			{
-				bool dataSet = false;
-				if (incomingData.Count == 0)
-				{
-					Thread.Sleep(1000);
-				}
-				lock (this)  // protect access to FIFO
+				lock (this)
 				{
 					if (incomingData.Count != 0)
 					{
 						data = incomingData.Dequeue();
 						dataSet = true;
 					}
+					else 
+					{
+						// i want to check the notStoped flag from time to time
+						// and make sure that incomingData is empty
+						Monitor.Wait(this, 1*1000);
+					}
 				}
 				if (dataSet) 
 				{
-					// TODO write data the file 
-					Console.WriteLine(" "+data);
+					WriteData(data);
 				}
 			}
 		}
 		
-		public string FileName
-		{
-			get;
-			protected set;
-		}
+		protected abstract void WriteData(object data);
 		
 		protected bool notStoped;
 		
@@ -163,13 +170,14 @@ namespace JQuant
 		/// Under normal conditions the list is going to be empty most of the time
 		/// </summary>
 		protected Queue incomingData;
+		protected Thread writer;
 	}
 
 	/// <summary>
 	/// this class will get the data from specified data producer and write the data to the 
 	/// specified file.
 	/// </summary>
-	public class MarketDataLoggerAscii :Logger<FMRShell.MarketData>, ISink<FMRShell.MarketData>
+	public class MarketDataLoggerAscii :AsyncLogger, ISink<FMRShell.MarketData>
 	{
 		public MarketDataLoggerAscii(string name, string filename, 
 		                             IProducer<FMRShell.MarketData> producer): base(name)
@@ -182,10 +190,14 @@ namespace JQuant
 		/// <summary>
 		/// register notifier in the producer, start write file
 		/// </summary>
-		public void Start()
+		public override void Start()
 		{
 			// open file for writing 
+			
+			// register myself in the data producer
 			_producer.AddSink(this);
+			
+			base.Start();			
 		}
 
 		/// <summary>
@@ -193,13 +205,12 @@ namespace JQuant
 		/// remove registration from the producer
 		/// close the file, remove registration of the data sync from the producer
 		/// </summary>
-		public void Stop()
+		public override void Stop()
 		{
-			notStoped = false;
             lock (this)
 			{
 				_producer.RemoveSink(this);
-				incomingData.Clear();
+				base.Stop();
 			}			
 		}
 		
@@ -210,51 +221,13 @@ namespace JQuant
 		/// </summary>
 		public void Notify(int count, FMRShell.MarketData data)
 		{
-			// producer can reuse the same object again and again
-			// i have to clone it before pushing to the FIFO
-			FMRShell.MarketData dataClone = (FMRShell.MarketData)data.Clone();
-            lock (this)  // protect access to FIFO
-			{
-				// push the data to the FIFO
-				incomingData.Enqueue(dataClone);
-			}
+			base.AddEntry(data);
 		}
 		
-		/// <summary>
-		/// low priority thread writing the data to the file
-		/// </summary>
-		protected void FileWriter()
+		protected override void WriteData(object data)
 		{
-			FMRShell.MarketData data = new FMRShell.MarketData();
-			while (notStoped)
-			{
-				bool dataSet = false;
-				if (incomingData.Count == 0)
-				{
-					Thread.Sleep(1000);
-				}
-				lock (this)  // protect access to FIFO
-				{
-					if (incomingData.Count != 0)
-					{
-						data = (FMRShell.MarketData)incomingData.Dequeue();
-						dataSet = true;
-					}
-				}
-				if (dataSet) 
-				{
-					// TODO write data the file 
-					Console.WriteLine(" "+data);
-				}
-			}
+			// write data to the file
 		}
-		
-		/// <summary>
-		/// Notify() pushes the incoming data here
-		/// Thread FileWriter() pulls objects from the list and writes them to the file
-		/// Under normal conditions the list is going to be empty most of the time
-		/// </summary>
-		protected Queue incomingData;
 		
 		public string FileName
 		{
@@ -263,8 +236,6 @@ namespace JQuant
 		}
 		
 		protected IProducer<FMRShell.MarketData> _producer;
-		protected bool notStoped;
-
 	}
 	
 }
