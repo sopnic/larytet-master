@@ -26,7 +26,7 @@ namespace JQuantForms
 		public void Write(string s)
 		{
 			base.AppendText(s);
-			Truncate();
+//			Truncate();
 		}
 		
 		protected void Truncate()

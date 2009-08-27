@@ -609,11 +609,7 @@ namespace FMRShell
 	/// </summary>
     class FMRShellTest
     {
-#if NOTFMRSHELLMAIN
-        public static void Main_(string[] args)
-#else			
         public static void Main(string[] args)
-#endif				
         {
 			// use default hard coded settings
             Connection newConn = new FMRShell.Connection();
