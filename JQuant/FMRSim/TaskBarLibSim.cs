@@ -332,13 +332,66 @@ namespace TaskBarLibSim
 	
 	public class UserClass
 	{
+		public UserClass()
+		{
+			_loginProgress = 0;
+			_loginStatus = LoginStatus.LoginSessionInactive;
+		}
+		
 		public int Login(string username, string AS400Password, string AppPassword, out string message, out int sessionId)
 		{
 			message = "";
-			sessionId = 0;
+			_sessionId = 1;
+			sessionId = _sessionId;
+			_loginStatus = LoginStatus.LoginSessionInProgress;
+			_loginStarted = DateTime.Now;
 			
-			return 0;
+			return _sessionId;
 		}
+		
+		public void GetLoginActivity(ref int sessionId, out int percent, out string description)
+		{
+			// simulation - if in progress move things 			
+			switch (_loginStatus )
+			{
+			case LoginStatus.LoginSessionInactive:  
+				// do nothing until Login() is not being called
+				break;
+			case LoginStatus.LoginSessionActive:
+				// login done - nothing more is required
+				break;
+			
+			default:
+				TimeSpan ts = TimeSpan.FromSeconds(1);
+				DateTime current = DateTime.Now;
+				if ((_loginStarted + ts) <= current)
+				{
+					_loginProgress += 20;
+					_loginStarted = current;
+				}
+				if (_loginProgress >= 100)
+				{
+					_loginStatus = LoginStatus.LoginSessionActive;
+				}
+				break;
+			}
+			percent = _loginProgress;
+			description = "No login description";
+			sessionId = _sessionId;
+		}
+		
+		
+		public LoginStatus get_LoginState(ref int sessionId)
+		{
+			return _loginStatus;
+		}
+		
+		protected int _loginProgress;
+		protected int _sessionId;
+		protected LoginStatus _loginStatus;
+		protected DateTime _loginStarted;
+
+		
 	}
 		
 }
