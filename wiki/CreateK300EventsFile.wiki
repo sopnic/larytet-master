@@ -13,11 +13,15 @@ public virtual int CreateK300EventsFile(
 }}}
 
 *Parameters:*
-_CacheFolder_ A folder/path to which the file(s) will be saved
-_DataFileName_ Data file(s) name.
-_EventsPerFile_ The maximal number of events per file.
-_streamType_ which streams events to keep in the file (Maof/Rezef)
-_ErrorMessage_ ???
+  _CacheFolder_ A folder/path to which the file(s) will be saved
+
+  _DataFileName_ Data file(s) name.
+
+  _EventsPerFile_ The maximal number of events per file.
+
+  _streamType_ which streams events to keep in the file (Maof/Rezef)
+
+  _ErrorMessage_ ???
 
 *Return Value:*
 int (probably 0 if success and -1 if failure, like all the functions here?)
