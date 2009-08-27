@@ -1,5 +1,4 @@
 using System;
-using TaskBarLib;
 
 /// <summary>
 /// I want to run TaskBarLib simulation. I am going to implement API using prerecorded
@@ -312,6 +311,9 @@ namespace TaskBarLibSim
         public string UPD_TIME;
     }
 
+    public struct K300MadadType
+    {
+    }
 
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireMaofEventHandler(ref Array psaStrRecords, ref int nRecords);
@@ -352,7 +354,7 @@ namespace TaskBarLibSim
 
     public delegate void _IK300EventsEvents_OnMaofEventHandler(ref K300MaofType data);
     public delegate void _IK300EventsEvents_OnRezefEventHandler(ref K300RzfType data);
-
+    public delegate void _IK300EventsEvents_OnMadadEventHandler(ref K300MadadType data);
 
     public interface _IK300EventsEvents_Event
     {
@@ -410,7 +412,15 @@ namespace TaskBarLibSim
         public event _IK300EventsEvents_OnRezefEventHandler OnRezef;
         public event _IK300EventsEvents_OnMadadEventHandler OnMadad;
 
-        // Properties
+        // Properties - are used to filter the events data 
+        public BaseAssetTypes EventsFilterBaseAsset { set; get; }
+        public int EventsFilterBno { set; get; }
+        public int EventsFilterMadad { set; get; }
+        public int EventsFilterMaof { set; get; }
+        public MonthType EventsFilterMonth { set; get; }
+        public int EventsFilterRezef { set; get; }
+        public StockKind EventsFilterStockKind { set; get; }
+        public MadadTypes EventsFilterStockMadad { set; get; }
     }
 
 
