@@ -48,7 +48,9 @@ namespace JQuant
 			
 	        protected override void HandleMessage(string s)
 	        {
+#if WITHGUI
 				consoleOut.Write(s);
+#endif                
 			}
 			
 			public JQuantForms.ConsoleOut consoleOut
@@ -407,27 +409,33 @@ namespace JQuant
 		
 		static void Main(string[] args) 
 		{
+            
 			Resources.Init();
 				
 				
 			instance = new Program();			
-					
+
+#if WITHGUI
 			// bring up GUI	(spawns separate thread)
+            Application.Init ();
 			new Thread(instance.InitGUI).Start();
+#endif            
 		
 			// run console (blocking call)
 			instance.Run();  
 			
-			Console.Write("Exiting...close GUI...");
-			instance.CloseGUI();
 			
-			Console.WriteLine("done");
 			
 			// very last chance for the cleanup - close streams and so on
 			// before i return control to the OS	
 			
-			Application.Exit();			
-			
+#if WITHGUI
+            Console.Write("Exiting...close GUI...");
+            instance.CloseGUI();
+			Application.Quit();
+            Console.WriteLine("done");
+#else            
+#endif
 		}
 		
 		protected Form mainForm;
