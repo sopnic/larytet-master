@@ -106,7 +106,6 @@ namespace FMRShell
 		/// </summary>
 		private void Init()
 		{
-			stateListeners = new List<JQuant.ISink<ConnectionState>> (5);
 			state = ConnectionState.Idle;
 			userClass = new UserClass();
 		}
@@ -245,35 +244,6 @@ namespace FMRShell
 			return openResult;
 		}
 
-        /// <summary>
-		/// this method spawns a thread which will attempt to establish the connection
-		/// and keep the connection alive
-		/// the call to Keep() is non-blocking. 
-		/// Before calling to Keep() application should call AddStateListener() and register 
-		/// interface allowing to listen to changes in the connection state
-		/// </summary>
-        public void Keep()
-        {
-		}
-		
-		/// <summary>
-		/// Application will call this method to install listeners - callback functions 
-		/// which should be called when the state of the connection changed
-		/// Class Connection will call Notify() for all registered sinks
-		/// </summary>
-		public void AddStateListener(JQuant.ISink<ConnectionState> sink)
-		{
-			stateListeners.Add(sink);
-		}
-		
-		/// <summary>
-		/// this is remove from the list and if the list is large the method can be quite 
-		/// expensive
-		/// </summary>
-		public void RemoveStateListener(JQuant.ISink<ConnectionState> sink)
-		{
-			stateListeners.Remove(sink);
-		}
 		
 		public string GetUserName()
 		{
@@ -286,6 +256,7 @@ namespace FMRShell
 			protected set;
 		}
 		
+		
 		public ConnectionState state
 		{
 			get;
@@ -297,7 +268,6 @@ namespace FMRShell
 		protected string xmlFileName;
 		protected bool useXmlFile;
 		protected ConnectionParameters _parameters;
-        protected List<JQuant.ISink<ConnectionState>> stateListeners;
 
 	
 		/// <value>
