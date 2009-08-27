@@ -1,24 +1,21 @@
-
 using System;
 
-
 /// <summary>
-/// I want to run TaskLib simulation. I am going to implement API using prerecorded 
+/// I want to run TaskLib simulation. I am going to implement API using prerecorded
 /// or generated in some other way log files as a data feed
-/// Only small part of the API is implemented 
-/// This class is used by the FMRShell and allows to simulate different scenarios 
+/// Only small part of the API is implemented
+/// This class is used by the FMRShell and allows to simulate different scenarios
 /// and play back previously recorded log files
-/// In the future this class will contain engines which simulate behaviour of the 
+/// In the future this class will contain engines which simulate behaviour of the
 /// real system
-/// 
-/// Side note. Another approach to the simulation is to install a real server running 
-/// simulator and let the rest of the application including 3rd party code (DLLs from 
-/// FMR) use the simulation server. At this point it looks like an overkill. Thanks to 
+///
+/// Side note. Another approach to the simulation is to install a real server running
+/// simulator and let the rest of the application including 3rd party code (DLLs from
+/// FMR) use the simulation server. At this point it looks like an overkill. Thanks to
 /// the time stamps i can simulate the system behaviour fairly close.
 /// </summary>
 namespace TaskBarLibSim
 {
-	
     public enum BaseAssetTypes
     {
         BaseAssetAll = -1,
@@ -30,7 +27,7 @@ namespace TaskBarLibSim
         BaseAssetShacharAroch = 7,
         BaseAssetShacharBenoni = 6
     }
-	
+
     public enum MonthType
     {
         AllMonths = -1,
@@ -48,7 +45,7 @@ namespace TaskBarLibSim
         September = 9
     }
 
-	public enum MadadTypes
+    public enum MadadTypes
     {
         AllMadad = -1,
         BANK = 4,
@@ -76,7 +73,7 @@ namespace TaskBarLibSim
         YETER30 = 9,
         YETER50 = 13
     }
-	
+
     public enum K300StreamType
     {
         IndexStream = 0x34,
@@ -85,7 +82,7 @@ namespace TaskBarLibSim
         RezefCNTStream = 0x33,
         RezefStream = 0x31
     }
-	
+
     public enum StockKind
     {
         StockKindAgach = 1,
@@ -94,7 +91,7 @@ namespace TaskBarLibSim
         StockKindMakam = 2,
         StockKindMenaya = 0
     }
-	
+
     public enum LoginStatus
     {
         LoginSessionActive,
@@ -110,7 +107,7 @@ namespace TaskBarLibSim
         LoginSessionReLogin,
         LoginSessionTaskBarBlocked
     }
-	
+
     public enum OnlineSessionType
     {
         OnlineSessionTypeAccounts,
@@ -119,7 +116,7 @@ namespace TaskBarLibSim
         OnlineSessionTypeKranot,
         OnlineSessionTypeKupa
     }
-	
+
     public enum OrderOperation
     {
         OrderOperationNewBuy,
@@ -128,7 +125,7 @@ namespace TaskBarLibSim
         OrderOperationUpdSell,
         OrderOperationDelete
     }
-	
+
     public enum OrdersErrorTypes
     {
         Alert = 0x34,
@@ -138,7 +135,7 @@ namespace TaskBarLibSim
         PasswordReq = 0x33,
         ReEnter = 50
     }
-	
+
     public enum QueryType
     {
         qtDetailed = 0x30,
@@ -153,7 +150,7 @@ namespace TaskBarLibSim
         YieldDataYearbyMonth = 2,
         YieldDataYearbyQuater = 5
     }
-	
+
     public enum ConnectionState
     {
         csOpen,
@@ -167,6 +164,20 @@ namespace TaskBarLibSim
         LoginLevelMax = 50,
         LoginLevelOptionsStocks = 2,
         LoginLevelPermissions = 1
+    }
+
+    /// <summary>
+    /// This type is represents the timestamps from AS400 servers
+    /// </summary>
+    public struct AS400DateTime
+    {
+        public int year;
+        public int month;
+        public int day;
+        public int hour;
+        public int minute;
+        public int second;
+        public int ms;
     }
 
     public struct K300MaofType
@@ -234,13 +245,14 @@ namespace TaskBarLibSim
         public string UPD_DAT;
         public string UPD_TIME;
         public string FILER;
-    }	
+    }
+
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireMaofEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireRezefCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireRezefEventHandler(ref Array psaStrRecords, ref int nRecords);
 
-	public interface IK300
+    public interface IK300
     {
         int GetMAOF(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad);
         int GetMAOFRaw(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad);
@@ -249,7 +261,7 @@ namespace TaskBarLibSim
         int K300StartStream(K300StreamType streamType);
         int K300StopStream(K300StreamType streamType);
     }
-	
+
     public interface K300 : IK300, IK300Event_Event
     {
     }
@@ -263,25 +275,25 @@ namespace TaskBarLibSim
         event IK300Event_FireRezefCNTEventHandler FireRezefCNT;
     }
 
-	
+
     public interface IK300Events
     {
     }
-	
+
     public interface K300Events : IK300Events, _IK300EventsEvents_Event
     {
-    }	
+    }
 
     public delegate void _IK300EventsEvents_OnMaofEventHandler(ref K300MaofType data);
 
-	
+
     public interface _IK300EventsEvents_Event
     {
         // Events
         event _IK300EventsEvents_OnMaofEventHandler OnMaof;
     }
-	
-	public class K300Class : IK300, K300, IK300Event_Event
+
+    public class K300Class : IK300, K300, IK300Event_Event
     {
         // Events
         public event IK300Event_FireMaofEventHandler FireMaof;
@@ -291,107 +303,135 @@ namespace TaskBarLibSim
 
         // Methods
         public virtual int GetMAOF(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad)
-		{
-			return 0;
-		}
-		
+        {
+            return 0;
+        }
+
         public virtual int GetMAOFRaw(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad)
-		{
-			return 0;
-		}
-		
+        {
+            return 0;
+        }
+
         public virtual int K300StartStream(K300StreamType streamType)
-		{
-			return 0;
-		}
-		
+        {
+            return 0;
+        }
+
         public virtual int K300StopStream(K300StreamType streamType)
-		{
-			return 0;
-		}
-		
+        {
+            return 0;
+        }
+
         public virtual int StartStream(K300StreamType streamType, string strStockNumber, MadadTypes strMadad, int withEvents)
-		{
-			return 0;
-		}
-		
+        {
+            return 0;
+        }
+
         public virtual void StopUpdate(int pnID)
-		{
-		}
-		
+        {
+        }
+
     }
-	
+
     public class K300EventsClass : IK300Events, K300Events, _IK300EventsEvents_Event
     {
         // Events
         public event _IK300EventsEvents_OnMaofEventHandler OnMaof;
 
-		// Properties
+        // Properties
     }
 
-	
-	public class UserClass
-	{
-		public UserClass()
-		{
-			_loginProgress = 0;
-			_loginStatus = LoginStatus.LoginSessionInactive;
-		}
-		
-		public int Login(string username, string AS400Password, string AppPassword, out string message, out int sessionId)
-		{
-			message = "";
-			_sessionId = 1;
-			sessionId = _sessionId;
-			_loginStatus = LoginStatus.LoginSessionInProgress;
-			_loginStarted = DateTime.Now;
-			
-			return _sessionId;
-		}
-		
-		public void GetLoginActivity(ref int sessionId, out int percent, out string description)
-		{
-			// simulation - if in progress move things 			
-			switch (_loginStatus )
-			{
-			case LoginStatus.LoginSessionInactive:  
-				// do nothing until Login() is not being called
-				break;
-			case LoginStatus.LoginSessionActive:
-				// login done - nothing more is required
-				break;
-			
-			default:
-				TimeSpan ts = TimeSpan.FromSeconds(1);
-				DateTime current = DateTime.Now;
-				if ((_loginStarted + ts) <= current)
-				{
-					_loginProgress += 20;
-					_loginStarted = current;
-				}
-				if (_loginProgress >= 100)
-				{
-					_loginStatus = LoginStatus.LoginSessionActive;
-				}
-				break;
-			}
-			percent = _loginProgress;
-			description = "No login description";
-			sessionId = _sessionId;
-		}
-		
-		
-		public LoginStatus get_LoginState(ref int sessionId)
-		{
-			return _loginStatus;
-		}
-		
-		protected int _loginProgress;
-		protected int _sessionId;
-		protected LoginStatus _loginStatus;
-		protected DateTime _loginStarted;
 
-		
-	}
-		
+    public class UserClass
+    {
+        public UserClass()
+        {
+            _loginProgress = 0;
+            _loginStatus = LoginStatus.LoginSessionInactive;
+        }
+
+        public int Login(string username, string AS400Password, string AppPassword, out string message, out int sessionId)
+        {
+            message = "";
+            _sessionId = 1;
+            sessionId = _sessionId;
+            _loginStatus = LoginStatus.LoginSessionInProgress;
+            _loginStarted = DateTime.Now;
+
+            return _sessionId;
+        }
+
+        public void GetLoginActivity(ref int sessionId, out int percent, out string description)
+        {
+            // simulation - if in progress move things                      
+            switch (_loginStatus)
+            {
+                case LoginStatus.LoginSessionInactive:
+                    // do nothing until Login() is not being called
+                    break;
+                case LoginStatus.LoginSessionActive:
+                    // login done - nothing more is required
+                    break;
+
+                default:
+                    TimeSpan ts = TimeSpan.FromSeconds(1);
+                    DateTime current = DateTime.Now;
+                    if ((_loginStarted + ts) <= current)
+                    {
+                        _loginProgress += 20;
+                        _loginStarted = current;
+                    }
+                    if (_loginProgress >= 100)
+                    {
+                        _loginStatus = LoginStatus.LoginSessionActive;
+                    }
+                    break;
+            }
+            percent = _loginProgress;
+            description = "No login description";
+            sessionId = _sessionId;
+        }
+
+
+        public LoginStatus get_LoginState(ref int sessionId)
+        {
+            return _loginStatus;
+        }
+
+        protected int _loginProgress;
+        protected int _sessionId;
+        protected LoginStatus _loginStatus;
+        protected DateTime _loginStarted;
+
+
+    }
+
+    public class ConfigClass
+    {
+        /// <summary>
+        /// This function is used to get timestamp from AS400 server in order to compute
+        /// roundrip times and latencies
+        /// </summary>
+        /// <param name="dt">A <see cref="TaskBarLibSim.AS400DateTime"/></param>
+        /// <param name="latency">A <see cref="System.Int32"/></param>
+        /// <returns>0 if success, -1 if failure</returns>
+        public int GetAS400DateTime(out AS400DateTime dt, out int latency)
+        {
+            DateTime now = DateTime.Now;
+            //fill the AS400DateTime struct with updated values
+            dt.year = now.Year;
+            dt.month = now.Month;
+            dt.minute = now.Minute;
+            dt.second = now.Second;
+            dt.ms = now.Millisecond;
+
+            //An arbitrary value for latency
+            latency = 50;
+
+            bool success = true;
+            if (success) return 0;
+            else return -1;
+        }
+    }
 }
+
