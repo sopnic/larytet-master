@@ -27,12 +27,28 @@ namespace JQuant
 			Console.WriteLine(s);
 			
 			// and GUI 
-			consoleOut.WriteLine(s+"\n");
+			// output is asynchronous - send mail to the thread
+			outputThread.Send(s+"\n");
 		}
 			
 		public void Write(string s) 
 		{
 			Console.Write(s);
+		}
+		
+		protected class OutputThread: MailboxThread<string>
+		{
+			public OutputThread(JQuantForms.ConsoleOut console) : base("ConsoleOut", 100)
+			{
+				_console = console;
+			}
+			
+	        protected override void HandleMessage(string s)
+	        {
+				_console.Write(s);
+			}
+			
+			JQuantForms.ConsoleOut _console;
 		}
 
 		/// <summary>
@@ -41,6 +57,10 @@ namespace JQuant
 		/// </summary>
 		protected Program() 
 		{
+			consoleOut = new JQuantForms.ConsoleOut();
+			outputThread = new OutputThread(consoleOut);
+			outputThread.Start();
+			
 			cli = new CommandLineInterface("Jerusalem Quant");
 			LoadCommandLineInterface();
 		}
@@ -330,7 +350,6 @@ namespace JQuant
 		protected void InitGUI()
 		{
 			// create consoles for output/input
-			// at this point ConsoleOut exists
 			// consoleOut = new JQuantForms.ConsoleOut();
 			consoleOut.Dock = DockStyle.Fill;
 
@@ -372,7 +391,7 @@ namespace JQuant
 			Resources.Init();
 				
 				
-			instance = new Program();
+			instance = new Program();			
 					
 			// bring up GUI	(spawns separate thread)
 			new Thread(instance.InitGUI).Start();
@@ -388,8 +407,9 @@ namespace JQuant
 		
 		protected Form mainForm;
 		// tricky part - i need output console before main form is initialized
-		protected JQuantForms.ConsoleOut consoleOut = new JQuantForms.ConsoleOut();
+		protected JQuantForms.ConsoleOut consoleOut;
 		protected JQuantForms.ConsoleIn consoleIn;
+		protected OutputThread outputThread;
 		
 		public static Program instance
 		{
