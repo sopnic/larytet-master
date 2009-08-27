@@ -34,21 +34,28 @@ namespace JQuant
 		public void Write(string s) 
 		{
 			Console.Write(s);
+
+			// and GUI 
+			// output is asynchronous - send mail to the thread
+			outputThread.Send(s);
 		}
 		
 		protected class OutputThread: MailboxThread<string>
 		{
-			public OutputThread(JQuantForms.ConsoleOut console) : base("ConsoleOut", 100)
+			public OutputThread() : base("ConsoleOut", 100)
 			{
-				_console = console;
 			}
 			
 	        protected override void HandleMessage(string s)
 	        {
-				_console.Write(s);
+				consoleOut.Write(s);
 			}
 			
-			JQuantForms.ConsoleOut _console;
+			public JQuantForms.ConsoleOut consoleOut
+			{
+				get;
+				set;
+			}
 		}
 
 		/// <summary>
@@ -57,10 +64,8 @@ namespace JQuant
 		/// </summary>
 		protected Program() 
 		{
-			consoleOut = new JQuantForms.ConsoleOut();
-			outputThread = new OutputThread(consoleOut);
-			outputThread.Start();
-			
+			outputThread = new OutputThread();
+
 			cli = new CommandLineInterface("Jerusalem Quant");
 			LoadCommandLineInterface();
 		}
@@ -157,8 +162,6 @@ namespace JQuant
 			}
 			thr.Stop();
 			debugThreadShowCallback(iWrite, cmdName, cmdArguments);
-				
-			thr.Dispose();
 				
 			System.GC.Collect();
 		}
@@ -344,20 +347,33 @@ namespace JQuant
 		
 		}
 			
+		protected void CloseGUI()
+		{
+			Console.Write("Stop output...");
+			outputThread.Stop();
+			Console.Write("Clear output...");
+			consoleOut.Clear();
+			Console.Write("Clear table panel...");
+			tlp.Controls.Remove(consoleOut);
+			tlp.Controls.Remove(consoleIn);
+			Console.Write("Clear main form...");
+			mainForm.Controls.Remove(tlp);				
+		}
+		
 		/// <summary>
 		/// executed in a separate thread - uses spare CPU cycles
 		/// </summary>
 		protected void InitGUI()
 		{
 			// create consoles for output/input
-			// consoleOut = new JQuantForms.ConsoleOut();
+			consoleOut = new JQuantForms.ConsoleOut();
 			consoleOut.Dock = DockStyle.Fill;
 
 			consoleIn = new JQuantForms.ConsoleIn();
 			consoleIn.Dock = DockStyle.Fill;
 							
 			// Create layout
-			TableLayoutPanel tlp = new TableLayoutPanel();
+			tlp = new TableLayoutPanel();
 			tlp.Dock = DockStyle.Fill;
 			tlp.ColumnCount = 1;
 			tlp.RowCount = 2;
@@ -372,9 +388,9 @@ namespace JQuant
 			tlp.Controls.Add(consoleIn, 0, 1);
 			
 			// i have no idea what this thing does
-			tlp.ResumeLayout(false);
-			tlp.PerformLayout();
-			
+			// tlp.ResumeLayout(false);
+			// tlp.PerformLayout();
+
 			// create main form
 			mainForm = new Form();
 			mainForm.Size = new System.Drawing.Size(600, 400);
@@ -382,10 +398,13 @@ namespace JQuant
 			mainForm.Controls.Add(tlp);
 			mainForm.Show();
 			
+			outputThread.consoleOut = consoleOut;
+			outputThread.Start();
+			
 			// spawn a thread to handle the mainForm
 			Application.Run(mainForm);
 		}
-			
+		
 		static void Main(string[] args) 
 		{
 			Resources.Init();
@@ -395,14 +414,20 @@ namespace JQuant
 					
 			// bring up GUI	(spawns separate thread)
 			new Thread(instance.InitGUI).Start();
-				
 		
 			// run console (blocking call)
 			instance.Run();  
 			
+			Console.Write("Exiting...close GUI...");
+			instance.CloseGUI();
+			
+			Console.WriteLine("done");
+			
 			// very last chance for the cleanup - close streams and so on
 			// before i return control to the OS	
+			
 			Application.Exit();			
+			
 		}
 		
 		protected Form mainForm;
@@ -410,6 +435,7 @@ namespace JQuant
 		protected JQuantForms.ConsoleOut consoleOut;
 		protected JQuantForms.ConsoleIn consoleIn;
 		protected OutputThread outputThread;
+		protected TableLayoutPanel tlp;
 		
 		public static Program instance
 		{

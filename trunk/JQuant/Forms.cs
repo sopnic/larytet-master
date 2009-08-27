@@ -18,12 +18,24 @@ namespace JQuantForms
 		public ConsoleOut()
 		{
 			base.Multiline = true;
-			
+			base.ScrollBars = ScrollBars.Vertical;
+			base.ReadOnly = true;
+			base.WordWrap = true;
 		}
 		
 		public void Write(string s)
 		{
 			base.AppendText(s);
+			Truncate();
+		}
+		
+		protected void Truncate()
+		{
+			int maxTextLength = 600;
+			if (TextLength > maxTextLength)
+			{
+				Text = Text.Remove(0, (TextLength-maxTextLength));
+			}
 		}
 	}
 	
@@ -36,6 +48,8 @@ namespace JQuantForms
 		public ConsoleIn()
 		{
 			base.Multiline = false;
+			base.ReadOnly = false;
+			base.ScrollBars = ScrollBars.Horizontal;
 		}
 		
 		public string ReadLine()
