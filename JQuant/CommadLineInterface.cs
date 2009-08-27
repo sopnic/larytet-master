@@ -137,7 +137,7 @@ namespace JQuant
 
         protected void DummyCommand(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            Console.WriteLine("Menu " + Name +
+            iWrite.WriteLine("Menu " + Name +
                 ": callback is called. Probably should be command");
         }
 

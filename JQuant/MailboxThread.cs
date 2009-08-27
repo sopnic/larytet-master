@@ -8,7 +8,7 @@ namespace JQuant
     /// <summary>
     /// Thread waiting forever for a message
     /// </summary>
-    public class MailboxThread<Message> : IThread, IDisposable
+    public class MailboxThread<Message> : IThread
     {
 
         public MailboxThread(string name, int mailboxCapacity)
@@ -23,7 +23,7 @@ namespace JQuant
             _state = ThreadState.Initialized;
         }
 
-        public void Dispose()
+        protected void Dispose()
         {
             if (_isAlive)
             {
@@ -62,6 +62,7 @@ namespace JQuant
             }
 
             _state = ThreadState.Stoped;
+			Dispose();
         }
 
         /// <summary>
