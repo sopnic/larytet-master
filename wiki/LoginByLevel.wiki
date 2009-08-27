@@ -19,7 +19,7 @@ _username_    UserName for AS400 login proccess.
 
 _AS400Password_    Password for AS400 login proccess. 
 
-_systemName_    System name required for futre development of multiple customer login. You must insert here the system name of the AS400 to which you are connecting. 
+_systemName_    System name required for future development of multiple customer login. You must insert here the system name of the AS400 to which you are connecting. 
 
 _customer_    Customer number required for future development of multiple customer login. You must insert here the required customer number for connection. 
 
@@ -34,7 +34,7 @@ Upon success the function returns the positive unique session Id as is received 
 
 In the event of failure the following values can be returned by the function: 
   -1 : illegal user name or password.
-  -2 : Required login level not recognised. 
+  -2 : Required login level not recognized. 
   -3 : System currently executing login for lower ranked login level. Please try again later.
   -4 : Maximum number of users currently logged in to system.
   -5 : Unrecognized systemName or customer number. 
