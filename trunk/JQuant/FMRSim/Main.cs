@@ -396,13 +396,20 @@ namespace JQuant
 			// create main form
 			mainForm = new Form();
 			mainForm.Size = new System.Drawing.Size(600, 400);
+            
+            mainForm.SuspendLayout();
+            
 			// add layout to the main form
 			mainForm.Controls.Add(tlp);
-			mainForm.Show();
+
+            mainForm.ResumeLayout(false);
+            mainForm.PerformLayout();
+            
+			mainForm.Activate();
 			
 			outputThread.consoleOut = consoleOut;
 			outputThread.Start();
-			
+            
 			// spawn a thread to handle the mainForm
 			Application.Run(mainForm);
 		}

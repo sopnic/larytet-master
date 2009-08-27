@@ -25,18 +25,16 @@ namespace JQuantForms
 		
 		public void Write(string s)
 		{
-			base.AppendText(s);
-//			Truncate();
+			s = Text+s;
+            int maxTextLength = 600;
+            if (s.Length > maxTextLength)
+            {
+                s = s.Remove(0, (s.Length-maxTextLength));
+            }
+            Text = s;
+            // base.Refresh();
 		}
 		
-		protected void Truncate()
-		{
-			int maxTextLength = 600;
-			if (TextLength > maxTextLength)
-			{
-				Text = Text.Remove(0, (TextLength-maxTextLength));
-			}
-		}
 	}
 	
 	/// <summary>

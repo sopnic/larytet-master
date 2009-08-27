@@ -3,18 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FMRSim", "FMRSim\FMRSim.csproj", "{98340754-A22F-4B5C-BBF5-2BF97BA2B627}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FMRSim.WinForms", "FMRSim.WinForms\FMRSim.WinForms.csproj", "{6C4F9648-1B84-4D81-B1E2-CADD907DE605}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6C4F9648-1B84-4D81-B1E2-CADD907DE605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C4F9648-1B84-4D81-B1E2-CADD907DE605}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C4F9648-1B84-4D81-B1E2-CADD907DE605}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C4F9648-1B84-4D81-B1E2-CADD907DE605}.Release|Any CPU.Build.0 = Release|Any CPU
 		{98340754-A22F-4B5C-BBF5-2BF97BA2B627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{98340754-A22F-4B5C-BBF5-2BF97BA2B627}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98340754-A22F-4B5C-BBF5-2BF97BA2B627}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -25,18 +19,18 @@ Global
 		StartupItems = $0
 		$0.Item = FMRSim\FMRSim.csproj
 		Policies = $1
-		$1.StandardHeader = $2
-		$2.Text = 
-		$2.inheritsSet = MITX11License
-		$1.DotNetNamingPolicy = $3
-		$3.DirectoryNamespaceAssociation = None
-		$3.ResourceNamePolicy = FileFormatDefault
-		$1.TextStylePolicy = $4
-		$4.FileWidth = 120
-		$4.TabWidth = 4
-		$4.TabsToSpaces = True
-		$4.NoTabsAfterNonTabs = False
-		$4.RemoveTrailingWhitespace = True
-		$4.EolMarker = Native
+		$1.TextStylePolicy = $2
+		$2.FileWidth = 120
+		$2.TabWidth = 4
+		$2.TabsToSpaces = True
+		$2.NoTabsAfterNonTabs = False
+		$2.RemoveTrailingWhitespace = True
+		$2.EolMarker = Native
+		$1.StandardHeader = $3
+		$3.Text = 
+		$3.inheritsSet = MITX11License
+		$1.DotNetNamingPolicy = $4
+		$4.DirectoryNamespaceAssociation = None
+		$4.ResourceNamePolicy = FileFormatDefault
 	EndGlobalSection
 EndGlobal
