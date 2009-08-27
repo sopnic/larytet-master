@@ -3,10 +3,7 @@
 // This is FMR Simulation project
 // Partial implementation of FMRLab API as in the defined in the fmrlib.idl
 	
-	
-	
 using System;
-
 
 namespace JQuant {
 	
@@ -206,6 +203,8 @@ namespace JQuant {
 			iWrite.WriteLine("Connection failed errResult="+errResult);
 		}
 			
+		iWrite.WriteLine("Login status is "+connection.loginStatus.ToString());
+		
 		// final cleanup
 		connection.Dispose();
 	}
