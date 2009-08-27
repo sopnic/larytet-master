@@ -8,6 +8,7 @@
     <ProjectGuid>{98340754-A22F-4B5C-BBF5-2BF97BA2B627}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>FMRSim</AssemblyName>
+    <StartupObject>JQuant.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

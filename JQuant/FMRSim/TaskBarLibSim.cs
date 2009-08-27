@@ -418,6 +418,8 @@ namespace TaskBarLibSim
         public int GetAS400DateTime(out AS400DateTime dt, out int latency)
         {
             DateTime now = DateTime.Now;
+
+            dt = new AS400DateTime();
             //fill the AS400DateTime struct with updated values
             dt.year = now.Year;
             dt.month = now.Month;
