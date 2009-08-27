@@ -14,8 +14,32 @@ namespace JQuant
 	
 	class Program :JQuant.IWrite
 	{   
-		
-		Program() 
+		/// <summary>
+		/// application uses something like Program.instance.WriteLine()
+		/// </summary>
+		/// <param name="s">
+		/// A <see cref="System.String"/>
+		/// string to print
+		/// </param>
+		public void WriteLine(string s) 
+		{
+			// stdio
+			Console.WriteLine(s);
+			
+			// and GUI 
+			consoleOut.WriteLine(s+"\n");
+		}
+			
+		public void Write(string s) 
+		{
+			Console.Write(s);
+		}
+
+		/// <summary>
+		/// this guy is called by Main() and will never be called by anybody else
+		/// Use static property instance to access methods of the class
+		/// </summary>
+		protected Program() 
 		{
 			cli = new CommandLineInterface("Jerusalem Quant");
 			LoadCommandLineInterface();
@@ -268,17 +292,8 @@ namespace JQuant
 		                          " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
 		}  
 		
-		public void WriteLine(string s) 
-		{
-			Console.WriteLine(s);
-		}
-			
-		public void Write(string s) 
-		{
-			Console.Write(s);
-		}
-			
-		public void Run() 
+		
+		protected void Run() 
 		{
 		
 			cli.PrintTitle(this);
@@ -309,10 +324,14 @@ namespace JQuant
 		
 		}
 			
+		/// <summary>
+		/// executed in a separate thread - uses spare CPU cycles
+		/// </summary>
 		protected void InitGUI()
 		{
 			// create consoles for output/input
-			consoleOut = new JQuantForms.ConsoleOut();
+			// at this point ConsoleOut exists
+			// consoleOut = new JQuantForms.ConsoleOut();
 			consoleOut.Dock = DockStyle.Fill;
 
 			consoleIn = new JQuantForms.ConsoleIn();
@@ -321,10 +340,13 @@ namespace JQuant
 			// Create layout
 			TableLayoutPanel tlp = new TableLayoutPanel();
 			tlp.Dock = DockStyle.Fill;
-			tlp.ColumnCount = 1;			
-			tlp.RowCount = 2;			
-			tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
-			tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+			tlp.ColumnCount = 1;
+			tlp.RowCount = 2;
+
+			tlp.RowStyles.Add(new System.Windows.Forms.RowStyle
+			                  (System.Windows.Forms.SizeType.Percent, 80F));
+			tlp.RowStyles.Add(new System.Windows.Forms.RowStyle
+			                  (System.Windows.Forms.SizeType.Absolute, 28F));
 
 			// add consoles
 			tlp.Controls.Add(consoleOut, 0, 0);
@@ -336,7 +358,7 @@ namespace JQuant
 			
 			// create main form
 			mainForm = new Form();
-			mainForm.AutoSize = true;
+			mainForm.Size = new System.Drawing.Size(600, 400);
 			// add layout to the main form
 			mainForm.Controls.Add(tlp);
 			mainForm.Show();
@@ -350,15 +372,14 @@ namespace JQuant
 			Resources.Init();
 				
 				
-			Program prog = new Program();
+			instance = new Program();
 					
 			// bring up GUI	(spawns separate thread)
-			new Thread(prog.InitGUI).Start();
+			new Thread(instance.InitGUI).Start();
 				
 		
 			// run console (blocking call)
-			prog.Run();  
-			
+			instance.Run();  
 			
 			// very last chance for the cleanup - close streams and so on
 			// before i return control to the OS	
@@ -366,8 +387,15 @@ namespace JQuant
 		}
 		
 		protected Form mainForm;
-		protected JQuantForms.ConsoleOut consoleOut;
+		// tricky part - i need output console before main form is initialized
+		protected JQuantForms.ConsoleOut consoleOut = new JQuantForms.ConsoleOut();
 		protected JQuantForms.ConsoleIn consoleIn;
+		
+		public static Program instance
+		{
+			get;
+			protected set;
+		}
 		
 	}		
 }
