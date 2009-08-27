@@ -193,8 +193,9 @@ namespace JQuant {
 
 		bool openResult;
 		int errResult;
-		openResult = connection.Open(out errResult);
+		openResult = connection.Open(out errResult, true);
 
+		iWrite.WriteLine("");
 		if (openResult)
 		{
 			iWrite.WriteLine("Connection openned for "+connection.GetUserName());

@@ -174,22 +174,17 @@ namespace FMRShell
                     _parameters.appPassword, 
 				    out  errMsg, out  sessionId);
 
-				if (returnCode >= 0)
+				result = (returnCode >= 0);
+				if (result)
 				{
 					// according to the documentation returnCode == sessionId
 					if (sessionId != returnCode)
 					{
 						Console.WriteLine("Session Id="+sessionId+",returnCode="+returnCode+" are not equal after Login");
 					}
-					// at this point userClass object is completely initialized and ready for work
-					state = ConnectionState.Established;
-				}
-				else  // Login failed - application will try again later
-				{
-					state = ConnectionState.Trying;			
-					result = false;
 				}
 			}
+			
             return result;
         }			
 		
@@ -197,22 +192,57 @@ namespace FMRShell
 		/// the calling thread will be blocked by this method until Login to the
 		/// remote server succeeds 
 		/// </summary>
-        public void Open()
+		/// <param name="printProgress">
+		/// A <see cref="System.Boolean"/>
+		/// if set to true will print dots as login makes progress
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Boolean"/>
+		/// True if Ok and returnCode is set to something meaningful
+		/// Application will check that the method retruned true and only 
+		/// after that analyze returnCode
+		/// </returns>
+        public bool Open(out int returnCode, bool printProgress)
         {
 			state = ConnectionState.Trying;
+			int percent = 0;
+			
+			bool openResult = Open(out returnCode);
+			
 			// loop until login succeeds
-			do {
-				int returnCode;
-				bool openResult = Open(out returnCode);
-				if (openResult)
+			while (openResult)
+			{
+				int percent_1;
+				string description;
+				
+				userClass.GetLoginActivity(ref sessionId, out percent_1, out description);
+				if ((percent_1 != percent) && (printProgress))
 				{
-					state = ConnectionState.Established;
+					percent = percent_1;
+					Console.Write(".");
+				}
+				
+				loginStatus = userClass.get_LoginState(ref sessionId);
+				
+				if (loginStatus == LoginStatus.LoginSessionActive)
+				{
+					openResult = true;
 					break;
 				}
-				// i need a short delay here before next attempt - 5s
-				Thread.Sleep(5*1000);
+				else if ((loginStatus == LoginStatus.LoginSessionInProgress) || (loginStatus == LoginStatus.LoginSessionReLogin))
+				{
+				}
+				else 
+				{
+					openResult = false;
+					break;
+				}
+				
+				// i need a short delay here before next attempt - 1s
+				Thread.Sleep(1*1000);
 			}
-			while (true);
+			
+			return openResult;
 		}
 
         /// <summary>
@@ -248,6 +278,12 @@ namespace FMRShell
 		public string GetUserName()
 		{
 			return _parameters.userName;
+		}
+		
+		public LoginStatus loginStatus
+		{
+			get;
+			protected set;
 		}
 		
 		public ConnectionState state
@@ -603,7 +639,11 @@ namespace FMRShell
 	/// </summary>
     class FMRShellTest
     {
+#if NOTFMRSHELLMAIN
+        public static void Main_(string[] args)
+#else			
         public static void Main(string[] args)
+#endif				
         {
 			// use default hard coded settings
             Connection newConn = new FMRShell.Connection();
