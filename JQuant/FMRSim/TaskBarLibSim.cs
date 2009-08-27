@@ -1,7 +1,8 @@
 using System;
+using TaskBarLib;
 
 /// <summary>
-/// I want to run TaskLib simulation. I am going to implement API using prerecorded
+/// I want to run TaskBarLib simulation. I am going to implement API using prerecorded
 /// or generated in some other way log files as a data feed
 /// Only small part of the API is implemented
 /// This class is used by the FMRShell and allows to simulate different scenarios
@@ -77,9 +78,9 @@ namespace TaskBarLibSim
     public enum K300StreamType
     {
         IndexStream = 0x34,
-        MaofCNTStream = 50,
+        MaofCNTStream = 50,  //out of date, not used anymore
         MaofStream = 0x30,
-        RezefCNTStream = 0x33,
+        RezefCNTStream = 0x33,  //out of date, not used anymore
         RezefStream = 0x31
     }
 
@@ -247,6 +248,71 @@ namespace TaskBarLibSim
         public string FILER;
     }
 
+    public struct K300RzfType
+    {
+        public string SUG_REC;
+        public string BNO_Num;
+        public string BNO_NAME;
+        public string Symbol;
+        public string TRADE_METH;
+        public string SIDURI_Num;
+        public string RWR_VA;
+        public string MIN_UNIT;
+        public string HARIG_NV;
+        public string MIN_PR_OPN;
+        public string MAX_PR_OPN;
+        public string MIN_PR_CNT;
+        public string MAX_PR_CNT;
+        public string BASIS_PRC;
+        public string STATUS;
+        public string EX_COD;
+        public string EX_DETAIL;
+        public string RWR_VB;
+        public string shlav;
+        public string LAST_PRC;
+        public string TRD_STP_N;
+        public string STP_OPN_TM;
+        public string RWR_VD;
+        public string LMT_BY1;
+        public string LMT_BY2;
+        public string LMT_BY3;
+        public string LMY_BY1_NV;
+        public string LMY_BY2_NV;
+        public string LMY_BY3_NV;
+        public string MKT_NV_BY;
+        public string MKT_NV_BY_NUM;
+        public string RWR_VE;
+        public string LMT_SL1;
+        public string LMT_SL2;
+        public string LMT_SL3;
+        public string LMY_SL1_NV;
+        public string LMY_SL2_NV;
+        public string LMY_SL3_NV;
+        public string MKT_NV_SL;
+        public string MKT_NV_SL_NUM;
+        public string RWR_VF;
+        public string THEOR_PR;
+        public string THEOR_VL;
+        public string RWR_VG;
+        public string LST_DL_PR;
+        public string LST_DL_TM;
+        public string LST_DF_BS;
+        public string LST_DF_OPN;
+        public string LST_DL_VL;
+        public string DAY_VL;
+        public string DAY_VL_NIS;
+        public string DAY_DIL_NO;
+        public string DAY_MAX_PR;
+        public string DAY_MIN_PR;
+        public string BNO_NAME_E;
+        public string SYMBOL_E;
+        public string STP_COD;
+        public string COD_SHAAR;
+        public string UPD_DAT;
+        public string UPD_TIME;
+    }
+
+
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireMaofEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireRezefCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
@@ -285,17 +351,21 @@ namespace TaskBarLibSim
     }
 
     public delegate void _IK300EventsEvents_OnMaofEventHandler(ref K300MaofType data);
+    public delegate void _IK300EventsEvents_OnRezefEventHandler(ref K300RzfType data);
 
 
     public interface _IK300EventsEvents_Event
     {
         // Events
         event _IK300EventsEvents_OnMaofEventHandler OnMaof;
+        event _IK300EventsEvents_OnRezefEventHandler OnRezef;
     }
 
     public class K300Class : IK300, K300, IK300Event_Event
     {
-        // Events
+        // Events - even though they appear here,
+        // these events are out of date, use K300EventsClass onMaof / on Rezef / onMadad instead
+        // we'll need to clean up some time
         public event IK300Event_FireMaofEventHandler FireMaof;
         public event IK300Event_FireMaofCNTEventHandler FireMaofCNT;
         public event IK300Event_FireRezefEventHandler FireRezef;
@@ -337,6 +407,8 @@ namespace TaskBarLibSim
     {
         // Events
         public event _IK300EventsEvents_OnMaofEventHandler OnMaof;
+        public event _IK300EventsEvents_OnRezefEventHandler OnRezef;
+        public event _IK300EventsEvents_OnMadadEventHandler OnMadad;
 
         // Properties
     }
