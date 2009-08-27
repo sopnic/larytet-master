@@ -4,9 +4,11 @@ using System.Windows.Forms;
 
 /// <summary>
 /// classes supporting application GUI
+/// all Linux/Windows interoperability issues should be handled here
 /// </summary>
 namespace JQuantForms
 {
+	
 	/// <summary>
 	/// Graphic console - exactly like text based console
 	/// This console for output only
@@ -16,6 +18,7 @@ namespace JQuantForms
 		public ConsoleOut()
 		{
 			base.Multiline = true;
+			
 		}
 		
 		public void WriteLine(string s)

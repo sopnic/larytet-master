@@ -6,6 +6,7 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
+using System.Drawing;
 
 
 namespace JQuant 
@@ -311,15 +312,27 @@ namespace JQuant
 		protected void InitGUI()
 		{
 			consoleOut = new JQuantForms.ConsoleOut();
+			consoleOut.Dock = DockStyle.Fill;
 			consoleIn = new JQuantForms.ConsoleIn();
+			consoleIn.Dock = DockStyle.Fill;
 							
 			mainForm = new Form();
 			mainForm.AutoSize = true;
-			// Adding controls to the fomr
-			mainForm.Controls.AddRange(new System.Windows.Forms.Control[]{consoleOut, consoleIn} );
+			// Adding controls to the form
+			TableLayoutPanel tlp = new TableLayoutPanel();
+			tlp.Dock = DockStyle.Fill;
+			mainForm.Controls.Add(tlp);
+			tlp.ColumnCount = 1;			
+			tlp.RowCount = 2;
+			
+			tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
+			tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+			tlp.Controls.Add(consoleOut, 0, 0);
+			tlp.Controls.Add(consoleIn, 0, 1);
 		
-			// call to Show() is blocking ?
 			mainForm.Show();
+			
+			// spawn a thread to handle the mainForm
 			Application.Run(mainForm);
 		}
 			
@@ -337,8 +350,10 @@ namespace JQuant
 			// run console (blocking call)
 			prog.Run();  
 			
+			
 			// very last chance for the cleanup - close streams and so on
 			// before i return control to the OS	
+			Application.Exit();			
 		}
 		
 		protected Form mainForm;
