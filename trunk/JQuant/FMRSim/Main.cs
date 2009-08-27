@@ -417,7 +417,6 @@ namespace JQuant
 
 #if WITHGUI
 			// bring up GUI	(spawns separate thread)
-            Application.Init ();
 			new Thread(instance.InitGUI).Start();
 #endif            
 		
@@ -432,7 +431,7 @@ namespace JQuant
 #if WITHGUI
             Console.Write("Exiting...close GUI...");
             instance.CloseGUI();
-			Application.Quit();
+			Application.Exit();
             Console.WriteLine("done");
 #else            
 #endif
