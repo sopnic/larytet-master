@@ -311,25 +311,34 @@ namespace JQuant
 			
 		protected void InitGUI()
 		{
+			// create consoles for output/input
 			consoleOut = new JQuantForms.ConsoleOut();
 			consoleOut.Dock = DockStyle.Fill;
+
 			consoleIn = new JQuantForms.ConsoleIn();
 			consoleIn.Dock = DockStyle.Fill;
 							
-			mainForm = new Form();
-			mainForm.AutoSize = true;
-			// Adding controls to the form
+			// Create layout
 			TableLayoutPanel tlp = new TableLayoutPanel();
 			tlp.Dock = DockStyle.Fill;
-			mainForm.Controls.Add(tlp);
 			tlp.ColumnCount = 1;			
-			tlp.RowCount = 2;
-			
+			tlp.RowCount = 2;			
 			tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
 			tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+
+			// add consoles
 			tlp.Controls.Add(consoleOut, 0, 0);
 			tlp.Controls.Add(consoleIn, 0, 1);
-		
+			
+			// i have no idea what this thing does
+			tlp.ResumeLayout(false);
+			tlp.PerformLayout();
+			
+			// create main form
+			mainForm = new Form();
+			mainForm.AutoSize = true;
+			// add layout to the main form
+			mainForm.Controls.Add(tlp);
 			mainForm.Show();
 			
 			// spawn a thread to handle the mainForm
