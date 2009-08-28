@@ -31,7 +31,7 @@ namespace JQuant
             }
 
             _mailbox.Dispose();
-            _mailbox = null;
+            // _mailbox = null;
 
             _state = ThreadState.Destroyed;
 
@@ -47,7 +47,11 @@ namespace JQuant
             Console.WriteLine("MailboxThread " + _name + " destroyed");
         }
 
-        public void Run()
+        /// <summary>
+        /// loop forever (or until _isAlive is true)
+        /// get messages from the mailbox, call HandleMessage
+        /// </summary>
+        protected virtual void Run()
         {
             _state = ThreadState.Started;
             _isAlive = true;
