@@ -21,19 +21,52 @@ namespace JQuantForms
 			base.ScrollBars = ScrollBars.Vertical;
 			base.ReadOnly = true;
 			base.WordWrap = true;
-		}
+            setTextDelegate = new SetTextDelegate(SetText);
+        }
 		
 		public void Write(string s)
 		{
-			s = Text+s;
-            int maxTextLength = 600;
-            if (s.Length > maxTextLength)
+            if (this.InvokeRequired)
             {
-                s = s.Remove(0, (s.Length-maxTextLength));
+                // It's on a different thread, so use Invoke.
+                this.Invoke(setTextDelegate, new object[] { s });
             }
-            Text = s;
-            // base.Refresh();
+            else
+            {
+                // It's on the same thread, no need for Invoke
+                SetText(s);
+            }
 		}
+
+        private void SetText(string s)
+        {
+            const int maxTextLength = 32*1024;
+            
+            // prepare string (truncate if neccessary)
+            
+            int totalLength = (s.Length+TextLength);
+            if (totalLength > maxTextLength)
+            {
+                // truncate by at least 30% to avoid truncation on every string
+                int removeCount = Math.Max(totalLength - maxTextLength, (int)(maxTextLength*0.3F));
+                s = Text + s;
+                s = s.Remove(0, removeCount);
+
+                Text = s;
+                
+                SelectionStart = Text.Length;
+            }
+            else
+            {
+                base.AppendText(s);
+            }
+
+            base.ScrollToCaret();
+            base.Refresh();                
+        }
+
+        protected delegate void SetTextDelegate(string s);
+        SetTextDelegate setTextDelegate;
 		
 	}
 	

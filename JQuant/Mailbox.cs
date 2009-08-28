@@ -104,7 +104,7 @@ namespace JQuant
 
             lock (this)
             {
-                if (Count == 0) Monitor.Wait(this);
+                if (Count == 0) Monitor.Wait(this, 1000);
                 if (Count != 0)
                 {
                     _received++;
