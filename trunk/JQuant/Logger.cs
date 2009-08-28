@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace JQuant
 {
@@ -45,11 +46,11 @@ namespace JQuant
 		{
 			return _count;
 		}
-		
+        
         public LogType GetLogType()
-		{
-			return _type;
-		}
+        {
+            return Type;
+        }
 		
 		public bool TimeStamped()
 		{
@@ -66,9 +67,13 @@ namespace JQuant
 			return _stampOldest;
 		}
 		
+        public LogType Type
+        {
+            get;
+            set;
+        }
 
 		protected string _name;
-		protected LogType _type;
 		protected int _count;
 		protected bool _timeStamped;
 		protected System.DateTime _stampLatest; 
@@ -99,10 +104,12 @@ namespace JQuant
 		/// <summary>
 		/// start write file
 		/// </summary>
-		public virtual void Start()
+		public virtual bool Start()
 		{
 			// start Writer (writing thread)
 			writer.Start();
+
+            return true;
 		}
 
 		/// <summary>
@@ -221,32 +228,59 @@ namespace JQuant
 		                             IProducer<FMRShell.MarketData> producer): base(name)
 		{
 			FileName = filename;
+            _fileStream = default(FileStream);
 			_producer = producer;
             _append = append;
 			notStoped = false;
+
+            Type t = typeof(FMRShell.MarketData);
+            _fi = t.GetFields();
 		}
 			
 		/// <summary>
 		/// register notifier in the producer, start write file
+        /// returns True if Ok
+        /// application will check LastException if the method
+        /// returns False
 		/// </summary>
-		public override void Start()
+		public override bool Start()
 		{
-			// open file for writing
-            if (_append)
-            {
-                _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
-            }
-            else
-            {
-                _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
-            }
-
+            bool result = false;
             
-			
-			// register myself in the data producer
-			_producer.AddSink(this);
-			
-			base.Start();			
+            // i want a loop here to break from  - i avoid multiple
+            // returns this way
+            do
+            {
+                // open file for writing
+                try
+                {
+                    if (_append)
+                    {
+                        _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    }
+                    else
+                    {
+                        _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+                    }
+                }
+                catch (IOException e)
+                {
+                    // store the exception
+                    LastException = e;
+                    // and get out
+                    break;
+                }
+
+                // register myself in the data producer
+                _producer.AddSink(this);
+                
+                base.Start();       
+
+                result = true;
+            }
+            while (false);
+
+            return result;
 		}
 
 		/// <summary>
@@ -258,6 +292,10 @@ namespace JQuant
 		{
             lock (this)
 			{
+                if (_fileStream != default(FileStream))
+                {
+                    _fileStream.Close();
+                }
 				_producer.RemoveSink(this);
 				base.Stop();
 			}			
@@ -276,12 +314,39 @@ namespace JQuant
 		/// </summary>
 		public void Notify(int count, FMRShell.MarketData data)
 		{
+            // i have to clone the data first. Producer can use the same
+            // reference again and again
+            data = (FMRShell.MarketData)data.Clone();
+
+            // add the object to the queue for further processing
 			base.AddEntry(data);
 		}
-		
+
+        /// <summary>
+        /// write data to the file. this method is called from a separate
+        /// thread
+        /// </summary>
+        /// <param name="data">
+        /// A <see cref="System.Object"/>
+        /// </param>
 		protected override void WriteData(object data)
 		{
-			// write data to the file
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(200);
+            
+			// I have to decide on format of the log - ASCII or binary 
+            // should I write any system info like version the data/software ?
+            // at this point only ASCII is supported, no system info
+            // write all fields of K300MaofType (data.k3Maof) in one line
+            // followed by EOL
+            FMRShell.MarketData md = (FMRShell.MarketData)data;
+
+            foreach (FieldInfo fi in _fi)
+            {
+                object val = fi.GetValue(md);
+                sb.Append(val.ToString());
+                sb.Append("\t");
+            }
+            sb.Append(Environment.NewLine);
 		}
 		
 		public string FileName
@@ -289,10 +354,17 @@ namespace JQuant
 			get;
 			protected set;
 		}
+        
+        public Exception LastException
+        {
+            get;
+            protected set;
+        }
 		
 		protected IProducer<FMRShell.MarketData> _producer;
         bool _append;
         FileStream _fileStream;
+        FieldInfo[] _fi;
 	}
 	
 }

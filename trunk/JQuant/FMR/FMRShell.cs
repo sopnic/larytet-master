@@ -293,7 +293,18 @@ namespace FMRShell
         
         public object Clone()
         {
-            return new MarketData();
+            // create a new object
+            MarketData md = new MarketData();
+
+            // copy data
+            md.k3Maof = this.k3Maof;
+
+            return md;
+        }
+
+        public override string ToString()
+        {
+            return "";
         }
 	}
 	
@@ -324,7 +335,7 @@ namespace FMRShell
 	/// Additonally class spawns a thread which does polling of the remote server 
 	/// in case notification does not work correctly and to ensure that the data is 
 	/// consistent. 
-	/// There is a tricky part. We want to make sure that the data which we get by 
+	/// There is a tricky part. I want to make sure that the data which we get by 
 	/// polling and via asynchronous API is the same. Collector uses for this purpose
 	/// a dedicated sink - thread which polls the servers and compares the received 
 	/// data with the one sent to it by the collector
@@ -364,6 +375,11 @@ namespace FMRShell
 			foreach (JQuant.ISink<MarketData> sink in listeners)
 			{
 				// sink should not modify the data
+                // sink has two options
+                // 1) handle the data in the context of the Collector
+                // thead
+                // 2) clone the data and and postopone the procesing (delegate
+                // to another thread
 				sink.Notify(countOnMaof, marketDataOnMaof);
 			}
 		}
