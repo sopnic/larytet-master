@@ -1,5 +1,6 @@
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
@@ -80,7 +81,11 @@ namespace JQuant
 	/// the class implments asynchronous (postponned) writing and will be
 	/// used when there large amounts of data to write or when the data should be
 	/// processed before writing and the thread generating the data is 
-	/// sensitive to the performance 
+	/// sensitive to the performance
+    ///    
+    /// Use property Priority to set the task priority. Default priority is 
+    /// ThreadPriority.Lowest
+    /// 
 	/// </summary>
 	public abstract class AsyncLogger :Logger
 	{
@@ -114,11 +119,11 @@ namespace JQuant
 			}			
 		}
 		
-		/// <summary>
-		/// FMRShell collector calls this method to notify about incoming events
-		/// push the evet into FIFO and let low priority background thread to write 
-		/// the data into the file
-		/// </summary>
+        /// <summary>
+        /// Application calls this method to add entry to the log
+        /// This method is non-blocking - add entry to the queue for 
+        /// further processing and get out
+        /// </summary>
 		public override void AddEntry(object data)
 		{
             lock (this)  // protect access to FIFO
@@ -128,7 +133,21 @@ namespace JQuant
 				Monitor.Pulse(this);
 			}
 		}
-		
+
+        public ThreadPriority Priority
+        {
+            set {
+                writer.Priority = value;
+            }
+            
+            get
+            {
+                return writer.Priority;
+            }
+        }
+
+
+        
 		/// <summary>
 		/// low priority thread writing the data to the file
 		/// </summary>
@@ -177,13 +196,33 @@ namespace JQuant
 	/// this class will get the data from specified data producer and write the data to the 
 	/// specified file.
 	/// </summary>
-	public class MarketDataLoggerAscii :AsyncLogger, ISink<FMRShell.MarketData>
+	public class MarketDataLogger :AsyncLogger, ISink<FMRShell.MarketData>
 	{
-		public MarketDataLoggerAscii(string name, string filename, 
+        /// <summary>
+        /// Create the ASCII logger
+        /// </summary>
+        /// <param name="name">
+        /// A <see cref="System.String"/>
+        /// Debuh info - name of the logger
+        /// </param>
+        /// <param name="filename">
+        /// A <see cref="System.String"/>
+        /// File to read the data
+        /// </param>
+        /// <param name="append">
+        /// A <see cref="System.Boolean"/>
+        /// If "append" is true and file exists logger will append the data to the end of the file
+        /// </param>
+        /// <param name="producer">
+        /// A <see cref="IProducer"/>
+        /// Object which provides data to log
+        /// </param>
+		public MarketDataLogger(string name, string filename, bool append, 
 		                             IProducer<FMRShell.MarketData> producer): base(name)
 		{
 			FileName = filename;
 			_producer = producer;
+            _append = append;
 			notStoped = false;
 		}
 			
@@ -192,7 +231,17 @@ namespace JQuant
 		/// </summary>
 		public override void Start()
 		{
-			// open file for writing 
+			// open file for writing
+            if (_append)
+            {
+                _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+            }
+            else
+            {
+                _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+            }
+
+            
 			
 			// register myself in the data producer
 			_producer.AddSink(this);
@@ -213,6 +262,12 @@ namespace JQuant
 				base.Stop();
 			}			
 		}
+
+        public override void Dispose()
+        {
+            _fileStream.Close();
+            base.Dispose();
+        }
 		
 		/// <summary>
 		/// FMRShell collector calls this method to notify about incoming events
@@ -236,6 +291,8 @@ namespace JQuant
 		}
 		
 		protected IProducer<FMRShell.MarketData> _producer;
+        bool _append;
+        FileStream _fileStream;
 	}
 	
 }
