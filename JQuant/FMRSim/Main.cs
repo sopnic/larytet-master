@@ -90,7 +90,10 @@ namespace JQuant
 				try {
 					// process command - "this" is IWrite interface
 					cli.ProcessCommand(this, input);
-					if (ExitFlag) break;
+					if (ExitFlag)
+                    {
+                        break;
+                    }
 		
 				} catch (Exception ex) {
 					WriteLine(ex.ToString());
@@ -106,11 +109,21 @@ namespace JQuant
             CloseGUI();
 #endif
         }
-			
+
+        protected delegate void ApplicationExitDelegate();
 		protected void CloseGUI()
 		{
-            Application.Exit();
-            Environment.Exit(0);
+            ApplicationExitDelegate applicationExit = new ApplicationExitDelegate(Application.Exit);
+            if (mainForm.InvokeRequired)
+            {
+                // It's on a different thread, so use Invoke.
+                mainForm.Invoke(applicationExit);
+            }
+            else
+            {
+                // It's on the same thread, no need for Invoke
+                Application.Exit();
+            }
        }
 
 		/// <summary>
