@@ -28,7 +28,9 @@ namespace JQuant
 			
 			// and GUI 
 			// output is asynchronous - send mail to the thread
-			outputThread.Send(s+"\n");
+#if WITHGUI
+            consoleOut.Write(s + Environment.NewLine);
+#endif
 		}
 			
 		public void Write(string s) 
@@ -37,40 +39,27 @@ namespace JQuant
 
 			// and GUI 
 			// output is asynchronous - send mail to the thread
-			outputThread.Send(s);
+#if WITHGUI
+            consoleOut.Write(s);
+#endif
 		}
 		
-		protected class OutputThread: MailboxThread<string>
-		{
-			public OutputThread() : base("ConsoleOut", 100)
-			{
-			}
-			
-	        protected override void HandleMessage(string s)
-	        {
-#if WITHGUI
-				consoleOut.Write(s);
-#endif                
-			}
-			
-			public JQuantForms.ConsoleOut consoleOut
-			{
-				get;
-				set;
-			}
-		}
-
 		/// <summary>
 		/// this guy is called by Main() and will never be called by anybody else
 		/// Use static property instance to access methods of the class
 		/// </summary>
 		protected Program() 
 		{
-			outputThread = new OutputThread();
-
 			cli = new CommandLineInterface("Jerusalem Quant");
 			LoadCommandLineInterface();
-		}
+
+#if WITHGUI
+            consoleOut = new JQuantForms.ConsoleOut();
+            Thread guiThread = new Thread(this.InitGUI);
+            guiThread.Priority = ThreadPriority.Lowest;
+            guiThread.Start();
+#endif
+        }
 			
 		private CommandLineInterface cli;
 		private bool ExitFlag;
@@ -113,29 +102,25 @@ namespace JQuant
 				
 				
 			// last chance for the cleanup - close streams and so on
-		
-		}
+#if WITHGUI
+            CloseGUI();
+#endif
+        }
 			
 		protected void CloseGUI()
 		{
-			Console.Write("Stop output...");
-			outputThread.Stop();
-			Console.Write("Clear output...");
-			consoleOut.Clear();
-			Console.Write("Clear table panel...");
-			tlp.Controls.Remove(consoleOut);
-			tlp.Controls.Remove(consoleIn);
-			Console.Write("Clear main form...");
-			mainForm.Controls.Remove(tlp);				
-		}
-		
+            Application.Exit();
+            Environment.Exit(0);
+       }
+
 		/// <summary>
 		/// executed in a separate thread - uses spare CPU cycles
 		/// </summary>
 		protected void InitGUI()
 		{
 			// create consoles for output/input
-			consoleOut = new JQuantForms.ConsoleOut();
+            // output console is one of the first things to create
+			// consoleOut = new JQuantForms.ConsoleOut();
 			consoleOut.Dock = DockStyle.Fill;
 
 			consoleIn = new JQuantForms.ConsoleIn();
@@ -172,50 +157,25 @@ namespace JQuant
             mainForm.ResumeLayout(false);
             mainForm.PerformLayout();
             
-			mainForm.Activate();
-			
-			outputThread.consoleOut = consoleOut;
-			outputThread.Start();
-            
-			// spawn a thread to handle the mainForm
-			Application.Run(mainForm);
-		}
+			mainForm.Show();
+
+            Application.Run(mainForm);
+        }
 		
 		static void Main(string[] args) 
-		{
-            
+		{            
 			Resources.Init();
-				
-				
-			instance = new Program();			
-
-#if WITHGUI
-			// bring up GUI	(spawns separate thread)
-			new Thread(instance.InitGUI).Start();
-#endif            
-		
-			// run console (blocking call)
-			instance.Run();  
+								
+			instance = new Program();
 			
-			
-			
-			// very last chance for the cleanup - close streams and so on
-			// before i return control to the OS	
-			
-#if WITHGUI
-            Console.Write("Exiting...close GUI...");
-            instance.CloseGUI();
-			Application.Exit();
-            Console.WriteLine("done");
-#else            
-#endif
+            // run console
+            instance.Run();            
 		}
 		
 		protected Form mainForm;
 		// tricky part - i need output console before main form is initialized
 		protected JQuantForms.ConsoleOut consoleOut;
 		protected JQuantForms.ConsoleIn consoleIn;
-		protected OutputThread outputThread;
 		protected TableLayoutPanel tlp;
 		
 		public static Program instance
