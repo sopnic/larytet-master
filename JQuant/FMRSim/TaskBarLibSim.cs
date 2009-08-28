@@ -502,12 +502,16 @@ namespace TaskBarLibSim
             DateTime now = DateTime.Now;
 
             dt = new AS400DateTime();
-            //fill the AS400DateTime struct with updated values
-            dt.year = now.Year;
-            dt.month = now.Month;
-            dt.minute = now.Minute;
-            dt.second = now.Second;
-            dt.ms = now.Millisecond;
+
+            using (dt)  // save multiple "dt."
+            {
+                //fill the AS400DateTime struct with updated values
+                year = now.Year;
+                month = now.Month;
+                minute = now.Minute;
+                second = now.Second;
+                ms = now.Millisecond;
+            }
 
             //An arbitrary value for latency
             latency = 50;
