@@ -209,8 +209,12 @@ namespace FMRShell
 			int percent = 0;
 			
 			bool openResult = Open(out returnCode);
-			
-			// loop until login succeeds
+            
+            //Print title + progress bar
+            Console.WriteLine(
+                "\n0    10   20   30   40   50   60   70   80   90  100\n|----+----+----+----+----+----+----+----+----+----|");
+            
+            // loop until login succeeds
 			while (openResult)
 			{
 				int percent_1;
@@ -219,8 +223,12 @@ namespace FMRShell
 				userClass.GetLoginActivity(ref sessionId, out percent_1, out description);
 				if ((percent_1 != percent) && (printProgress))
 				{
-					percent = percent_1;
-					Console.Write(".");
+                    //scale the dots to the progress bar
+                    while (percent < percent_1)
+                    {
+                        Console.Write(".");
+                        percent += 2;
+                    }
 				}
 				
 				loginStatus = userClass.get_LoginState(ref sessionId);
