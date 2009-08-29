@@ -77,6 +77,7 @@ namespace JQuant
     {
         public StructToString(string delimiter)
         {
+            this.delimiter = delimiter;
             Type t = typeof(FMRShell.MarketData);
             fields = t.GetFields();
             InitLegend();
@@ -108,12 +109,13 @@ namespace JQuant
         {
             get
             {
-                return Delimiter;
+                return this.delimiter;
             }
             
             set
             {
                 // i can check if the delimiter changed indeed
+                delimiter = value;
                 Init(data);
             }
         }
@@ -158,6 +160,7 @@ namespace JQuant
 
         protected FieldInfo[]fields;
         protected StructType data;
+        protected string delimiter;
     }
 
     public class RandomString

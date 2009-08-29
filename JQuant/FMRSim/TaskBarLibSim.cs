@@ -414,18 +414,20 @@ namespace TaskBarLibSim
         /// initializes the simulation
         /// actual simulation stream will start by the K300StartStream
         /// </summary>
-        public void InitStreamSimulation(ISimulationDataGenerator<K300MaofType> maofGenerator)
+        public static void InitStreamSimulation(ISimulationDataGenerator<K300MaofType> maofGenerator)
         {
-            this.maofGenerator = maofGenerator;
+            K300Class.maofGenerator = maofGenerator;
         }
 
         public virtual int K300StopStream(K300StreamType streamType)
         {
+            maofGenerator.Stop();
             return 0;
         }
 
         public virtual int StartStream(K300StreamType streamType, string strStockNumber, MadadTypes strMadad, int withEvents)
         {
+            maofGenerator.Start();
             return 0;
         }
 
@@ -434,7 +436,7 @@ namespace TaskBarLibSim
         }
 
         protected bool maofStreamStarted;
-        protected ISimulationDataGenerator<K300MaofType> maofGenerator;
+        protected static ISimulationDataGenerator<K300MaofType> maofGenerator;
     }
 
     public class K300EventsClass : IK300Events, K300Events, _IK300EventsEvents_Event

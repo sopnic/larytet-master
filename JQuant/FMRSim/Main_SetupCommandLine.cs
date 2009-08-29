@@ -1,5 +1,6 @@
 
 using System;
+using System.Threading;
 
 namespace JQuant
 {
@@ -209,7 +210,37 @@ namespace JQuant
                 
             System.GC.Collect();
         }
+
+#if USEFMRSIM        
+        protected void debugLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+        {
+            // create Maof data generator
+            TaskBarLibSim.MaofDataGeneratorRandom dataGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
+
+            // setup the data generator in the K300Class
+            TaskBarLibSim.K300Class.InitStreamSimulation(dataGenerator);
+
+            // create Collector (producer) 
+            FMRShell.Collector collector = new FMRShell.Collector();
             
+            // create logger which will register itself (AddSink) in the collector
+            MarketDataLogger logger = new MarketDataLogger("simLogger", "simLog", false, 
+                                     collector);
+
+            // start logger
+            logger.Start();
+
+            // start collector, which will start the stream in K300Class, whch will start
+            // data generator
+            collector.Start();
+
+            Thread.Sleep(10);
+
+            collector.Stop();
+            logger.Stop();
+               
+        }
+#endif        
             
         protected void LoadCommandLineInterface() 
         {
@@ -239,8 +270,10 @@ namespace JQuant
                                   " List of created pools with the current status and statistics", debugPoolShowCallback);
             menuDebug.AddCommand("loginTest", "Run simple test of the login", 
                                   " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
+#if USEFMRSIM        
             menuDebug.AddCommand("loggerTest", "Run simple test of the logger", 
-                                  " ", debugLoginCallback);
+                                  " Create a Collector and start a random data simulator", debugLoggerTestCallback);
+#endif            
         }  
         
     }
