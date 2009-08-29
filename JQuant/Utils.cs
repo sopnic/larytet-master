@@ -78,7 +78,7 @@ namespace JQuant
         public StructToString(string delimiter)
         {
             Type t = typeof(FMRShell.MarketData);
-            _fields = t.GetFields();
+            fields = t.GetFields();
             InitLegend();
         }
 
@@ -114,7 +114,7 @@ namespace JQuant
             set
             {
                 // i can check if the delimiter changed indeed
-                Init(_data);
+                Init(data);
             }
         }
 
@@ -131,7 +131,7 @@ namespace JQuant
         {
             StringBuilder sbLegend = new StringBuilder(150);
             
-            foreach (FieldInfo field in _fields)
+            foreach (FieldInfo field in fields)
             {
                 string name = field.Name;
                 sbLegend.Append(name);
@@ -142,10 +142,10 @@ namespace JQuant
         
         public void Init(StructType data)
         {
-            _data = data;
+            this.data = data;
             StringBuilder sbData = new StringBuilder(50);
             
-            foreach (FieldInfo field in _fields)
+            foreach (FieldInfo field in fields)
             {
                 object val = field.GetValue(data);
                 sbData.Append(val.ToString());
@@ -156,9 +156,55 @@ namespace JQuant
             IsInitialized = true;
         }
 
-        protected FieldInfo[] _fields;
-        protected StructType _data;
+        protected FieldInfo[]fields;
+        protected StructType data;
     }
 
-    
+    public class RandomString
+    {
+        /// <summary>
+        /// create one object and call Next() to get a random string
+        /// will generate random strings in the specified length range
+        /// </summary>
+        /// <param name="minLength">
+        /// A <see cref="System.Int32"/>
+        /// </param>
+        /// <param name="maxLength">
+        /// A <see cref="System.Int32"/>
+        /// </param>
+        public RandomString(int minLength, int maxLength)
+        {
+            rand = new Random();
+            this.minLength = minLength;
+            this.maxLength = maxLength;
+        }
+        
+        /// <summary>
+        /// Build a random string (for id, login, password...)
+        /// </summary>
+        public string Next() 
+        {
+            int length = rand.Next(minLength, maxLength);
+            StringBuilder tempString = new StringBuilder(Guid.NewGuid().ToString());
+            
+            tempString = tempString.Replace("-", "");
+
+            while (tempString.Length < length)
+            {
+                tempString.Append(tempString);
+            }
+
+            if (length < tempString.Length)
+            {
+                tempString = tempString.Remove(0, tempString.Length - length);
+            }
+                    
+            
+            return tempString.ToString();
+        }
+        
+        Random rand;
+        int minLength;
+        int maxLength;
+    }
 }

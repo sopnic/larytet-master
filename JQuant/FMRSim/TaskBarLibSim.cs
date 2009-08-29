@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+
 
 /// <summary>
 /// I want to run TaskBarLib simulation. I am going to implement API using prerecorded
@@ -373,6 +375,11 @@ namespace TaskBarLibSim
         public event IK300Event_FireRezefEventHandler FireRezef;
         public event IK300Event_FireRezefCNTEventHandler FireRezefCNT;
 
+        public K300Class()
+        {
+            maofStreamStarted = false;
+        }
+
         // Methods
         public virtual int GetMAOF(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad)
         {
@@ -386,7 +393,117 @@ namespace TaskBarLibSim
 
         public virtual int K300StartStream(K300StreamType streamType)
         {
+            switch (streamType)
+            {
+                case K300StreamType.MaofStream:
+                    // start data generation thread
+                    maofStreamStarted = true;
+                    break;
+                    
+                default:
+                    break;
+            }
             return 0;
+        }
+
+
+        /// <summary>
+        /// this is not part of the FMR's TaskBarLib. Part of the simulation engine
+        /// </summary>
+        /// <param name="generator">
+        /// A <see cref="ISimulationStreamGenerator"/>
+        /// </param>
+        public interface ISimulationDataGenerator<DataType>
+        {
+            /// <summary>
+            /// Will return true if initialized. In this method data generator will open
+            /// files, generate initial data seeds, prepare helpers, zero counters, etc.
+            /// </summary>
+            bool Init();
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            void Close();
+            
+            /// <summary>
+            /// Returns next chunk of data of type. If Ok return true 
+            /// The method should block the calling thread until the next chunk
+            /// of data is available or there is no more data will ever be available
+            /// in the later case the method will return false
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.Object"/>
+            /// Data will be set to the next generated chunk
+            /// </returns>
+            bool GetData(out DataType data);
+        }
+
+        /// <summary>
+        /// very siimple all fields are random Maof data generator
+        /// objects of this type used as an argument to the InitStreamSimulation
+        /// </summary>
+        /// <param name="maofGenerator">
+        /// A <see cref="ISimulationStreamGenerator"/>
+        /// </param>
+        public class MaofDataGeneratorRandom :ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
+        {
+            public bool Init()
+            {
+                randomString = new JQuant.RandomString(3, 5);
+                
+                Type t = typeof(FMRShell.MarketData);
+                fields = t.GetFields();
+                count = 0;
+                
+                // random numbers generator is always there
+                return true;
+            }
+
+            public void Close()
+            {
+            }
+
+            public bool GetData(out K300MaofType data)
+            {
+                // create a new object
+                data = new K300MaofType();
+
+                // set all fields in the object
+                foreach (FieldInfo field in fields)
+                {
+                    field.SetValue(data, randomString.Next());
+                }
+
+                count += 1;
+                
+                return true;
+            }
+
+
+            public int GetCount()
+            {
+                return count;
+            }
+
+            public string GetName()
+            {
+                return "Maof data random generator";
+            }
+
+
+            JQuant.RandomString randomString;
+            protected FieldInfo[] fields;
+            int count;
+        }
+
+        /// <summary>
+        /// initializes the simulation
+        /// actual simulation stream will start by the K300StartStream
+        /// </summary>
+        public void InitStreamSimulation(ISimulationDataGenerator<K300MaofType> maofGenerator)
+        {
+            this.maofGenerator = maofGenerator;
         }
 
         public virtual int K300StopStream(K300StreamType streamType)
@@ -403,6 +520,8 @@ namespace TaskBarLibSim
         {
         }
 
+        protected bool maofStreamStarted;
+        protected ISimulationDataGenerator<K300MaofType> maofGenerator;
     }
 
     public class K300EventsClass : IK300Events, K300Events, _IK300EventsEvents_Event
