@@ -132,6 +132,12 @@ namespace JQuant
 		System.DateTime GetOldest();
 	}
 
+
+    public interface IDataGenerator
+    {
+        int GetCount();
+        string GetName();
+    }
 	
     /// <summary>
     /// a storage of all created objects
@@ -146,6 +152,7 @@ namespace JQuant
             Threads = new List<IThread>(10);
             Pools = new List<IPool>(10);
             Loggers = new List<ILogger>(10);
+            DataGenerators = new List<IDataGenerator>(10);
         }
 
         static public void Init()
@@ -177,6 +184,8 @@ namespace JQuant
         public static List<IPool> Pools;
 		
         public static List<ILogger> Loggers;
+
+        public static List<IDataGenerator> DataGenerators;
 
         static protected Resources r;
     }
