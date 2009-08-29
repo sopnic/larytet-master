@@ -69,4 +69,96 @@ namespace JQuant
             return s.ToString();
         }
     }
+
+    /// <summary>
+    /// converts a struct to a string with specified delimiters
+    /// </summary>
+    public class StructToString<StructType>
+    {
+        public StructToString(string delimiter)
+        {
+            Type t = typeof(FMRShell.MarketData);
+            _fields = t.GetFields();
+            InitLegend();
+        }
+
+        /// <value>
+        /// keeps list of the fields (field names) separated by the Delimiter 
+        /// </value>
+        public string Legend
+        {
+           get;
+           protected set;
+        }
+        
+        /// <value>
+        /// keeps a string with values separated by the delimiter
+        /// </value>
+        public string Values
+        {
+           get;
+           protected set;
+        }
+        
+        /// <value>
+        /// delimiter used to separate the fields
+        /// If set the object will regenerate strings
+        /// </value>
+        public string Delimiter
+        {
+            get
+            {
+                return Delimiter;
+            }
+            
+            set
+            {
+                // i can check if the delimiter changed indeed
+                Init(_data);
+            }
+        }
+
+        /// <value>
+        /// This field is true if Init() was called
+        /// </value>
+        public bool IsInitialized
+        {
+            get;
+            protected set;
+        }
+        
+        protected void InitLegend()
+        {
+            StringBuilder sbLegend = new StringBuilder(150);
+            
+            foreach (FieldInfo field in _fields)
+            {
+                string name = field.Name;
+                sbLegend.Append(name);
+                sbLegend.Append(Delimiter);
+            }
+            Legend = sbLegend.ToString();
+        }
+        
+        public void Init(StructType data)
+        {
+            _data = data;
+            StringBuilder sbData = new StringBuilder(50);
+            
+            foreach (FieldInfo field in _fields)
+            {
+                object val = field.GetValue(data);
+                sbData.Append(val.ToString());
+                sbData.Append(Delimiter);
+            }
+            Values = sbData.ToString();
+
+            IsInitialized = true;
+        }
+
+        protected FieldInfo[] _fields;
+        protected StructType _data;
+    }
+
+    
 }
