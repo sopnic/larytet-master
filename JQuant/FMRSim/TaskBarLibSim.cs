@@ -681,8 +681,9 @@ namespace TaskBarLibSim
 
         protected override void SendEvents(ref K300MaofType data)
         {
-
             SimulationTop.k300EventsClass.SendEventMaof(ref data);
+            // avoid tight loops in the system
+            Thread.Sleep(50);
         }
 
         public int GetCount()

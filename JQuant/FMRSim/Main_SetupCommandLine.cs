@@ -239,6 +239,8 @@ namespace JQuant
                                   " List of created pools with the current status and statistics", debugPoolShowCallback);
             menuDebug.AddCommand("loginTest", "Run simple test of the login", 
                                   " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
+            menuDebug.AddCommand("loggerTest", "Run simple test of the logger", 
+                                  " ", debugLoginCallback);
         }  
         
     }
