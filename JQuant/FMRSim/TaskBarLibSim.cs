@@ -379,6 +379,7 @@ namespace TaskBarLibSim
         public K300Class()
         {
             maofStreamStarted = false;
+            SimulationTop.k300Class = this;
         }
 
         // Methods
@@ -438,10 +439,25 @@ namespace TaskBarLibSim
 
     public class K300EventsClass : IK300Events, K300Events, _IK300EventsEvents_Event
     {
+
+        public K300EventsClass()
+        {
+            SimulationTop.k300EventsClass = this;
+        }
+                
         // Events
         public event _IK300EventsEvents_OnMaofEventHandler OnMaof;
         public event _IK300EventsEvents_OnRezefEventHandler OnRezef;
         public event _IK300EventsEvents_OnMadadEventHandler OnMadad;
+
+        /// <summary>
+        /// part of the simulation
+        /// send event to all registered users 
+        /// </summary>
+        public void SendEventMaof(ref K300MaofType data)
+        {
+            OnMaof(ref data);
+        }
 
         // Properties - are used to filter the events data 
         public BaseAssetTypes EventsFilterBaseAsset { set; get; }
@@ -603,6 +619,7 @@ namespace TaskBarLibSim
                 {
                     break;
                 }
+                SendEvents(ref data);
             }
         }
 
@@ -619,12 +636,14 @@ namespace TaskBarLibSim
         /// </returns>
         protected abstract bool GetData(out DataType data);
 
+        protected abstract void SendEvents(ref DataType data);
         
         private bool notStopped;
     }
     
 
     /// <summary>
+    /// this is a thread generating 
     /// very siimple all fields are random Maof data generator
     /// objects of this type used as an argument to the InitStreamSimulation
     /// </summary>
@@ -660,6 +679,11 @@ namespace TaskBarLibSim
             return true;
         }
 
+        protected override void SendEvents(ref K300MaofType data)
+        {
+
+            SimulationTop.k300EventsClass.SendEventMaof(ref data);
+        }
 
         public int GetCount()
         {
@@ -675,6 +699,18 @@ namespace TaskBarLibSim
         JQuant.RandomString randomString;
         protected FieldInfo[] fields;
         int count;
+    }
+
+    /// <summary>
+    /// I need some class where all apparently disconnected classes are connected
+    /// For example K300Class and K300EventsClass
+    /// User application registers event listeners in the EventClass and calls StartStream
+    /// in the K300Class
+    /// </summary>
+    class SimulationTop
+    {
+        public static K300EventsClass k300EventsClass;
+        public static K300Class k300Class;
     }
     
 }
