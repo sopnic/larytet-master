@@ -14,6 +14,8 @@ using System.ComponentModel;
 /// simulation or real TaskBar namespace
 /// the rest of the application is using FMRShell and is not aware if 
 /// this is a simulation or a real server connected
+/// Actually this is not precise - Command Line interface contains some internal test commands
+/// which require simulation engines
 /// </summary>
 #if USEFMRSIM
 using TaskBarLibSim;
@@ -392,6 +394,11 @@ namespace FMRShell
 			k300Class.K300StartStream(K300StreamType.MaofStream);
 		}
 		
+        public void Stop()
+        {
+            k300Class.K300StopStream(K300StreamType.MaofStream);
+        }
+        
         public bool AddSink(JQuant.ISink<MarketData> sink)
 		{
 			listeners.Add(sink);
