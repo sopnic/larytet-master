@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace JQuant
 {
@@ -106,6 +105,8 @@ namespace JQuant
 		/// </summary>
 		public virtual bool Start()
 		{
+            notStoped = true;
+            
 			// start Writer (writing thread)
 			writer.Start();
 
@@ -232,9 +233,7 @@ namespace JQuant
 			_producer = producer;
             _append = append;
 			notStoped = false;
-
-            Type t = typeof(FMRShell.MarketData);
-            _fi = t.GetFields();
+            marketDataToString = new StructToString<FMRShell.MarketData>("\t");
 		}
 			
 		/// <summary>
@@ -257,19 +256,50 @@ namespace JQuant
                     if (_append)
                     {
                         _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                        _streamWriter = new StreamWriter(_fileStream);
                     }
                     else
                     {
                         _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+                        _streamWriter = new StreamWriter(_fileStream);
                     }
                 }
                 catch (IOException e)
                 {
                     // store the exception
                     LastException = e;
+                    if (_fileStream != default(FileStream))
+                    {
+                        _fileStream.Close();
+                        _fileStream = default(FileStream);
+                        _streamWriter = default(StreamWriter);
+                    }
                     // and get out
                     break;
                 }
+
+                // write legend at the top of the file
+                try
+                {
+                    _streamWriter.WriteLine(marketDataToString.Legend);
+                }
+                catch (IOException e)
+                {
+                    // store the exception
+                    LastException = e;
+                    // close the file
+                    _fileStream.Close();
+                    _streamWriter = default(StreamWriter);
+                    _fileStream = default(FileStream);
+                    Console.WriteLine(e.ToString());
+                    // and get out
+                    break;
+                }
+                finally
+                {
+                    _fileStream.Close();
+                }
+             
 
                 // register myself in the data producer
                 _producer.AddSink(this);
@@ -295,6 +325,8 @@ namespace JQuant
                 if (_fileStream != default(FileStream))
                 {
                     _fileStream.Close();
+                    _streamWriter = default(StreamWriter);
+                    _fileStream = default(FileStream);
                 }
 				_producer.RemoveSink(this);
 				base.Stop();
@@ -331,8 +363,6 @@ namespace JQuant
         /// </param>
 		protected override void WriteData(object data)
 		{
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(200);
-            
 			// I have to decide on format of the log - ASCII or binary 
             // should I write any system info like version the data/software ?
             // at this point only ASCII is supported, no system info
@@ -340,13 +370,31 @@ namespace JQuant
             // followed by EOL
             FMRShell.MarketData md = (FMRShell.MarketData)data;
 
-            foreach (FieldInfo fi in _fi)
+            // convert the data to string - this is time consuming
+            // operation
+            marketDataToString.Init(md);
+            
+            // write the string to the file
+            try
             {
-                object val = fi.GetValue(md);
-                sb.Append(val.ToString());
-                sb.Append("\t");
+                _streamWriter.WriteLine(marketDataToString.Values);
             }
-            sb.Append(Environment.NewLine);
+            catch (IOException e)
+            {
+                // store the exception
+                LastException = e;
+                // close the file
+                _fileStream.Close();
+                _streamWriter = default(StreamWriter);
+                _fileStream = default(FileStream);
+                // and get out
+                Stop();
+                Console.WriteLine(e.ToString());
+            }
+            finally
+            {
+                _fileStream.Close();
+            }
 		}
 		
 		public string FileName
@@ -364,7 +412,8 @@ namespace JQuant
 		protected IProducer<FMRShell.MarketData> _producer;
         bool _append;
         FileStream _fileStream;
-        FieldInfo[] _fi;
+        StructToString<FMRShell.MarketData> marketDataToString;
+        StreamWriter _streamWriter;
 	}
 	
 }
