@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading;
 
 
 /// <summary>
@@ -397,6 +398,8 @@ namespace TaskBarLibSim
             {
                 case K300StreamType.MaofStream:
                     // start data generation thread
+                    
+                    // set flag to keep track of the started streams
                     maofStreamStarted = true;
                     break;
                     
@@ -404,97 +407,6 @@ namespace TaskBarLibSim
                     break;
             }
             return 0;
-        }
-
-
-        /// <summary>
-        /// this is not part of the FMR's TaskBarLib. Part of the simulation engine
-        /// </summary>
-        /// <param name="generator">
-        /// A <see cref="ISimulationStreamGenerator"/>
-        /// </param>
-        public interface ISimulationDataGenerator<DataType>
-        {
-            /// <summary>
-            /// Will return true if initialized. In this method data generator will open
-            /// files, generate initial data seeds, prepare helpers, zero counters, etc.
-            /// </summary>
-            bool Init();
-            
-            /// <summary>
-            /// 
-            /// </summary>
-            void Close();
-            
-            /// <summary>
-            /// Returns next chunk of data of type. If Ok return true 
-            /// The method should block the calling thread until the next chunk
-            /// of data is available or there is no more data will ever be available
-            /// in the later case the method will return false
-            /// </summary>
-            /// <returns>
-            /// A <see cref="System.Object"/>
-            /// Data will be set to the next generated chunk
-            /// </returns>
-            bool GetData(out DataType data);
-        }
-
-        /// <summary>
-        /// very siimple all fields are random Maof data generator
-        /// objects of this type used as an argument to the InitStreamSimulation
-        /// </summary>
-        /// <param name="maofGenerator">
-        /// A <see cref="ISimulationStreamGenerator"/>
-        /// </param>
-        public class MaofDataGeneratorRandom :ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
-        {
-            public bool Init()
-            {
-                randomString = new JQuant.RandomString(3, 5);
-                
-                Type t = typeof(FMRShell.MarketData);
-                fields = t.GetFields();
-                count = 0;
-                
-                // random numbers generator is always there
-                return true;
-            }
-
-            public void Close()
-            {
-            }
-
-            public bool GetData(out K300MaofType data)
-            {
-                // create a new object
-                data = new K300MaofType();
-
-                // set all fields in the object
-                foreach (FieldInfo field in fields)
-                {
-                    field.SetValue(data, randomString.Next());
-                }
-
-                count += 1;
-                
-                return true;
-            }
-
-
-            public int GetCount()
-            {
-                return count;
-            }
-
-            public string GetName()
-            {
-                return "Maof data random generator";
-            }
-
-
-            JQuant.RandomString randomString;
-            protected FieldInfo[] fields;
-            int count;
         }
 
         /// <summary>
@@ -637,5 +549,133 @@ namespace TaskBarLibSim
             else return -1;
         }
     }
+
+
+
+// From this line down - simulation relates classes which are part of the TaskBarLib API
+    
+    /// <summary>
+    /// this is not part of the FMR's TaskBarLib. Part of the simulation engine
+    /// </summary>
+    /// <param name="generator">
+    /// A <see cref="ISimulationStreamGenerator"/>
+    /// </param>
+    public interface ISimulationDataGenerator<DataType>
+    {
+        void Start();
+        
+        void Stop();
+    }
+
+    /// <summary>
+    /// a thread firing specified event
+    /// </summary>
+    public abstract class EventGenerator<DataType>:ISimulationDataGenerator<DataType>
+    {
+        public EventGenerator()
+        {
+            notStopped = true;
+        }
+
+        public virtual void Start()
+        {
+            notStopped = true;
+            new Thread(Run).Start();
+            return ;
+        }
+        
+        public virtual void Stop()
+        {
+            notStopped = false;
+            return ;
+        }
+            
+        /// <summary>
+        /// thread main loop 
+        /// </summary>
+        protected void Run()
+        {
+            while (notStopped)
+            {
+                DataType data;
+                bool result = GetData(out data);
+                if (!result)
+                {
+                    break;
+                }
+            }
+        }
+
+    
+        /// <summary>
+        /// Returns next chunk of data of type. If Ok return true 
+        /// The method should block the calling thread until the next chunk
+        /// of data is available or there is no more data will ever be available
+        /// in the later case the method will return false
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.Object"/>
+        /// Data will be set to the next generated chunk
+        /// </returns>
+        protected abstract bool GetData(out DataType data);
+
+        
+        private bool notStopped;
+    }
+    
+
+    /// <summary>
+    /// very siimple all fields are random Maof data generator
+    /// objects of this type used as an argument to the InitStreamSimulation
+    /// </summary>
+    /// <param name="maofGenerator">
+    /// A <see cref="ISimulationStreamGenerator"/>
+    /// </param>
+    public class MaofDataGeneratorRandom :EventGenerator<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
+    {
+        public MaofDataGeneratorRandom()
+        {
+            randomString = new JQuant.RandomString(3, 5);
+            
+            Type t = typeof(FMRShell.MarketData);
+            fields = t.GetFields();
+            count = 0;
+            
+            return ;
+        }
+
+        protected override bool GetData(out K300MaofType data)
+        {
+            // create a new object
+            data = new K300MaofType();
+
+            // set all fields in the object
+            foreach (FieldInfo field in fields)
+            {
+                field.SetValue(data, randomString.Next());
+            }
+
+            count += 1;
+            
+            return true;
+        }
+
+
+        public int GetCount()
+        {
+            return count;
+        }
+
+        public string GetName()
+        {
+            return "Maof data random generator";
+        }
+
+
+        JQuant.RandomString randomString;
+        protected FieldInfo[] fields;
+        int count;
+    }
+    
 }
 
