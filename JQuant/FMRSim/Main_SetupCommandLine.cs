@@ -211,6 +211,14 @@ namespace JQuant
             System.GC.Collect();
         }
 
+        protected void debugGetAS400DTCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            iWrite.WriteLine("Latency is " + FMRShell.AS400Synch.GetLatency().ToString());
+            iWrite.WriteLine("Time is " + FMRShell.AS400Synch.GetAS400Time().ToString());
+            iWrite.WriteLine("Now pinging 30 times...\n");
+            iWrite.WriteLine(FMRShell.AS400Synch.Ping(30,500));
+        }
+
 #if USEFMRSIM        
         protected void debugLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
         {
@@ -270,6 +278,10 @@ namespace JQuant
                                   " List of created pools with the current status and statistics", debugPoolShowCallback);
             menuDebug.AddCommand("loginTest", "Run simple test of the login", 
                                   " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
+            menuDebug.AddCommand("AS400TimeTest", "ping the server",
+                                  "ping AS400 server in order to get latency and synchronize local amachine time with server's",
+                                  debugGetAS400DTCallback);
+
 #if USEFMRSIM        
             menuDebug.AddCommand("loggerTest", "Run simple test of the logger", 
                                   " Create a Collector and start a random data simulator", debugLoggerTestCallback);
