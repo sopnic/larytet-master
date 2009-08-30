@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG USEFMRSIM NOTFMRSHELLMAIN WITHGUI_</DefineConstants>
+    <DefineConstants>DEBUG USEFMRSIM NOTFMRSHELLMAIN WITHGUI</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>

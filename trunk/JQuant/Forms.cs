@@ -8,12 +8,24 @@ using System.Windows.Forms;
 /// </summary>
 namespace JQuantForms
 {
-	
+
+    public interface IConsoleOut
+    {
+        void Write(string s);
+    }
+    
+    public class ConsoleOutDummy :IConsoleOut
+    {
+        public void Write(string s)
+        {
+        }
+    }
+    
 	/// <summary>
 	/// Graphic console - exactly like text based console
 	/// This console for output only
 	/// </summary>
-	public class ConsoleOut :TextBox
+	public class ConsoleOut :TextBox, IConsoleOut
 	{
 		public ConsoleOut()
 		{
