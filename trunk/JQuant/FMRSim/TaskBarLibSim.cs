@@ -399,7 +399,8 @@ namespace TaskBarLibSim
             {
                 case K300StreamType.MaofStream:
                     // start data generation thread
-                    
+                    maofGenerator.Start();
+
                     // set flag to keep track of the started streams
                     maofStreamStarted = true;
                     break;
@@ -657,8 +658,8 @@ namespace TaskBarLibSim
         public MaofDataGeneratorRandom()
         {
             randomString = new JQuant.RandomString(3, 5);
-            
-            Type t = typeof(FMRShell.MarketData);
+
+            Type t = typeof(K300MaofType);
             fields = t.GetFields();
             count = 0;
             
