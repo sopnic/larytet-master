@@ -300,7 +300,7 @@ namespace FMRShell
 	/// </summary>
 	public struct MarketData :ICloneable
 	{
-		public K300MaofType k3Maof;
+		public K300MaofType k300MaofType;
         
         public object Clone()
         {
@@ -308,17 +308,87 @@ namespace FMRShell
             MarketData md = new MarketData();
 
             // copy data
-            md.k3Maof = this.k3Maof;
+            md.k300MaofType.SUG_REC = this.k300MaofType.SUG_REC;
+
+            md.k300MaofType.TRADE_METH = this.k300MaofType.TRADE_METH;
+            md.k300MaofType.BNO_Num = this.k300MaofType.BNO_Num;
+            md.k300MaofType.LAST_REC = this.k300MaofType.LAST_REC;
+            md.k300MaofType.SIDURI_Num = this.k300MaofType.SIDURI_Num;
+            md.k300MaofType.SYMBOL_E = this.k300MaofType.SYMBOL_E;
+            md.k300MaofType.Symbol = this.k300MaofType.Symbol;
+            md.k300MaofType.BNO_NAME_E = this.k300MaofType.BNO_NAME_E;
+            md.k300MaofType.BNO_NAME = this.k300MaofType.BNO_NAME;
+            md.k300MaofType.BRANCH_NO = this.k300MaofType.BRANCH_NO;
+            md.k300MaofType.BRANCH_U = this.k300MaofType.BRANCH_U;
+            md.k300MaofType.SUG_BNO = this.k300MaofType.SUG_BNO;
+            md.k300MaofType.MIN_UNIT = this.k300MaofType.MIN_UNIT;
+            md.k300MaofType.HARIG_NV = this.k300MaofType.HARIG_NV;
+            md.k300MaofType.MIN_PR = this.k300MaofType.MIN_PR;
+            md.k300MaofType.MAX_PR = this.k300MaofType.MAX_PR;
+            md.k300MaofType.BASIS_PRC = this.k300MaofType.BASIS_PRC;
+            md.k300MaofType.BASIS_COD = this.k300MaofType.BASIS_COD;
+            md.k300MaofType.STATUS_COD = this.k300MaofType.STATUS_COD;
+            md.k300MaofType.EX_DATE = this.k300MaofType.EX_DATE;
+            md.k300MaofType.EX_PRC = this.k300MaofType.EX_PRC;
+            md.k300MaofType.VL_MULT = this.k300MaofType.VL_MULT;
+            md.k300MaofType.VL_COD = this.k300MaofType.VL_COD;
+            md.k300MaofType.ZERO_COD = this.k300MaofType.ZERO_COD;
+            md.k300MaofType.shlav = this.k300MaofType.shlav;
+            md.k300MaofType.STATUS = this.k300MaofType.STATUS;
+            md.k300MaofType.TRD_STP_CD = this.k300MaofType.TRD_STP_CD;
+            md.k300MaofType.TRD_STP_N = this.k300MaofType.TRD_STP_N;
+            md.k300MaofType.STP_OPN_TM = this.k300MaofType.STP_OPN_TM;
+            md.k300MaofType.LMT_BY1 = this.k300MaofType.LMT_BY1;
+            md.k300MaofType.LMT_BY2 = this.k300MaofType.LMT_BY2;
+            md.k300MaofType.LMT_BY3 = this.k300MaofType.LMT_BY3;
+            md.k300MaofType.LMY_BY1_NV = this.k300MaofType.LMY_BY1_NV;
+            md.k300MaofType.LMY_BY2_NV = this.k300MaofType.LMY_BY2_NV;
+            md.k300MaofType.LMY_BY3_NV = this.k300MaofType.LMY_BY3_NV;
+            md.k300MaofType.RWR_FE = this.k300MaofType.RWR_FE;
+            md.k300MaofType.LMT_SL1 = this.k300MaofType.LMT_SL1;
+            md.k300MaofType.LMT_SL2 = this.k300MaofType.LMT_SL2;
+            md.k300MaofType.LMT_SL3 = this.k300MaofType.LMT_SL3;
+            md.k300MaofType.LMY_SL1_NV = this.k300MaofType.LMY_SL1_NV;
+            md.k300MaofType.LMY_SL2_NV = this.k300MaofType.LMY_SL2_NV;
+            md.k300MaofType.LMY_SL3_NV = this.k300MaofType.LMY_SL3_NV;
+            md.k300MaofType.RWR_FF = this.k300MaofType.RWR_FF;
+            md.k300MaofType.PRC = this.k300MaofType.PRC;
+            md.k300MaofType.COD_PRC = this.k300MaofType.COD_PRC;
+            md.k300MaofType.SUG_PRC = this.k300MaofType.SUG_PRC;
+            md.k300MaofType.LST_DF_BS = this.k300MaofType.LST_DF_BS;
+            md.k300MaofType.RWR_FG = this.k300MaofType.RWR_FG;
+            md.k300MaofType.LST_DL_PR = this.k300MaofType.LST_DL_PR;
+            md.k300MaofType.LST_DL_TM = this.k300MaofType.LST_DL_TM;
+            md.k300MaofType.LST_DL_VL = this.k300MaofType.LST_DL_VL;
+            md.k300MaofType.DAY_VL = this.k300MaofType.DAY_VL;
+            md.k300MaofType.DAY_VL_NIS = this.k300MaofType.DAY_VL_NIS;
+            md.k300MaofType.DAY_DIL_NO = this.k300MaofType.DAY_DIL_NO;
+            md.k300MaofType.RWR_FH = this.k300MaofType.RWR_FH;
+            md.k300MaofType.DAY_MAX_PR = this.k300MaofType.DAY_MAX_PR;
+            md.k300MaofType.DAY_MIN_PR = this.k300MaofType.DAY_MIN_PR;
+            md.k300MaofType.POS_OPN = this.k300MaofType.POS_OPN;
+            md.k300MaofType.POS_OPN_DF = this.k300MaofType.POS_OPN_DF;
+            md.k300MaofType.STS_NXT_DY = this.k300MaofType.STS_NXT_DY;
+            md.k300MaofType.UPD_DAT = this.k300MaofType.UPD_DAT;
+            md.k300MaofType.UPD_TIME = this.k300MaofType.UPD_TIME;
+            md.k300MaofType.FILER = this.k300MaofType.FILER;
 
             return md;
         }
 
         public override string ToString()
         {
-            return "";
+            return k300MaofType.SUG_REC;
         }
 	}
-	
+
+    public class K300MaofTypeToString :StructToString<K300MaofType>
+    {
+        public K300MaofTypeToString(string delimiter): base(delimiter)
+        {
+        }
+    }
+    
 	/// <summary>
 	/// this class used by the RxDataValidator to let the application know that
 	/// something wrong with the incoming data
@@ -380,8 +450,9 @@ namespace FMRShell
 		/// </param>
         protected void OnMaof(ref K300MaofType data)
         {
+
 			// no memory allocation here - i am using allready created object 
-			marketDataOnMaof.k3Maof = data;
+			marketDataOnMaof.k300MaofType = data;
 			
 			foreach (JQuant.ISink<MarketData> sink in listeners)
 			{

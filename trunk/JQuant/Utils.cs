@@ -78,7 +78,7 @@ namespace JQuant
         public StructToString(string delimiter)
         {
             this.delimiter = delimiter;
-            Type t = typeof(FMRShell.MarketData);
+            Type t = typeof(StructType);
             fields = t.GetFields();
             InitLegend();
         }
@@ -137,7 +137,7 @@ namespace JQuant
             {
                 string name = field.Name;
                 sbLegend.Append(name);
-                sbLegend.Append(Delimiter);
+                sbLegend.Append(delimiter);
             }
             Legend = sbLegend.ToString();
         }
@@ -151,7 +151,7 @@ namespace JQuant
             {
                 object val = field.GetValue(data);
                 sbData.Append(val.ToString());
-                sbData.Append(Delimiter);
+                sbData.Append(delimiter);
             }
             Values = sbData.ToString();
 
@@ -163,7 +163,34 @@ namespace JQuant
         protected string delimiter;
     }
 
-    public class RandomString
+    public interface IRandomString
+    {
+        string Next();
+    }
+    
+    public class RandomNumericalString: IRandomString
+    {
+        public RandomNumericalString(int min, int max)
+        {
+            rand = new Random();
+            this.min = min;
+            this.max = max;
+        }
+
+        public string Next() 
+        {
+            int length = rand.Next(min, max);
+                        
+            return length.ToString();
+        }
+        
+        Random rand;
+        int min;
+        int max;
+        
+    }
+    
+    public class RandomString: IRandomString
     {
         /// <summary>
         /// create one object and call Next() to get a random string
@@ -230,7 +257,8 @@ namespace JQuant
         }
         public static double Mean(List<int> lst)
         {
-            return lst.Average();
+            // return lst.Average();
+            return 0;
         }
 
         public static double StdDev(List<int> lst)
@@ -246,12 +274,14 @@ namespace JQuant
 
         public static int Max(List<int> lst)
         {
-            return lst.Max();
+            // return lst.Max();
+            return 0;
         }
 
         public static int Min(List<int> lst)
         {
-            return lst.Min();
+            // return lst.Min();
+            return 0;
         }
     }
 }

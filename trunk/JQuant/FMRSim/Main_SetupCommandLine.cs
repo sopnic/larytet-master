@@ -242,7 +242,7 @@ namespace JQuant
             // data generator
             collector.Start();
 
-            Thread.Sleep(10);
+            Thread.Sleep(1000);
 
             collector.Stop();
             logger.Stop();

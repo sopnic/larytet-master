@@ -235,7 +235,7 @@ namespace JQuant
             _producer = producer;
             _append = append;
 			notStoped = false;
-            marketDataToString = new StructToString<FMRShell.MarketData>("\t");
+            marketDataToString = new FMRShell.K300MaofTypeToString("\t");
 		}
 			
 		/// <summary>
@@ -257,12 +257,12 @@ namespace JQuant
                 {
                     if (_append)
                     {
-                        _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                        _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
                         _streamWriter = new StreamWriter(_fileStream);
                     }
                     else
                     {
-                        _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+                        _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
                         _streamWriter = new StreamWriter(_fileStream);
                     }
                 }
@@ -341,7 +341,7 @@ namespace JQuant
 		{
             // i have to clone the data first. Producer can use the same
             // reference again and again
-            data = (FMRShell.MarketData)data.Clone();
+            FMRShell.MarketData dataClone = (FMRShell.MarketData)(data.Clone());
 
             // add the object to the queue for further processing
 			base.AddEntry(data);
@@ -365,7 +365,7 @@ namespace JQuant
 
             // convert the data to string - this is time consuming
             // operation
-            marketDataToString.Init(md);
+            marketDataToString.Init(md.k300MaofType);
             
             // write the string to the file
             try
@@ -406,7 +406,7 @@ namespace JQuant
 		protected IProducer<FMRShell.MarketData> _producer;
         bool _append;
         FileStream _fileStream;
-        StructToString<FMRShell.MarketData> marketDataToString;
+        FMRShell.K300MaofTypeToString marketDataToString;
         StreamWriter _streamWriter;
 	}
 	
