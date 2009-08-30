@@ -210,4 +210,48 @@ namespace JQuant
         int minLength;
         int maxLength;
     }
+
+    
+
+    /// <summary>
+    /// Making different statistical computations. 
+    /// For the moment implemented for an integer list, need to convert it to any numerical type.
+    /// </summary>
+    public class StatUtils
+    {
+        public static int Length(List<int> lst)
+        {
+            int n=0;
+            foreach (int x in lst)
+            {
+                n++;
+            }
+            return n;
+        }
+        public static double Mean(List<int> lst)
+        {
+            return lst.Average();
+        }
+
+        public static double StdDev(List<int> lst)
+        {
+            double m=Mean(lst);
+            double sd=0.0;
+            foreach (int l in lst)
+            {
+                sd += (l - m)*(l-m);
+            }
+            return Math.Sqrt(sd) / (Length(lst) - 1);
+        }
+
+        public static int Max(List<int> lst)
+        {
+            return lst.Max();
+        }
+
+        public static int Min(List<int> lst)
+        {
+            return lst.Min();
+        }
+    }
 }

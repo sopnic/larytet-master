@@ -8,6 +8,7 @@ using System.Threading;
  
 using System.Reflection;
 using System.ComponentModel;
+using JQuant;
 
 /// <summary>
 /// depending on the compilation flags i am going to use
@@ -633,7 +634,74 @@ namespace FMRShell
 		}				
 	}
 
-    
+    /// <summary>
+    /// Used to get latecny and synchronize local machine vs. AS400
+    /// </summary>
+    /// 
+    public class AS400Synch
+    {
+        /// <summary>
+        /// Returns latency in case of successful call, -1 otherwise
+        /// </summary>
+        /// <returns>A <see cref="System.Int32"/></returns>
+        public static int GetLatency()
+        {
+            ConfigClass cs = new ConfigClass();
+            AS400DateTime dt;
+            int ltncy;
+            int ret=cs.GetAS400DateTime(out dt, out ltncy);
+            if (ret == 0) return ltncy;
+            else return ret;
+        }
+
+        public static string GetAS400Time()
+        {
+            ConfigClass cs = new ConfigClass();
+            AS400DateTime dt;
+            int ltncy;
+            int ret = cs.GetAS400DateTime(out dt, out ltncy);
+            return dt.hour + ":" + dt.minute + ":" + dt.second + "." + dt.ms;
+        }
+
+        /// <summary>
+        /// Computes basic statistics on latency from a number of AS400 pings
+        /// </summary>
+        /// <param name="numTries">no. of times to ping the server</param>
+        /// <param name="timeOut">timeout between the pings</param>
+        public static string Ping(int numTries, int timeOut)
+        {
+            ConfigClass cs = new ConfigClass();
+            List<int> lst=new List<int>(30);
+            int ltncy;
+            int ret;
+            AS400DateTime dt;
+            if (numTries == 1) return "AS400Time " + GetAS400Time() + " latency " + GetLatency();
+            else
+            {
+                for (int i = 0; i < numTries; i++)
+                {
+                    ret = cs.GetAS400DateTime(out dt, out ltncy);
+                    lst.Add(ltncy);
+                    Thread.Sleep(timeOut);
+                }
+                string M = Math.Round(Convert.ToDecimal(StatUtils.Mean(lst)),2).ToString();
+                string SD = Math.Round(Convert.ToDecimal(StatUtils.StdDev(lst)), 2).ToString();
+                string Min = StatUtils.Min(lst).ToString();
+                string Max = StatUtils.Max(lst).ToString();
+                string o = OutputUtils.FormatField("Mean",10)+
+                    OutputUtils.FormatField("Std.Dev.",10)+
+                    OutputUtils.FormatField("Min",10)+
+                    OutputUtils.FormatField("Max",10)+
+                    "\n----------------------------------------\n"+
+                    OutputUtils.FormatField(M, 10)+
+                    OutputUtils.FormatField(SD,10)+
+                    OutputUtils.FormatField(Min,10)+
+                    OutputUtils.FormatField(Max,10);
+
+                return o;
+            }
+        }
+    }
     
     /// <summary>
 	/// Example of usage of the class, Main_ should be replaced by Main in the real application
