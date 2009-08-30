@@ -257,8 +257,7 @@ namespace JQuant
         }
         public static double Mean(List<int> lst)
         {
-            // return lst.Average();
-            return 0;
+            return lst.Average();
         }
 
         public static double StdDev(List<int> lst)
@@ -274,14 +273,12 @@ namespace JQuant
 
         public static int Max(List<int> lst)
         {
-            // return lst.Max();
-            return 0;
+            return lst.Max();
         }
 
         public static int Min(List<int> lst)
         {
-            // return lst.Min();
-            return 0;
+            return lst.Min();
         }
     }
 }
