@@ -98,6 +98,7 @@ namespace JQuant
 			notStoped = false;
 			writer = new Thread(this.Writer);
 			writer.Priority = ThreadPriority.Lowest;
+            incomingData = new Queue(100);
 		}
 			
 		/// <summary>
@@ -180,7 +181,7 @@ namespace JQuant
 						Monitor.Wait(this, 1*1000);
 					}
 				}
-				if (dataSet) 
+				if (dataSet)
 				{
 					WriteData(data);
 				}
@@ -230,7 +231,8 @@ namespace JQuant
 		{
 			FileName = filename;
             _fileStream = default(FileStream);
-			_producer = producer;
+            _streamWriter = default(StreamWriter);
+            _producer = producer;
             _append = append;
 			notStoped = false;
             marketDataToString = new StructToString<FMRShell.MarketData>("\t");
@@ -271,8 +273,6 @@ namespace JQuant
                     if (_fileStream != default(FileStream))
                     {
                         _fileStream.Close();
-                        _fileStream = default(FileStream);
-                        _streamWriter = default(StreamWriter);
                     }
                     // and get out
                     break;
@@ -282,6 +282,7 @@ namespace JQuant
                 try
                 {
                     _streamWriter.WriteLine(marketDataToString.Legend);
+                    _streamWriter.Flush();
                 }
                 catch (IOException e)
                 {
@@ -289,15 +290,9 @@ namespace JQuant
                     LastException = e;
                     // close the file
                     _fileStream.Close();
-                    _streamWriter = default(StreamWriter);
-                    _fileStream = default(FileStream);
                     Console.WriteLine(e.ToString());
                     // and get out
                     break;
-                }
-                finally
-                {
-                    _fileStream.Close();
                 }
              
 
@@ -322,14 +317,12 @@ namespace JQuant
 		{
             lock (this)
 			{
+                _producer.RemoveSink(this);
+                base.Stop();
                 if (_fileStream != default(FileStream))
                 {
                     _fileStream.Close();
-                    _streamWriter = default(StreamWriter);
-                    _fileStream = default(FileStream);
                 }
-				_producer.RemoveSink(this);
-				base.Stop();
 			}			
 		}
 
@@ -378,6 +371,13 @@ namespace JQuant
             try
             {
                 _streamWriter.WriteLine(marketDataToString.Values);
+                _streamWriter.Flush();
+            }
+            catch (ObjectDisposedException e)
+            {
+                // store the exception
+                LastException = e;
+                Console.WriteLine(e.ToString());
             }
             catch (IOException e)
             {
@@ -385,15 +385,9 @@ namespace JQuant
                 LastException = e;
                 // close the file
                 _fileStream.Close();
-                _streamWriter = default(StreamWriter);
-                _fileStream = default(FileStream);
                 // and get out
                 Stop();
                 Console.WriteLine(e.ToString());
-            }
-            finally
-            {
-                _fileStream.Close();
             }
 		}
 		
