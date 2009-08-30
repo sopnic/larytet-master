@@ -618,6 +618,7 @@ namespace TaskBarLibSim
             {
                 DataType data;
                 bool result = GetData(out data);
+                
                 if (!result)
                 {
                     break;
@@ -657,7 +658,7 @@ namespace TaskBarLibSim
     {
         public MaofDataGeneratorRandom()
         {
-            randomString = new JQuant.RandomString(3, 5);
+            randomString = new JQuant.RandomNumericalString(21, 80155);
 
             Type t = typeof(K300MaofType);
             fields = t.GetFields();
@@ -668,16 +669,81 @@ namespace TaskBarLibSim
 
         protected override bool GetData(out K300MaofType data)
         {
+            // delay - usually delay will be in the GetData
+            // GetData reads log, pulls the time stamps and simulates
+            // timing of the real data stream
+            Thread.Sleep(50);
+            
             // create a new object
             data = new K300MaofType();
 
             // set all fields in the object
-            foreach (FieldInfo field in fields)
-            {
-                field.SetValue(data, randomString.Next());
-            }
+            data.SUG_REC = randomString.Next();
+            data.TRADE_METH = randomString.Next();
+            data.BNO_Num = randomString.Next();
+            data.LAST_REC = randomString.Next();
+            data.SIDURI_Num = randomString.Next();
+            data.SYMBOL_E = randomString.Next();
+            data.Symbol = randomString.Next();
+            data.BNO_NAME_E = randomString.Next();
+            data.BNO_NAME = randomString.Next();
+            data.BRANCH_NO = randomString.Next();
+            data.BRANCH_U = randomString.Next();
+            data.SUG_BNO = randomString.Next();
+            data.MIN_UNIT = randomString.Next();
+            data.HARIG_NV = randomString.Next();
+            data.MIN_PR = randomString.Next();
+            data.MAX_PR = randomString.Next();
+            data.BASIS_PRC = randomString.Next();
+            data.BASIS_COD = randomString.Next();
+            data.STATUS_COD = randomString.Next();
+            data.EX_DATE = randomString.Next();
+            data.EX_PRC = randomString.Next();
+            data.VL_MULT = randomString.Next();
+            data.VL_COD = randomString.Next();
+            data.ZERO_COD = randomString.Next();
+            data.shlav = randomString.Next();
+            data.STATUS = randomString.Next();
+            data.TRD_STP_CD = randomString.Next();
+            data.TRD_STP_N = randomString.Next();
+            data.STP_OPN_TM = randomString.Next();
+            data.LMT_BY1 = randomString.Next();
+            data.LMT_BY2 = randomString.Next();
+            data.LMT_BY3 = randomString.Next();
+            data.LMY_BY1_NV = randomString.Next();
+            data.LMY_BY2_NV = randomString.Next();
+            data.LMY_BY3_NV = randomString.Next();
+            data.RWR_FE = randomString.Next();
+            data.LMT_SL1 = randomString.Next();
+            data.LMT_SL2 = randomString.Next();
+            data.LMT_SL3 = randomString.Next();
+            data.LMY_SL1_NV = randomString.Next();
+            data.LMY_SL2_NV = randomString.Next();
+            data.LMY_SL3_NV = randomString.Next();
+            data.RWR_FF = randomString.Next();
+            data.PRC = randomString.Next();
+            data.COD_PRC = randomString.Next();
+            data.SUG_PRC = randomString.Next();
+            data.LST_DF_BS = randomString.Next();
+            data.RWR_FG = randomString.Next();
+            data.LST_DL_PR = randomString.Next();
+            data.LST_DL_TM = randomString.Next();
+            data.LST_DL_VL = randomString.Next();
+            data.DAY_VL = randomString.Next();
+            data.DAY_VL_NIS = randomString.Next();
+            data.DAY_DIL_NO = randomString.Next();
+            data.RWR_FH = randomString.Next();
+            data.DAY_MAX_PR = randomString.Next();
+            data.DAY_MIN_PR = randomString.Next();
+            data.POS_OPN = randomString.Next();
+            data.POS_OPN_DF = randomString.Next();
+            data.STS_NXT_DY = randomString.Next();
+            data.UPD_DAT = randomString.Next();
+            data.UPD_TIME = randomString.Next();
+            data.FILER = randomString.Next();
 
             count += 1;
+            
             
             return true;
         }
@@ -700,7 +766,7 @@ namespace TaskBarLibSim
         }
 
 
-        JQuant.RandomString randomString;
+        JQuant.IRandomString randomString;
         protected FieldInfo[] fields;
         int count;
     }
