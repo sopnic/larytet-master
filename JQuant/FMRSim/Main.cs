@@ -54,7 +54,10 @@ namespace JQuant
 			LoadCommandLineInterface();
 
 #if WITHGUI
-            consoleOut = new JQuantForms.ConsoleOut();
+            // tricky part - i need output console before main form is initialized        
+            consoleOut = new JQuantForms.ConsoleOutDummy();
+
+            // now the rest of the GUI controls
             Thread guiThread = new Thread(this.InitGUI);
             guiThread.Priority = ThreadPriority.Lowest;
             guiThread.Start();
@@ -124,17 +127,20 @@ namespace JQuant
                 // It's on the same thread, no need for Invoke
                 Application.Exit();
             }
-       }
+        }
 
 		/// <summary>
 		/// executed in a separate thread - uses spare CPU cycles
 		/// </summary>
 		protected void InitGUI()
 		{
+            // Control.CheckForIllegalCrossThreadCalls = false;            
+            
 			// create consoles for output/input
             // output console is one of the first things to create
-			// consoleOut = new JQuantForms.ConsoleOut();
+			JQuantForms.ConsoleOut consoleOut = new JQuantForms.ConsoleOut();
 			consoleOut.Dock = DockStyle.Fill;
+            this.consoleOut = consoleOut;
 
 			consoleIn = new JQuantForms.ConsoleIn();
 			consoleIn.Dock = DockStyle.Fill;
@@ -186,8 +192,8 @@ namespace JQuant
 		}
 		
 		protected Form mainForm;
-		// tricky part - i need output console before main form is initialized
-		protected JQuantForms.ConsoleOut consoleOut;
+        
+		protected JQuantForms.IConsoleOut consoleOut;
 		protected JQuantForms.ConsoleIn consoleIn;
 		protected TableLayoutPanel tlp;
 		
