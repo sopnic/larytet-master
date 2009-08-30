@@ -556,12 +556,14 @@ namespace TaskBarLibSim
             //fill the AS400DateTime struct with updated values
             dt.year = now.Year;
             dt.month = now.Month;
+            dt.day = now.Day;
+            dt.hour = now.Hour;
             dt.minute = now.Minute;
             dt.second = now.Second;
             dt.ms = now.Millisecond;
 
             //An arbitrary value for latency
-            latency = 50;
+            latency = new Random().Next(15,250);
 
             bool success = true;
             if (success) return 0;

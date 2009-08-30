@@ -246,21 +246,21 @@ namespace JQuant
     /// </summary>
     public class StatUtils
     {
-        public static int Length(List<int> lst)
+        public static int Length(List<double> lst)
         {
             int n=0;
-            foreach (int x in lst)
+            foreach (double x in lst)
             {
                 n++;
             }
             return n;
         }
-        public static double Mean(List<int> lst)
+        public static double Mean(List<double> lst)
         {
             return lst.Average();
         }
 
-        public static double StdDev(List<int> lst)
+        public static double StdDev(List<double> lst)
         {
             double m=Mean(lst);
             double sd=0.0;
@@ -271,12 +271,12 @@ namespace JQuant
             return Math.Sqrt(sd) / (Length(lst) - 1);
         }
 
-        public static int Max(List<int> lst)
+        public static double Max(List<double> lst)
         {
             return lst.Max();
         }
 
-        public static int Min(List<int> lst)
+        public static double Min(List<double> lst)
         {
             return lst.Min();
         }
