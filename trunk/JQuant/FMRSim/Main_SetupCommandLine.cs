@@ -214,9 +214,34 @@ namespace JQuant
         protected void debugGetAS400DTCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             iWrite.WriteLine("Latency is " + FMRShell.AS400Synch.GetLatency().ToString());
-            iWrite.WriteLine("Time is " + FMRShell.AS400Synch.GetAS400Time().ToString());
-            iWrite.WriteLine("Now pinging 30 times...\n");
-            iWrite.WriteLine(FMRShell.AS400Synch.Ping(30,500));
+            iWrite.WriteLine("Time is " + FMRShell.AS400Synch.GetAS400DateTime().ToString("hh:mm:ss.fff"));
+            iWrite.WriteLine("Now pinging 30 times...");
+
+            int ltncy;
+            DateTime dt;
+            System.Collections.Generic.List<double> lst = new System.Collections.Generic.List<double>(30);
+            for (int i = 0; i < 30; i++)
+            {
+                FMRShell.AS400Synch.Ping(out dt,out ltncy);
+                lst.Add(Convert.ToDouble(ltncy));
+                Thread.Sleep(500);
+                iWrite.Write(".");
+            }
+            string M = Math.Round(Convert.ToDecimal(StatUtils.Mean(lst)),2).ToString();
+            string SD = Math.Round(Convert.ToDecimal(StatUtils.StdDev(lst)), 2).ToString();
+            string Min = StatUtils.Min(lst).ToString();
+            string Max = StatUtils.Max(lst).ToString();
+            string o = "\n\n"+OutputUtils.FormatField("Mean",10)+
+                OutputUtils.FormatField("Std.Dev.",10)+
+                OutputUtils.FormatField("Min",10)+
+                OutputUtils.FormatField("Max",10)+
+                "\n----------------------------------------\n"+
+                OutputUtils.FormatField(M, 10)+
+                OutputUtils.FormatField(SD,10)+
+                OutputUtils.FormatField(Min,10)+
+                OutputUtils.FormatField(Max,10);
+
+            iWrite.WriteLine(o);
         }
 
 #if USEFMRSIM        

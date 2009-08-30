@@ -725,54 +725,37 @@ namespace FMRShell
             else return ret;
         }
 
-        public static string GetAS400Time()
+        public static DateTime GetAS400DateTime()
         {
             ConfigClass cs = new ConfigClass();
             AS400DateTime dt;
             int ltncy;
             int ret = cs.GetAS400DateTime(out dt, out ltncy);
-            return dt.hour + ":" + dt.minute + ":" + dt.second + "." + dt.ms;
+            return ConvertToDateTime(dt);
         }
 
         /// <summary>
-        /// Computes basic statistics on latency from a number of AS400 pings
+        /// Ping once
         /// </summary>
-        /// <param name="numTries">no. of times to ping the server</param>
-        /// <param name="timeOut">timeout between the pings</param>
-        public static string Ping(int numTries, int timeOut)
+        /// <param name="dt">A <see cref="AS400DateTime"/></param>
+        /// <param name="latency">A <see cref="System.Int32"/></param>
+        /// <returns>A <see cref="System.Boolean"/> true in case of sucess, false otherwise</returns>
+        public static bool Ping(out DateTime dt, out int latency)
         {
             ConfigClass cs = new ConfigClass();
-            List<int> lst=new List<int>(30);
-            int ltncy;
-            int ret;
-            AS400DateTime dt;
-            if (numTries == 1) return "AS400Time " + GetAS400Time() + " latency " + GetLatency();
-            else
-            {
-                for (int i = 0; i < numTries; i++)
-                {
-                    ret = cs.GetAS400DateTime(out dt, out ltncy);
-                    lst.Add(ltncy);
-                    Thread.Sleep(timeOut);
-                }
-                string M = Math.Round(Convert.ToDecimal(StatUtils.Mean(lst)),2).ToString();
-                string SD = Math.Round(Convert.ToDecimal(StatUtils.StdDev(lst)), 2).ToString();
-                string Min = StatUtils.Min(lst).ToString();
-                string Max = StatUtils.Max(lst).ToString();
-                string o = OutputUtils.FormatField("Mean",10)+
-                    OutputUtils.FormatField("Std.Dev.",10)+
-                    OutputUtils.FormatField("Min",10)+
-                    OutputUtils.FormatField("Max",10)+
-                    "\n----------------------------------------\n"+
-                    OutputUtils.FormatField(M, 10)+
-                    OutputUtils.FormatField(SD,10)+
-                    OutputUtils.FormatField(Min,10)+
-                    OutputUtils.FormatField(Max,10);
+            AS400DateTime AS400dt;
+            int ret = cs.GetAS400DateTime(out AS400dt, out latency);
+            dt = ConvertToDateTime(AS400dt);
+            if (ret == 0) return true;
+            else return false;
+        }
 
-                return o;
-            }
+        public static DateTime ConvertToDateTime(AS400DateTime dt)
+        {
+            return new DateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.ms);
         }
     }
+
     
     /// <summary>
 	/// Example of usage of the class, Main_ should be replaced by Main in the real application
