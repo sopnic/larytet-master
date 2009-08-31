@@ -273,13 +273,49 @@ namespace JQuant
             collector.Start();
 
             Thread.Sleep(1000);
+            debugLoggerShowCallback(iWrite, cmdName, cmdArguments);
 
             collector.Stop();
             logger.Stop();
-               
+            logger.Dispose();
         }
 #endif        
-            
+
+        protected void debugLoggerShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+        {
+            iWrite.WriteLine(
+                OutputUtils.FormatField("Name", 10)+
+                OutputUtils.FormatField("Triggered", 10)+
+                OutputUtils.FormatField("Logged", 10)+
+                OutputUtils.FormatField("Dropped", 10)+
+                OutputUtils.FormatField("Log type", 10)+
+                OutputUtils.FormatField("Latest", 24)+
+                OutputUtils.FormatField("Oldest", 24)+
+                OutputUtils.FormatField("Stamped", 10)
+            );
+            iWrite.WriteLine("-----------------------------------------------------------------------------------------------------------------------");
+            bool isEmpty = true;
+            foreach (ILogger logger in Resources.Loggers) 
+            {
+                    isEmpty = false;
+                    iWrite.WriteLine(
+                        OutputUtils.FormatField(logger.GetName(), 10)+
+                        OutputUtils.FormatField(logger.GetCountTrigger(), 10)+
+                        OutputUtils.FormatField(logger.GetCountLog(), 10)+
+                        OutputUtils.FormatField(logger.GetCountDropped(), 10)+
+                        OutputUtils.FormatField(logger.GetLogType().ToString(), 10)+
+                        OutputUtils.FormatField(logger.GetLatest().ToString(), 24)+
+                        OutputUtils.FormatField(logger.GetOldest().ToString(), 24) +
+                        OutputUtils.FormatField(logger.TimeStamped().ToString(), 10)
+                    );
+                                     
+            }       
+            if (isEmpty) 
+            {
+                iWrite.WriteLine("No loggers");
+            }
+        }
+        
         protected void LoadCommandLineInterface() 
         {
         
@@ -290,7 +326,7 @@ namespace JQuant
             // Menu menuFMRLibSim = 
                     cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation", 
                                    " Condiguration and debug of the FMR simulatoion");
-            Menu menuDebug = cli.RootMenu.AddMenu("Debug", "System debug info", 
+            Menu menuDebug = cli.RootMenu.AddMenu("Dbg", "System debug info", 
                                    " Created objetcs, access to the system statistics");
             menuDebug.AddCommand("GC", "Run garbage collector", 
                                   " Forces garnage collection", debugGcCallback);
@@ -316,6 +352,8 @@ namespace JQuant
             menuDebug.AddCommand("loggerTest", "Run simple test of the logger", 
                                   " Create a Collector and start a random data simulator", debugLoggerTestCallback);
 #endif            
+            menuDebug.AddCommand("loggerShow", "Show existing loggers", 
+                                  " List of created loggers with the statistics", debugLoggerShowCallback);
         }  
         
     }
