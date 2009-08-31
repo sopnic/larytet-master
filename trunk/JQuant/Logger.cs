@@ -19,7 +19,7 @@ namespace JQuant
             _countLog = 0;
             _countDropped = 0;
 
-            // add myself to the list of created mailboxes
+            // add myself to the list of created loggers
             Resources.Loggers.Add(this);
         }
 
@@ -36,7 +36,7 @@ namespace JQuant
 
         ~Logger()
         {
-            Console.WriteLine("Mailbox " + GetName() + " destroyed");
+            Console.WriteLine("Logger " + GetName() + " destroyed");
         }
 		
         public string GetName()
@@ -287,8 +287,14 @@ namespace JQuant
             _streamWriter = default(StreamWriter);
             _producer = producer;
             _append = append;
+            _timeStamped = false;
+            _stampLatest = default(System.DateTime);
+            _stampOldest = default(System.DateTime);
+            Type = LogType.Ascii;
 			notStoped = false;
             marketDataToString = new FMRShell.K300MaofTypeToString("\t");
+            
+            
             // I estimate size of FMRShell.MarketData struct 50 bytes
             QueueSize = (500*1024)/50; 
 		}
@@ -402,6 +408,8 @@ namespace JQuant
 		/// </summary>
 		public void Notify(int count, FMRShell.MarketData data)
 		{
+            _stampLatest = System.DateTime.Now;
+            
             // i have to clone the data first. Producer can use the same
             // reference again and again
             FMRShell.MarketData dataClone = (FMRShell.MarketData)(data.Clone());
