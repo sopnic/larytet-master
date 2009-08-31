@@ -15,6 +15,9 @@ namespace JQuant
         public Logger(string name)
         {
             _name = name;
+            _countTrigger = 0;
+            _countLog = 0;
+            _countDropped = 0;
 
             // add myself to the list of created mailboxes
             Resources.Loggers.Add(this);
@@ -41,10 +44,20 @@ namespace JQuant
 			return _name;
 		}
 		
-        public int GetCount()
+        public int GetCountLog()
 		{
-			return _count;
+			return _countLog;
 		}
+        
+        public int GetCountTrigger()
+        {
+            return _countTrigger;
+        }
+        
+        public int GetCountDropped()
+        {
+            return _countDropped;
+        }
         
         public LogType GetLogType()
         {
@@ -73,7 +86,9 @@ namespace JQuant
         }
 
 		protected string _name;
-		protected int _count;
+        protected int _countTrigger;
+        protected int _countLog;
+        protected int _countDropped;
 		protected bool _timeStamped;
 		protected System.DateTime _stampLatest; 
 		protected System.DateTime _stampOldest; 
@@ -122,10 +137,26 @@ namespace JQuant
 		public virtual void Stop()
 		{
 			notStoped = false;
+            stopped = false;
+            
             lock (this)
 			{
+                // let the writer thread know that it is time to get out
+                Monitor.Pulse(this);
+
+                // help the garbage collector to clean up
 				incomingData.Clear();
-			}			
+			}
+
+            // wait for the write thread exit
+            while (!stopped)
+            {
+                lock (this)
+                {
+                    Monitor.Pulse(this);
+                }
+                Thread.Sleep(100);
+            }
 		}
 		
         /// <summary>
@@ -137,9 +168,17 @@ namespace JQuant
 		{
             lock (this)  // protect access to FIFO
 			{
-				// push the data to the FIFO
-				incomingData.Enqueue(data);
-				Monitor.Pulse(this);
+                _countTrigger++;
+                if (incomingData.Count < QueueSize)
+                {                    
+    				// push the data to the FIFO
+    				incomingData.Enqueue(data);
+                }
+                else
+                {
+                    _countDropped++;
+                }
+                Monitor.Pulse(this);
 			}
 		}
 
@@ -155,6 +194,17 @@ namespace JQuant
             }
         }
 
+        /// <value>
+        /// Setting this property will limit size of the queue of events
+        /// waiting for processing
+        /// there is some reasonable default (0.5MB of entries)
+        /// </value>
+        public int QueueSize
+        {
+            get;
+            set;
+        }
+
 
         
 		/// <summary>
@@ -162,11 +212,11 @@ namespace JQuant
 		/// </summary>
 		protected void Writer()
 		{
-			bool dataSet = false;
 			object data = null;
 			
 			while (notStoped)
 			{
+                bool dataSet = false;
 				lock (this)
 				{
 					if (incomingData.Count != 0)
@@ -186,11 +236,14 @@ namespace JQuant
 					WriteData(data);
 				}
 			}
+            
+            stopped = true;
 		}
 		
 		protected abstract void WriteData(object data);
 		
 		protected bool notStoped;
+        protected bool stopped;
 		
 		/// <summary>
 		/// Notify() pushes the incoming data here
@@ -236,6 +289,8 @@ namespace JQuant
             _append = append;
 			notStoped = false;
             marketDataToString = new FMRShell.K300MaofTypeToString("\t");
+            // I estimate size of FMRShell.MarketData struct 50 bytes
+            QueueSize = (500*1024)/50; 
 		}
 			
 		/// <summary>
@@ -273,6 +328,9 @@ namespace JQuant
                     if (_fileStream != default(FileStream))
                     {
                         _fileStream.Close();
+                        // help Garbage collector
+                        _streamWriter = default(StreamWriter);
+                        _fileStream = default(FileStream);
                     }
                     // and get out
                     break;
@@ -282,7 +340,6 @@ namespace JQuant
                 try
                 {
                     _streamWriter.WriteLine(marketDataToString.Legend);
-                    _streamWriter.Flush();
                 }
                 catch (IOException e)
                 {
@@ -290,6 +347,9 @@ namespace JQuant
                     LastException = e;
                     // close the file
                     _fileStream.Close();
+                    // help Garbage collector
+                    _streamWriter = default(StreamWriter);
+                    _fileStream = default(FileStream);
                     Console.WriteLine(e.ToString());
                     // and get out
                     break;
@@ -315,20 +375,23 @@ namespace JQuant
 		/// </summary>
 		public override void Stop()
 		{
-            lock (this)
-			{
-                _producer.RemoveSink(this);
-                base.Stop();
-                if (_fileStream != default(FileStream))
-                {
-                    _fileStream.Close();
-                }
-			}			
+            base.Stop();
+            _producer.RemoveSink(this);
+            if (_fileStream != default(FileStream))
+            {
+                _fileStream.Close();
+                // help Garbage collector
+                _streamWriter = default(StreamWriter);
+                _fileStream = default(FileStream);
+            }
 		}
 
         public override void Dispose()
         {
-            _fileStream.Close();
+            if (_fileStream != default(FileStream))
+            {
+                _fileStream.Close();
+            }
             base.Dispose();
         }
 		
@@ -371,7 +434,13 @@ namespace JQuant
             try
             {
                 _streamWriter.WriteLine(marketDataToString.Values);
-                _streamWriter.Flush();
+                // i want to make Flush from time to time
+                // the question is when ? or let the OS to manage the things ?
+                // _streamWriter.Flush();
+                lock (this)
+                {
+                    _countLog++;
+                }
             }
             catch (ObjectDisposedException e)
             {
@@ -381,13 +450,11 @@ namespace JQuant
             }
             catch (IOException e)
             {
+                Console.WriteLine(e.ToString());
                 // store the exception
                 LastException = e;
-                // close the file
-                _fileStream.Close();
                 // and get out
                 Stop();
-                Console.WriteLine(e.ToString());
             }
 		}
 		

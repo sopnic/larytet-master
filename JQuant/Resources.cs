@@ -110,8 +110,21 @@ namespace JQuant
 		/// A <see cref="System.Int32"/>
 		/// number of records in the log
 		/// </returns>
-        int GetCount();
-		
+        int GetCountLog();
+        
+        /// <summary>
+        /// number of times Logger was invoke
+        /// normallu equal or close to what GetCountLog() returns
+        /// difference between two is number of pending entries (wait in queue
+        /// for processing)
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.Int32"/>
+        /// </returns>
+        int GetCountTrigger();
+
+        int GetCountDropped();
+
         LogType GetLogType();
 		
 		/// <summary>
