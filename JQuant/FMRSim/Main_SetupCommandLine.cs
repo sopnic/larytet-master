@@ -231,17 +231,22 @@ namespace JQuant
             string SD = Math.Round(Convert.ToDecimal(StatUtils.StdDev(lst)), 2).ToString();
             string Min = StatUtils.Min(lst).ToString();
             string Max = StatUtils.Max(lst).ToString();
-            string o = "\n\n"+OutputUtils.FormatField("Mean",10)+
-                OutputUtils.FormatField("Std.Dev.",10)+
-                OutputUtils.FormatField("Min",10)+
-                OutputUtils.FormatField("Max",10)+
-                "\n----------------------------------------\n"+
-                OutputUtils.FormatField(M, 10)+
-                OutputUtils.FormatField(SD,10)+
-                OutputUtils.FormatField(Min,10)+
-                OutputUtils.FormatField(Max,10);
+            /*string o = */
+            iWrite.WriteLine(Environment.NewLine);
+            iWrite.WriteLine(Environment.NewLine);
+            iWrite.Write(OutputUtils.FormatField("Mean", 10));
+            iWrite.Write(OutputUtils.FormatField("Std.Dev.",10));
+            iWrite.Write(OutputUtils.FormatField("Min",10));
+            iWrite.Write(OutputUtils.FormatField("Max",10));
+            iWrite.Write(Environment.NewLine);
+            iWrite.Write("----------------------------------------");
+            iWrite.Write(Environment.NewLine);
+            iWrite.Write(OutputUtils.FormatField(M, 10));
+            iWrite.Write(OutputUtils.FormatField(SD,10));
+            iWrite.Write(OutputUtils.FormatField(Min,10));
+            iWrite.Write(OutputUtils.FormatField(Max,10));
+            iWrite.WriteLine(Environment.NewLine);
 
-            iWrite.WriteLine(o);
         }
 
 #if USEFMRSIM        
