@@ -1,6 +1,8 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Collections;
 
 /// <summary>
 /// classes supporting application GUI
@@ -88,17 +90,88 @@ namespace JQuantForms
 	/// </summary>
 	public class ConsoleIn :TextBox
 	{
-		public ConsoleIn()
+        public delegate void ProcessCommandDelegate(string command);
+        
+		public ConsoleIn(ProcessCommandDelegate commandProcessor)
 		{
 			base.Multiline = false;
 			base.ReadOnly = false;
 			base.ScrollBars = ScrollBars.Horizontal;
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.KeyPressHandler);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.KeyHandler);
+
+            this.commandProcessor = commandProcessor;
+            this.history = new List<string>(HISTORY_SIZE);
+            historyIdx = 0;
 		}
 		
 		public string ReadLine()
 		{
 			return base.Text;
 		}
+
+        protected void KeyHandler(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            System.Windows.Forms.Keys keyCode = e.KeyCode;
+            switch (keyCode)
+            {
+            case System.Windows.Forms.Keys.Up:
+                if (historyIdx > 0)
+                {
+                    historyIdx--;
+                }
+                if ((historyIdx >= 0) && (history.Count > 0))
+                {
+                    Text = history[historyIdx];
+                    base.Refresh();
+                }
+                break;
+            case System.Windows.Forms.Keys.Down:
+                if (historyIdx < (history.Count-1))
+                {
+                    historyIdx++;
+                }
+                if ((historyIdx < history.Count) && (history.Count > 0))
+                {
+                    Text = history[historyIdx];
+                    base.Refresh();
+                }
+                break;
+            }
+        }
+
+        protected void KeyPressHandler(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            System.Windows.Forms.Keys keyPressed = (System.Windows.Forms.Keys)e.KeyChar;
+            switch (keyPressed)
+            {
+            case System.Windows.Forms.Keys.Escape:
+                this.Clear();
+                break;
+            case System.Windows.Forms.Keys.Enter:
+                commandProcessor(Text);
+                UpdateHistory(Text);
+                break;
+            }
+        }
+
+        protected void UpdateHistory(string s)
+        {
+            bool contains = history.Contains(s);
+            if (!contains)
+            {
+               history.Add(s); 
+            }
+            if (history.Count >= HISTORY_SIZE)
+            {
+                history.RemoveAt(0);
+            }
+        }
+
+        protected ProcessCommandDelegate commandProcessor;
+        protected List<string> history;
+        protected int historyIdx;
+        protected const int HISTORY_SIZE = 100;
 	}
 	
 }

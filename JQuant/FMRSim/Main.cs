@@ -129,6 +129,11 @@ namespace JQuant
             }
         }
 
+        protected void ConsoleInCommandHalder(string s)
+        {
+            cli.ProcessCommand(this, s);
+        }
+        
 		/// <summary>
 		/// executed in a separate thread - uses spare CPU cycles
 		/// </summary>
@@ -142,7 +147,7 @@ namespace JQuant
 			consoleOut.Dock = DockStyle.Fill;
             this.consoleOut = consoleOut;
 
-			consoleIn = new JQuantForms.ConsoleIn();
+			consoleIn = new JQuantForms.ConsoleIn(new JQuantForms.ConsoleIn.ProcessCommandDelegate(this.ConsoleInCommandHalder));
 			consoleIn.Dock = DockStyle.Fill;
 							
 			// Create layout
