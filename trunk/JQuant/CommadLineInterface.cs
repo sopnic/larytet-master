@@ -232,10 +232,26 @@ namespace JQuant
         public void ProcessCommand(IWrite iWrite, string cmdName)
         {
             Command cmd;
+            // store the current menu
+            Menu currentMenuCopy = CurrentMenu;
+            bool restoreCurrentMenu = false;
 
             if (cmdName.Equals("")) return;
 
             cmdName = OutputUtils.RemoveLeadingBlanks(cmdName);
+
+            // is there a slash ? fectch the command before the slash and
+            // build path to the command
+            // after that remove the prefix from the string
+            int slashIdx = cmdName.IndexOf("/");
+            while (slashIdx >= 0)
+            {
+                string subcommand = cmdName.Substring(0, slashIdx);
+                ProcessCommand(iWrite, subcommand);
+                cmdName = cmdName.Remove(0, slashIdx+1);
+                slashIdx = cmdName.IndexOf("/");
+                restoreCurrentMenu = true;
+            }
 
             // may be exit or help commands - always look in the system menu	
             bool found = SystemMenu.FindCommand(cmdName, out cmd);
@@ -255,6 +271,11 @@ namespace JQuant
             else
             {
                 iWrite.WriteLine("Unknown command " + cmdName);
+            }
+
+            if (restoreCurrentMenu)
+            {
+                CurrentMenu = currentMenuCopy;
             }
         }
 

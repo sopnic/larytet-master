@@ -238,6 +238,7 @@ namespace JQuant
 			}
             
             stopped = true;
+            Console.WriteLine("Logger " + GetName() + " thread stopped");
 		}
 		
 		protected abstract void WriteData(object data);
