@@ -68,6 +68,17 @@ namespace JQuant
 
             return s.ToString();
         }
+
+        static public string RemoveLeadingBlanks(string s)
+        {
+            int blank_idx = s.IndexOf(' ');
+            while (blank_idx == 0)
+            {
+                s.Remove(0, 1);
+                blank_idx = s.IndexOf(' ');
+            }
+            return s;
+        }
     }
 
     /// <summary>
