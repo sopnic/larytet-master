@@ -204,7 +204,7 @@ namespace FMRShell
 		/// Application will check that the method retruned true and only 
 		/// after that analyze returnCode
 		/// </returns>
-        public bool Open(out int returnCode, bool printProgress)
+        public bool Open(IWrite iWrite, out int returnCode, bool printProgress)
         {
 			state = ConnectionState.Trying;
 			int percent = 0;
@@ -212,8 +212,9 @@ namespace FMRShell
 			bool openResult = Open(out returnCode);
             
             //Print title + progress bar
-            Console.WriteLine(
-                "\n0    10   20   30   40   50   60   70   80   90  100\n|----+----+----+----+----+----+----+----+----+----|");
+            iWrite.WriteLine(Environment.NewLine);
+            iWrite.WriteLine("0    10   20   30   40   50   60   70   80   90  100");
+            iWrite.WriteLine("|----+----+----+----+----+----+----+----+----+----|");
             
             // loop until login succeeds
 			while (openResult)
@@ -227,7 +228,7 @@ namespace FMRShell
                     //scale the dots to the progress bar
                     while (percent < percent_1)
                     {
-                        Console.Write(".");
+                        iWrite.Write(".");
                         percent += 2;
                     }
 				}
@@ -254,6 +255,7 @@ namespace FMRShell
 			
 			return openResult;
 		}
+        
 
 		
 		public string GetUserName()
@@ -273,7 +275,12 @@ namespace FMRShell
 			get;
 			protected set;
 		}
-		
+
+        public string LoginErrorDesc()
+        {
+            return this.userClass.get_LoginErrorDesc(ref this.sessionId);
+        }
+
         protected int sessionId;
         protected string errMsg;
 		protected string xmlFileName;
@@ -752,7 +759,7 @@ namespace FMRShell
 
         public static DateTime ConvertToDateTime(AS400DateTime dt)
         {
-            return new DateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.ms);
+            return new DateTime(dt.year, dt.Month, dt.day, dt.hour, dt.minute, dt.second, dt.ms);
         }
     }
 

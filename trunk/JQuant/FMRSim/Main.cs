@@ -32,7 +32,21 @@ namespace JQuant
             consoleOut.Write(s + Environment.NewLine);
 #endif
 		}
-			
+
+
+        public void WriteLine()
+        {
+            // stdio
+            Console.WriteLine();
+
+            // and GUI 
+            // output is asynchronous - send mail to the thread
+#if WITHGUI
+            consoleOut.Write(Environment.NewLine);
+#endif
+        }
+
+
 		public void Write(string s) 
 		{
 			Console.Write(s);

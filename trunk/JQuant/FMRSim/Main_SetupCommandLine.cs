@@ -168,7 +168,7 @@ namespace JQuant
         
             bool openResult;
             int errResult;
-            openResult = connection.Open(out errResult, true);
+            openResult = connection.Open(iWrite, out errResult, true);
         
             iWrite.WriteLine("");
             if (openResult)
@@ -179,6 +179,7 @@ namespace JQuant
             else
             {
                 iWrite.WriteLine("Connection failed errResult="+errResult);
+                iWrite.WriteLine("Error description: "+connection.LoginErrorDesc());
             }
                 
             iWrite.WriteLine("Login status is "+connection.loginStatus.ToString());
@@ -230,9 +231,8 @@ namespace JQuant
             string SD = Math.Round(Convert.ToDecimal(StatUtils.StdDev(lst)), 2).ToString();
             string Min = StatUtils.Min(lst).ToString();
             string Max = StatUtils.Max(lst).ToString();
-            /*string o = */
-            iWrite.WriteLine(Environment.NewLine);
-            iWrite.WriteLine(Environment.NewLine);
+
+            iWrite.WriteLine();
             iWrite.Write(OutputUtils.FormatField("Mean", 10));
             iWrite.Write(OutputUtils.FormatField("Std.Dev.",10));
             iWrite.Write(OutputUtils.FormatField("Min",10));
@@ -244,8 +244,7 @@ namespace JQuant
             iWrite.Write(OutputUtils.FormatField(SD,10));
             iWrite.Write(OutputUtils.FormatField(Min,10));
             iWrite.Write(OutputUtils.FormatField(Max,10));
-            iWrite.WriteLine(Environment.NewLine);
-
+            iWrite.WriteLine();
         }
         
         protected void debugLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
