@@ -175,7 +175,7 @@ namespace TaskBarLibSim
     public struct AS400DateTime
     {
         public int year;
-        public int month;
+        public int Month;
         public int day;
         public int hour;
         public int minute;
@@ -530,8 +530,14 @@ namespace TaskBarLibSim
             return _loginStatus;
         }
 
+        public string get_LoginErrorDesc(ref int sessionId)
+        {
+            return _loginErrorDesc;
+        }
+
         protected int _loginProgress;
         protected int _sessionId;
+        protected string _loginErrorDesc;
         protected LoginStatus _loginStatus;
         protected DateTime _loginStarted;
 
@@ -555,7 +561,7 @@ namespace TaskBarLibSim
 
             //fill the AS400DateTime struct with updated values
             dt.year = now.Year;
-            dt.month = now.Month;
+            dt.Month = now.Month;
             dt.day = now.Day;
             dt.hour = now.Hour;
             dt.minute = now.Minute;

@@ -15,6 +15,7 @@ namespace JQuant
     public interface IWrite
     {
         void WriteLine(string s);
+        void WriteLine();
         void Write(string s);
     }
 
