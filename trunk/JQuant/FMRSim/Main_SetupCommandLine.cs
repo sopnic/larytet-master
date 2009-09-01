@@ -162,7 +162,6 @@ namespace JQuant
             }
         }
             
-            
         protected void debugLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
         {
             FMRShell.Connection connection = new FMRShell.Connection("ConnectionParameters.xml");
@@ -248,38 +247,75 @@ namespace JQuant
             iWrite.WriteLine(Environment.NewLine);
 
         }
-
-#if USEFMRSIM        
+        
         protected void debugLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
         {
+            OpenMaofStreamAndLog(iWrite, true, "simLog.txt", "simLogger");
+        }
+
+        protected void debugOperatonsLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+        {
+            // generate filename
+            string filename = "maofLog."+DateTime.Now.ToString()+".txt";
+            filename = filename.Replace('/',' ');
+            filename = filename.Replace(' ','_');
+            iWrite.WriteLine("Log file "+filename);
+
+            OpenMaofStreamAndLog(iWrite, false, filename, "MaofLogger");
+        }
+
+        protected FMRShell.Collector maofCollector;
+        protected MarketDataLogger maofLogger;
+        
+        protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            CloseMaofStreamAndLog(iWrite);
+        }
+            
+        protected void CloseMaofStreamAndLog(IWrite iWrite) 
+        {
+            maofCollector.Stop();
+            maofLogger.Stop();
+            maofLogger.Dispose();
+        }
+        
+        protected void OpenMaofStreamAndLog(IWrite iWrite, bool test, string filename, string loggerName) 
+        {
+#if USEFMRSIM        
             // create Maof data generator
             TaskBarLibSim.MaofDataGeneratorRandom dataGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
 
             // setup the data generator in the K300Class
             TaskBarLibSim.K300Class.InitStreamSimulation(dataGenerator);
+#endif        
 
-            // create Collector (producer) 
-            FMRShell.Collector collector = new FMRShell.Collector();
+            // create Collector (producer) - will do it only once
+            if (maofCollector == default(FMRShell.Collector))
+            {
+                maofCollector = new FMRShell.Collector();
+            }
             
             // create logger which will register itself (AddSink) in the collector
-            MarketDataLogger logger = new MarketDataLogger("simLogger", "simLog", false, 
-                                     collector);
+            maofLogger = new MarketDataLogger(loggerName, filename, false, 
+                                     maofCollector);
 
             // start logger
-            logger.Start();
+            maofLogger.Start();
 
             // start collector, which will start the stream in K300Class, whch will start
             // data generator
-            collector.Start();
+            maofCollector.Start();
 
-            Thread.Sleep(1000);
-            debugLoggerShowCallback(iWrite, cmdName, cmdArguments);
+            Thread.Sleep(100);
+            debugLoggerShowCallback(iWrite, "", null);
+            
+            if (test)
+            {
+                Thread.Sleep(1000);
 
-            collector.Stop();
-            logger.Stop();
-            logger.Dispose();
+                CloseMaofStreamAndLog(iWrite);
+            }
         }
-#endif        
 
         protected void debugLoggerShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
         {
@@ -320,6 +356,18 @@ namespace JQuant
         {
         
             cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
+
+            Menu menuOperations = cli.RootMenu.AddMenu("Oper", "Operations", 
+                                   " Login, start stream&log");
+            menuOperations.AddCommand("Login", "Login to the remote server", 
+                                  " The call will block until login succeeds", debugLoginCallback);
+            menuOperations.AddCommand("LogMaof", "Log Maof stream",
+                                  " Start stream and run logger", debugOperatonsLogMaofCallback);
+            menuOperations.AddCommand("StopLog", "Stop previosly started Log",
+                                  " Stop stream andlogger", debugOperatonsStopLogCallback);
+            menuOperations.AddCommand("loggerShow", "Show existing loggers", 
+                                  " List of created loggers with the statistics", debugLoggerShowCallback);
+            
             // Menu menuFMRLib = 
                     cli.RootMenu.AddMenu("FMRLib", "Access to  FMRLib API", 
                                   " Allows to access the FMRLib API directly");

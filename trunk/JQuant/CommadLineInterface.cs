@@ -159,8 +159,21 @@ namespace JQuant
         /// </returns>
         public bool FindCommand(string cmdLine, out Command command)
         {
+            // remove leading blanks
+            // get first word of the command (delimiter is blank)
+            int idx_blank_0 = cmdLine.IndexOf(' ');
+            string word_0;
+            if (idx_blank_0 > 0)
+            {
+                word_0 = cmdLine.Substring(0, idx_blank_0);
+            }
+            else
+            {
+                word_0 = cmdLine;
+            }
+            
             // case not sensitive - convert everything to lower case
-            string cmdLineLower = cmdLine.ToLower();
+            string cmdLineLower = word_0.ToLower();
             foreach (Command cmd in Commands)
             {
                 string cmdNameLower = cmd.Name.ToLower();
@@ -221,6 +234,8 @@ namespace JQuant
             Command cmd;
 
             if (cmdName.Equals("")) return;
+
+            cmdName = OutputUtils.RemoveLeadingBlanks(cmdName);
 
             // may be exit or help commands - always look in the system menu	
             bool found = SystemMenu.FindCommand(cmdName, out cmd);
