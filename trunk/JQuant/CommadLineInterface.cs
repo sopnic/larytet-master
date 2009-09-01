@@ -240,9 +240,11 @@ namespace JQuant
 
             cmdName = OutputUtils.RemoveLeadingBlanks(cmdName);
 
-            // is there a slash ? fectch the command before the slash and
-            // build path to the command
+            // is there a slash ? fectch the command before the slash 
+            // and execute the command
             // after that remove the prefix from the string
+            // CurrentMenu reference will be restored from copy
+            // in the end of the function
             int slashIdx = cmdName.IndexOf("/");
             while (slashIdx >= 0)
             {
