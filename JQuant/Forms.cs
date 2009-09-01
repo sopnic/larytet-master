@@ -58,25 +58,18 @@ namespace JQuantForms
             
             // prepare string (truncate if neccessary)
             
-            int totalLength = (s.Length+TextLength);
-            if (totalLength > maxTextLength)
+            if (TextLength > maxTextLength)
             {
                 // truncate by at least 30% to avoid truncation on every string
-                int removeCount = Math.Max(totalLength - maxTextLength, (int)(maxTextLength*0.3F));
-                s = Text + s;
-                s = s.Remove(0, removeCount);
+                int removeCount = Math.Max(TextLength - maxTextLength, (int)(maxTextLength*0.3F));
 
-                Text = s;
+                Text.Remove(0, removeCount);
                 
                 SelectionStart = Text.Length;
             }
-            else
-            {
-                base.AppendText(s);
-            }
-
-            base.ScrollToCaret();
-            base.Refresh();                
+            
+            base.AppendText(s);
+//            base.ScrollToCaret();
         }
 
         protected delegate void SetTextDelegate(string s);
@@ -123,7 +116,6 @@ namespace JQuantForms
                 if ((historyIdx >= 0) && (history.Count > 0))
                 {
                     Text = history[historyIdx];
-                    base.Refresh();
                 }
                 break;
             case System.Windows.Forms.Keys.Down:
@@ -134,7 +126,6 @@ namespace JQuantForms
                 if ((historyIdx < history.Count) && (history.Count > 0))
                 {
                     Text = history[historyIdx];
-                    base.Refresh();
                 }
                 break;
             }
