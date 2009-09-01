@@ -253,7 +253,7 @@ namespace JQuant
             OpenMaofStreamAndLog(iWrite, true, "simLog.txt", "simLogger");
         }
 
-        protected void debugOperatonsLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
+        protected void debugOperationsLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
         {
             // generate filename
             string filename = "maofLog."+DateTime.Now.ToString()+".txt";
@@ -277,17 +277,18 @@ namespace JQuant
             maofCollector.Stop();
             maofLogger.Stop();
             maofLogger.Dispose();
+            maofLogger = null;
         }
         
         protected void OpenMaofStreamAndLog(IWrite iWrite, bool test, string filename, string loggerName) 
         {
-#if USEFMRSIM        
+#if USEFMRSIM
             // create Maof data generator
             TaskBarLibSim.MaofDataGeneratorRandom dataGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
 
             // setup the data generator in the K300Class
             TaskBarLibSim.K300Class.InitStreamSimulation(dataGenerator);
-#endif        
+#endif
 
             // create Collector (producer) - will do it only once
             if (maofCollector == default(FMRShell.Collector))
@@ -361,11 +362,11 @@ namespace JQuant
                                    " Login, start stream&log");
             menuOperations.AddCommand("Login", "Login to the remote server", 
                                   " The call will block until login succeeds", debugLoginCallback);
-            menuOperations.AddCommand("LogMaof", "Log Maof stream",
-                                  " Start stream and run logger", debugOperatonsLogMaofCallback);
+            menuOperations.AddCommand("StartLog", "Log Maof stream",
+                                  " Start stream and run logger", debugOperationsLogMaofCallback);
             menuOperations.AddCommand("StopLog", "Stop previosly started Log",
                                   " Stop stream andlogger", debugOperatonsStopLogCallback);
-            menuOperations.AddCommand("loggerShow", "Show existing loggers", 
+            menuOperations.AddCommand("ShowLog", "Show existing loggers", 
                                   " List of created loggers with the statistics", debugLoggerShowCallback);
             
             // Menu menuFMRLib = 
