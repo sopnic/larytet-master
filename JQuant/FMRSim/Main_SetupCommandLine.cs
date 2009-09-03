@@ -249,7 +249,7 @@ namespace JQuant
         
         protected void debugLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
         {
-            OpenMaofStreamAndLog(iWrite, true, "simLog.txt", "simLogger");
+            OpenStreamAndLog(iWrite, true, "simLog.txt", "simLogger");
         }
 
         protected void debugOperationsLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
@@ -260,7 +260,7 @@ namespace JQuant
             filename = filename.Replace(' ','_');
             iWrite.WriteLine("Log file "+filename);
 
-            OpenMaofStreamAndLog(iWrite, false, filename, "MaofLogger");
+            OpenStreamAndLog(iWrite, false, filename, "MaofLogger");
         }
 
         protected FMRShell.Collector maofCollector;
@@ -279,14 +279,18 @@ namespace JQuant
             maofLogger = null;
         }
         
-        protected void OpenMaofStreamAndLog(IWrite iWrite, bool test, string filename, string loggerName) 
+        protected void OpenStreamAndLog(IWrite iWrite, bool test, string filename, string loggerName) 
         {
 #if USEFMRSIM
             // create Maof data generator
             TaskBarLibSim.MaofDataGeneratorRandom dataGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
 
-            // setup the data generator in the K300Class
+            //create Rezef data generator
+            TaskBarLibSim.RezefDataGeneratorRandom dataRzfGenerator = new TaskBarLibSim.RezefDataGeneratorRandom();
+
+            // setup the data generator(s) in the K300Class
             TaskBarLibSim.K300Class.InitStreamSimulation(dataGenerator);
+            TaskBarLibSim.K300Class.InitStreamSimulation(dataRzfGenerator);
 #endif
 
             // create Collector (producer) - will do it only once
@@ -316,6 +320,9 @@ namespace JQuant
                 CloseMaofStreamAndLog(iWrite);
             }
         }
+
+
+
 
         protected void debugLoggerShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
         {

@@ -259,7 +259,7 @@ namespace JQuant
 	/// this class will get the data from specified data producer and write the data to the 
 	/// specified file.
 	/// </summary>
-	public class MarketDataLogger :AsyncLogger, ISink<FMRShell.MarketData>
+	public class MarketDataLogger :AsyncLogger, ISink<FMRShell.MarketDataMaof>
 	{
         /// <summary>
         /// Create the ASCII logger
@@ -281,7 +281,7 @@ namespace JQuant
         /// Object which provides data to log
         /// </param>
 		public MarketDataLogger(string name, string filename, bool append, 
-		                             IProducer<FMRShell.MarketData> producer): base(name)
+		                             IProducer<FMRShell.MarketDataMaof> producer): base(name)
 		{
 			FileName = filename;
             _fileStream = default(FileStream);
@@ -407,13 +407,13 @@ namespace JQuant
 		/// push the evet into FIFO and let low priority background thread to write 
 		/// the data into the file
 		/// </summary>
-		public void Notify(int count, FMRShell.MarketData data)
+		public void Notify(int count, FMRShell.MarketDataMaof data)
 		{
             _stampLatest = System.DateTime.Now;
             
             // i have to clone the data first. Producer can use the same
             // reference again and again
-            FMRShell.MarketData dataClone = (FMRShell.MarketData)(data.Clone());
+            FMRShell.MarketDataMaof dataClone = (FMRShell.MarketDataMaof)(data.Clone());
 
             // add the object to the queue for further processing
 			base.AddEntry(data);
@@ -433,7 +433,7 @@ namespace JQuant
             // at this point only ASCII is supported, no system info
             // write all fields of K300MaofType (data.k3Maof) in one line
             // followed by EOL
-            FMRShell.MarketData md = (FMRShell.MarketData)data;
+            FMRShell.MarketDataMaof md = (FMRShell.MarketDataMaof)data;
 
             // convert the data to string - this is time consuming
             // operation
@@ -479,7 +479,7 @@ namespace JQuant
             protected set;
         }
 		
-		protected IProducer<FMRShell.MarketData> _producer;
+		protected IProducer<FMRShell.MarketDataMaof> _producer;
         bool _append;
         FileStream _fileStream;
         FMRShell.K300MaofTypeToString marketDataToString;

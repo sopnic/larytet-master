@@ -35,6 +35,7 @@ namespace JQuantForms
 			base.ScrollBars = ScrollBars.Vertical;
 			base.ReadOnly = true;
 			base.WordWrap = true;
+            base.Font = new System.Drawing.Font("Lucida Console",10);
             setTextDelegate = new SetTextDelegate(SetText);
         }
 		
