@@ -420,6 +420,11 @@ namespace TaskBarLibSim
             K300Class.maofGenerator = maofGenerator;
         }
 
+        public static void InitStreamSimulation(ISimulationDataGenerator<K300RzfType> rzfGenerator)
+        {
+            K300Class.rezefGenerator = rzfGenerator;
+        }
+
         public virtual int K300StopStream(K300StreamType streamType)
         {
             maofGenerator.Stop();
@@ -438,6 +443,7 @@ namespace TaskBarLibSim
 
         protected bool maofStreamStarted;
         protected static ISimulationDataGenerator<K300MaofType> maofGenerator;
+        protected static ISimulationDataGenerator<K300RzfType> rezefGenerator;
     }
 
     public class K300EventsClass : IK300Events, K300Events, _IK300EventsEvents_Event
@@ -460,6 +466,14 @@ namespace TaskBarLibSim
         public void SendEventMaof(ref K300MaofType data)
         {
             OnMaof(ref data);
+        }
+
+        /// <summary>
+        /// Send simulated Rezef data to all registered users
+        /// </summary>
+        public void SendEventRzf(ref K300RzfType data)
+        {
+            OnRezef(ref data);
         }
 
         // Properties - are used to filter the events data 
@@ -779,6 +793,130 @@ namespace TaskBarLibSim
         int count;
     }
 
+
+
+    /// <summary>
+    /// this is a thread generating 
+    /// very siimple all fields are random Rezef data generator
+    /// objects of this type used as an argument to the InitStreamSimulation
+    /// </summary>
+    /// <param name="maofGenerator">
+    /// A <see cref="ISimulationStreamGenerator"/>
+    /// </param>
+    public class RezefDataGeneratorRandom : EventGenerator<K300RzfType>, ISimulationDataGenerator<K300RzfType>, JQuant.IDataGenerator
+    {
+        public RezefDataGeneratorRandom()
+        {
+            randomString = new JQuant.RandomNumericalString(21, 80155);
+
+            Type t = typeof(K300RzfType);
+            fields = t.GetFields();
+            count = 0;
+
+            return;
+        }
+
+        protected override bool GetData(out K300RzfType data)
+        {
+            // delay - usually delay will be in the GetData
+            // GetData reads log, pulls the time stamps and simulates
+            // timing of the real data stream
+            Thread.Sleep(50);
+
+            // create a new object
+            data = new K300RzfType();
+
+            // set all fields in the object
+            data.SUG_REC = randomString.Next();
+            data.BNO_Num = randomString.Next();
+            data.BNO_NAME = randomString.Next();
+            data.Symbol = randomString.Next();
+            data.TRADE_METH = randomString.Next();
+            data.SIDURI_Num = randomString.Next();
+            data.RWR_VA = randomString.Next();
+            data.MIN_UNIT = randomString.Next();
+            data.HARIG_NV = randomString.Next();
+            data.MIN_PR_OPN = randomString.Next();
+            data.MAX_PR_OPN = randomString.Next();
+            data.MIN_PR_CNT = randomString.Next();
+            data.MAX_PR_CNT = randomString.Next();
+            data.BASIS_PRC = randomString.Next();
+            data.STATUS = randomString.Next();
+            data.EX_COD = randomString.Next();
+            data.EX_DETAIL = randomString.Next();
+            data.RWR_VB = randomString.Next();
+            data.shlav = randomString.Next();
+            data.LAST_PRC = randomString.Next();
+            data.TRD_STP_N = randomString.Next();
+            data.STP_OPN_TM = randomString.Next();
+            data.RWR_VD = randomString.Next();
+            data.LMT_BY1 = randomString.Next();
+            data.LMT_BY2 = randomString.Next();
+            data.LMT_BY3 = randomString.Next();
+            data.LMY_BY1_NV = randomString.Next();
+            data.LMY_BY2_NV = randomString.Next();
+            data.LMY_BY3_NV = randomString.Next();
+            data.MKT_NV_BY = randomString.Next();
+            data.MKT_NV_BY_NUM = randomString.Next();
+            data.RWR_VE = randomString.Next();
+            data.LMT_SL1 = randomString.Next();
+            data.LMT_SL2 = randomString.Next();
+            data.LMT_SL3 = randomString.Next();
+            data.LMY_SL1_NV = randomString.Next();
+            data.LMY_SL2_NV = randomString.Next();
+            data.LMY_SL3_NV = randomString.Next();
+            data.MKT_NV_SL = randomString.Next();
+            data.MKT_NV_SL_NUM = randomString.Next();
+            data.RWR_VF = randomString.Next();
+            data.THEOR_PR = randomString.Next();
+            data.THEOR_VL = randomString.Next();
+            data.RWR_VG = randomString.Next();
+            data.LST_DL_PR = randomString.Next();
+            data.LST_DL_TM = randomString.Next();
+            data.LST_DF_BS = randomString.Next();
+            data.LST_DF_OPN = randomString.Next();
+            data.LST_DL_VL = randomString.Next();
+            data.DAY_VL = randomString.Next();
+            data.DAY_VL_NIS = randomString.Next();
+            data.DAY_DIL_NO = randomString.Next();
+            data.DAY_MAX_PR = randomString.Next();
+            data.DAY_MIN_PR = randomString.Next();
+            data.BNO_NAME_E = randomString.Next();
+            data.SYMBOL_E = randomString.Next();
+            data.STP_COD = randomString.Next();
+            data.COD_SHAAR = randomString.Next();
+            data.UPD_DAT = randomString.Next();
+            data.UPD_TIME = randomString.Next();
+
+            count += 1;
+
+
+            return true;
+        }
+
+        protected override void SendEvents(ref K300RzfType data)
+        {
+            SimulationTop.k300EventsClass.SendEventRzf(ref data);
+            // avoid tight loops in the system
+            Thread.Sleep(50);
+        }
+
+        public int GetCount()
+        {
+            return count;
+        }
+
+        public string GetName()
+        {
+            return "Rezef data random generator";
+        }
+
+
+        JQuant.IRandomString randomString;
+        protected FieldInfo[] fields;
+        int count;
+    }
+
     /// <summary>
     /// I need some class where all apparently disconnected classes are connected
     /// For example K300Class and K300EventsClass
@@ -792,4 +930,3 @@ namespace TaskBarLibSim
     }
     
 }
-

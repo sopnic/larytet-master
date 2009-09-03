@@ -30,6 +30,12 @@ using TaskBarLib;
 /// </summary>
 namespace FMRShell
 {
+    public enum DataType
+    {
+        Maof,
+        Rezef,
+        Madad
+    }
 	public enum ConnectionState
 	{
         [Description("Idle")]
@@ -301,18 +307,133 @@ namespace FMRShell
 
     /// <summary>
 	/// generic class 
-	/// data container for the trading/market data
+	/// data container for the trading/market data - Maof options
 	/// can hold fields like time stamp, bid/ask, last price, etc.
 	/// this class is not going to be used directly but inherited
 	/// </summary>
-	public struct MarketData :ICloneable
+	public struct MarketDataRezef :ICloneable
 	{
-		public K300MaofType k300MaofType;
+		public K300RzfType k300RzfType;
         
         public object Clone()
         {
             // create a new object
-            MarketData md = new MarketData();
+            MarketDataRezef md = new MarketDataRezef();
+
+            // copy data
+            md.k300RzfType.SUG_REC = this.k300RzfType.SUG_REC;
+            md.k300RzfType.BNO_Num = this.k300RzfType.BNO_Num;
+            md.k300RzfType.BNO_NAME = this.k300RzfType.BNO_NAME;
+            md.k300RzfType.Symbol = this.k300RzfType.Symbol;
+            md.k300RzfType.TRADE_METH = this.k300RzfType.TRADE_METH;
+            md.k300RzfType.SIDURI_Num = this.k300RzfType.SIDURI_Num;
+            md.k300RzfType.RWR_VA = this.k300RzfType.RWR_VA;
+            md.k300RzfType.MIN_UNIT = this.k300RzfType.MIN_UNIT;
+            md.k300RzfType.HARIG_NV = this.k300RzfType.HARIG_NV;
+            md.k300RzfType.MIN_PR_OPN = this.k300RzfType.MIN_PR_OPN;
+            md.k300RzfType.MAX_PR_OPN = this.k300RzfType.MAX_PR_OPN;
+            md.k300RzfType.MIN_PR_CNT = this.k300RzfType.MIN_PR_CNT;
+            md.k300RzfType.MAX_PR_CNT = this.k300RzfType.MAX_PR_CNT;
+            md.k300RzfType.BASIS_PRC = this.k300RzfType.BASIS_PRC;
+            md.k300RzfType.STATUS = this.k300RzfType.STATUS;
+            md.k300RzfType.EX_COD = this.k300RzfType.EX_COD;
+            md.k300RzfType.EX_DETAIL = this.k300RzfType.EX_DETAIL;
+            md.k300RzfType.RWR_VB = this.k300RzfType.RWR_VB;
+            md.k300RzfType.shlav = this.k300RzfType.shlav;
+            md.k300RzfType.LAST_PRC = this.k300RzfType.LAST_PRC;
+            md.k300RzfType.TRD_STP_N = this.k300RzfType.TRD_STP_N;
+            md.k300RzfType.STP_OPN_TM = this.k300RzfType.STP_OPN_TM;
+            md.k300RzfType.RWR_VD = this.k300RzfType.RWR_VD;
+            md.k300RzfType.LMT_BY1 = this.k300RzfType.LMT_BY1;
+            md.k300RzfType.LMT_BY2 = this.k300RzfType.LMT_BY2;
+            md.k300RzfType.LMT_BY3 = this.k300RzfType.LMT_BY3;
+            md.k300RzfType.LMY_BY1_NV = this.k300RzfType.LMY_BY1_NV;
+            md.k300RzfType.LMY_BY2_NV = this.k300RzfType.LMY_BY2_NV;
+            md.k300RzfType.LMY_BY3_NV = this.k300RzfType.LMY_BY3_NV;
+            md.k300RzfType.MKT_NV_BY = this.k300RzfType.MKT_NV_BY;
+            md.k300RzfType.MKT_NV_BY_NUM = this.k300RzfType.MKT_NV_BY_NUM;
+            md.k300RzfType.RWR_VE = this.k300RzfType.RWR_VE;
+            md.k300RzfType.LMT_SL1 = this.k300RzfType.LMT_SL1;
+            md.k300RzfType.LMT_SL2 = this.k300RzfType.LMT_SL2;
+            md.k300RzfType.LMT_SL3 = this.k300RzfType.LMT_SL3;
+            md.k300RzfType.LMY_SL1_NV = this.k300RzfType.LMY_SL1_NV;
+            md.k300RzfType.LMY_SL2_NV = this.k300RzfType.LMY_SL2_NV;
+            md.k300RzfType.LMY_SL3_NV = this.k300RzfType.LMY_SL3_NV;
+            md.k300RzfType.MKT_NV_SL = this.k300RzfType.MKT_NV_SL;
+            md.k300RzfType.MKT_NV_SL_NUM = this.k300RzfType.MKT_NV_SL_NUM;
+            md.k300RzfType.RWR_VF = this.k300RzfType.RWR_VF;
+            md.k300RzfType.THEOR_PR = this.k300RzfType.THEOR_PR;
+            md.k300RzfType.THEOR_VL = this.k300RzfType.THEOR_VL;
+            md.k300RzfType.RWR_VG = this.k300RzfType.RWR_VG;
+            md.k300RzfType.LST_DL_PR = this.k300RzfType.LST_DL_PR;
+            md.k300RzfType.LST_DL_TM = this.k300RzfType.LST_DL_TM;
+            md.k300RzfType.LST_DF_BS = this.k300RzfType.LST_DF_BS;
+            md.k300RzfType.LST_DF_OPN = this.k300RzfType.LST_DF_OPN;
+            md.k300RzfType.LST_DL_VL = this.k300RzfType.LST_DL_VL;
+            md.k300RzfType.DAY_VL = this.k300RzfType.DAY_VL;
+            md.k300RzfType.DAY_VL_NIS = this.k300RzfType.DAY_VL_NIS;
+            md.k300RzfType.DAY_DIL_NO = this.k300RzfType.DAY_DIL_NO;
+            md.k300RzfType.DAY_MAX_PR = this.k300RzfType.DAY_MAX_PR;
+            md.k300RzfType.DAY_MIN_PR = this.k300RzfType.DAY_MIN_PR;
+            md.k300RzfType.BNO_NAME_E = this.k300RzfType.BNO_NAME_E;
+            md.k300RzfType.SYMBOL_E = this.k300RzfType.SYMBOL_E;
+            md.k300RzfType.STP_COD = this.k300RzfType.STP_COD;
+            md.k300RzfType.COD_SHAAR = this.k300RzfType.COD_SHAAR;
+            md.k300RzfType.UPD_DAT = this.k300RzfType.UPD_DAT;
+            md.k300RzfType.UPD_TIME = this.k300RzfType.UPD_TIME;
+
+            return md;
+        }
+
+        
+        public override string ToString()
+        {
+            return k300RzfType.SUG_REC;
+        }
+
+                /// <summary>
+        /// Prepares a single record to be written 
+        /// to a CSV (comma-separated values) output file.
+        /// </summary>
+        /// <returns></returns>
+        public string ToCSVString()
+        {
+            return
+                k300RzfType.BNO_Num + "," +
+                k300RzfType.LMT_BY1 + "," +
+                k300RzfType.LMT_BY2 + "," +
+                k300RzfType.LMT_BY3 + "," +
+                k300RzfType.LMT_SL1 + "," +
+                k300RzfType.LMT_SL2 + "," +
+                k300RzfType.LMT_SL3 + "," +
+                k300RzfType.LMY_BY1_NV + "," +
+                k300RzfType.LMY_BY2_NV + "," +
+                k300RzfType.LMY_BY3_NV + "," +
+                k300RzfType.LMY_SL1_NV + "," +
+                k300RzfType.LMY_SL2_NV + "," +
+                k300RzfType.LMY_SL3_NV + "," +
+                k300RzfType.LST_DL_PR + "," +
+                k300RzfType.LST_DL_TM + "," +
+                k300RzfType.LST_DL_VL + "," +
+                k300RzfType.UPD_TIME + "\n";
+        }
+    }//struct MarketDataRezef
+
+
+    /// <summary>
+    /// generic class 
+    /// data container for the trading/market data - Maof options
+    /// can hold fields like time stamp, bid/ask, last price, etc.
+    /// this class is not going to be used directly but inherited
+    /// </summary>
+    public struct MarketDataMaof : ICloneable
+    {
+        public K300MaofType k300MaofType;
+
+        public object Clone()
+        {
+            // create a new object
+            MarketDataMaof md = new MarketDataMaof();
 
             // copy data
             md.k300MaofType.SUG_REC = this.k300MaofType.SUG_REC;
@@ -387,27 +508,63 @@ namespace FMRShell
         {
             return k300MaofType.SUG_REC;
         }
-	}
+
+        /// <summary>
+        /// Prepares a single record to be written 
+        /// to a CSV (comma-separated values) output file.
+        /// </summary>
+        /// <returns></returns>
+        public string ToCSVString()
+        {
+            return
+                k300MaofType.BNO_Num + "," +
+                k300MaofType.LMT_BY1 + "," +
+                k300MaofType.LMT_BY2 + "," +
+                k300MaofType.LMT_BY3 + "," +
+                k300MaofType.LMT_SL1 + "," +
+                k300MaofType.LMT_SL2 + "," +
+                k300MaofType.LMT_SL3 + "," +
+                k300MaofType.LMY_BY1_NV + "," +
+                k300MaofType.LMY_BY2_NV + "," +
+                k300MaofType.LMY_BY3_NV + "," +
+                k300MaofType.LMY_SL1_NV + "," +
+                k300MaofType.LMY_SL2_NV + "," +
+                k300MaofType.LMY_SL3_NV + "," +
+                k300MaofType.LST_DL_PR + "," +
+                k300MaofType.LST_DL_TM + "," +
+                k300MaofType.LST_DL_VL + "," +
+                k300MaofType.UPD_TIME + "\n";
+        }
+    }//struct MarketDataMaof
+
 
     public class K300MaofTypeToString :StructToString<K300MaofType>
     {
-        public K300MaofTypeToString(string delimiter): base(delimiter)
+        public K300MaofTypeToString(string delimiter)
+            : base(delimiter)
         {
         }
     }
-    
-	/// <summary>
+
+    public class K300RzfTypeToString : StructToString<K300RzfType>
+    {
+        public K300RzfTypeToString(string delimiter)
+            : base(delimiter)
+        {
+        }
+    }
+    /// <summary>
 	/// this class used by the RxDataValidator to let the application know that
 	/// something wrong with the incoming data
 	/// </summary>
 	public class DataValidatorEvent
 	{
-		public MarketData sync
+		public MarketDataMaof sync
 		{
 			get;
 			set;
 		}
-		public MarketData async
+		public MarketDataMaof async
 		{
 			get;
 			set;
@@ -428,23 +585,34 @@ namespace FMRShell
 	/// a dedicated sink - thread which polls the servers and compares the received 
 	/// data with the one sent to it by the collector
 	/// </summary>
-	public class Collector: JQuant.IProducer<MarketData>
+	public class Collector: JQuant.IProducer<MarketDataMaof>
 	{
 		
-		public Collector()
+		/// <summary>
+		/// Maof Data is collected by default
+        /// Use Collector(DataType dt) for other types or 
+        /// for explicit Maof Collector
+		/// </summary>
+        public Collector()
 		{
-			listeners = new List<JQuant.ISink<MarketData>>(5);
+			MaofListeners = new List<JQuant.ISink<MarketDataMaof>>(5);
 
-			countOnMaof = 0;
+			countOnCall = 0;
 			
-			marketDataOnMaof = new MarketData();
+			marketDataOnMaof = new MarketDataMaof();
 			
 			// create a couple of TaskLib objects required for access
 			// to the data stream 
 			k300Class = new K300Class();
 			k300EventsClass = new K300EventsClass();
             k300EventsClass.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
-		}
+            //k300EventsClass.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
+        }
+
+        public Collector(DataType x)
+        {
+            
+        }
 
 		/// <summary>
 		/// Called by TaskBarLib. This method calls registered listeners and gets out 
@@ -461,7 +629,7 @@ namespace FMRShell
 			// no memory allocation here - i am using allready created object 
 			marketDataOnMaof.k300MaofType = data;
 			
-			foreach (JQuant.ISink<MarketData> sink in listeners)
+			foreach (JQuant.ISink<MarketDataMaof> sink in MaofListeners)
 			{
 				// sink should not modify the data
                 // sink has two options
@@ -469,10 +637,31 @@ namespace FMRShell
                 // thead
                 // 2) clone the data and and postopone the procesing (delegate
                 // to another thread
-				sink.Notify(countOnMaof, marketDataOnMaof);
+				sink.Notify(countOnCall, marketDataOnMaof);
 			}
 		}
-		
+
+        /// <summary>
+        /// Collects Rezef data 
+        /// </summary>
+        /// <param name="data"></param>
+        protected void OnRezef(ref K300RzfType data)
+        {
+            //TODO
+            //marketDataOnRezef.K300RzfType= data;
+
+            foreach (JQuant.ISink<MarketDataRezef> sink in MaofListeners)
+            {
+                // sink should not modify the data
+                // sink has two options
+                // 1) handle the data in the context of the Collector
+                // thead
+                // 2) clone the data and and postopone the procesing (delegate
+                // to another thread
+                //sink.Notify(countOnMaof, marketDataOnMaof);
+            }
+        }
+
 		/// <summary>
 		/// default start - only Maof events
 		/// </summary>
@@ -480,35 +669,101 @@ namespace FMRShell
 		{
 			k300Class.K300StartStream(K300StreamType.MaofStream);
 		}
-		
+
+        public void Start(DataType dt)
+        {
+            switch(dt)
+            {
+                case DataType.Maof:
+                    {
+                        k300Class.K300StartStream(K300StreamType.MaofStream);
+                        break;
+                    }
+                case DataType.Rezef:
+                    {
+                    k300Class.K300StartStream(K300StreamType.RezefStream);
+                    break;
+                }
+                case DataType.Madad: {
+                    k300Class.K300StartStream(K300StreamType.IndexStream);  // For future uses
+                    break;
+                }
+                default: {
+                    k300Class.K300StartStream(K300StreamType.MaofStream);   //starts Maof anyway - pls review if 
+                    break;                                                  //it's not a problem
+                }
+            }
+        }
+		/// <summary>
+		/// by default it stops only maof 
+		/// </summary>
         public void Stop()
         {
             k300Class.K300StopStream(K300StreamType.MaofStream);
         }
+
+        public void Stop(DataType dt)
+        {
+            switch (dt)
+            {
+                case DataType.Maof:
+                    {
+                        k300Class.K300StopStream(K300StreamType.MaofStream);
+                        break;
+                    }
+                case DataType.Rezef:
+                    {
+                        k300Class.K300StopStream(K300StreamType.RezefStream);
+                        break;
+                    }
+                case DataType.Madad:
+                    {
+                        k300Class.K300StopStream(K300StreamType.IndexStream);  // For future uses
+                        break;
+                    }
+                default:
+                    {
+                        k300Class.K300StopStream(K300StreamType.MaofStream);
+                        break;
+                    }
+            }
+        }
         
-        public bool AddSink(JQuant.ISink<MarketData> sink)
+        public bool AddSink(JQuant.ISink<MarketDataMaof> sink)
 		{
-			listeners.Add(sink);
+			MaofListeners.Add(sink);
 			return true;
 		}
-		
-        public bool RemoveSink(JQuant.ISink<MarketData> sink)
+
+        public bool AddSink(JQuant.ISink<MarketDataRezef> sink)
+        {
+            RezefListeners.Add(sink);
+            return true;
+        }
+        		
+        public bool RemoveSink(JQuant.ISink<MarketDataMaof> sink)
 		{
-			listeners.Remove(sink);
+			MaofListeners.Remove(sink);
 			return true;
 		}
+
+        public bool RemoveSink(JQuant.ISink<MarketDataRezef> sink)
+        {
+            RezefListeners.Remove(sink);
+            return true;
+        }
 		
 		
-		protected static List<JQuant.ISink<MarketData>> listeners;
+		protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;
+        protected static List<JQuant.ISink<MarketDataRezef>> RezefListeners;
 		protected K300Class k300Class;
 		protected K300EventsClass k300EventsClass;
-		protected MarketData marketDataOnMaof;
+		protected MarketDataMaof marketDataOnMaof;
 		
 		/// <summary>
 		/// count calls to the notifiers
 		/// </summary>
-		protected int countOnMaof; 
-
+		protected int countOnCall;
 	}
 	
 	/// <summary>
@@ -521,7 +776,7 @@ namespace FMRShell
 	/// and if there is no match (miss) notifies all registered listeners (sinks) about
 	/// data mismatch
 	/// </summary>
-	public class RxDataValidator: JQuant.IProducer<DataValidatorEvent>, JQuant.ISink<MarketData>
+	public class RxDataValidator: JQuant.IProducer<DataValidatorEvent>, JQuant.ISink<MarketDataMaof>
 	{
         public bool AddSink(JQuant.ISink<DataValidatorEvent> sink)
 		{
@@ -543,7 +798,7 @@ namespace FMRShell
 		/// <param name="data">
 		/// A <see cref="MarketData"/>
 		/// </param>
-		public void Notify(int count, MarketData data)
+		public void Notify(int count, MarketDataMaof data)
 		{
 		}
 	}
