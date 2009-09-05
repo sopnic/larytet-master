@@ -379,6 +379,7 @@ namespace TaskBarLibSim
         public K300Class()
         {
             maofStreamStarted = false;
+            rezefStreamStarted = false;
             SimulationTop.k300Class = this;
         }
 
@@ -398,13 +399,22 @@ namespace TaskBarLibSim
             switch (streamType)
             {
                 case K300StreamType.MaofStream:
-                    // start data generation thread
-                    maofGenerator.Start();
-
-                    // set flag to keep track of the started streams
-                    maofStreamStarted = true;
-                    break;
+                    {
+                        // start data generation thread
+                        maofGenerator.Start();
                     
+                        // set flag to keep track of the started streams
+                    
+                        maofStreamStarted = true;
+                        break;
+                    }
+
+                case K300StreamType.RezefStream:
+                    {
+                        rezefGenerator.Start();
+                        rezefStreamStarted = true;
+                        break;
+                    }
                 default:
                     break;
             }
@@ -427,7 +437,19 @@ namespace TaskBarLibSim
 
         public virtual int K300StopStream(K300StreamType streamType)
         {
-            maofGenerator.Stop();
+            switch (streamType)
+            {
+                case K300StreamType.MaofStream:
+                    maofGenerator.Stop();
+                    break;
+
+                case K300StreamType.RezefStream:
+                    rezefGenerator.Stop();
+                    break;
+
+                default:
+                    break;
+            }
             return 0;
         }
 
@@ -442,6 +464,7 @@ namespace TaskBarLibSim
         }
 
         protected bool maofStreamStarted;
+        protected bool rezefStreamStarted;
         protected static ISimulationDataGenerator<K300MaofType> maofGenerator;
         protected static ISimulationDataGenerator<K300RzfType> rezefGenerator;
     }

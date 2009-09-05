@@ -249,7 +249,7 @@ namespace JQuant
         
         protected void debugLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
         {
-            OpenStreamAndLog(iWrite, true, "simLog.txt", "simLogger");
+            OpenStreamAndLog(iWrite, true, FMRShell.DataType.Rezef, "simLog.txt", "simLogger");
         }
 
         protected void debugOperationsLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments) 
@@ -260,55 +260,61 @@ namespace JQuant
             filename = filename.Replace(' ','_');
             iWrite.WriteLine("Log file "+filename);
 
-            OpenStreamAndLog(iWrite, false, filename, "MaofLogger");
+            OpenStreamAndLog(iWrite, false, FMRShell.DataType.Rezef, filename, "MaofLogger");
         }
 
-        protected FMRShell.Collector maofCollector;
-        protected MarketDataLogger maofLogger;
+        protected FMRShell.Collector tradingDataCollector;
+        protected MarketDataLogger tradingDataLogger;
         
         protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            CloseMaofStreamAndLog(iWrite);
+            CloseDataStreamAndLog(iWrite,(FMRShell.DataType) cmdArguments[1]);
         }
             
-        protected void CloseMaofStreamAndLog(IWrite iWrite) 
+        protected void CloseDataStreamAndLog(IWrite iWrite,FMRShell.DataType dt) 
         {
-            maofCollector.Stop();
-            maofLogger.Stop();
-            maofLogger.Dispose();
-            maofLogger = null;
+            tradingDataCollector.Stop(dt);
+            tradingDataLogger.Stop();
+            tradingDataLogger.Dispose();
+            tradingDataLogger = null;
         }
         
-        protected void OpenStreamAndLog(IWrite iWrite, bool test, string filename, string loggerName) 
+        protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType TrDataType, string filename, string loggerName) 
         {
 #if USEFMRSIM
-            // create Maof data generator
-            TaskBarLibSim.MaofDataGeneratorRandom dataGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
-
-            //create Rezef data generator
-            TaskBarLibSim.RezefDataGeneratorRandom dataRzfGenerator = new TaskBarLibSim.RezefDataGeneratorRandom();
-
-            // setup the data generator(s) in the K300Class
-            TaskBarLibSim.K300Class.InitStreamSimulation(dataGenerator);
-            TaskBarLibSim.K300Class.InitStreamSimulation(dataRzfGenerator);
+            if (TrDataType==FMRShell.DataType.Maof)
+            {
+                // create Maof data generator
+                TaskBarLibSim.MaofDataGeneratorRandom dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
+                // setup the data generator(s) in the K300Class
+                TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
+            }
+            else if (TrDataType == FMRShell.DataType.Rezef)
+            {
+                //create Rezef data generator
+                TaskBarLibSim.RezefDataGeneratorRandom dataRzfGenerator = new TaskBarLibSim.RezefDataGeneratorRandom();
+                TaskBarLibSim.K300Class.InitStreamSimulation(dataRzfGenerator);
+            }
+            else
+            {
+                iWrite.WriteLine("Unknown data type: " + TrDataType.ToString());
+            }
 #endif
 
             // create Collector (producer) - will do it only once
-            if (maofCollector == default(FMRShell.Collector))
-            {
-                maofCollector = new FMRShell.Collector();
-            }
-            
+            if (TrDataType == FMRShell.DataType.Maof) tradingDataCollector = new FMRShell.Collector(FMRShell.DataType.Maof);
+            else if (TrDataType==FMRShell.DataType.Rezef) tradingDataCollector = new FMRShell.Collector(FMRShell.DataType.Rezef);
+            else iWrite.WriteLine("Unknown data type...");
+
             // create logger which will register itself (AddSink) in the collector
-            maofLogger = new MarketDataLogger(loggerName, filename, false, 
-                                     maofCollector);
+            tradingDataLogger = new MarketDataLogger(loggerName, filename, false, tradingDataCollector);
 
             // start logger
-            maofLogger.Start();
+            tradingDataLogger.Start();
 
             // start collector, which will start the stream in K300Class, whch will start
             // data generator
-            maofCollector.Start();
+            tradingDataCollector.Start(TrDataType);
 
             Thread.Sleep(100);
             debugLoggerShowCallback(iWrite, "", null);
@@ -317,7 +323,7 @@ namespace JQuant
             {
                 Thread.Sleep(1000);
 
-                CloseMaofStreamAndLog(iWrite);
+                CloseDataStreamAndLog(iWrite, TrDataType);
             }
         }
 

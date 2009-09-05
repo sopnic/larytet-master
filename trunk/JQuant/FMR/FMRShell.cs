@@ -587,7 +587,8 @@ namespace FMRShell
 	/// </summary>
 	public class Collector: JQuant.IProducer<MarketDataMaof>
 	{
-		
+        //NO default collector - delete the lines commented out below after the review:
+/*		
 		/// <summary>
 		/// Maof Data is collected by default
         /// Use Collector(DataType dt) for other types or 
@@ -595,23 +596,41 @@ namespace FMRShell
 		/// </summary>
         public Collector()
 		{
-			MaofListeners = new List<JQuant.ISink<MarketDataMaof>>(5);
+            MaofListeners = new List<JQuant.ISink<MarketDataMaof>>(5);
+            RezefListeners = new List<JQuant.ISink<MarketDataRezef>>(5);
 
 			countOnCall = 0;
 			
 			marketDataOnMaof = new MarketDataMaof();
+            marketDataOnRezef = new MarketDataRezef();
 			
 			// create a couple of TaskLib objects required for access
 			// to the data stream 
 			k300Class = new K300Class();
 			k300EventsClass = new K300EventsClass();
             k300EventsClass.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
-            //k300EventsClass.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
+            k300EventsClass.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
         }
-
-        public Collector(DataType x)
+*/
+        public Collector(DataType dt)
         {
-            
+            // create a couple of TaskLib objects required for access to the data stream 
+            k300Class = new K300Class();
+            k300EventsClass = new K300EventsClass();
+            if (this.dt == DataType.Maof)
+            {
+                MaofListeners = new List<JQuant.ISink<MarketDataMaof>>(5);
+                marketDataOnMaof = new MarketDataMaof();
+                k300EventsClass.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
+            }
+            else if (this.dt == DataType.Rezef)
+            {
+                RezefListeners = new List<JQuant.ISink<MarketDataRezef>>(5);
+                marketDataOnRezef = new MarketDataRezef();
+                k300EventsClass.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
+            }
+
+            countOnCall = 0;
         }
 
 		/// <summary>
@@ -647,29 +666,22 @@ namespace FMRShell
         /// <param name="data"></param>
         protected void OnRezef(ref K300RzfType data)
         {
-            //TODO
-            //marketDataOnRezef.K300RzfType= data;
+            marketDataOnRezef.k300RzfType = data;
 
-            foreach (JQuant.ISink<MarketDataRezef> sink in MaofListeners)
+            foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners)
             {
-                // sink should not modify the data
-                // sink has two options
-                // 1) handle the data in the context of the Collector
-                // thead
-                // 2) clone the data and and postopone the procesing (delegate
-                // to another thread
-                //sink.Notify(countOnMaof, marketDataOnMaof);
+                sink.Notify(countOnCall, marketDataOnRezef);
             }
         }
 
 		/// <summary>
 		/// default start - only Maof events
 		/// </summary>
-		public void Start()
+		/*public void Start()
 		{
 			k300Class.K300StartStream(K300StreamType.MaofStream);
 		}
-
+        */
         public void Start(DataType dt)
         {
             switch(dt)
@@ -757,8 +769,10 @@ namespace FMRShell
 		protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;
         protected static List<JQuant.ISink<MarketDataRezef>> RezefListeners;
 		protected K300Class k300Class;
+        protected DataType dt;
 		protected K300EventsClass k300EventsClass;
-		protected MarketDataMaof marketDataOnMaof;
+        protected MarketDataMaof marketDataOnMaof;
+        protected MarketDataRezef marketDataOnRezef;
 		
 		/// <summary>
 		/// count calls to the notifiers
