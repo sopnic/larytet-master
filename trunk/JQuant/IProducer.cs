@@ -20,7 +20,6 @@ namespace JQuant
 		/// Important ! If sink postpones the processing of the data sink should clone 
 		/// the data (call data.Clone()) and use the copy for further processing.
 		/// Sink should not modify data
-        /// sink should not modify the data
         /// sink has two options
         /// 1) handle the data in the context of the Collector thread
         /// 2) clone the data and and postopone the procesing (delegate to another thread)

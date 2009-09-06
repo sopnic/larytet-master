@@ -585,138 +585,144 @@ namespace FMRShell
 	/// a dedicated sink - thread which polls the servers and compares the received 
 	/// data with the one sent to it by the collector
 	/// </summary>
-	public class Collector: JQuant.IProducer<MarketDataMaof>
+	public class Collector  /*: JQuant.IProducer<MarketDataMaof>*/
 	{
-        //NO default collector - delete the lines commented out below after the review:
-/*		
-		/// <summary>
-		/// Maof Data is collected by default
-        /// Use Collector(DataType dt) for other types or 
-        /// for explicit Maof Collector
-		/// </summary>
-        public Collector()
-		{
-            MaofListeners = new List<JQuant.ISink<MarketDataMaof>>(5);
-            RezefListeners = new List<JQuant.ISink<MarketDataRezef>>(5);
-
-			countOnCall = 0;
-			
-			marketDataOnMaof = new MarketDataMaof();
-            marketDataOnRezef = new MarketDataRezef();
-			
-			// create a couple of TaskLib objects required for access
-			// to the data stream 
-			k300Class = new K300Class();
-			k300EventsClass = new K300EventsClass();
-            k300EventsClass.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
-            k300EventsClass.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
-        }
-*/
-        public Collector(DataType dt)
+        public class MaofProducer : JQuant.IProducer<MarketDataMaof>
         {
-            // create a couple of TaskLib objects required for access to the data stream 
-            k300Class = new K300Class();
-            k300EventsClass = new K300EventsClass();
-            if (this.dt == DataType.Maof)
+            public MaofProducer(K300EventsClass k3)
             {
                 MaofListeners = new List<JQuant.ISink<MarketDataMaof>>(5);
-                marketDataOnMaof = new MarketDataMaof();
-                k300EventsClass.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
+                mktDta = new MarketDataMaof();
+                k3.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
+                countOnMaof = 0;
             }
-            else if (this.dt == DataType.Rezef)
+
+            /// <summary>
+            /// Called by TaskBarLib. This method calls registered listeners and gets out 
+            /// The idea behind it to be as fast as possible
+            /// this is the point where some basic processing can be done like filter obvious
+            /// errors
+            /// </summary>
+            /// <param name="data">
+            /// A <see cref="K300MaofType"/>
+            /// </param>
+            protected void OnMaof(ref K300MaofType data)
+            {
+                // no memory allocation here - I am using allready created object 
+                mktDta.k300MaofType = data;
+
+                // sink should not modify the data. sink has two options:
+                // 1) handle the data in the context of the Collector thead
+                // 2) clone the data and and postopone the procesing (delegate to another thread)
+                foreach (JQuant.ISink<MarketDataMaof> sink in MaofListeners) sink.Notify(countOnMaof, mktDta);
+            }
+
+            public void Start(K300Class k3)
+            {
+                k3.K300StartStream(K300StreamType.MaofStream);
+            }
+
+            public void Stop(K300Class k3)
+            {
+                k3.K300StopStream(K300StreamType.MaofStream);
+            }
+
+            public bool AddSink(JQuant.ISink<MarketDataMaof> sink)
+            {
+                MaofListeners.Add(sink);
+                return true;
+            }
+
+            public bool RemoveSink(JQuant.ISink<MarketDataMaof> sink)
+            {
+                MaofListeners.Remove(sink);
+                return true;
+            }
+
+            MarketDataMaof mktDta;
+            int countOnMaof;
+
+        }//class MaofProducer
+
+        public class RezefProducer : JQuant.IProducer<MarketDataRezef>
+        {
+            public RezefProducer(K300EventsClass k3)
             {
                 RezefListeners = new List<JQuant.ISink<MarketDataRezef>>(5);
-                marketDataOnRezef = new MarketDataRezef();
-                k300EventsClass.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
+                mktDta = new MarketDataRezef();
+                k3.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
             }
 
-            countOnCall = 0;
-        }
-
-		/// <summary>
-		/// Called by TaskBarLib. This method calls registered listeners and gets out 
-		/// The idea behind it to be as fast as possible
-		/// this is the point where some basic processing can be done like filter obvious
-		/// errors
-		/// </summary>
-		/// <param name="data">
-		/// A <see cref="K300MaofType"/>
-		/// </param>
-        protected void OnMaof(ref K300MaofType data)
-        {
-
-			// no memory allocation here - i am using allready created object 
-			marketDataOnMaof.k300MaofType = data;
-			
-			foreach (JQuant.ISink<MarketDataMaof> sink in MaofListeners)
-			{
-				// sink should not modify the data
-                // sink has two options
-                // 1) handle the data in the context of the Collector
-                // thead
-                // 2) clone the data and and postopone the procesing (delegate
-                // to another thread
-				sink.Notify(countOnCall, marketDataOnMaof);
-			}
-		}
-
-        /// <summary>
-        /// Collects Rezef data 
-        /// </summary>
-        /// <param name="data"></param>
-        protected void OnRezef(ref K300RzfType data)
-        {
-            marketDataOnRezef.k300RzfType = data;
-
-            foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners)
+            protected void OnRezef(ref K300RzfType data)
             {
-                sink.Notify(countOnCall, marketDataOnRezef);
+                mktDta.k300RzfType = data;
+                foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners) sink.Notify(countOnRezef, mktDta);
             }
-        }
 
-		/// <summary>
-		/// default start - only Maof events
-		/// </summary>
-		/*public void Start()
-		{
-			k300Class.K300StartStream(K300StreamType.MaofStream);
-		}
-        */
-        public void Start(DataType dt)
+            public void Start(K300Class k3)
+            {
+                k3.K300StartStream(K300StreamType.RezefStream);
+            }
+
+            public void Stop(K300Class k3)
+            {
+                k3.K300StopStream(K300StreamType.RezefStream);
+            }
+
+            public bool AddSink(JQuant.ISink<MarketDataRezef> sink)
+            {
+                RezefListeners.Add(sink);
+                return true;
+            }
+
+            public bool RemoveSink(JQuant.ISink<MarketDataRezef> sink)
+            {
+                RezefListeners.Remove(sink);
+                return true;
+            }
+
+            MarketDataRezef mktDta;
+            int countOnRezef;
+        }//class RezefProducer
+
+        public Collector(DataType dt)
         {
-            switch(dt)
+            // create a couple of TaskBarLib objects required for access to the data stream 
+            k300Class = new K300Class();
+            k300EventsClass = new K300EventsClass();
+
+            //initialize inner producers:
+            maofProducer = new MaofProducer(k300EventsClass);
+            rezefProducer = new RezefProducer(k300EventsClass);
+        }
+        
+        public void Start()
+        {
+            switch(this.dt)
             {
                 case DataType.Maof:
                     {
-                        k300Class.K300StartStream(K300StreamType.MaofStream);
+                        this.maofProducer.Start(k300Class);
                         break;
                     }
                 case DataType.Rezef:
                     {
-                    k300Class.K300StartStream(K300StreamType.RezefStream);
-                    break;
-                }
+                        this.rezefProducer.Start(k300Class);
+                        break;
+                    }
                 case DataType.Madad: {
-                    k300Class.K300StartStream(K300StreamType.IndexStream);  // For future uses
+                    // For future use -  k300Class.K300StartStream(K300StreamType.IndexStream); or add inner class
                     break;
                 }
                 default: {
-                    k300Class.K300StartStream(K300StreamType.MaofStream);   //starts Maof anyway - pls review if 
-                    break;                                                  //it's not a problem
+                    break;      //do nothing
                 }
             }
         }
-		/// <summary>
-		/// by default it stops only maof 
-		/// </summary>
+
         public void Stop()
         {
-            k300Class.K300StopStream(K300StreamType.MaofStream);
-        }
-
-        public void Stop(DataType dt)
-        {
-            switch (dt)
+            switch (this.dt)
             {
                 case DataType.Maof:
                     {
@@ -740,45 +746,25 @@ namespace FMRShell
                     }
             }
         }
-        
-        public bool AddSink(JQuant.ISink<MarketDataMaof> sink)
-		{
-			MaofListeners.Add(sink);
-			return true;
-		}
 
-        public bool AddSink(JQuant.ISink<MarketDataRezef> sink)
+        public void AddSink()
         {
-            RezefListeners.Add(sink);
-            return true;
-        }
-        		
-        public bool RemoveSink(JQuant.ISink<MarketDataMaof> sink)
-		{
-			MaofListeners.Remove(sink);
-			return true;
-		}
 
-        public bool RemoveSink(JQuant.ISink<MarketDataRezef> sink)
-        {
-            RezefListeners.Remove(sink);
-            return true;
         }
-		
+
+        public MaofProducer maofProducer;
+        public RezefProducer rezefProducer;
 		
 		protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;
         protected static List<JQuant.ISink<MarketDataRezef>> RezefListeners;
 		protected K300Class k300Class;
+        protected K300EventsClass k300EventsClass;
+
         protected DataType dt;
-		protected K300EventsClass k300EventsClass;
         protected MarketDataMaof marketDataOnMaof;
         protected MarketDataRezef marketDataOnRezef;
-		
-		/// <summary>
-		/// count calls to the notifiers
-		/// </summary>
-		protected int countOnCall;
-	}
+
+    }
 	
 	/// <summary>
 	/// The class also is a sink registered with the Collector. When Collector sends 

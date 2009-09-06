@@ -264,19 +264,28 @@ namespace JQuant
         }
 
         protected FMRShell.Collector tradingDataCollector;
-        protected MarketDataLogger tradingDataLogger;
+        protected TradingDataLogger DataLogger;
         
         protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            CloseDataStreamAndLog(iWrite,(FMRShell.DataType) cmdArguments[1]);
+            CloseDataStreamAndLog(iWrite,(FMRShell.DataType) cmdArguments[0]);
         }
             
         protected void CloseDataStreamAndLog(IWrite iWrite,FMRShell.DataType dt) 
         {
-            tradingDataCollector.Stop(dt);
-            tradingDataLogger.Stop();
-            tradingDataLogger.Dispose();
-            tradingDataLogger = null;
+            if (dt==FMRShell.DataType.Maof)
+            {
+                DataLogger.Stop();
+                DataLogger.Dispose();
+                DataLogger = null;
+            }
+            else if (dt==FMRShell.DataType.Rezef)
+            {
+                DataLogger.Stop();
+                DataLogger.Dispose();
+                DataLogger = null;
+            }
+            tradingDataCollector.Stop();
         }
         
         protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType TrDataType, string filename, string loggerName) 
@@ -302,19 +311,26 @@ namespace JQuant
 #endif
 
             // create Collector (producer) - will do it only once
-            if (TrDataType == FMRShell.DataType.Maof) tradingDataCollector = new FMRShell.Collector(FMRShell.DataType.Maof);
-            else if (TrDataType==FMRShell.DataType.Rezef) tradingDataCollector = new FMRShell.Collector(FMRShell.DataType.Rezef);
+            if (TrDataType == FMRShell.DataType.Maof)
+            {
+                tradingDataCollector = new FMRShell.Collector(FMRShell.DataType.Maof);
+            }
+            else if (TrDataType == FMRShell.DataType.Rezef)
+            {
+                tradingDataCollector = new FMRShell.Collector(FMRShell.DataType.Rezef);
+            }
             else iWrite.WriteLine("Unknown data type...");
 
             // create logger which will register itself (AddSink) in the collector
-            tradingDataLogger = new MarketDataLogger(loggerName, filename, false, tradingDataCollector);
+            DataLogger = new TradingDataLogger(loggerName, filename, false, tradingDataCollector, TrDataType);
+
 
             // start logger
-            tradingDataLogger.Start();
+            DataLogger.Start();
 
             // start collector, which will start the stream in K300Class, whch will start
             // data generator
-            tradingDataCollector.Start(TrDataType);
+            tradingDataCollector.Start();
 
             Thread.Sleep(100);
             debugLoggerShowCallback(iWrite, "", null);

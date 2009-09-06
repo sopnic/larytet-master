@@ -259,8 +259,58 @@ namespace JQuant
 	/// this class will get the data from specified data producer and write the data to the 
 	/// specified file.
 	/// </summary>
-	public class MarketDataLogger :AsyncLogger, ISink<FMRShell.MarketDataMaof>
+	public class TradingDataLogger :AsyncLogger/*, ISink<FMRShell.MarketDataMaof>*/
 	{
+        public class MaofSink:ISink<FMRShell.MarketDataMaof>
+        {
+            public MaofSink(TradingDataLogger TrDtaLogger)
+            {
+                maofDataToString = new FMRShell.K300MaofTypeToString("\t");
+                tdl = TrDtaLogger;
+                tdl._collector.maofProducer.AddSink(this);
+            }
+
+            public void Stop()
+            {
+                tdl._collector.maofProducer.RemoveSink(this);
+            }
+
+            public void Notify(int count, FMRShell.MarketDataMaof data)
+            {
+                tdl._stampLatest = System.DateTime.Now;
+                FMRShell.MarketDataMaof dataClone = (FMRShell.MarketDataMaof)(data.Clone());
+                tdl.AddEntry(dataClone);
+            }
+
+            public FMRShell.K300MaofTypeToString maofDataToString;
+            protected TradingDataLogger tdl;    //a pointer to the container class
+        }
+
+        public class RezefSink : ISink<FMRShell.MarketDataRezef>
+        {
+            public RezefSink(TradingDataLogger TrDtaLogger)
+            {
+                rezefDataToString = new FMRShell.K300RzfTypeToString("\t");
+                tdl = TrDtaLogger;
+                tdl._collector.rezefProducer.AddSink(this);
+            }
+
+            public void Stop()
+            {
+                tdl._collector.rezefProducer.RemoveSink(this);
+            }
+
+            public void Notify(int count, FMRShell.MarketDataRezef data)
+            {
+                tdl._stampLatest = System.DateTime.Now;
+                FMRShell.MarketDataRezef dataClone = (FMRShell.MarketDataRezef)(data.Clone());
+                tdl.AddEntry(dataClone);
+            }
+
+            public FMRShell.K300RzfTypeToString rezefDataToString;
+            protected TradingDataLogger tdl;    //a pointer to the container class
+        }
+
         /// <summary>
         /// Create the ASCII logger
         /// </summary>
@@ -280,20 +330,20 @@ namespace JQuant
         /// A <see cref="IProducer"/>
         /// Object which provides data to log
         /// </param>
-		public MarketDataLogger(string name, string filename, bool append, 
-		                             IProducer<FMRShell.MarketDataMaof> producer): base(name)
+		public TradingDataLogger(string name, string filename, bool append, FMRShell.Collector collector, FMRShell.DataType dt): base(name)
 		{
 			FileName = filename;
             _fileStream = default(FileStream);
             _streamWriter = default(StreamWriter);
-            _producer = producer;
+            _collector = collector;
             _append = append;
             _timeStamped = false;
             _stampLatest = default(System.DateTime);
             _stampOldest = default(System.DateTime);
+            _dt = dt;
             Type = LogType.Ascii;
 			notStoped = false;
-            marketDataToString = new FMRShell.K300MaofTypeToString("\t");
+            
             
             
             // I estimate size of FMRShell.MarketData struct 50 bytes
@@ -344,9 +394,10 @@ namespace JQuant
                 }
 
                 // write legend at the top of the file
-                try
+                /*try
                 {
-                    _streamWriter.WriteLine(marketDataToString.Legend);
+                    if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(this._maofSink.maofDataToString.Legend);
+                    else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(this._rezefSink.rezefDataToString.Legend);
                 }
                 catch (IOException e)
                 {
@@ -360,11 +411,12 @@ namespace JQuant
                     Console.WriteLine(e.ToString());
                     // and get out
                     break;
-                }
+                }*/
              
 
                 // register myself in the data producer
-                _producer.AddSink(this);
+                if (this._dt == FMRShell.DataType.Maof) this._maofSink = new MaofSink(this);
+                else if (this._dt == FMRShell.DataType.Rezef) this._rezefSink = new RezefSink(this);
                 
                 base.Start();       
 
@@ -383,7 +435,9 @@ namespace JQuant
 		public override void Stop()
 		{
             base.Stop();
-            _producer.RemoveSink(this);
+            if (_dt == FMRShell.DataType.Maof) _maofSink.Stop();
+            else if (_dt == FMRShell.DataType.Rezef) _rezefSink.Stop();
+
             if (_fileStream != default(FileStream))
             {
                 _fileStream.Close();
@@ -407,17 +461,22 @@ namespace JQuant
 		/// push the evet into FIFO and let low priority background thread to write 
 		/// the data into the file
 		/// </summary>
-		public void Notify(int count, FMRShell.MarketDataMaof data)
+		/*public void Notify(int count, FMRShell.MarketDataMaof data)
 		{
             _stampLatest = System.DateTime.Now;
             
             // i have to clone the data first. Producer can use the same
             // reference again and again
             FMRShell.MarketDataMaof dataClone = (FMRShell.MarketDataMaof)(data.Clone());
-
             // add the object to the queue for further processing
 			base.AddEntry(data);
-		}
+		}*/
+
+
+        /*public void AddEntry(object data)
+        {
+            base.AddEntry(data);
+        }*/
 
         /// <summary>
         /// write data to the file. this method is called from a separate
@@ -433,16 +492,16 @@ namespace JQuant
             // at this point only ASCII is supported, no system info
             // write all fields of K300MaofType (data.k3Maof) in one line
             // followed by EOL
-            FMRShell.MarketDataMaof md = (FMRShell.MarketDataMaof)data;
 
             // convert the data to string - this is time consuming
             // operation
-            marketDataToString.Init(md.k300MaofType);
-            
+            if (_dt == FMRShell.DataType.Maof) _maofSink.maofDataToString.Init(((FMRShell.MarketDataMaof)data).k300MaofType);
+            else if (_dt == FMRShell.DataType.Rezef) _rezefSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).k300RzfType);
             // write the string to the file
             try
             {
-                _streamWriter.WriteLine(marketDataToString.Values);
+                if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Values);
+                else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Values);
                 // i want to make Flush from time to time
                 // the question is when ? or let the OS to manage the things ?
                 // _streamWriter.Flush();
@@ -479,11 +538,13 @@ namespace JQuant
             protected set;
         }
 		
-		protected IProducer<FMRShell.MarketDataMaof> _producer;
+		protected FMRShell.Collector _collector;    //producer
+        protected MaofSink _maofSink;               //and two
+        protected RezefSink _rezefSink;             //sinks
+
         bool _append;
         FileStream _fileStream;
-        FMRShell.K300MaofTypeToString marketDataToString;
+        FMRShell.DataType _dt;
         StreamWriter _streamWriter;
 	}
-	
 }
