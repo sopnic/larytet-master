@@ -340,10 +340,10 @@ namespace TaskBarLibSim
     public interface IK300Event_Event
     {
         // Events
-        event IK300Event_FireMaofEventHandler FireMaof;
+        /*event IK300Event_FireMaofEventHandler FireMaof;
         event IK300Event_FireMaofCNTEventHandler FireMaofCNT;
         event IK300Event_FireRezefEventHandler FireRezef;
-        event IK300Event_FireRezefCNTEventHandler FireRezefCNT;
+        event IK300Event_FireRezefCNTEventHandler FireRezefCNT;*/
     }
 
 
@@ -371,10 +371,10 @@ namespace TaskBarLibSim
         // Events - even though they appear here,
         // these events are out of date, use K300EventsClass onMaof / on Rezef / onMadad instead
         // we'll need to clean up some time
-        public event IK300Event_FireMaofEventHandler FireMaof;
+        /*public event IK300Event_FireMaofEventHandler FireMaof;
         public event IK300Event_FireMaofCNTEventHandler FireMaofCNT;
         public event IK300Event_FireRezefEventHandler FireRezef;
-        public event IK300Event_FireRezefCNTEventHandler FireRezefCNT;
+        public event IK300Event_FireRezefCNTEventHandler FireRezefCNT;*/
 
         public K300Class()
         {
@@ -480,7 +480,7 @@ namespace TaskBarLibSim
         // Events
         public event _IK300EventsEvents_OnMaofEventHandler OnMaof;
         public event _IK300EventsEvents_OnRezefEventHandler OnRezef;
-        public event _IK300EventsEvents_OnMadadEventHandler OnMadad;
+        //public event _IK300EventsEvents_OnMadadEventHandler OnMadad;
 
         /// <summary>
         /// part of the simulation
