@@ -1,3 +1,4 @@
+
 using System;
 using System.Reflection;
 using System.Threading;
@@ -402,9 +403,9 @@ namespace TaskBarLibSim
                     {
                         // start data generation thread
                         maofGenerator.Start();
-                    
+
                         // set flag to keep track of the started streams
-                    
+
                         maofStreamStarted = true;
                         break;
                     }
@@ -476,7 +477,7 @@ namespace TaskBarLibSim
         {
             SimulationTop.k300EventsClass = this;
         }
-                
+
         // Events
         public event _IK300EventsEvents_OnMaofEventHandler OnMaof;
         public event _IK300EventsEvents_OnRezefEventHandler OnRezef;
@@ -606,7 +607,7 @@ namespace TaskBarLibSim
             dt.ms = now.Millisecond;
 
             //An arbitrary value for latency
-            latency = new Random().Next(15,250);
+            latency = new Random().Next(15, 250);
 
             bool success = true;
             if (success) return 0;
@@ -616,8 +617,8 @@ namespace TaskBarLibSim
 
 
 
-// From this line down - simulation relates classes which are part of the TaskBarLib API
-    
+    // From this line down - simulation relates classes which are part of the TaskBarLib API
+
     /// <summary>
     /// this is not part of the FMR's TaskBarLib. Part of the simulation engine
     /// </summary>
@@ -627,14 +628,14 @@ namespace TaskBarLibSim
     public interface ISimulationDataGenerator<DataType>
     {
         void Start();
-        
+
         void Stop();
     }
 
     /// <summary>
     /// a thread firing specified event
     /// </summary>
-    public abstract class EventGenerator<DataType>:ISimulationDataGenerator<DataType>
+    public abstract class EventGenerator<DataType> : ISimulationDataGenerator<DataType>
     {
         public EventGenerator()
         {
@@ -645,15 +646,15 @@ namespace TaskBarLibSim
         {
             notStopped = true;
             new Thread(Run).Start();
-            return ;
+            return;
         }
-        
+
         public virtual void Stop()
         {
             notStopped = false;
-            return ;
+            return;
         }
-            
+
         /// <summary>
         /// thread main loop 
         /// </summary>
@@ -663,7 +664,7 @@ namespace TaskBarLibSim
             {
                 DataType data;
                 bool result = GetData(out data);
-                
+
                 if (!result)
                 {
                     break;
@@ -672,7 +673,7 @@ namespace TaskBarLibSim
             }
         }
 
-    
+
         /// <summary>
         /// Returns next chunk of data of type. If Ok return true 
         /// The method should block the calling thread until the next chunk
@@ -686,10 +687,10 @@ namespace TaskBarLibSim
         protected abstract bool GetData(out DataType data);
 
         protected abstract void SendEvents(ref DataType data);
-        
+
         private bool notStopped;
     }
-    
+
 
     /// <summary>
     /// this is a thread generating 
@@ -699,7 +700,7 @@ namespace TaskBarLibSim
     /// <param name="maofGenerator">
     /// A <see cref="ISimulationStreamGenerator"/>
     /// </param>
-    public class MaofDataGeneratorRandom :EventGenerator<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
+    public class MaofDataGeneratorRandom : EventGenerator<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
     {
         public MaofDataGeneratorRandom()
         {
@@ -708,8 +709,8 @@ namespace TaskBarLibSim
             Type t = typeof(K300MaofType);
             fields = t.GetFields();
             count = 0;
-            
-            return ;
+
+            return;
         }
 
         protected override bool GetData(out K300MaofType data)
@@ -718,7 +719,7 @@ namespace TaskBarLibSim
             // GetData reads log, pulls the time stamps and simulates
             // timing of the real data stream
             Thread.Sleep(50);
-            
+
             // create a new object
             data = new K300MaofType();
 
@@ -788,8 +789,8 @@ namespace TaskBarLibSim
             data.FILER = randomString.Next();
 
             count += 1;
-            
-            
+
+
             return true;
         }
 
@@ -951,5 +952,5 @@ namespace TaskBarLibSim
         public static K300EventsClass k300EventsClass;
         public static K300Class k300Class;
     }
-    
+
 }
