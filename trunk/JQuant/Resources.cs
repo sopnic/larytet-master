@@ -91,27 +91,27 @@ namespace JQuant
         [Description("SQL")]
         SQL
     };
-	
-	
+
+
     /// <summary>
     /// System logs will register in the central data base
     /// </summary>
     public interface ILogger
-    {		
-		/// <summary>
-		/// returns name of the logger 
-		/// </summary>
+    {
+        /// <summary>
+        /// returns name of the logger 
+        /// </summary>
         string GetName();
-		
-		/// <summary>
-		///returns number of records 
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.Int32"/>
-		/// number of records in the log
-		/// </returns>
+
+        /// <summary>
+        ///returns number of records 
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.Int32"/>
+        /// number of records in the log
+        /// </returns>
         int GetCountLog();
-        
+
         /// <summary>
         /// number of times Logger was invoke
         /// normallu equal or close to what GetCountLog() returns
@@ -126,24 +126,24 @@ namespace JQuant
         int GetCountDropped();
 
         LogType GetLogType();
-		
-		/// <summary>
-		/// returns true if the log entries are time stamped by the producer. 
-		/// Logs can and will time stamp the entries. So in some cases there are going to be two
-		/// time stamps - by the producer and by the logger.
-		/// </summary>
-		bool TimeStamped();
-		
-		/// <summary>
-		/// returns time of the most recent log entry
-		/// </summary>
-		System.DateTime GetLatest();
 
-		/// <summary>
-		/// returns time of the oldest log entry
-		/// </summary>
-		System.DateTime GetOldest();
-	}
+        /// <summary>
+        /// returns true if the log entries are time stamped by the producer. 
+        /// Logs can and will time stamp the entries. So in some cases there are going to be two
+        /// time stamps - by the producer and by the logger.
+        /// </summary>
+        bool TimeStamped();
+
+        /// <summary>
+        /// returns time of the most recent log entry
+        /// </summary>
+        System.DateTime GetLatest();
+
+        /// <summary>
+        /// returns time of the oldest log entry
+        /// </summary>
+        System.DateTime GetOldest();
+    }
 
 
     public interface IDataGenerator
@@ -151,7 +151,7 @@ namespace JQuant
         int GetCount();
         string GetName();
     }
-	
+
     /// <summary>
     /// a storage of all created objects
     /// an object central
@@ -184,18 +184,18 @@ namespace JQuant
         /// created in the system mailboxes
         /// </summary>
         public static List<IMailbox> Mailboxes;
-		
-		/// <summary>
-		/// i expect that creation of threads is not an often operation
-		/// if this is not the case one can construct threads which do not register at all
-		/// or a thread pool where all threads are registered after boot.  
-		/// Adding a thread will not take too much time, but thread deletion will 
-		/// consume some CPU cycles.
-		/// </summary>
+
+        /// <summary>
+        /// i expect that creation of threads is not an often operation
+        /// if this is not the case one can construct threads which do not register at all
+        /// or a thread pool where all threads are registered after boot.  
+        /// Adding a thread will not take too much time, but thread deletion will 
+        /// consume some CPU cycles.
+        /// </summary>
         public static List<IThread> Threads;
-		
+
         public static List<IPool> Pools;
-		
+
         public static List<ILogger> Loggers;
 
         public static List<IDataGenerator> DataGenerators;

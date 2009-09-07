@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -172,7 +173,7 @@ namespace JQuant
             {
                 word_0 = cmdLine;
             }
-            
+
             // case not sensitive - convert everything to lower case
             string cmdLineLower = word_0.ToLower();
             foreach (Command cmd in Commands)
@@ -251,7 +252,7 @@ namespace JQuant
             {
                 string subcommand = cmdName.Substring(0, slashIdx);
                 ProcessCommand(iWrite, subcommand);
-                cmdName = cmdName.Remove(0, slashIdx+1);
+                cmdName = cmdName.Remove(0, slashIdx + 1);
                 slashIdx = cmdName.IndexOf("/");
                 restoreCurrentMenu = true;
             }

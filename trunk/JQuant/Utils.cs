@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -11,10 +12,10 @@ namespace JQuant
 {
 
 
-	/// <summary>
-	/// C# enum does not allow to reload ToString method
-	/// I need patch here 
-	/// </summary>
+    /// <summary>
+    /// C# enum does not allow to reload ToString method
+    /// I need patch here 
+    /// </summary>
     class EnumUtils
     {
         /// <summary>
@@ -32,9 +33,9 @@ namespace JQuant
     }
 
 
-	/// <summary>
-	/// format output - add blanks, remove trailing blanks, etc.
-	/// </summary>
+    /// <summary>
+    /// format output - add blanks, remove trailing blanks, etc.
+    /// </summary>
     public class OutputUtils
     {
         /// <summary>
@@ -99,19 +100,19 @@ namespace JQuant
         /// </value>
         public string Legend
         {
-           get;
-           protected set;
+            get;
+            protected set;
         }
-        
+
         /// <value>
         /// keeps a string with values separated by the delimiter
         /// </value>
         public string Values
         {
-           get;
-           protected set;
+            get;
+            protected set;
         }
-        
+
         /// <value>
         /// delimiter used to separate the fields
         /// If set the object will regenerate strings
@@ -122,7 +123,7 @@ namespace JQuant
             {
                 return this.delimiter;
             }
-            
+
             set
             {
                 // i can check if the delimiter changed indeed
@@ -139,11 +140,11 @@ namespace JQuant
             get;
             protected set;
         }
-        
+
         protected void InitLegend()
         {
             StringBuilder sbLegend = new StringBuilder(150);
-            
+
             foreach (FieldInfo field in fields)
             {
                 string name = field.Name;
@@ -152,12 +153,12 @@ namespace JQuant
             }
             Legend = sbLegend.ToString();
         }
-        
+
         public void Init(StructType data)
         {
             this.data = data;
             StringBuilder sbData = new StringBuilder(50);
-            
+
             foreach (FieldInfo field in fields)
             {
                 object val = field.GetValue(data);
@@ -169,7 +170,7 @@ namespace JQuant
             IsInitialized = true;
         }
 
-        protected FieldInfo[]fields;
+        protected FieldInfo[] fields;
         protected StructType data;
         protected string delimiter;
     }
@@ -178,8 +179,8 @@ namespace JQuant
     {
         string Next();
     }
-    
-    public class RandomNumericalString: IRandomString
+
+    public class RandomNumericalString : IRandomString
     {
         public RandomNumericalString(int min, int max)
         {
@@ -188,20 +189,19 @@ namespace JQuant
             this.max = max;
         }
 
-        public string Next() 
+        public string Next()
         {
             int length = rand.Next(min, max);
-                        
+
             return length.ToString();
         }
-        
+
         Random rand;
         int min;
         int max;
-        
     }
-    
-    public class RandomString: IRandomString
+
+    public class RandomString : IRandomString
     {
         /// <summary>
         /// create one object and call Next() to get a random string
@@ -219,15 +219,15 @@ namespace JQuant
             this.minLength = minLength;
             this.maxLength = maxLength;
         }
-        
+
         /// <summary>
         /// Build a random string (for id, login, password...)
         /// </summary>
-        public string Next() 
+        public string Next()
         {
             int length = rand.Next(minLength, maxLength);
             StringBuilder tempString = new StringBuilder(Guid.NewGuid().ToString());
-            
+
             tempString = tempString.Replace("-", "");
 
             while (tempString.Length < length)
@@ -239,17 +239,14 @@ namespace JQuant
             {
                 tempString = tempString.Remove(0, tempString.Length - length);
             }
-                    
-            
+
             return tempString.ToString();
         }
-        
+
         Random rand;
         int minLength;
         int maxLength;
     }
-
-    
 
     /// <summary>
     /// Making different statistical computations. 
@@ -259,7 +256,7 @@ namespace JQuant
     {
         public static int Length(List<double> lst)
         {
-            int n=0;
+            int n = 0;
             foreach (double x in lst)
             {
                 n++;
@@ -273,11 +270,11 @@ namespace JQuant
 
         public static double StdDev(List<double> lst)
         {
-            double m=Mean(lst);
-            double sd=0.0;
+            double m = Mean(lst);
+            double sd = 0.0;
             foreach (int l in lst)
             {
-                sd += (l - m)*(l-m);
+                sd += (l - m) * (l - m);
             }
             return Math.Sqrt(sd) / (Length(lst) - 1);
         }

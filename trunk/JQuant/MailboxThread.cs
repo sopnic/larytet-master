@@ -66,7 +66,7 @@ namespace JQuant
             }
 
             _state = ThreadState.Stoped;
-			Dispose();
+            Dispose();
         }
 
         /// <summary>
