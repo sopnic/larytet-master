@@ -1,26 +1,20 @@
+#summary Maof basic order structure.
+
+code:
 {{{
-    struct tagMaofOrderType {
-        [helpstring("סניף")]
-        BSTR Branch;
-        [helpstring("חשבון")]
-        BSTR Account;
-        [helpstring("מספר אופציה")]
-        BSTR Option;
-        [helpstring("פעולה")]
-        BSTR operation;
-        [helpstring("כמות")]
-        BSTR ammount;
-        [helpstring("מחיר")]
-        BSTR price;
-        [helpstring("LMT/LMO/IOC סוג פקודה")]
-        BSTR Sug_Pkuda;
-        [helpstring("אסמכתא")]
-        BSTR Asmachta;
-        [helpstring("אסמכתא פ.מ.ר")]
-        BSTR AsmachtaFmr;
-        [helpstring("נקלט")]
-        long Pass;
-        [helpstring("זיהוי פקודה פנימי")]
-        long OrderID;
-    } MaofOrderType;
+[C#]
+    public struct MaofOrderType
+    {
+        public string Branch;       //סניף
+        public string Account;      //חשבון
+        public string Option;       //מספר אופציה
+        public string operation;    //פעולה
+        public string ammount;      //כמות
+        public string price;        //מחיר
+        public string Sug_Pkuda;    //סוג פקודה
+        public string Asmachta;     //אסמכתא
+        public string AsmachtaFmr;  //אסמכתא פ.מ.ר
+        public int Pass;            //נקלט
+        public int OrderID;         //זיהוי פקודה פנימי
+    }
 }}}
