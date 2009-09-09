@@ -23,7 +23,7 @@ _Branch_
 
 *Return Value:*
 {{{
- 0 : Maof session started successfully.
+ 0 : Rezef session started successfully.
 -1 : General function failure.
 -2 : Account or branch parameters not relayed to function.
 -3 : DataBase failure.
