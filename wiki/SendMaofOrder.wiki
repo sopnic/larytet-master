@@ -1,3 +1,7 @@
+#Summary Sends Single Maof Order. 
+
+
+
 {{{
 HRESULT SendMaofOrder(
   [in] long sessionId, 
