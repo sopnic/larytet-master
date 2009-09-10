@@ -1401,5 +1401,3 @@ Function StatusToString(STS As String) As String
              StatusToString = ""
     End Select
 End Function
-
-
