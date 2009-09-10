@@ -1,4 +1,4 @@
 #summary Sends Single Rezef Order.
 
 
-Outdated method, see SendOrderRZ instead.
+Outdated method, see [SendOrderRZ] instead.
