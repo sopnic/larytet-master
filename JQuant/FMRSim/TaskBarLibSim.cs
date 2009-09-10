@@ -20,18 +20,6 @@ using System.Threading;
 /// </summary>
 namespace TaskBarLibSim
 {
-    public enum BaseAssetTypes
-    {
-        BaseAssetAll = -1,
-        BaseAssetBanks = 4,
-        BaseAssetDollar = 2,
-        BaseAssetEuro = 5,
-        BaseAssetInterest = 3,
-        BaseAssetMaof = 1,
-        BaseAssetShacharAroch = 7,
-        BaseAssetShacharBenoni = 6
-    }
-
     public enum MonthType
     {
         AllMonths = -1,
@@ -121,25 +109,6 @@ namespace TaskBarLibSim
         OnlineSessionTypeKupa
     }
 
-    public enum OrderOperation
-    {
-        OrderOperationNewBuy,
-        OrderOperationNewSell,
-        OrderOperationUpdBuy,
-        OrderOperationUpdSell,
-        OrderOperationDelete
-    }
-
-    public enum OrdersErrorTypes
-    {
-        Alert = 0x34,
-        Confirmation = 0x31,
-        Fatal = 0x30,
-        NoError = 0x35,
-        PasswordReq = 0x33,
-        ReEnter = 50
-    }
-
     public enum QueryType
     {
         qtDetailed = 0x30,
@@ -155,6 +124,9 @@ namespace TaskBarLibSim
         YieldDataYearbyQuater = 5
     }
 
+    /// <summary>
+    /// Query types enumaration
+    /// </summary>
     public enum ConnectionState
     {
         csOpen,
@@ -317,6 +289,21 @@ namespace TaskBarLibSim
 
     public struct K300MadadType
     {
+        public string BNO_N;
+        public string CALC_TIME;
+        public string FIL1_VK;
+        public string FIL2_VK;
+        public string FIL3_VK;
+        public string FIL6_VK;
+        public string Madad;
+        public string MDD_COD;
+        public string MDD_DF;
+        public string MDD_N;
+        public string MDD_NAME;
+        public string MDD_SUG;
+        public string SUG_RC;
+        public string UPD_DAT;
+        public string UPD_TIME;
     }
 
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
@@ -393,6 +380,18 @@ namespace TaskBarLibSim
         public virtual int GetMAOFRaw(ref Array vecRecords, ref string strLastTime, string strOptionNumber, MadadTypes strMadad)
         {
             return 0;
+        }
+
+        public virtual int GetBaseAssets2(out System.Array psaRecords, int BaseAssetCode)
+        {
+            psaRecords = null;
+            return -1;
+        }
+
+        public virtual int GetBaseAssets(out System.Array psaRecords, int BaseAssetCode)
+        {
+            psaRecords = null;
+            return -1;
         }
 
         public virtual int K300StartStream(K300StreamType streamType)
@@ -512,7 +511,7 @@ namespace TaskBarLibSim
     }
 
 
-    public class UserClass
+    public partial class UserClass
     {
         public UserClass()
         {
@@ -573,12 +572,49 @@ namespace TaskBarLibSim
             return _loginErrorDesc;
         }
 
+        /// <summary>
+        /// Carries out the (simulated) AS400 logout process.
+        /// </summary>
+        /// <param name="SessionId">A <see cref="System.Int32"/>
+        /// The logout process requires a 
+        /// unique Session Identification number that identifies 
+        /// the session to be closed.</param>
+        /// <returns>A <see cref="System.Int32"/>
+        /// In the event of failure -1 is returned from the function.
+        /// In the event of success 0 is returned from the function.</returns>
+        public int Logout(int SessionId)
+        {
+            bool success=true;
+            if (success) return 0;
+            else return -1;
+        }
+
+        //public properties:
+        /// <summary>
+        /// Relays the customer number for the current taskbar configuration.
+        /// </summary>
+        public virtual string Cust { get {return this._cust;}  }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual ConnectionState State { get { return this._cs; } }
+
+        public virtual string System { get {return this._system; }}
+
+        public virtual string SystemName { get { return this._sysName;} }
+
+
         protected int _loginProgress;
         protected int _sessionId;
         protected string _loginErrorDesc;
         protected LoginStatus _loginStatus;
         protected DateTime _loginStarted;
 
+        protected string _cust = "aryeh";
+        protected ConnectionState _cs;
+        protected string _system="TBSim";
+        protected string _sysName="TaskBarLibSim";
 
     }
 
