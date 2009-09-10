@@ -124,7 +124,9 @@ namespace FMRShell
         /// </summary>
         public void Dispose()
         {
-            // call userClass.Logout here
+            // call userClass.Logout
+            userClass.Logout(sessionId);
+
 
             // set userClass to null
 
@@ -303,7 +305,7 @@ namespace FMRShell
             protected set;
         }
 
-    }
+    }//class Connection
 
     /// <summary>
     /// generic class 
@@ -645,6 +647,7 @@ namespace FMRShell
                 RezefListeners = new List<JQuant.ISink<MarketDataRezef>>(5);
                 mktDta = new MarketDataRezef();
                 k3.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
+                countOnRezef = 0;
             }
 
             protected void OnRezef(ref K300RzfType data)
@@ -1009,6 +1012,25 @@ namespace FMRShell
                 Console.ReadLine();
             }
             else Console.WriteLine("Successfull connection, SessionId=" + returnCode);
+        }
+
+        public int initOrd(out MaofOrderType Order)
+        {
+            UserClass user = new UserClass();
+            Order = new MaofOrderType();
+            Order.Account = "12345";
+            Order.Branch = "000";
+            Order.ammount = "1";
+            Order.Asmachta = "";
+            Order.AsmachtaFmr = "";
+            Order.operation = "N"; //either "N", "U" or "D", for "New", "Update" or "Delete", respectively
+            Order.Option = "80593171"; //security ID number on TASE
+            Order.OrderID = 0;
+            Order.Pass = 0;
+            Order.price = "890";
+            Order.Sug_Pkuda = "LMT";    //either "LMT", "LMO" or "IOC" - still need to check this, I think it should be "FOK"
+                                       //I think it should be "FOK", not "LMO"
+            return 0;
         }
     }
 
