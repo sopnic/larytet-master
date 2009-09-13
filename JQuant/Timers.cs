@@ -65,7 +65,6 @@ namespace JQuant
     /// </summary>
     public class TimerList : List<Timer>, ITimerList
     {
-
         /// <summary>
         /// Create a timer list
         /// </summary>
@@ -80,6 +79,7 @@ namespace JQuant
         /// <param name="timerCallback">
         /// A <see cref="TimerExpiredCallback"/>
         /// This method will be called for all expired timers
+        /// There is no a callback per timer. Only a callback per timer list
         /// </param>
         public TimerList(string name, int size, TimerExpiredCallback timerCallback) :base(size)
         {
@@ -255,6 +255,9 @@ namespace JQuant
         protected void Run()
         {
             isAlive = true;
+
+            // Check all timer lists, find minimum delay (timeout before the nearest timer expires)
+            // call Thread.Sleep()
             while (isAlive)
             {
             }
