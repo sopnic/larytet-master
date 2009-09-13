@@ -1,3 +1,49 @@
+#summary MOFINQType can be used to parse the records returned from User.GetOrdersMaof
+{{{
+    public struct MOFINQType
+    {
+        public string ERR;          //שגוי
+        public string SYS_TYPE;     //סיסטם מקור הפקודה
+        public string SND_RCV; 	    // -מטרת השדר
+        public string ORDR_TYPE;    //MANA/ORDR  שיטת הפקודה
+        public string OPR_NAME;     // סיסמאת המשתמש
+        public string SUG_INQ; 	    //0=DETAIL     סוג פירוט
+        public string SEQ_PIC; 	    // FMR  -    ספרור שוטף
+        public string MANA_PIC;     //מספר מנה/שעה אחרונה
+        public string BNO_PIC; 	    //מספר נייר ערך
+        public string BNO_NAME;     //שם נייר
+        public string OP;           //קוד קניה / מכירה
+        public string BRANCH_PIC;   //סניף
+        public string TIK_PIC; 	    //תיק
+        public string SUG_MAVR_PIC; // סוג  חשבון מפצל/מעבר
+        public string ID_MAVR_PIC;  //מספר חשבון מפצל/מעבר
+        public string SUG_PIC; 	    // סוג חשבון
+        public string ID_PIC; 	    //חשבון
+        public string ID_NAME; 	    //שם החשבון
+        public string SUG_ID_PIC;   //סוג חשבון
+        public string NOSTRO; 	    //קוד נוסטרו
+        public string ORDR_NV_PIC;  //כמות מבוקשת
+        public string ORDR_SUG;     //סוג פקודה
+        public string ORDR_PRC_PIC; //מחיר הזמנה
+        public string ORDR_TIME;    //זמן קליטת ההזמנה
+        public string DIL_NV_PIC;   //כמות בעסקה
+        public string DIL_PRC_PIC;  //מחיר עסקה
+        public string DIL_TIME_PIC; //שעת העסקה
+        public string MBR_SEQ_PIC;  //מספר הודעת חבר
+        public string RZF_SEQ_PIC;  //מספר הודעת רצף
+        public string RZF_ORD_PIC;  //מספר פקודה ברצף
+        public string ORDER_NO_PIC; //HOST - ספרור מיוחד
+        public string DIL_PIC; 	    //מספר אישור עסקה
+        public string COD_UPD; 	    //סטטוס הפקודה
+        public string STS; 	    //סטטוס הפקודה
+        public string ERR_DATA;     //נתונים חסרים/שגויים
+        public string ERR_INQ; 	    //שגוי
+        public string ERR_UPD; 	    //שגוי
+        public string SUG_INFO;     //0=ORDR  1=DIL  2=SUM  
+        public string DSP_FMR; 	    //מצב הפקודה
+    }
+}}}
+
 {{{
     struct tagMOFINQType {
         [helpstring("                  שגוי")]
