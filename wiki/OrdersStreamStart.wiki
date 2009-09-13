@@ -40,4 +40,4 @@ _streamType_
   * The OrdersStreamStop function should be called in order to close the stream. 
 
 *See Also:*
-MOFINQType | RZFINQType | OrdersStreamStop | TradeType 
+[MOFINQType] | [RZFINQType] | [OrdersStreamStop] | [TradeType]
