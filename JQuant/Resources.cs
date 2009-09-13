@@ -152,6 +152,14 @@ namespace JQuant
         string GetName();
     }
 
+    public interface ITimerTask
+    {
+        int GetPendingTimers();
+        int GetCountStart();
+        int GetCountStop();
+        int GetCountExpired();
+    }
+    
     /// <summary>
     /// a storage of all created objects
     /// an object central
@@ -166,6 +174,7 @@ namespace JQuant
             Pools = new List<IPool>(10);
             Loggers = new List<ILogger>(10);
             DataGenerators = new List<IDataGenerator>(10);
+            TimerTasks = new  List<ITimerTask>(5);
         }
 
         static public void Init()
@@ -199,6 +208,8 @@ namespace JQuant
         public static List<ILogger> Loggers;
 
         public static List<IDataGenerator> DataGenerators;
+
+        public static List<ITimerTask> TimerTasks;
 
         static protected Resources r;
     }

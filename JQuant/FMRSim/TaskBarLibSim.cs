@@ -500,7 +500,7 @@ namespace TaskBarLibSim
         }
 
         // Properties - are used to filter the events data 
-        public BaseAssetTypes EventsFilterBaseAsset { set; get; }
+        // public BaseAssetTypes EventsFilterBaseAsset { set; get; }
         public int EventsFilterBno { set; get; }
         public int EventsFilterMadad { set; get; }
         public int EventsFilterMaof { set; get; }
