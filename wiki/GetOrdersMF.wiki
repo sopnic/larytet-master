@@ -42,4 +42,4 @@ _LastTime_
   * Records can be parsed using the MOFINQType structure. 
 
 *See Also:*
-MOFINQType | OrdersStreamStart 
+[MOFINQType] | OrdersStreamStart 
