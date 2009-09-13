@@ -1,0 +1,3 @@
+#summary Retrieves a summary or detailed version of Maof orders and executions for the specifed branch, account and stock number.
+
+Outdated, use [GetOrdersMF] method instead.
