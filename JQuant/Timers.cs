@@ -1,5 +1,8 @@
 
 using System;
+using System.Threading;
+using System.Timers;
+using System.Collections.Generic;
 
 /// <summary>
 /// The idea is taken from http://larytet.sourceforge.net/aos.shtml  (AOS Timer)
@@ -41,16 +44,140 @@ using System;
 /// </summary>
 namespace JQuant
 {
-    /// <summary>
-    /// Timer task (or timer set) implementation
-    /// </summary>
-    public class TimerTask : ITimerTask
+
+    public delegate void TimerExpiredCallback(object o);
+    
+    public class Timer
     {
-        
-        public TimerTask()
+        /// <summary>
+        /// this is expiration tick
+        /// </summary>
+        long ExpirationTime;
+
+        /// <summary>
+        /// system tick when the timer was started
+        /// </summary>
+        long StartTick;
+    }
+
+    /// <summary>
+    /// lits of timers - keep all timers with the same timeout
+    /// </summary>
+    public class TimerList : List<Timer>, ITimerList
+    {
+
+        /// <summary>
+        /// Create a timer list
+        /// </summary>
+        /// <param name="name">
+        /// A <see cref="System.String"/>
+        /// Name of the timer list
+        /// </param>
+        /// <param name="size">
+        /// A <see cref="System.Int32"/>
+        /// Maximum number of pending timers
+        /// </param>
+        /// <param name="timerCallback">
+        /// A <see cref="TimerExpiredCallback"/>
+        /// This method will be called for all expired timers
+        /// </param>
+        public TimerList(string name, int size, TimerExpiredCallback timerCallback) :base(size)
         {
+            // add myself to the list of created timer lists
+            Resources.TimerLists.Add(this);
+
+            this.name = name;
+            this.timerCallback = timerCallback;
+
+            // create pool of free timers
+            InitTimers(size);
         }
 
+        protected void Dispose()
+        {
+            // remove myself from the list of created timer lists
+            Resources.TimerLists.Remove(this);
+        }
+
+        /// <summary>
+        /// Allocate a free timer from the stack of free timers, set expiration
+        /// add the timer to end of the list of running timers
+        /// </summary>
+        /// <param name="timeout">
+        /// A <see cref="System.Int64"/>
+        /// Reference to the started timer. Can be used in call to Stop()
+        /// </param>
+        /// <param name="timer">
+        /// A <see cref="Timer"/>
+        /// </param>
+        /// <returns>
+        /// A <see cref="System.Boolean"/>
+        /// returns true of Ok, false is failed to allocate a new timer - no free
+        /// timers are available
+        /// </returns>
+        public bool StartTimer(long timeout, out Timer timer, out long timerId)
+        {
+            timer = null;
+            timerId = 0;
+            
+            return true;
+        }
+
+        /// <summary>
+        /// use this method if no need to call Stop() will ever arise for the timer
+        /// </summary>
+        public bool StartTimer(long timeout)
+        {
+            Timer timer;
+            long timerId;
+            
+            bool result = StartTimer(timeout, out timer, out timerId);
+            
+            return result;
+        }
+
+        /// <summary>
+        /// stop previously started timer
+        /// </summary>
+        /// <param name="timer">
+        /// A <see cref="Timer"/>
+        /// </param>
+        /// <param name="timerId">
+        /// A <see cref="System.Int64"/>
+        /// Value returned by StartTimer()
+        /// </param>
+        /// <returns>
+        /// A <see cref="System.Boolean"/>
+        /// Returns true if the timer was running and now stopped
+        /// Call to this method for already stoped timer will return false
+        /// and error message will be printed on the console
+        /// </returns>
+        public bool StopTimer(Timer timer, long timerId)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// free timers are stored in the stack
+        /// </summary>
+        /// <param name="size">
+        /// A <see cref="System.Int32"/>
+        /// </param>
+        protected void InitTimers(int size)
+        {
+            freeTimers = new Stack<Timer>(size);
+            for (int i = 0; i < size; i++)
+            {
+                Timer timer = new Timer();
+                freeTimers.Push(timer);
+            }
+        }
+
+        ~TimerList()
+        {
+            Console.WriteLine("TimerList " + name + " destroyed");
+        }
+        
         public int GetPendingTimers()
         {
             return 0;
@@ -71,6 +198,72 @@ namespace JQuant
             return 0;
         }
         
+        /// <summary>
+        /// stack of free timers
+        /// </summary>
+        protected Stack<Timer> freeTimers;
+
         
+        protected string name;
+
+        protected TimerExpiredCallback timerCallback;
+    }
+    
+    /// <summary>
+    /// Timer task (timer set) implementation
+    /// </summary>
+    public class TimerTask
+    {
+        
+        public TimerTask(string name)
+        {
+            this.name = name;
+            this.isAlive = false;
+            
+        }
+
+        protected void Dispose()
+        {
+            thread.Abort();
+            thread = null;
+        }
+
+
+        /// <summary>
+        /// call this method to start the thread - enters loop forever in the 
+        /// method Run()
+        /// </summary>
+        public void Start()
+        {
+            this.thread = new Thread(this.Run);
+            this.thread.Start();
+        }
+
+        public void Stop()
+        {
+            isAlive = false;
+            Monitor.Pulse(this);
+        }
+        
+        
+        ~TimerTask()
+        {
+            Console.WriteLine("TimerTask " + name + " destroyed");
+        }
+
+
+        protected void Run()
+        {
+            isAlive = true;
+            while (isAlive)
+            {
+            }
+        }
+        
+
+        protected Thread thread;
+        protected bool isAlive;
+        protected string name;
+
     }
 }

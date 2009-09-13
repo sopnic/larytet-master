@@ -152,7 +152,7 @@ namespace JQuant
         string GetName();
     }
 
-    public interface ITimerTask
+    public interface ITimerList
     {
         int GetPendingTimers();
         int GetCountStart();
@@ -174,7 +174,7 @@ namespace JQuant
             Pools = new List<IPool>(10);
             Loggers = new List<ILogger>(10);
             DataGenerators = new List<IDataGenerator>(10);
-            TimerTasks = new  List<ITimerTask>(5);
+            TimerLists = new  List<ITimerList>(5);
         }
 
         static public void Init()
@@ -209,7 +209,7 @@ namespace JQuant
 
         public static List<IDataGenerator> DataGenerators;
 
-        public static List<ITimerTask> TimerTasks;
+        public static List<ITimerList> TimerLists;
 
         static protected Resources r;
     }
