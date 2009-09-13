@@ -63,7 +63,7 @@ namespace JQuant
     /// <summary>
     /// lits of timers - keep all timers with the same timeout
     /// </summary>
-    public class TimerList : List<Timer>, ITimerList
+    public class TimerList : ITimerList
     {
         /// <summary>
         /// Create a timer list
@@ -81,13 +81,14 @@ namespace JQuant
         /// This method will be called for all expired timers
         /// There is no a callback per timer. Only a callback per timer list
         /// </param>
-        public TimerList(string name, int size, TimerExpiredCallback timerCallback) :base(size)
+        public TimerList(string name, int size, TimerExpiredCallback timerCallback)
         {
             // add myself to the list of created timer lists
             Resources.TimerLists.Add(this);
 
             this.name = name;
             this.timerCallback = timerCallback;
+
 
             // create pool of free timers
             InitTimers(size);
@@ -105,10 +106,16 @@ namespace JQuant
         /// </summary>
         /// <param name="timeout">
         /// A <see cref="System.Int64"/>
-        /// Reference to the started timer. Can be used in call to Stop()
         /// </param>
         /// <param name="timer">
         /// A <see cref="Timer"/>
+        /// Reference to the started timer. Can be used in call to Stop()
+        /// </param>
+        /// <param name="timerId">
+        /// A <see cref="System.Int64"/>
+        /// Timer list reuse refernces (objects) of type Timer. Reference to Timer is
+        /// not enough to make sure that you stop the correct timer. Value timerId
+        /// is a unique (system level) timer identifier
         /// </param>
         /// <returns>
         /// A <see cref="System.Boolean"/>
@@ -145,6 +152,9 @@ namespace JQuant
         /// <param name="timerId">
         /// A <see cref="System.Int64"/>
         /// Value returned by StartTimer()
+        /// Timer list reuse refernces (objects) of type Timer. Reference to Timer object 
+        /// is not enough to make sure that you stop the correct timer. Value timerId
+        /// is a unique (system level) timer identifier
         /// </param>
         /// <returns>
         /// A <see cref="System.Boolean"/>
@@ -171,6 +181,9 @@ namespace JQuant
                 Timer timer = new Timer();
                 freeTimers.Push(timer);
             }
+
+            // list of pending timers - initially empty
+            pendingTimers = new List<Timer>(size);
         }
 
         ~TimerList()
@@ -202,6 +215,13 @@ namespace JQuant
         /// stack of free timers
         /// </summary>
         protected Stack<Timer> freeTimers;
+
+
+        /// <summary>
+        /// List of pending timers. TimerList contains timers with the same timeout
+        /// The oldest is going to be in the tail of the list
+        /// </summary>
+        protected List<Timer> pendingTimers;
 
         
         protected string name;
