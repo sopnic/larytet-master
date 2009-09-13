@@ -36,7 +36,7 @@ _streamType_
 }}}
 
 *Remarks:*
-  * OrdersStreamStart should be called before calls to functions GetOrdersRZ or GetOrdersMF in order to initiate the streaming.
+  * OrdersStreamStart should be called before calls to functions [GetOrdersRZ] or [GetOrdersMF] in order to initiate the streaming.
   * The OrdersStreamStop function should be called in order to close the stream. 
 
 *See Also:*
