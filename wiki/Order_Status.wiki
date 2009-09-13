@@ -1,4 +1,4 @@
-#summary STS field in the [MOFINQType] structure.
+#summary STS field in the MOFINQType structure.
 
 ||	Status code	||	Description	||
 ||	1	||	נקלט ע.ת.	||
