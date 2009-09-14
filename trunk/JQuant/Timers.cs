@@ -123,7 +123,7 @@ namespace JQuant
     /// <summary>
     /// lits of timers - keep all timers with the same timeout
     /// </summary>
-    public class TimerList : ITimerList
+    public class TimerList : ITimerList, IDisposable
     {
         /// <summary>
         /// Create a timer list
@@ -164,8 +164,8 @@ namespace JQuant
             Resources.TimerLists.Add(this);
         }
 
-        protected void Dispose()
-        {
+        public void Dispose()
+        {            
             // rmeove myself from the TimerTask
             timerTask.RemoveList(this);
             
@@ -222,6 +222,8 @@ namespace JQuant
                 // allocate a timer from the stack of free timers
                 lock (this)
                 {
+                    countStartAttempt++;
+
                     if (freeTimers.Count > 0)
                     {
                         timer = freeTimers.Pop();
@@ -243,6 +245,7 @@ namespace JQuant
                 // add the timer to the queue of the pending timers
                 lock (this)
                 {
+                    countStart++;
                     pendingTimers.Add(timer);
                 }
 
@@ -315,8 +318,11 @@ namespace JQuant
             
             lock (this)
             {
+                countStopAttempt++;
+                
                 if ((timer.Running) && (timer.TimerId == timerId))
                 {
+                    countStop++;
                     timer.Running = false;
                 }
                 else if (!timer.Running)
@@ -398,6 +404,7 @@ namespace JQuant
 
                     lock (this)
                     {
+                        countExpired++;
                         timer.Running = false;
                     }
                 }
@@ -447,22 +454,48 @@ namespace JQuant
         
         public int GetPendingTimers()
         {
-            return 0;
+            return pendingTimers.Count;
         }
         
         public int GetCountStart()
         {
-            return 0;
+            return countStart;
         }
         
         public int GetCountStop()
         {
-            return 0;
+            return countStop;
+        }
+        
+        public int GetCountStartAttempt()
+        {
+            return countStartAttempt;
+        }
+        
+        public int GetCountStopAttempt()
+        {
+            return countStopAttempt;
         }
         
         public int GetCountExpired()
         {
-            return 0;
+            return countExpired;
+        }
+        
+        public int GetSize()
+        {
+            int size = (pendingTimers.Count+freeTimers.Count);
+            return size;
+        }
+        
+        public string GetName()
+        {
+            return name;
+        }
+        
+        public string GetTaskName()
+        {
+            return timerTask.Name;
         }
         
         /// <summary>
@@ -470,6 +503,11 @@ namespace JQuant
         /// </summary>
         protected Stack<Timer> freeTimers;
 
+        int countStart;
+        int countStartAttempt;
+        int countStop;
+        int countStopAttempt;
+        int countExpired;
 
         /// <summary>
         /// List of pending timers. TimerList contains timers with the same timeout
@@ -504,18 +542,18 @@ namespace JQuant
     /// <summary>
     /// Timer task (timer set) implementation
     /// </summary>
-    public class TimerTask
+    public class TimerTask: IDisposable
     {
         
         public TimerTask(string name)
         {
-            this.name = name;
+            this.Name = name;
             this.isAlive = false;
             this.timerLists = new List<TimerList>(5);
             sleepTimeout = Int32.MaxValue;
         }
 
-        protected void Dispose()
+        public void Dispose()
         {
             thread.Abort();
             thread = null;
@@ -567,7 +605,7 @@ namespace JQuant
         
         ~TimerTask()
         {
-            Console.WriteLine("TimerTask " + name + " destroyed");
+            Console.WriteLine("TimerTask " + Name + " destroyed");
         }
 
 
@@ -631,7 +669,11 @@ namespace JQuant
 
         protected Thread thread;
         protected bool isAlive;
-        protected string name;
+        public string Name
+        {
+            get;
+            protected set;
+        }
         protected int sleepTimeout;
 
         List<TimerList> timerLists;

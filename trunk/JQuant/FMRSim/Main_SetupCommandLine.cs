@@ -372,6 +372,83 @@ namespace JQuant
             }
         }
 
+        protected void Timer5sHandler(Timer timer)
+        {
+             Console.WriteLine("5s timer expired "+ DateTime.Now);
+        }
+        
+        protected void Timer30sHandler(Timer timer)
+        {
+             Console.WriteLine("30s timer expired "+ DateTime.Now);
+        }
+        
+        protected void debugTimerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            // call once - init timers subsystem
+            Timers.Init();
+
+            // create set (timer task). initially empty
+            TimerTask timerTask = new TimerTask("ShortTimers");
+
+            // create two types of timers
+            TimerList timers_5sec = new TimerList("5sec", 5*1000, 100, this.Timer5sHandler, timerTask);
+            TimerList timers_30sec = new TimerList("30sec", 30*1000, 100, this.Timer30sHandler, timerTask);
+            
+            timerTask.Start();
+
+            // start a couple of timers
+            timers_5sec.Start();
+            timers_30sec.Start();
+
+            debugTimerShowCallback(iWrite, null, null);
+
+            Thread.Sleep(40*1000);
+
+            debugTimerShowCallback(iWrite, null, null);
+            
+            // clean up
+            timers_5sec.Dispose();
+            timers_30sec.Dispose();
+            timerTask.Dispose();            
+        }
+
+        protected void debugTimerShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            iWrite.WriteLine(
+                OutputUtils.FormatField("Name", 14) +
+                OutputUtils.FormatField("Task", 14) +
+                OutputUtils.FormatField("Size", 10) +
+                OutputUtils.FormatField("Pending", 10) +
+                OutputUtils.FormatField("StartA", 10) +
+                OutputUtils.FormatField("Start", 10) +
+                OutputUtils.FormatField("StopA", 10) +
+                OutputUtils.FormatField("Stop", 10) +
+                OutputUtils.FormatField("Expired", 10)
+            );
+            iWrite.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+            bool isEmpty = true;
+            foreach (ITimerList timerList in Resources.TimerLists)
+            {
+                isEmpty = false;
+                iWrite.WriteLine(
+                    OutputUtils.FormatField(timerList.GetName(), 14) +
+                    OutputUtils.FormatField(timerList.GetTaskName(), 14) +
+                    OutputUtils.FormatField(timerList.GetSize(), 10) +
+                    OutputUtils.FormatField(timerList.GetPendingTimers(), 10) +
+                    OutputUtils.FormatField(timerList.GetCountStartAttempt(), 10) +
+                    OutputUtils.FormatField(timerList.GetCountStart(), 10) +
+                    OutputUtils.FormatField(timerList.GetCountStopAttempt(), 10) +
+                    OutputUtils.FormatField(timerList.GetCountStop(), 10) +
+                    OutputUtils.FormatField(timerList.GetCountExpired(), 10)
+                );
+
+            }
+            if (isEmpty)
+            {
+                iWrite.WriteLine("No timers");
+            }
+        }
+        
         protected void LoadCommandLineInterface()
         {
 
@@ -415,6 +492,12 @@ namespace JQuant
             menuDebug.AddCommand("AS400TimeTest", "ping the server",
                                   "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                   debugGetAS400DTCallback);
+
+
+            menuDebug.AddCommand("timerTest", "Run simple timer tests",
+                                  " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
+            menuDebug.AddCommand("timerShow", "Show timers",
+                                  " List of created timers and timer tasks", debugTimerShowCallback);
 
 #if USEFMRSIM
             menuDebug.AddCommand("loggerTest", "Run simple test of the logger",

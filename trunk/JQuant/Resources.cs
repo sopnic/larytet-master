@@ -158,6 +158,11 @@ namespace JQuant
         int GetCountStart();
         int GetCountStop();
         int GetCountExpired();
+        int GetCountStartAttempt();
+        int GetCountStopAttempt();
+        int GetSize();
+        string GetName();
+        string GetTaskName();
     }
     
     /// <summary>
