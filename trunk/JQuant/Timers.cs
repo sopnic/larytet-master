@@ -497,7 +497,13 @@ namespace JQuant
         
         public int GetSize()
         {
-            int size = (pendingTimers.Count+freeTimers.Count);
+            int size;
+            
+            lock (this)
+            {
+                size = (pendingTimers.Count+freeTimers.Count);
+            }
+            
             return size;
         }
         
