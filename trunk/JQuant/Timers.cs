@@ -570,6 +570,7 @@ namespace JQuant
             this.isAlive = false;
             this.timerLists = new List<TimerList>(5);
             sleepTimeout = Int32.MaxValue;
+            semaphore = new Semaphore(0, Int32.MaxValue);
         }
 
         public void Dispose()
@@ -592,18 +593,12 @@ namespace JQuant
         public void Stop()
         {
             isAlive = false;
-            lock (this)
-            {
-                Monitor.Pulse(this);
-            }
+            semaphore.Release();
         }
 
         public void WakeupCall()
         {
-            lock (this)
-            {
-                Monitor.Pulse(this);
-            }
+            semaphore.Release();
         }
 
         public void AddList(TimerList timerList)
@@ -636,11 +631,7 @@ namespace JQuant
             // call Thread.Sleep()
             while (isAlive)
             {
-                lock (this)
-                {
-                    Monitor.Wait(this, sleepTimeout);
-                }
-
+                semaphore.WaitOne(sleepTimeout, true);
                 ProcessExpiredTimers();
             }
         }
@@ -696,6 +687,8 @@ namespace JQuant
         protected int sleepTimeout;
 
         List<TimerList> timerLists;
+
+        protected Semaphore semaphore;
 
     }
 
