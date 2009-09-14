@@ -86,7 +86,9 @@
     </Compile>
     <Compile Include="..\FMRSim\Main_SetupCommandLine.cs" />
     <Compile Include="..\FMRSim\TaskBarLibSim_Orders.cs">
-      <Link>TaskBarLibSim_Orders.cs</Link>
+    </Compile>
+    <Compile Include="..\Timers.cs">
+      <Link>Timers.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
