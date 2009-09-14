@@ -398,15 +398,17 @@ namespace JQuant
                     break;
                 }
 
-                if ((timer.ExpirationTime < currentTick) && (timer.Running))
+                if ((timer.ExpirationTime <= currentTick) && (timer.Running))
                 {
-                    timerCallback(timer);
-
                     lock (this)
                     {
                         countExpired++;
                         timer.Running = false;
                     }
+                    
+                    timerCallback(timer);
+
+                    
                 }
 
                 // return all not running timers (expired and stoped)
@@ -449,7 +451,7 @@ namespace JQuant
 
         ~TimerList()
         {
-            Console.WriteLine("TimerList " + name + " destroyed");
+            Console.WriteLine("TimerList " + name + " from set " + timerTask.Name + " destroyed");
         }
         
         public int GetPendingTimers()
