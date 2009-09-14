@@ -382,6 +382,7 @@ namespace JQuant
                 {
                     if (pendingTimers.Count > 0)
                     {
+                        // get first (oldest) timer from the list
                         timer = pendingTimers[0];
                     }
                     else
