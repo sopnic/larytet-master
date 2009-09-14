@@ -42,14 +42,21 @@ using System.ComponentModel;
 ///   5. In the system can coexist short - 10 ms - timer that always expired and 10 long
 ///      protocol timers that ususally stopped by the application before expiration
 ///                      -----------   Usage examples  ---------------
+///
+///   Timers.Init();
+///   TimerTask timerTask = new TimerTask("ShortTimers");
+///   TimerList timers_5sec = new TimerList("5sec", 100, this.TimerExpiredHandler, timerTask);
+///   timerTask.Start();
+///   timers_5sec.Start();
+///
 /// </summary>
 namespace JQuant
 {
 
     /// <summary>
-    /// application calls TimersInit.Init() before any other operation
+    /// application calls Timers.Init() before any other operation
     /// </summary>
-    public class TimersInit
+    public class Timers
     {
         /// <summary>
         /// this methos should be called once by the application 
@@ -69,11 +76,18 @@ namespace JQuant
         [Description("Already stoped")]
         ALREADY_STOPED,
         
-        [Description("wrong timer ID")]
+        [Description("Wrong timer ID")]
         WRONG_TIMER_ID,
+
+
+        [Description("No free timers")]
+        NO_FREE_TIMERS,
         
-        [Description("Unknown")]
-        STOP_UNKNOWN
+        [Description("Unknown in Stop")]
+        STOP_UNKNOWN,
+
+        [Description("Unknown in Start")]
+        START_UNKNOWN
     };
            
     
@@ -128,20 +142,27 @@ namespace JQuant
         /// </param>
         public TimerList(string name, int size, TimerExpiredCallback timerCallback, TimerTask timerTask)
         {
-            // add myself to the list of created timer lists
-            Resources.TimerLists.Add(this);
 
             this.name = name;
             this.timerCallback = timerCallback;
-            this.baseTick = DateTime.Now.Ticks;
+            // this.baseTick = DateTime.Now.Ticks;
             this.timerTask = timerTask;
 
             // create pool of free timers
             InitTimers(size);
+
+            // register with the TimerTask
+            timerTask.AddList(this);
+            
+            // add myself to the list of created timer lists
+            Resources.TimerLists.Add(this);
         }
 
         protected void Dispose()
         {
+            // rmeove myself from the TimerTask
+            timerTask.RemoveList(this);
+            
             // remove myself from the list of created timer lists
             Resources.TimerLists.Remove(this);
         }
@@ -174,17 +195,17 @@ namespace JQuant
         /// returns true of Ok, false is failed to allocate a new timer - no free
         /// timers are available
         /// </returns>
-        public bool StartTimer(long timeout, out Timer timer, out long timerId, object applicationHook)
+        public bool Start(long timeout, out Timer timer, out long timerId, object applicationHook)
         {
             
             // timestamp the call as soon as possible
             DateTime startTime = DateTime.Now;
-            long startTick = (startTime.Ticks - baseTick) * TICKS_IN_MILLISECOND;
+            long startTick = (startTime.Ticks) / TICKS_IN_MILLISECOND;
 
                 
             timer = null;
             timerId = 0;
-            bool result = false;
+            Error error = Error.START_UNKNOWN;
 
             
             do
@@ -201,6 +222,7 @@ namespace JQuant
                     }
                     else
                     {
+                        error = Error.NO_FREE_TIMERS;
                         break;
                     }                    
                 }
@@ -221,13 +243,79 @@ namespace JQuant
                 // send wakeup call to the task handling the timers
                 timerTask.WakeupCall();
                 
-                result = true;
+                error = Error.NONE;
             }
             while (false);
 
+            if (error != Error.NONE)
+            {
+                PrintError("Start failed ", error);
+            }
+            
+
+            return (error == Error.NONE);
+        }
+
+        /// <summary>
+        /// use this method if no need to call Stop() will ever arise for the timer
+        /// </summary>
+        public bool Start(long timeout, object applicationHook)
+        {
+            Timer timer;
+            long timerId;
+            
+            bool result = Start(timeout, out timer, out timerId, applicationHook);
+            
             return result;
         }
 
+        /// <summary>
+        /// stop previously started timer
+        /// </summary>
+        /// <param name="timer">
+        /// A <see cref="Timer"/>
+        /// </param>
+        /// <param name="timerId">
+        /// A <see cref="System.Int64"/>
+        /// Value returned by StartTimer()
+        /// Timer list reuse refernces (objects) of type Timer. Reference to Timer object 
+        /// is not enough to make sure that you stop the correct timer. Value timerId
+        /// is a unique (system level) timer identifier
+        /// </param>
+        /// <returns>
+        /// A <see cref="System.Boolean"/>
+        /// Returns true if the timer was running and now stopped
+        /// Call to this method for already stoped timer will return false
+        /// and error message will be printed on the console
+        /// </returns>
+        public bool Stop(Timer timer, long timerId)
+        {
+            Error error = Error.NONE;
+            
+            lock (this)
+            {
+                if ((timer.Running) && (timer.TimerId == timerId))
+                {
+                    timer.Running = false;
+                }
+                else if (!timer.Running)
+                {
+                    error = Error.ALREADY_STOPED;
+                }
+                else if (timer.TimerId != timerId)
+                {
+                    error = Error.STOP_UNKNOWN;
+                }
+            }
+
+            if (error != Error.NONE)
+            {
+                PrintError("Stop failed ", error);
+            }
+            
+            return (error == Error.NONE);
+        }
+        
         /// <summary>
         /// returns the timeout before the nearest timer expires
         /// </summary>
@@ -256,64 +344,55 @@ namespace JQuant
             return result;
         }
 
-        /// <summary>
-        /// use this method if no need to call Stop() will ever arise for the timer
-        /// </summary>
-        public bool StartTimer(long timeout, object applicationHook)
+        public void ProcessExpiredTimers(long currentTick, out int delay)
         {
-            Timer timer;
-            long timerId;
-            
-            bool result = StartTimer(timeout, out timer, out timerId, applicationHook);
-            
-            return result;
-        }
+            Timer timer = default(Timer);
+            delay = Int32.MaxValue;
 
-        /// <summary>
-        /// stop previously started timer
-        /// </summary>
-        /// <param name="timer">
-        /// A <see cref="Timer"/>
-        /// </param>
-        /// <param name="timerId">
-        /// A <see cref="System.Int64"/>
-        /// Value returned by StartTimer()
-        /// Timer list reuse refernces (objects) of type Timer. Reference to Timer object 
-        /// is not enough to make sure that you stop the correct timer. Value timerId
-        /// is a unique (system level) timer identifier
-        /// </param>
-        /// <returns>
-        /// A <see cref="System.Boolean"/>
-        /// Returns true if the timer was running and now stopped
-        /// Call to this method for already stoped timer will return false
-        /// and error message will be printed on the console
-        /// </returns>
-        public bool StopTimer(Timer timer, long timerId)
-        {
-            Error error = Error.NONE;
-            
-            lock (this)
+            while (true)
             {
-                if ((timer.Running) && (timer.TimerId == timerId))
+                lock (this)
                 {
-                    timer.Running = false;
+                    if (pendingTimers.Count > 0)
+                    {
+                        timer = pendingTimers[0];
+                    }
+                    else
+                    {
+                        // list is empty
+                        break;
+                    }
                 }
-                else if (!timer.Running)
+
+                // no more expired timers
+                if (timer.ExpirationTime > currentTick)
                 {
-                    error = Error.ALREADY_STOPED;
+                    delay = (int)(timer.ExpirationTime - currentTick);
+                    break;
                 }
-                else if (timer.TimerId != timerId)
+
+                if ((timer.ExpirationTime < currentTick) && (timer.Running))
                 {
-                    error = Error.STOP_UNKNOWN;
+                    timerCallback(timer);
+
+                    lock (this)
+                    {
+                        timer.Running = false;
+                    }
+                }
+
+                // return all not running timers (expired and stoped)
+                // to the pool of free timers
+                if (!timer.Running)
+                {
+                    lock (this)
+                    {
+                        pendingTimers.Remove(timer);
+                        freeTimers.Push(timer);
+                    }
                 }
             }
-
-            if (error != Error.NONE)
-            {
-                PrintError("Stop failed ", error);
-            }
             
-            return (error == Error.NONE);
         }
 
         protected void PrintError(string prefix, Error error)
@@ -388,9 +467,9 @@ namespace JQuant
         /// to save tick wrap arounds all ticks are going to be calculated as 
         /// offsets to this value
         /// </summary>
-        protected long baseTick;
+        // protected long baseTick;
 
-        protected const int TICKS_IN_MILLISECOND = 10000;
+        public const int TICKS_IN_MILLISECOND = 10000;
 
         protected TimerTask timerTask;
     }
@@ -404,7 +483,9 @@ namespace JQuant
         public TimerTask(string name)
         {
             this.name = name;
-            this.isAlive = false;            
+            this.isAlive = false;
+            this.timerLists = new List<TimerList>(5);
+            sleepTimeout = Int32.MaxValue;
         }
 
         protected void Dispose()
@@ -432,6 +513,26 @@ namespace JQuant
 
         public void WakeupCall()
         {
+            lock (this)
+            {
+                Monitor.Pulse(this);
+            }
+        }
+
+        public void AddList(TimerList timerList)
+        {
+            lock (this)
+            {
+                timerLists.Add(timerList);
+            }
+        }
+        
+        public void RemoveList(TimerList timerList)
+        {
+            lock (this)
+            {
+                timerLists.Remove(timerList);
+            }
         }
         
         ~TimerTask()
@@ -448,13 +549,62 @@ namespace JQuant
             // call Thread.Sleep()
             while (isAlive)
             {
+                lock (this)
+                {
+                    Monitor.Wait(this, sleepTimeout);
+                }
+
+                ProcessExpiredTimers();
             }
         }
-        
+
+
+        /// <summary>
+        /// process all lists for expired timers
+        /// calculate next sleep delay
+        /// </summary>
+        protected void ProcessExpiredTimers()
+        {
+            int delay = Int32.MaxValue;
+
+            // i want to save CPU cycles. calculate current tick only once
+            long currentTick = DateTime.Now.Ticks / TimerList.TICKS_IN_MILLISECOND;
+            
+            int idx = 0;
+            TimerList timerList = default(TimerList);
+            
+            while (true)
+            {
+                lock (this)
+                {
+                    if (idx < timerLists.Count)
+                    {
+                        timerList = timerLists[idx];
+                        idx++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                int temp;
+                timerList.ProcessExpiredTimers(currentTick, out temp);
+                if (temp < delay)
+                {
+                    delay = temp;
+                }
+            }
+
+            sleepTimeout = delay;
+        }
 
         protected Thread thread;
         protected bool isAlive;
         protected string name;
+        protected int sleepTimeout;
+
+        List<TimerList> timerLists;
 
     }
 
