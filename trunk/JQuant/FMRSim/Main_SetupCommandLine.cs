@@ -382,14 +382,13 @@ namespace JQuant
              Console.WriteLine("30s timer expired "+ DateTime.Now);
         }
         
-        protected void debugTimerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void debugTimerTestThread()
         {
-            // call once - init timers subsystem
-            Timers.Init();
-
             // create set (timer task). initially empty
             TimerTask timerTask = new TimerTask("ShortTimers");
 
+            Console.WriteLine("Start timers "+ DateTime.Now);
+            
             // create two types of timers
             TimerList timers_5sec = new TimerList("5sec", 5*1000, 100, this.Timer5sHandler, timerTask);
             TimerList timers_30sec = new TimerList("30sec", 30*1000, 100, this.Timer30sHandler, timerTask);
@@ -400,21 +399,30 @@ namespace JQuant
             timers_5sec.Start();
             timers_30sec.Start();
 
-            debugTimerShowCallback(iWrite, null, null);
+            debugTimerShowCallback(null, null, null);
 
             Thread.Sleep(40*1000);
 
-            debugTimerShowCallback(iWrite, null, null);
+            debugTimerShowCallback(null, null, null);
             
             // clean up
             timers_5sec.Dispose();
             timers_30sec.Dispose();
             timerTask.Dispose();            
         }
+        
+        protected void debugTimerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            // call once - init timers subsystem
+            Timers.Init();
+            
+            System.Threading.Thread thread = new System.Threading.Thread(debugTimerTestThread);
+            thread.Start();
+        }
 
         protected void debugTimerShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            iWrite.WriteLine(
+            System.Console.WriteLine(
                 OutputUtils.FormatField("Name", 14) +
                 OutputUtils.FormatField("Task", 14) +
                 OutputUtils.FormatField("Size", 10) +
@@ -425,12 +433,12 @@ namespace JQuant
                 OutputUtils.FormatField("Stop", 10) +
                 OutputUtils.FormatField("Expired", 10)
             );
-            iWrite.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+            System.Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
             bool isEmpty = true;
             foreach (ITimerList timerList in Resources.TimerLists)
             {
                 isEmpty = false;
-                iWrite.WriteLine(
+                System.Console.WriteLine(
                     OutputUtils.FormatField(timerList.GetName(), 14) +
                     OutputUtils.FormatField(timerList.GetTaskName(), 14) +
                     OutputUtils.FormatField(timerList.GetSize(), 10) +
@@ -445,7 +453,7 @@ namespace JQuant
             }
             if (isEmpty)
             {
-                iWrite.WriteLine("No timers");
+                System.Console.WriteLine("No timers");
             }
         }
         
