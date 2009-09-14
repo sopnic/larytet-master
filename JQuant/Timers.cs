@@ -520,7 +520,10 @@ namespace JQuant
         public void Stop()
         {
             isAlive = false;
-            Monitor.Pulse(this);
+            lock (this)
+            {
+                Monitor.Pulse(this);
+            }
         }
 
         public void WakeupCall()
