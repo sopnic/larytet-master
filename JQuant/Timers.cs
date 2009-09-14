@@ -126,6 +126,8 @@ namespace JQuant
         public bool Running;
 
         public long TimerId;
+
+        public bool AutoRestart;
     }
 
     public delegate void TimerExpiredCallback(Timer timer);
@@ -206,12 +208,17 @@ namespace JQuant
         /// Field applicationHook can help to identify the timer in the context of timerExpired
         /// callback
         /// </param>
+        /// <param name="autoRestart">
+        /// A <see cref="System.Boolean"/>
+        /// If true the system will reschedule the expire timer automatically while taking care 
+        /// that the next expiration tick is exactly startTick+2*timeout
+        /// </param>
         /// <returns>
         /// A <see cref="System.Boolean"/>
         /// returns true of Ok, false is failed to allocate a new timer - no free
         /// timers are available
         /// </returns>
-        public bool Start(out Timer timer, out long timerId, object applicationHook)
+        public bool Start(out Timer timer, out long timerId, object applicationHook, bool autoRestart)
         {
             
             // timestamp the call as soon as possible
@@ -251,6 +258,7 @@ namespace JQuant
                 timer.ExpirationTime = startTick+Timeout;
                 timer.Running = true;
                 timer.TimerId = timerId;
+                timer.AutoRestart = autoRestart;
 
                 // add the timer to the queue of the pending timers
                 lock (this)
@@ -283,7 +291,7 @@ namespace JQuant
             Timer timer;
             long timerId;
             
-            bool result = Start(out timer, out timerId, applicationHook);
+            bool result = Start(out timer, out timerId, applicationHook, false);
             
             return result;
         }
@@ -298,11 +306,11 @@ namespace JQuant
             Timer timer;
             long timerId;
             
-            bool result = Start(out timer, out timerId, null);
+            bool result = Start(out timer, out timerId, null, false);
             
             return result;
         }
-        
+
         /// <summary>
         /// stop previously started timer
         /// </summary>
@@ -419,12 +427,16 @@ namespace JQuant
                     
                     timerCallback(timer);
 
+                    if (timer.AutoRestart)
+                    {
+                    }
+
                     
                 }
 
                 // return all not running timers (expired and stoped)
                 // to the pool of free timers
-                if (!timer.Running)
+                if ((!timer.Running) && (!timer.AutoRestart))
                 {
                     lock (this)
                     {
