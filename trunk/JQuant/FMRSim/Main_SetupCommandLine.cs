@@ -397,12 +397,18 @@ namespace JQuant
 
             // start a couple of timers
             timers_5sec.Start();
-            timers_30sec.Start();
+
+            Timer timer;
+            long timerId;
+            timers_30sec.Start(out timer, out timerId, null);
 
             debugTimerShowCallback(null, null, null);
 
-            Thread.Sleep(40*1000);
-
+            // wait for the first timer to expire
+            Thread.Sleep(10*1000);
+            timers_30sec.Stop(timer, timerId);
+            
+            Thread.Sleep(30*1000);
             debugTimerShowCallback(null, null, null);
             
             // clean up
@@ -417,7 +423,7 @@ namespace JQuant
             Timers.Init();
 
             // timer test contains delauys. run the test from a separate thread and release
-            // user input
+            // user input context
             System.Threading.Thread thread = new System.Threading.Thread(debugTimerTestThread);
             thread.Start();
         }
