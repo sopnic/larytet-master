@@ -276,6 +276,21 @@ namespace JQuant
         }
 
         /// <summary>
+        /// use this method if there is no need to call Stop()
+        /// TimerList will call callback when the timer expires. 
+        /// Different timers can not be distinguished
+        /// </summary>
+        public bool Start()
+        {
+            Timer timer;
+            long timerId;
+            
+            bool result = Start(out timer, out timerId, null);
+            
+            return result;
+        }
+        
+        /// <summary>
         /// stop previously started timer
         /// </summary>
         /// <param name="timer">
