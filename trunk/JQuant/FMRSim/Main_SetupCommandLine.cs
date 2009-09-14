@@ -395,12 +395,17 @@ namespace JQuant
             
             timerTask.Start();
 
-            // start a couple of timers
+            // start some timers
+            timers_5sec.Start();
+            timers_5sec.Start();
+            timers_5sec.Start();
+            Thread.Sleep(1*1000);
             timers_5sec.Start();
 
             Timer timer;
             long timerId;
-            timers_30sec.Start(out timer, out timerId, null);
+            timers_30sec.Start(out timer, out timerId, null);            
+            timers_5sec.Start();
 
             debugTimerShowCallback(null, null, null);
 
