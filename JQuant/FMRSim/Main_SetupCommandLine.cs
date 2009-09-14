@@ -415,7 +415,9 @@ namespace JQuant
         {
             // call once - init timers subsystem
             Timers.Init();
-            
+
+            // timer test contains delauys. run the test from a separate thread and release
+            // user input
             System.Threading.Thread thread = new System.Threading.Thread(debugTimerTestThread);
             thread.Start();
         }
