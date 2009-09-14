@@ -43,12 +43,22 @@ using System.ComponentModel;
 ///      protocol timers that ususally stopped by the application before expiration
 ///                      -----------   Usage examples  ---------------
 ///
-///   Timers.Init();
+///   Timers.Init();  // initialize the subsystem, call once
+/// 
+///   // create a set
 ///   TimerTask timerTask = new TimerTask("ShortTimers");
+/// 
+///   // create two types of timers - 5s timer and 30s timer
 ///   TimerList timers_5sec = new TimerList("5sec", 5*1000, 100, this.TimerExpiredHandler, timerTask);
 ///   TimerList timers_30sec = new TimerList("30sec", 30*1000, 100, this.TimerExpiredHandler, timerTask);
+/// 
+///   // start the set of timers
 ///   timerTask.Start();
+/// 
+///   // start a couple of timers - i am no planning to stop these timers
+///   // timerTask will call method TimerExpiredHandler() when the timers expire
 ///   timers_5sec.Start();
+///   timers_30sec.Start();
 ///
 /// </summary>
 namespace JQuant
