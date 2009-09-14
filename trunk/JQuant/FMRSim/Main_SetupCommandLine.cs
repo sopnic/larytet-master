@@ -404,7 +404,7 @@ namespace JQuant
 
             Timer timer;
             long timerId;
-            timers_30sec.Start(out timer, out timerId, null);            
+            timers_30sec.Start(out timer, out timerId, null, false);            
             timers_5sec.Start();
 
             debugTimerShowCallback(null, null, null);
