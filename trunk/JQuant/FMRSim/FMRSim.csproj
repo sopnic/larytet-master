@@ -60,6 +60,7 @@
     <Compile Include="..\Forms.cs" />
     <Compile Include="Main_SetupCommandLine.cs" />
     <Compile Include="..\Timers.cs" />
+    <Compile Include="TaskBarLibSim_Orders.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
