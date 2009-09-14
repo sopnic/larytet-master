@@ -45,7 +45,8 @@ using System.ComponentModel;
 ///
 ///   Timers.Init();
 ///   TimerTask timerTask = new TimerTask("ShortTimers");
-///   TimerList timers_5sec = new TimerList("5sec", 100, this.TimerExpiredHandler, timerTask);
+///   TimerList timers_5sec = new TimerList("5sec", 5*1000, 100, this.TimerExpiredHandler, timerTask);
+///   TimerList timers_30sec = new TimerList("30sec", 30*1000, 100, this.TimerExpiredHandler, timerTask);
 ///   timerTask.Start();
 ///   timers_5sec.Start();
 ///
@@ -135,18 +136,23 @@ namespace JQuant
         /// A <see cref="System.Int32"/>
         /// Maximum number of pending timers
         /// </param>
+        /// <param name="timeout">
+        /// A <see cref="System.Int32"/>
+        /// Timeout for the timers in this list (milliseconds)
+        /// </param>
         /// <param name="timerCallback">
         /// A <see cref="TimerExpiredCallback"/>
         /// This method will be called for all expired timers
         /// There is no a callback per timer. Only a callback per timer list
         /// </param>
-        public TimerList(string name, int size, TimerExpiredCallback timerCallback, TimerTask timerTask)
+        public TimerList(string name, int timeout, int size, TimerExpiredCallback timerCallback, TimerTask timerTask)
         {
 
             this.name = name;
             this.timerCallback = timerCallback;
             // this.baseTick = DateTime.Now.Ticks;
             this.timerTask = timerTask;
+            this.Timeout = timeout;
 
             // create pool of free timers
             InitTimers(size);
@@ -195,7 +201,7 @@ namespace JQuant
         /// returns true of Ok, false is failed to allocate a new timer - no free
         /// timers are available
         /// </returns>
-        public bool Start(long timeout, out Timer timer, out long timerId, object applicationHook)
+        public bool Start(out Timer timer, out long timerId, object applicationHook)
         {
             
             // timestamp the call as soon as possible
@@ -230,7 +236,7 @@ namespace JQuant
                 // initialize the timer
                 timer.ApplicationHook = applicationHook;
                 timer.StartTick = startTick;
-                timer.ExpirationTime = startTick+timeout;
+                timer.ExpirationTime = startTick+Timeout;
                 timer.Running = true;
                 timer.TimerId = timerId;
 
@@ -259,12 +265,12 @@ namespace JQuant
         /// <summary>
         /// use this method if no need to call Stop() will ever arise for the timer
         /// </summary>
-        public bool Start(long timeout, object applicationHook)
+        public bool Start(object applicationHook)
         {
             Timer timer;
             long timerId;
             
-            bool result = Start(timeout, out timer, out timerId, applicationHook);
+            bool result = Start(out timer, out timerId, applicationHook);
             
             return result;
         }
@@ -472,6 +478,12 @@ namespace JQuant
         public const int TICKS_IN_MILLISECOND = 10000;
 
         protected TimerTask timerTask;
+
+        public int Timeout
+        {
+            get;
+            protected set;
+        }
     }
     
     /// <summary>
