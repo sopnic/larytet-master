@@ -389,6 +389,27 @@ namespace JQuant
             return result;
         }
 
+        /// <summary>
+        /// Check timers starting from the ooldest. If expired call the user callback,
+        /// remove the timer from the queue of pending timers, release the timer back
+        /// to the stack of free timers.
+        /// 
+        /// If the timer should be rescheduled (autorestart) I keep the start tick
+        /// (tick when the timer was started very first time) and counter of
+        /// restarts.  
+        /// The timer is removed from the head of the queue and added to the tail.
+        /// Timer expiration time is set to startTick + restarts * timeout. This way
+        /// I solve problem of timeout "drift" for the periodic timers under normal
+        /// conditions. The correct approach is to insert the restarted timer at the 
+        /// correct position, which is close to the tail, but not neccessary the
+        /// last element of the queue
+        /// </summary>
+        /// <param name="currentTick">
+        /// A <see cref="System.Int64"/>
+        /// </param>
+        /// <param name="delay">
+        /// A <see cref="System.Int32"/>
+        /// </param>
         public void ProcessExpiredTimers(long currentTick, out int delay)
         {
             Timer timer = default(Timer);
