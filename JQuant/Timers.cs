@@ -128,6 +128,8 @@ namespace JQuant
         public long TimerId;
 
         public bool AutoRestart;
+
+        public int Restarts;
     }
 
     public delegate void TimerExpiredCallback(Timer timer);
@@ -259,6 +261,7 @@ namespace JQuant
                 timer.Running = true;
                 timer.TimerId = timerId;
                 timer.AutoRestart = autoRestart;
+                timer.Restarts = 1; // first start is considered a restart
 
                 // add the timer to the queue of the pending timers
                 lock (this)
@@ -443,7 +446,10 @@ namespace JQuant
                     lock (this)
                     {
                         countExpired++;
-                        timer.Running = false;
+                        if (!timer.AutoRestart)
+                        {
+                            timer.Running = false;
+                        }
                     }
                     
                     timerCallback(timer);
@@ -463,6 +469,18 @@ namespace JQuant
                     {
                         pendingTimers.Remove(timer);
                         freeTimers.Push(timer);
+                    }
+                }
+
+                // timer requires rescheduling
+                if (timer.AutoRestart)
+                {
+                    lock (this)
+                    {
+                        int timerRestarts = (timer.Restarts++);
+                        timer.ExpirationTime = timer.StartTick + timerRestarts * Timeout;
+                        pendingTimers.Remove(timer);
+                        pendingTimers.Add(timer);
                     }
                 }
             }
