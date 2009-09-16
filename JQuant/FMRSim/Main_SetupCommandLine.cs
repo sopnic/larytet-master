@@ -477,14 +477,14 @@ namespace JQuant
         {
             long tick = DateTime.Now.Ticks;
             int c = (int)argument;
-            threadpoolTestTicks[c] = tick/10;
+            threadpoolTestTicks[c] = tick;
         }
 
         protected void ThreadPoolJobDone(object argument)
         {
             long tick = DateTime.Now.Ticks;
             int c = (int)argument;
-            threadpoolTestTicks[c] = tick/10 - threadpoolTestTicks[c];
+            threadpoolTestTicks[c] = (tick - threadpoolTestTicks[c])*100;
         }
 
         protected void debugThreadPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -502,7 +502,7 @@ namespace JQuant
 
             for (int i = 0;i < threadpoolTestTicks.Length;i++)
             {
-                iWrite.WriteLine("ThreadPoolJob done  idx=" + i + ", time=" + threadpoolTestTicks[i] + "micro");
+                iWrite.WriteLine("ThreadPoolJob done  idx=" + i + ", time=" + threadpoolTestTicks[i] + "nanos");
             }
             
         }
