@@ -27,6 +27,25 @@ namespace JQuant
     /// ThreadPool threadPool = new ThreadPool("Pool1", 5); // pool of 5 threads
     /// threadPool.DoJob(job, ack, fsmData); // call the job, fsmData will be called when job is done
     /// 
+    /// ----------- Limtations --------------
+    /// Starting a job thread requires rescheduling - a system thread moves from WAIT state to the RUN
+    /// state. In the typical OS rescheduling can happen in two different ways
+    /// - in the system call, for example in the contex of send signal to the waiting job thread
+    /// - in the system tick
+    /// The later option is worst case, because latency in this case can be a system tick which is
+    /// typically 1-10 ms.
+    /// Thus the limitation - there is no point to use thread pool and delegate jobs to different
+    /// threads if the task takes less than 50-100 ms
+    /// There is a workaround. Let's say that the job takes less than a typical rescheduling time 
+    /// (1-10ms) and there are lot of simultaneously running job threads. In this case there is
+    /// better approach to the problem. Method DoJob() can add the applcicatio request to the list
+    /// (queue) of pending jobs and start a helper thread which will in turn choose a free job thread. 
+    /// Just before exiting any running job thread checks the queue of the pending requests and if
+    /// there is any pulls the request and executes it. If there is no running job threads or the
+    /// running (active) job threads are busy the helper job will have a chance to do the job.
+    /// Performance of the system will depend on the relative priorities of the application thread
+    /// which delegates jobs, helper thread and job threads. We can expect that overall latency will
+    /// decrease.
     /// </summary>
     public class ThreadPool : IResourceThreadPool, IDisposable
     {
@@ -59,7 +78,7 @@ namespace JQuant
             
             // add myself to the list of created thread pools
             Resources.ThreadPools.Add(this);
-            
+            pendingJobs = new List<JobParams>(size);            
         }
 
         /// <summary>
@@ -109,6 +128,15 @@ namespace JQuant
         /// </returns>
         public bool DoJob(Job job, JobDone jobDone, object jobArgument)
         {
+            // probably there is a job thread exiting - let the first
+            // availabe thread do the job
+            lock (pendingJobs)
+            {
+                // pendingJobs.Add(new JobParams(job, jobDone, jobArgument));
+            }
+            
+            // just in case there is no thread running start a job thread
+            
             bool result = false;
             JobThread jobThread = default(JobThread);
             
@@ -142,6 +170,7 @@ namespace JQuant
             
             return result;
         }
+
 
         protected void JobDone(JobThread jobThread)
         {
@@ -186,6 +215,21 @@ namespace JQuant
 
         Stack<JobThread> jobThreads;
         List<JobThread> runningThreads;
+        List<JobParams> pendingJobs;
+
+        protected class JobParams
+        {
+            public JobParams(Job job, JobDone jobDone, object jobArgument)
+            {
+                this.job = job;
+                this.jobDone = jobDone;
+                this.jobArgument = jobArgument;
+            }
+            
+            public Job job;
+            public JobDone jobDone;
+            public object jobArgument;
+        }
 
         protected class JobThread: IDisposable
         {
