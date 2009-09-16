@@ -439,6 +439,7 @@ namespace JQuant
                 OutputUtils.FormatField("Name", 14) +
                 OutputUtils.FormatField("Task", 14) +
                 OutputUtils.FormatField("Size", 10) +
+                OutputUtils.FormatField("MaxCount", 10) +
                 OutputUtils.FormatField("Pending", 10) +
                 OutputUtils.FormatField("StartA", 10) +
                 OutputUtils.FormatField("Start", 10) +
@@ -448,19 +449,19 @@ namespace JQuant
             );
             System.Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
             bool isEmpty = true;
-            foreach (ITimerList timerList in Resources.TimerLists)
+            foreach (IResourceTimerList timerList in Resources.TimerLists)
             {
                 isEmpty = false;
                 System.Console.WriteLine(
                     OutputUtils.FormatField(timerList.GetName(), 14) +
                     OutputUtils.FormatField(timerList.GetTaskName(), 14) +
                     OutputUtils.FormatField(timerList.GetSize(), 10) +
+                    OutputUtils.FormatField(timerList.GetMaxCount(), 10) +
                     OutputUtils.FormatField(timerList.GetPendingTimers(), 10) +
                     OutputUtils.FormatField(timerList.GetCountStartAttempt(), 10) +
                     OutputUtils.FormatField(timerList.GetCountStart(), 10) +
                     OutputUtils.FormatField(timerList.GetCountStopAttempt(), 10) +
-                    OutputUtils.FormatField(timerList.GetCountStop(), 10) +
-                    OutputUtils.FormatField(timerList.GetCountExpired(), 10)
+                    OutputUtils.FormatField(timerList.GetCountStop(), 10)
                 );
 
             }

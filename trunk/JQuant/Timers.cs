@@ -154,7 +154,7 @@ namespace JQuant
     /// <summary>
     /// lits of timers - keep all timers with the same timeout
     /// </summary>
-    public class TimerList : ITimerList, IDisposable
+    public class TimerList : IResourceTimerList, IDisposable
     {
         /// <summary>
         /// Create a timer list
@@ -184,6 +184,14 @@ namespace JQuant
             // this.baseTick = DateTime.Now.Ticks;
             this.timerTask = timerTask;
             this.Timeout = timeout;
+
+            // clear the counters
+            countStart = 0;
+            countStartAttempt = 0;
+            countStop = 0;
+            countStopAttempt = 0;
+            countExpired = 0;
+            countMax = 0;
 
             // create pool of free timers
             InitTimers(size);
@@ -287,6 +295,10 @@ namespace JQuant
                 {
                     countStart++;
                     pendingTimers.Add(timer);
+                    if (countMax < pendingTimers.Count)
+                    {
+                        countMax = pendingTimers.Count;
+                    }
                 }
 
                 // send wakeup call to the task handling the timers
@@ -544,6 +556,11 @@ namespace JQuant
             return countStart;
         }
         
+        public int GetMaxCount()
+        {
+            return countMax;
+        }
+        
         public int GetCountStop()
         {
             return countStop;
@@ -596,6 +613,7 @@ namespace JQuant
         int countStop;
         int countStopAttempt;
         int countExpired;
+        int countMax;
 
         /// <summary>
         /// List of pending timers. TimerList contains timers with the same timeout
