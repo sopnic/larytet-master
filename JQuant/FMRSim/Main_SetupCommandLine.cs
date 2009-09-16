@@ -470,6 +470,46 @@ namespace JQuant
                 System.Console.WriteLine("No timers");
             }
         }
+
+        protected long[] threadpoolTestTicks;
+        
+        protected void ThreadPoolJobEnter(object argument)
+        {
+            long tick = DateTime.Now.Ticks;
+            int c = (int)argument;
+            threadpoolTestTicks[c] = tick/10;
+        }
+
+        protected void ThreadPoolJobDone(object argument)
+        {
+            long tick = DateTime.Now.Ticks;
+            int c = (int)argument;
+            threadpoolTestTicks[c] = tick/10 - threadpoolTestTicks[c];
+        }
+
+        protected void debugThreadPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            threadpoolTestTicks = new long[3];
+            
+            JQuant.ThreadPool threadPool = new JQuant.ThreadPool("test", 3);
+            threadPool.DoJob(ThreadPoolJobEnter, ThreadPoolJobDone, 0);
+            threadPool.DoJob(ThreadPoolJobEnter, ThreadPoolJobDone, 1);
+            threadPool.DoJob(ThreadPoolJobEnter, ThreadPoolJobDone, 2);
+            Thread.Sleep(100);
+            
+            debugThreadPoolShowCallback(iWrite, cmdName, cmdArguments);
+            threadPool.Dispose();
+
+            for (int i = 0;i < threadpoolTestTicks.Length;i++)
+            {
+                iWrite.WriteLine("ThreadPoolJob done  idx=" + i + ", time=" + threadpoolTestTicks[i] + "micro");
+            }
+            
+        }
+        
+        protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+        }
         
         protected void LoadCommandLineInterface()
         {
@@ -520,6 +560,11 @@ namespace JQuant
                                   " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
             menuDebug.AddCommand("timerShow", "Show timers",
                                   " List of created timers and timer tasks", debugTimerShowCallback);
+
+            menuDebug.AddCommand("threadPoolTest", "Run simple thread pool tests",
+                                  " Create a thread pool, start a couple of jobs, destroy the pool", debugThreadPoolTestCallback);
+            menuDebug.AddCommand("threadPoolShow", "Show thread pools",
+                                  " List of created thread pools", debugThreadPoolShowCallback);
 
 #if USEFMRSIM
             menuDebug.AddCommand("loggerTest", "Run simple test of the logger",

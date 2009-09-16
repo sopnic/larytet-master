@@ -28,7 +28,7 @@ namespace JQuant
     /// threadPool.DoJob(job, ack, fsmData); // fsmData will be called when job is done
     /// 
     /// </summary>
-    public class ThreadPool : IResourceThreadPool
+    public class ThreadPool : IResourceThreadPool, IDisposable
     {
         /// <summary>
         /// Create a thread pool
@@ -50,13 +50,50 @@ namespace JQuant
             countDone = 0;
             
             jobThreads = new Stack<JobThread>(size);
+            runningThreads = new List<JobThread>(size);
             for (int i = 0;i < size;i++)
             {
                 JobThread jobThread = new JobThread(this);                
                 jobThreads.Push(jobThread);
             }
+            
+            // add myself to the list of created thread pools
+            Resources.ThreadPools.Add(this);
+            
         }
 
+        /// <summary>
+        /// Call this method to destroy the object
+        /// </summary>
+        public void Dispose()
+        {
+            // remove myself from the list of created thread pools
+            Resources.ThreadPools.Remove(this);
+
+            // clean the stack of threads
+            lock (jobThreads)
+            {
+                foreach (JobThread jobThread in jobThreads)
+                {
+                    jobThread.Dispose();
+                }
+            }
+
+            // clean the list of running threads
+            lock (runningThreads)
+            {
+                foreach (JobThread jobThread in runningThreads)
+                {
+                    jobThread.Dispose();
+                }
+            }
+        }
+        
+        ~ThreadPool()
+        {
+            Console.WriteLine("ThreadPool " + Name + " destroyed");
+        }
+        
         /// <summary>
         /// Executes job in a thread, calls jobDone after the job done
         /// </summary>
@@ -98,6 +135,11 @@ namespace JQuant
                     }
                 }
 
+                lock (runningThreads)
+                {
+                    runningThreads.Add(jobThread);
+                }
+
                 jobThread.Start(job, jobDone, jobArgument);
 
                     
@@ -115,6 +157,12 @@ namespace JQuant
                 countDone++;
                 jobThreads.Push(jobThread);
             }
+
+            lock (runningThreads)
+            {
+                runningThreads.Remove(jobThread);
+            }
+            
         }
 
         public int GetSize()
@@ -149,8 +197,9 @@ namespace JQuant
         protected int countDone;
 
         Stack<JobThread> jobThreads;
+        List<JobThread> runningThreads;
 
-        protected class JobThread
+        protected class JobThread: IDisposable
         {
             public JobThread(ThreadPool threadPool)
             {
@@ -158,6 +207,7 @@ namespace JQuant
                 thread.IsBackground = true;
                 IsRunning = false;
                 this.threadPool = threadPool;
+                isStoped = false;
 
                 // run the job loop
                 thread.Start();
@@ -174,6 +224,19 @@ namespace JQuant
                     Monitor.Pulse(this);
                 }
             }
+            
+            /// <summary>
+            /// Call this method to destroy the object
+            /// </summary>
+            public void Dispose()
+            {
+                // remove myself from the list of created thread pools
+                lock (this)
+                {
+                    isStoped = true;
+                    Monitor.Pulse(this);
+                }                
+            }
 
             /// <summary>
             /// Wait for start signal
@@ -186,6 +249,10 @@ namespace JQuant
                     lock (this)
                     {
                         Monitor.Wait(this);
+                        if (isStoped)
+                        {
+                            break;
+                        }
                     }
                     
                     IsRunning = true;
@@ -212,6 +279,7 @@ namespace JQuant
             protected object jobArgument;
             protected ThreadPool threadPool;
             protected Thread thread;
+            protected bool isStoped;
         }
 
     }
