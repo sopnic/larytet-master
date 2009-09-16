@@ -8,7 +8,24 @@ using System.ComponentModel;
 /// <summary>
 /// The idea is taken from http://larytet.sourceforge.net/aos.shtml  (AOS Timer)
 /// In the CSharp there is System.Threading.Timer. The service comes at cost - a separate thread
-/// for every timer. This is proprietary implemenation for the application timers
+/// for every timer. There are more problems assotiated with the general timer system.
+/// In some (most) of the applications number of simultaneously running timers can be significant,
+/// but there are only limited (and small) number of differetnt timeouts (different types of timers). 
+/// Some of the timers are short and require precision (handle high priority events) and some
+/// timers are long and do not require high priority threads for handling.
+/// In the typical modern timer system there is an array where each entry is a linked list of
+/// timers which belong (approximately) to the same group (have similar or same) timeout. Thus start
+/// timer in a typical case takes O(1) - adding a new timer to the list. Number of lists is about
+/// equal to the number of different types of timers in the system.
+/// Such system has difficiencies
+///   * No control over prirority of the thread which handles the time expiration
+///   * The same pool of timers is shared by all applications
+///   * If number of different timers in the system is significant performance of 
+///     the StartTimer will degrade
+///   * There is no interface which allows to handle timer expiration synchronously -
+///     in the context of the same thread which start the timers
+/// 
+/// This is proprietary implemenation for the application timers
 ///   Terminology:
 ///   Timer list - queue of the running timers with the SAME timeout. For example list of 1s timers
 ///   Set - one or more lists of timers and a task handling the lists.
