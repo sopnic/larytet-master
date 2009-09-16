@@ -90,6 +90,9 @@
     <Compile Include="..\Timers.cs">
       <Link>Timers.cs</Link>
     </Compile>
+    <Compile Include="..\ThreadPool.cs">
+      <Link>ThreadPool.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskBarLib">
