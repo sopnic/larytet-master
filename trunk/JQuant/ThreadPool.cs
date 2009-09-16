@@ -30,7 +30,17 @@ namespace JQuant
     /// </summary>
     public class ThreadPool : IResourceThreadPool
     {
-        
+        /// <summary>
+        /// Create a thread pool
+        /// </summary>
+        /// <param name="name">
+        /// A <see cref="System.String"/>
+        /// Name of the pool
+        /// </param>
+        /// <param name="size">
+        /// A <see cref="System.Int32"/>
+        /// Number of job threads in the pool
+        /// </param>
         public ThreadPool(string name, int size)
         {
             this.Name = name;
@@ -42,8 +52,7 @@ namespace JQuant
             jobThreads = new Stack<JobThread>(size);
             for (int i = 0;i < size;i++)
             {
-                JobThread jobThread = new JobThread(this);
-                
+                JobThread jobThread = new JobThread(this);                
                 jobThreads.Push(jobThread);
             }
         }
@@ -149,6 +158,9 @@ namespace JQuant
                 thread.IsBackground = true;
                 IsRunning = false;
                 this.threadPool = threadPool;
+
+                // run the job loop
+                thread.Start();
             }
 
             public void Start(Job job, JobDone jobDone, object jobArgument)
@@ -163,6 +175,10 @@ namespace JQuant
                 }
             }
 
+            /// <summary>
+            /// Wait for start signal
+            /// do the job, notify ThreadPool that the job is done
+            /// </summary>
             public void Run()
             {
                 while (true)
@@ -178,39 +194,24 @@ namespace JQuant
                     job(jobArgument);
                     jobDone(jobArgument);
 
-                    // back to the ThreadPool
                     IsRunning = false;
+                    
+                    // back to the ThreadPool
                     threadPool.JobDone(this);
                 }
-            }
-
-            public Job job
-            {
-                get;
-                set;
-            }
-            
-            public JobDone jobDone
-            {
-                get;
-                set;
-            }
-            
-            public object jobArgument
-            {
-                get;
-                set;
             }
 
             public bool IsRunning
             {
                 get;
-                set;
+                protected set;
             }
 
+            protected Job job;
+            protected JobDone jobDone;
+            protected object jobArgument;
             protected ThreadPool threadPool;
-            
-            Thread thread;
+            protected Thread thread;
         }
 
     }
