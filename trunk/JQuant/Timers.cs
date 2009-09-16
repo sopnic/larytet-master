@@ -443,9 +443,10 @@ namespace JQuant
             {
                 lock (this)
                 {
+                    // any pending timers in the list ?
                     if (pendingTimers.Count > 0)
                     {
-                        // get first (oldest) timer from the list
+                        // get first (oldest) timer from the list head
                         timer = pendingTimers[0];
                     }
                     else
@@ -474,12 +475,6 @@ namespace JQuant
                     }
                     
                     timerCallback(timer);
-
-                    if (timer.AutoRestart)
-                    {
-                    }
-
-                    
                 }
 
                 // return all not running timers (expired and stoped)
@@ -500,6 +495,8 @@ namespace JQuant
                     {
                         int timerRestarts = (timer.Restarts++);
                         timer.ExpirationTime = timer.StartTick + timerRestarts * Timeout;
+
+                        // remove expired timer from the head, add to the tail
                         pendingTimers.Remove(timer);
                         pendingTimers.Add(timer);
                     }
