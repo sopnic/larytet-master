@@ -29,6 +29,8 @@ namespace JQuant
             jobThreads = new Stack<JobThread>(size);
             for (int i = 0;i < size;i++)
             {
+                JobThread jobThread = new JobThread();
+                
                 jobThreads.Push(new JobThread());
             }
         }
@@ -46,6 +48,19 @@ namespace JQuant
 
         protected class JobThread
         {
+            public JobThread()
+            {
+                thread = new Thread(Run);                    
+            }
+
+            public void Run()
+            {
+                while (true)
+                {
+                }
+            }
+            
+            Thread thread;
         }
 
     }

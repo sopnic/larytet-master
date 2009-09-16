@@ -152,7 +152,7 @@ namespace JQuant
         string GetName();
     }
 
-    public interface ITimerList
+    public interface IResourceTimerList
     {
         int GetPendingTimers();
         int GetCountStart();
@@ -161,8 +161,18 @@ namespace JQuant
         int GetCountStartAttempt();
         int GetCountStopAttempt();
         int GetSize();
+        int GetMaxCount();
         string GetName();
         string GetTaskName();
+    }
+    
+    public interface IResourceThreadPool
+    {
+        int GetSize();
+        string GetName();
+        int GetMaxCount();
+        int GetCountStart();
+        int GetCountDone();
     }
     
     /// <summary>
@@ -172,6 +182,9 @@ namespace JQuant
     /// </summary>
     public class Resources
     {
+        /// <summary>
+        /// call Init() to create a single instance of this class 
+        /// </summary>
         protected Resources()
         {
             Mailboxes = new List<IMailbox>(10);
@@ -179,7 +192,8 @@ namespace JQuant
             Pools = new List<IPool>(10);
             Loggers = new List<ILogger>(10);
             DataGenerators = new List<IDataGenerator>(10);
-            TimerLists = new  List<ITimerList>(5);
+            TimerLists = new  List<IResourceTimerList>(5);
+            ThreadPools = new List<IResourceThreadPool>(2);
         }
 
         static public void Init()
@@ -214,7 +228,9 @@ namespace JQuant
 
         public static List<IDataGenerator> DataGenerators;
 
-        public static List<ITimerList> TimerLists;
+        public static List<IResourceTimerList> TimerLists;
+
+        public static List<IResourceThreadPool> ThreadPools;
 
         static protected Resources r;
     }
