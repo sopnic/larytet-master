@@ -7,13 +7,13 @@ namespace JQuant
 {
 
     /// <summary>
-    /// this method will be called from a context of dynamically allocated
-    /// thread
+    /// this method will be called from a context of the job thread
     /// </summary>
     public delegate void Job(object argument);
 
     /// <summary>
-    /// this method will be called when job just before thread exists
+    /// this method will be called when job is done and just before the job 
+    /// thread exists
     /// </summary>
     public delegate void JobDone(object argument);
     
@@ -25,7 +25,7 @@ namespace JQuant
     /// 
     /// ----------- Usage Example -----------
     /// ThreadPool threadPool = new ThreadPool("Pool1", 5); // pool of 5 threads
-    /// threadPool.DoJob(job, ack, fsmData); // fsmData will be called when job is done
+    /// threadPool.DoJob(job, ack, fsmData); // call the job, fsmData will be called when job is done
     /// 
     /// </summary>
     public class ThreadPool : IResourceThreadPool, IDisposable
@@ -70,18 +70,15 @@ namespace JQuant
             // remove myself from the list of created thread pools
             Resources.ThreadPools.Remove(this);
 
-            // clean the stack of threads
             lock (jobThreads)
             {
+                // clean the stack of threads
                 foreach (JobThread jobThread in jobThreads)
                 {
                     jobThread.Dispose();
                 }
-            }
-
-            // clean the list of running threads
-            lock (runningThreads)
-            {
+                
+                // clean the list of running threads
                 foreach (JobThread jobThread in runningThreads)
                 {
                     jobThread.Dispose();
@@ -123,6 +120,7 @@ namespace JQuant
                     if (jobThreads.Count > 0)
                     {
                         jobThread = jobThreads.Pop();
+                        runningThreads.Add(jobThread);
                         if (MinThreadsFree > jobThreads.Count)
                         {
                             MinThreadsFree = jobThreads.Count;
@@ -133,11 +131,6 @@ namespace JQuant
                     {
                         break;
                     }
-                }
-
-                lock (runningThreads)
-                {
-                    runningThreads.Add(jobThread);
                 }
 
                 jobThread.Start(job, jobDone, jobArgument);
@@ -156,13 +149,8 @@ namespace JQuant
             {
                 countDone++;
                 jobThreads.Push(jobThread);
-            }
-
-            lock (runningThreads)
-            {
                 runningThreads.Remove(jobThread);
             }
-            
         }
 
         public int GetSize()
