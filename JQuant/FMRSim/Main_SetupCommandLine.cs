@@ -372,12 +372,12 @@ namespace JQuant
             }
         }
 
-        protected void Timer5sHandler(Timer timer)
+        protected void Timer5sHandler(ITimer timer)
         {
              Console.WriteLine("5s timer expired "+ DateTime.Now);
         }
         
-        protected void Timer30sHandler(Timer timer)
+        protected void Timer30sHandler(ITimer timer)
         {
              Console.WriteLine("30s timer expired "+ DateTime.Now);
         }
@@ -402,7 +402,7 @@ namespace JQuant
             Thread.Sleep(1*1000);
             timers_5sec.Start();
 
-            Timer timer;
+            ITimer timer;
             long timerId;
             timers_30sec.Start(out timer, out timerId, null, false);            
             timers_5sec.Start();
