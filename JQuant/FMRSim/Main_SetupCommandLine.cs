@@ -509,6 +509,31 @@ namespace JQuant
         
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
+            System.Console.WriteLine(
+                OutputUtils.FormatField("Name", 14) +
+                OutputUtils.FormatField("Size", 10) +
+                OutputUtils.FormatField("MaxCount", 10) +
+                OutputUtils.FormatField("Start", 10) +
+                OutputUtils.FormatField("Done", 10)
+            );
+            System.Console.WriteLine("-------------------------------------------------------------------------------");
+            bool isEmpty = true;
+            foreach (IResourceThreadPool threadPool in Resources.ThreadPools)
+            {
+                isEmpty = false;
+                System.Console.WriteLine(
+                    OutputUtils.FormatField(threadPool.GetName(), 14) +
+                    OutputUtils.FormatField(threadPool.GetSize(), 10) +
+                    OutputUtils.FormatField(threadPool.GetMaxCount(), 10) +
+                    OutputUtils.FormatField(threadPool.GetCountStart(), 10) +
+                    OutputUtils.FormatField(threadPool.GetCountDone(), 10)
+                );
+
+            }
+            if (isEmpty)
+            {
+                System.Console.WriteLine("No thread pool");
+            }
         }
         
         protected void LoadCommandLineInterface()
