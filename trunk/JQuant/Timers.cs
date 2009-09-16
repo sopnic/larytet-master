@@ -41,6 +41,7 @@ using System.ComponentModel;
 ///      sanity checking or management
 ///   5. In the system can coexist short - 10 ms - timer that always expired and 10 long
 ///      protocol timers that ususally stopped by the application before expiration
+/// 
 ///                      -----------   Usage examples  ---------------
 ///
 ///   Timers.Init();  // initialize the subsystem, call once
@@ -59,6 +60,12 @@ using System.ComponentModel;
 ///   // timerTask will call method TimerExpiredHandler() when the timers expire
 ///   timers_5sec.Start();
 ///   timers_30sec.Start();
+/// 
+///   How to stop previously started timer? This is tricky. Application have to keep two values - 
+///   reference to the object of type ITimer and timer identifier returned by Start(). To stop 
+///   the running timer application will need both of them. In the typical case state machine
+///   in the application will keep the values for all started timers as part of the internal 
+///   "state"
 ///
 /// </summary>
 namespace JQuant
@@ -75,64 +82,57 @@ namespace JQuant
         /// </summary>
         public static void Init()
         {
-            TimerId.Init();
+            TimerList.InitTimerId();
         }
+
+        public enum Error
+        {
+            [Description("None")]
+            NONE,
+            
+            [Description("Already stoped")]
+            ALREADY_STOPED,
+            
+            [Description("Wrong timer ID")]
+            WRONG_TIMER_ID,
+    
+    
+            [Description("No free timers")]
+            NO_FREE_TIMERS,
+            
+            [Description("Unknown in Stop")]
+            STOP_UNKNOWN,
+    
+            [Description("Unknown in Start")]
+            START_UNKNOWN
+        };
+    
+    
     }
 
-    public enum Error
-    {
-        [Description("None")]
-        NONE,
-        
-        [Description("Already stoped")]
-        ALREADY_STOPED,
-        
-        [Description("Wrong timer ID")]
-        WRONG_TIMER_ID,
-
-
-        [Description("No free timers")]
-        NO_FREE_TIMERS,
-        
-        [Description("Unknown in Stop")]
-        STOP_UNKNOWN,
-
-        [Description("Unknown in Start")]
-        START_UNKNOWN
-    };
            
-    
-    
-    public class Timer
+    /// <summary>
+    /// This class used for all interactions between application
+    /// and TimerList. For example, TimerList.Start() returns objects of this
+    /// type and TimerList.Stop() requires reference to the object of this
+    /// type
+    /// 
+    /// Internally TimerList uses objects of type Timer
+    /// </summary>
+    public interface ITimer
     {
         /// <summary>
-        /// this is expiration tick (milliseconds)
+        /// application is free to set ApplicationHook field. TimerList
+        /// will not modify the field.
+        /// This field can be use to store reference to the object which keeps
+        /// state machine internal state.
         /// </summary>
-        public long ExpirationTime;
-
-        /// <summary>
-        /// system tick when the timer was started  (milliseconds)
-        /// </summary>
-        public long StartTick;
-
-        /// <summary>
-        /// application is free to use this field
-        /// </summary>
-        public object ApplicationHook;
-
-        /// <summary>
-        /// true if not stopped
-        /// </summary>
-        public bool Running;
-
-        public long TimerId;
-
-        public bool AutoRestart;
-
-        public int Restarts;
+        object ApplicationHookGet();
+        void ApplicationHookSet(object hook);
     }
+    
 
-    public delegate void TimerExpiredCallback(Timer timer);
+    public delegate void TimerExpiredCallback(ITimer timer);
     
     /// <summary>
     /// lits of timers - keep all timers with the same timeout
@@ -220,7 +220,7 @@ namespace JQuant
         /// returns true of Ok, false is failed to allocate a new timer - no free
         /// timers are available
         /// </returns>
-        public bool Start(out Timer timer, out long timerId, object applicationHook, bool autoRestart)
+        public bool Start(out ITimer iTimer, out long timerId, object applicationHook, bool autoRestart)
         {
             
             // timestamp the call as soon as possible
@@ -228,9 +228,10 @@ namespace JQuant
             long startTick = (startTime.Ticks) / TICKS_IN_MILLISECOND;
 
                 
-            timer = null;
+            Timer timer = null;
+            iTimer = null;
             timerId = 0;
-            Error error = Error.START_UNKNOWN;
+            Timers.Error error = Timers.Error.START_UNKNOWN;
 
             
             do
@@ -249,7 +250,7 @@ namespace JQuant
                     }
                     else
                     {
-                        error = Error.NO_FREE_TIMERS;
+                        error = Timers.Error.NO_FREE_TIMERS;
                         break;
                     }                    
                 }
@@ -262,6 +263,7 @@ namespace JQuant
                 timer.TimerId = timerId;
                 timer.AutoRestart = autoRestart;
                 timer.Restarts = 1; // first start is considered a restart
+                iTimer = timer;
 
                 // add the timer to the queue of the pending timers
                 lock (this)
@@ -273,17 +275,17 @@ namespace JQuant
                 // send wakeup call to the task handling the timers
                 timerTask.WakeupCall();
                 
-                error = Error.NONE;
+                error = Timers.Error.NONE;
             }
             while (false);
 
-            if (error != Error.NONE)
+            if (error != Timers.Error.NONE)
             {
                 PrintError("Start failed ", error);
             }
             
 
-            return (error == Error.NONE);
+            return (error == Timers.Error.NONE);
         }
 
         /// <summary>
@@ -291,7 +293,7 @@ namespace JQuant
         /// </summary>
         public bool Start(object applicationHook)
         {
-            Timer timer;
+            ITimer timer;
             long timerId;
             
             bool result = Start(out timer, out timerId, applicationHook, false);
@@ -306,7 +308,7 @@ namespace JQuant
         /// </summary>
         public bool Start()
         {
-            Timer timer;
+            ITimer timer;
             long timerId;
             
             bool result = Start(out timer, out timerId, null, false);
@@ -333,9 +335,11 @@ namespace JQuant
         /// Call to this method for already stoped timer will return false
         /// and error message will be printed on the console
         /// </returns>
-        public bool Stop(Timer timer, long timerId)
+        public bool Stop(ITimer iTimer, long timerId)
         {
-            Error error = Error.NONE;
+            Timers.Error error = Timers.Error.NONE;
+
+            Timer timer = (Timer)iTimer;
             
             lock (this)
             {
@@ -348,20 +352,20 @@ namespace JQuant
                 }
                 else if (!timer.Running)
                 {
-                    error = Error.ALREADY_STOPED;
+                    error = Timers.Error.ALREADY_STOPED;
                 }
                 else if (timer.TimerId != timerId)
                 {
-                    error = Error.STOP_UNKNOWN;
+                    error = Timers.Error.STOP_UNKNOWN;
                 }
             }
 
-            if (error != Error.NONE)
+            if (error != Timers.Error.NONE)
             {
                 PrintError("Stop failed ", error);
             }
             
-            return (error == Error.NONE);
+            return (error == Timers.Error.NONE);
         }
         
         /// <summary>
@@ -487,7 +491,7 @@ namespace JQuant
             
         }
 
-        protected void PrintError(string prefix, Error error)
+        protected void PrintError(string prefix, Timers.Error error)
         {
             System.Console.WriteLine(prefix+EnumUtils.GetDescription(error));
         }
@@ -606,6 +610,102 @@ namespace JQuant
         {
             get;
             protected set;
+        }
+
+
+        /// <summary>
+        /// Data holder - keeps a timer
+        /// </summary>
+        protected class Timer : ITimer
+        {
+            public object ApplicationHookGet()
+            {
+                return ApplicationHook;
+            }
+            
+            public void ApplicationHookSet(object hook)
+            {
+                ApplicationHook = hook;
+            }
+    
+    
+            // private section - application is not expected to use the fields
+            // below this line
+            
+            /// <summary>
+            /// this is expiration tick (milliseconds)
+            /// </summary>
+            public long ExpirationTime;
+    
+            /// <summary>
+            /// system tick when the timer was started  (milliseconds)
+            /// </summary>
+            public long StartTick;
+    
+            /// <summary>
+            /// true if not stopped
+            /// </summary>
+            public bool Running;
+    
+            public long TimerId;
+    
+            public bool AutoRestart;
+    
+            public int Restarts;
+    
+            public object ApplicationHook
+            {
+                get;
+                set;
+            }
+        }
+
+        public static void InitTimerId()
+        {
+            TimerId.Init();
+        }
+        
+        /// <summary>
+        /// generates a unique timer identifier - simple 64 bits counter
+        /// </summary>
+        protected class TimerId
+        {
+            protected TimerId(long initialValue)
+            {
+                timerId = initialValue;
+            }
+    
+            public static void Init()
+            {
+                if (instance == default(TimerId))
+                {
+                    instance = new TimerId(0xB5);
+                }
+            }
+    
+            /// <summary>
+            /// Locks access to the timerId
+            /// should not be called from inside locked section
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.Int64"/>
+            /// Unique on the system level timer identifier
+            /// </returns>
+            static public long GetNext()
+            {
+                long id;
+                
+                lock (instance)
+                {
+                    timerId++;
+                    id = timerId;
+                }
+                
+                return id;
+            }
+            
+            static TimerId instance;
+            static long timerId;
         }
     }
     
@@ -744,46 +844,4 @@ namespace JQuant
     }
 
 
-    /// <summary>
-    /// generates a unique timer identifier - simple counter
-    /// </summary>
-    class TimerId
-    {
-        protected TimerId(long initialValue)
-        {
-            timerId = initialValue;
-        }
-
-        public static void Init()
-        {
-            if (instance == default(TimerId))
-            {
-                instance = new TimerId(0xB5);
-            }
-        }
-
-        /// <summary>
-        /// Locks access to the timerId
-        /// should not be called from inside locked section
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.Int64"/>
-        /// Unique on the system level timer identifier
-        /// </returns>
-        static public long GetNext()
-        {
-            long id;
-            
-            lock (instance)
-            {
-                timerId++;
-                id = timerId;
-            }
-            
-            return id;
-        }
-        
-        static TimerId instance;
-        static long timerId;
-    }
 }
