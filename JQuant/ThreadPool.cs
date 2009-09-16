@@ -22,6 +22,11 @@ namespace JQuant
     /// Every subsystem can create it's own pool of threads with specified number of
     /// threads. Pay attention, that there can be OS related limitations for the total  
     /// number of threads coexisting in the system.
+    /// 
+    /// ----------- Usage Example -----------
+    /// ThreadPool threadPool = new ThreadPool("Pool1", 5); // pool of 5 threads
+    /// threadPool.DoJob(job, ack, fsmData); // fsmData will be called when job is done
+    /// 
     /// </summary>
     public class ThreadPool : IResourceThreadPool
     {
