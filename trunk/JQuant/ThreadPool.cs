@@ -420,6 +420,8 @@ namespace JQuant
                     // inform ThreadPool that there is nothing to do
                     threadPool.JobThreadDone(this);                
                 }
+                
+                semaphore.Close();
             }
 
             protected void ServeJob(JobParams jobParams)
