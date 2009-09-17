@@ -168,11 +168,13 @@ namespace JQuant
     
     public interface IResourceThreadPool
     {
-        int GetSize();
+        int GetThreads();
+        int GetJobs();
         string GetName();
         int GetMaxCount();
         int GetCountStart();
         int GetCountDone();
+        int GetCountMaxJobs();
     }
     
     /// <summary>
