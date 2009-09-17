@@ -22,10 +22,18 @@ namespace JQuant
     /// Every subsystem can create it's own pool of threads with specified number of
     /// threads. Pay attention, that there can be OS related limitations for the total  
     /// number of threads coexisting in the system.
+    /// A subsystem can create more than one thread pool. For example pool of high 
+    /// priority threads for very short important tasks and pool for low priority
+    /// task which take longer.
+    /// Number of service threads in the pool can be smaller than maximum number
+    /// of pending jobs. 
     /// 
     /// ----------- Usage Example -----------
     /// ThreadPool threadPool = new ThreadPool("Pool1", 5); // pool of 5 threads
-    /// threadPool.DoJob(job, ack, fsmData); // call the job, fsmData will be called when job is done
+    /// 
+    /// // execute method job()
+    /// // method fsmData() will be called when job() is done
+    /// threadPool.DoJob(job, ack, fsmData); 
     /// 
     /// </summary>
     public class ThreadPool : IResourceThreadPool, IDisposable
@@ -35,11 +43,11 @@ namespace JQuant
         /// </summary>
         /// <param name="name">
         /// A <see cref="System.String"/>
-        /// Name of the pool
+        /// Name of the thread pool as it appears in debug reports
         /// </param>
         /// <param name="size">
         /// A <see cref="System.Int32"/>
-        /// Number of job threads in the pool
+        /// Number of service threads in the pool
         /// </param>
         public ThreadPool(string name, int size)
             : this(name, size, size, System.Threading.ThreadPriority.Lowest)
@@ -53,15 +61,20 @@ namespace JQuant
         /// </summary>
         /// <param name="name">
         /// A <see cref="System.String"/>
+        /// Name of the thread pool as it appears in debug reports
         /// </param>
         /// <param name="threads">
         /// A <see cref="System.Int32"/>
+        /// Number of service threads
         /// </param>
         /// <param name="jobs">
         /// A <see cref="System.Int32"/>
+        /// Maximum number of pending (yet to be served) jobs. The maximum number of jobs
+        /// can larger than number of service threads
         /// </param>
         /// <param name="priority">
         /// A <see cref="Thread.Priority"/>
+        /// Priority of the service threads
         /// </param>
         public ThreadPool(string name, int threads, int jobs, System.Threading.ThreadPriority priority)
         {
@@ -178,6 +191,9 @@ namespace JQuant
             return result;
         }
 
+        /// <summary>
+        /// start a service thread if there are free service threads 
+        /// </summary>
         protected void RefreshQueue()
         {
             bool mustSpawnJob;
@@ -230,6 +246,10 @@ namespace JQuant
             while (true);
         }
 
+        /// <summary>
+        /// return block jobParams to the pool of free blocks
+        /// this method is called from the service thread
+        /// </summary>
         protected void JobDone(JobParams jobParams)
         {
             lock (freeJobs)
@@ -238,7 +258,11 @@ namespace JQuant
                 freeJobs.Push(jobParams);
             }
         }
-        
+
+        /// <summary>
+        /// return the service thread to the stack of free threads
+        /// this method is called from the service thread
+        /// </summary>
         protected void JobThreadDone(JobThread jobThread)
         {
             lock (jobThreads)
