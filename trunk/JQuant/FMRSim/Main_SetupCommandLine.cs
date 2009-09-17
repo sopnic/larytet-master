@@ -486,7 +486,7 @@ namespace JQuant
 
         protected void debugThreadPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            JQuant.ThreadPool threadPool = new JQuant.ThreadPool("test", 3, ThreadPriority.Lowest);
+            JQuant.ThreadPool threadPool = new JQuant.ThreadPool("test", 1, 3, ThreadPriority.Lowest);
 
             threadpoolTestTicks = new long[3];
             long tick = DateTime.Now.Ticks;

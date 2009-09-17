@@ -42,7 +42,7 @@ namespace JQuant
         /// Number of job threads in the pool
         /// </param>
         public ThreadPool(string name, int size)
-            : this(name, size, System.Threading.ThreadPriority.Lowest)
+            : this(name, size, size, System.Threading.ThreadPriority.Lowest)
         {
         }
 
@@ -63,15 +63,16 @@ namespace JQuant
         /// <param name="priority">
         /// A <see cref="Thread.Priority"/>
         /// </param>
-        public ThreadPool(string name, int threads, System.Threading.ThreadPriority priority)
+        public ThreadPool(string name, int threads, int jobs, System.Threading.ThreadPriority priority)
         {
             this.Name = name;
             this.Threads = threads;
-            this.Jobs = threads;
+            this.Jobs = jobs;
             MinThreadsFree = threads;
             countStart = 0;
             countDone = 0;
             countMaxJobs = 0;
+            countRunningJobs = 0;
             
             jobThreads = new Stack<JobThread>(threads);
             runningThreads = new List<JobThread>(threads);
@@ -141,7 +142,6 @@ namespace JQuant
         public bool PlaceJob(Job job, JobDone jobDone, object jobArgument)
         {
             bool result = false;
-            JobThread jobThread = default(JobThread);
             JobParams jobParams = default(JobParams);
             
             do
@@ -169,6 +169,27 @@ namespace JQuant
                 
                 // just to be sure that there is a thread to serve the new 
                 // job allocate a free thread (if there is any)
+                RefreshQueue();
+                    
+                result = true;
+            }
+            while (false);
+            
+            return result;
+        }
+
+        public void RefreshQueue()
+        {
+            bool mustSpawnJob;
+            JobThread jobThread = default(JobThread);
+            
+            lock (this)
+            {
+                mustSpawnJob = (countRunningJobs == 0);
+            }
+            
+            do
+            {
                 lock (jobThreads)
                 {
                     if (jobThreads.Count > 0)
@@ -181,38 +202,69 @@ namespace JQuant
                         }
                         countStart++;
                     }
-                    else // no job threads available
-                    {
-                        break;
-                    }
                 }
 
-                jobThread.Start();
+                if (jobThread != default(JobThread))
+                {
+                    jobThread.Start();
+                    break;
+                }
 
-                    
-                result = true;
+                if (!mustSpawnJob)
+                {
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(1);
+                }
             }
-            while (false);
-            
-            return result;
+            while (true);
         }
 
-        protected void JobDone(JobThread jobThread, JobParams jobParams)
+        protected void JobDone(JobParams jobParams)
         {
-            lock (jobThreads)
-            {
-                countDone++;
-                jobThreads.Push(jobThread);
-                runningThreads.Remove(jobThread);
-            }
-
             lock (freeJobs)
             {
                 jobParams.Init();
                 freeJobs.Push(jobParams);
             }
         }
+        
+        protected void JobThreadDone(JobThread jobThread)
+        {
+            lock (jobThreads)
+            {
+                countDone++;
+                runningThreads.Remove(jobThread);
+                jobThreads.Push(jobThread);
+            }
+        }
 
+        /// <summary>
+        /// called by job thread to notify the pool that it just before 
+        /// executing the application hook
+        /// </summary>
+        protected void JobEnter()
+        {
+            lock (this)
+            {
+                countRunningJobs++;
+            }
+        }
+
+        /// <summary>
+        /// called by job thread to notify the pool that it just finished
+        /// executing the application hook
+        /// </summary>
+        protected void JobExit()
+        {
+            lock (this)
+            {
+                countRunningJobs--;
+            }
+        }
+        
         public int GetThreads()
         {
             return Threads;
@@ -255,6 +307,7 @@ namespace JQuant
         protected int countMaxJobs;
         protected int countStart;
         protected int countDone;
+        protected int countRunningJobs;
 
         Stack<JobThread> jobThreads;
         List<JobThread> runningThreads;
@@ -298,16 +351,14 @@ namespace JQuant
                 this.threadPool = threadPool;
                 isStoped = false;
 
+                semaphore = new Semaphore(0, Int32.MaxValue);
                 // run the job loop
                 thread.Start();
             }
 
             public void Start()
             {
-                lock (this)
-                {
-                    Monitor.Pulse(this);
-                }
+                semaphore.Release();
             }
             
             /// <summary>
@@ -315,12 +366,8 @@ namespace JQuant
             /// </summary>
             public void Dispose()
             {
-                // remove myself from the list of created thread pools
-                lock (this)
-                {
-                    isStoped = true;
-                    Monitor.Pulse(this);
-                }                
+                isStoped = true;
+                semaphore.Release();
             }
 
             /// <summary>
@@ -331,13 +378,10 @@ namespace JQuant
             {
                 while (true)
                 {
-                    lock (this)
+                    semaphore.WaitOne();
+                    if (isStoped)
                     {
-                        Monitor.Wait(this);
-                        if (isStoped)
-                        {
-                            break;
-                        }
+                        break;
                     }
 
                     // try to serve all pending jobs
@@ -355,6 +399,8 @@ namespace JQuant
                         if (jobParams != default(JobParams))
                         {
                             ServeJob(jobParams);
+                            // inform ThreadPool that the job is done
+                            threadPool.JobDone(jobParams);
                         }
                         else // no more pending jobs in the queue
                         {
@@ -362,6 +408,9 @@ namespace JQuant
                         }
                     }
                     while (true);
+                    
+                    // inform ThreadPool that there is nothing to do
+                    threadPool.JobThreadDone(this);                
                 }
             }
 
@@ -372,13 +421,13 @@ namespace JQuant
                 object jobArgument = jobParams.jobArgument;
                 
                 // execute the job and notify the application
+                // on execution
+                threadPool.JobEnter();
                 jobParams.job(jobArgument);
                 jobParams.jobDone(jobArgument);
+                threadPool.JobExit();
 
                 IsRunning = false;
-                
-                // back to the ThreadPool
-                threadPool.JobDone(this, jobParams);
             }
 
             public bool IsRunning
@@ -390,6 +439,7 @@ namespace JQuant
             protected ThreadPool threadPool;
             protected Thread thread;
             protected bool isStoped;
+            protected Semaphore semaphore;
         }
 
     }
