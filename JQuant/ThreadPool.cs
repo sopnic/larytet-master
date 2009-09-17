@@ -178,18 +178,21 @@ namespace JQuant
             return result;
         }
 
-        public void RefreshQueue()
+        protected void RefreshQueue()
         {
             bool mustSpawnJob;
             JobThread jobThread = default(JobThread);
-            
-            lock (this)
-            {
-                mustSpawnJob = (countRunningJobs == 0);
-            }
-            
+
             do
             {
+                // may be there is at least one thread serving 
+                // the job ? then starting of a new thread is not absolutely
+                // mandatory
+                lock (this)
+                {
+                    mustSpawnJob = (countRunningJobs == 0);
+                }
+            
                 lock (jobThreads)
                 {
                     if (jobThreads.Count > 0)
@@ -210,12 +213,17 @@ namespace JQuant
                     break;
                 }
 
+                // if there are no available threads to start, but there are
+                // some running threads I can get out - one of the running thread will serve
+                // queue of pending jobs
                 if (!mustSpawnJob)
                 {
                     break;
                 }
                 else
                 {
+                    // i have to wait. there are no available threads and no thread is
+                    // running.
                     Thread.Sleep(1);
                 }
             }
@@ -416,18 +424,20 @@ namespace JQuant
 
             protected void ServeJob(JobParams jobParams)
             {
+                threadPool.JobEnter();
+                
                 IsRunning = true;
 
                 object jobArgument = jobParams.jobArgument;
                 
                 // execute the job and notify the application
                 // on execution
-                threadPool.JobEnter();
                 jobParams.job(jobArgument);
                 jobParams.jobDone(jobArgument);
-                threadPool.JobExit();
 
                 IsRunning = false;
+                
+                threadPool.JobExit();
             }
 
             public bool IsRunning
