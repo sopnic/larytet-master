@@ -85,14 +85,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="..\FMRSim\Main_SetupCommandLine.cs" />
-    <Compile Include="..\FMRSim\TaskBarLibSim_Orders.cs">
-    </Compile>
-    <Compile Include="..\Timers.cs">
-      <Link>Timers.cs</Link>
-    </Compile>
-    <Compile Include="..\ThreadPool.cs">
-      <Link>ThreadPool.cs</Link>
-    </Compile>
+    <Compile Include="..\FMRSim\TaskBarLibSim_Orders.cs" />
+    <Compile Include="..\Timers.cs" />
+    <Compile Include="..\ThreadPool.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskBarLib">
