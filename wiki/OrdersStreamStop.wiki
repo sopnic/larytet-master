@@ -35,7 +35,7 @@ _streamType_
 }}}
 
 *Remarks:*
-  * OrdersStreamStop should be called after calls to functions GetOrdersRZ or GetOrdersMF in order to stop the streaming. 
+  * OrdersStreamStop should be called after calls to functions [GetOrdersRZ] or [GetOrdersMF] in order to stop the streaming. 
   * The OrdersStreamStart function should be called in order to initiate the stream. 
 
 *See Also:*
