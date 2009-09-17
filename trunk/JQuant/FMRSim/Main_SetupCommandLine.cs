@@ -504,7 +504,7 @@ namespace JQuant
 
             for (int i = 0;i < threadpoolTestTicks.Length;i++)
             {
-                iWrite.WriteLine("ThreadPoolJob done  idx=" + i + ", time=" + (double)threadpoolTestTicks[i]/(double)(10*1000) + "ms");
+                iWrite.WriteLine("ThreadPoolJob done  idx =" + i + ", time = " + (double)threadpoolTestTicks[i]/(double)(10*1) + " micros");
             }
             
         }
