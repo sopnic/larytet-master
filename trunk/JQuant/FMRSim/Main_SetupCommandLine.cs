@@ -486,7 +486,7 @@ namespace JQuant
 
         protected void debugThreadPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            JQuant.ThreadPool threadPool = new JQuant.ThreadPool("test", 3);
+            JQuant.ThreadPool threadPool = new JQuant.ThreadPool("test", 3, ThreadPriority.Lowest);
 
             threadpoolTestTicks = new long[3];
             long tick = DateTime.Now.Ticks;
@@ -494,10 +494,10 @@ namespace JQuant
             threadpoolTestTicks[1] = tick;
             threadpoolTestTicks[2] = tick;
             
-            threadPool.DoJob(ThreadPoolJobEnter, ThreadPoolJobDone, 0);
-            threadPool.DoJob(ThreadPoolJobEnter, ThreadPoolJobDone, 1);
-            threadPool.DoJob(ThreadPoolJobEnter, ThreadPoolJobDone, 2);
-            Thread.Sleep(100);
+            threadPool.PlaceJob(ThreadPoolJobEnter, ThreadPoolJobDone, 0);
+            threadPool.PlaceJob(ThreadPoolJobEnter, ThreadPoolJobDone, 1);
+            threadPool.PlaceJob(ThreadPoolJobEnter, ThreadPoolJobDone, 2);
+            Thread.Sleep(500);
             
             debugThreadPoolShowCallback(iWrite, cmdName, cmdArguments);
             threadPool.Dispose();
@@ -513,10 +513,12 @@ namespace JQuant
         {
             System.Console.WriteLine(
                 OutputUtils.FormatField("Name", 14) +
-                OutputUtils.FormatField("Size", 10) +
-                OutputUtils.FormatField("MaxCount", 10) +
+                OutputUtils.FormatField("Thrds", 10) +
+                OutputUtils.FormatField("Jobs", 10) +
+                OutputUtils.FormatField("MaxThrds", 10) +
                 OutputUtils.FormatField("Start", 10) +
-                OutputUtils.FormatField("Done", 10)
+                OutputUtils.FormatField("Done", 10) +
+                OutputUtils.FormatField("MaxJobs", 10)
             );
             System.Console.WriteLine("-------------------------------------------------------------------------------");
             bool isEmpty = true;
@@ -525,10 +527,12 @@ namespace JQuant
                 isEmpty = false;
                 System.Console.WriteLine(
                     OutputUtils.FormatField(threadPool.GetName(), 14) +
-                    OutputUtils.FormatField(threadPool.GetSize(), 10) +
+                    OutputUtils.FormatField(threadPool.GetThreads(), 10) +
+                    OutputUtils.FormatField(threadPool.GetJobs(), 10) +
                     OutputUtils.FormatField(threadPool.GetMaxCount(), 10) +
                     OutputUtils.FormatField(threadPool.GetCountStart(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountDone(), 10)
+                    OutputUtils.FormatField(threadPool.GetCountDone(), 10) +
+                    OutputUtils.FormatField(threadPool.GetCountMaxJobs(), 10)
                 );
 
             }

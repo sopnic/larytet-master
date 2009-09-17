@@ -27,25 +27,6 @@ namespace JQuant
     /// ThreadPool threadPool = new ThreadPool("Pool1", 5); // pool of 5 threads
     /// threadPool.DoJob(job, ack, fsmData); // call the job, fsmData will be called when job is done
     /// 
-    /// ----------- Limtations --------------
-    /// Starting a job thread requires rescheduling - a system thread moves from WAIT state to the RUN
-    /// state. In the typical OS rescheduling can happen in two different ways
-    /// - in the system call, for example in the contex of send signal to the waiting job thread
-    /// - in the system tick
-    /// The later option is worst case, because latency in this case can be a system tick which is
-    /// typically 1-10 ms.
-    /// Thus the limitation - there is no point to use thread pool and delegate jobs to different
-    /// threads if the task takes less than 50-100 ms
-    /// There is a workaround. Let's say that the job takes less than a typical rescheduling time 
-    /// (1-10ms) and there are lot of simultaneously running job threads. In this case there is
-    /// better approach to the problem. Method DoJob() can add the applcicatio request to the list
-    /// (queue) of pending jobs and start a helper thread which will in turn choose a free job thread. 
-    /// Just before exiting any running job thread checks the queue of the pending requests and if
-    /// there is any pulls the request and executes it. If there is no running job threads or the
-    /// running (active) job threads are busy the helper job will have a chance to do the job.
-    /// Performance of the system will depend on the relative priorities of the application thread
-    /// which delegates jobs, helper thread and job threads. We can expect that overall latency will
-    /// decrease.
     /// </summary>
     public class ThreadPool : IResourceThreadPool, IDisposable
     {
@@ -61,26 +42,57 @@ namespace JQuant
         /// Number of job threads in the pool
         /// </param>
         public ThreadPool(string name, int size)
+            : this(name, size, System.Threading.ThreadPriority.Lowest)
+        {
+        }
+
+        /// <summary>
+        /// Create a new thread pool. number of threads in the pool can be smaller
+        /// than maximum number of simultaneously placed job. Burst of new jobs can be
+        /// served by small number of threads
+        /// </summary>
+        /// <param name="name">
+        /// A <see cref="System.String"/>
+        /// </param>
+        /// <param name="threads">
+        /// A <see cref="System.Int32"/>
+        /// </param>
+        /// <param name="jobs">
+        /// A <see cref="System.Int32"/>
+        /// </param>
+        /// <param name="priority">
+        /// A <see cref="Thread.Priority"/>
+        /// </param>
+        public ThreadPool(string name, int threads, System.Threading.ThreadPriority priority)
         {
             this.Name = name;
-            this.Size = size;
-            MinThreadsFree = size;
+            this.Threads = threads;
+            this.Jobs = threads;
+            MinThreadsFree = threads;
             countStart = 0;
             countDone = 0;
+            countMaxJobs = 0;
             
-            jobThreads = new Stack<JobThread>(size);
-            runningThreads = new List<JobThread>(size);
-            for (int i = 0;i < size;i++)
+            jobThreads = new Stack<JobThread>(threads);
+            runningThreads = new List<JobThread>(threads);
+            for (int i = 0;i < threads;i++)
             {
-                JobThread jobThread = new JobThread(this);                
+                JobThread jobThread = new JobThread(this, priority);
                 jobThreads.Push(jobThread);
+            }
+
+            pendingJobs = new Queue<JobParams>(this.Jobs);
+            freeJobs = new Stack<JobParams>(this.Jobs);
+            for (int i = 0;i < this.Jobs;i++)
+            {
+                JobParams jobParams = new JobParams();
+                freeJobs.Push(jobParams);
             }
             
             // add myself to the list of created thread pools
             Resources.ThreadPools.Add(this);
-            pendingJobs = new List<JobParams>(size);            
         }
-
+        
         /// <summary>
         /// Call this method to destroy the object
         /// </summary>
@@ -126,23 +138,37 @@ namespace JQuant
         /// <returns>
         /// A <see cref="System.Boolean"/>
         /// </returns>
-        public bool DoJob(Job job, JobDone jobDone, object jobArgument)
+        public bool PlaceJob(Job job, JobDone jobDone, object jobArgument)
         {
-            // probably there is a job thread exiting - let the first
-            // availabe thread do the job
-            lock (pendingJobs)
-            {
-                // pendingJobs.Add(new JobParams(job, jobDone, jobArgument));
-            }
-            
-            // just in case there is no thread running start a job thread
-            
             bool result = false;
             JobThread jobThread = default(JobThread);
+            JobParams jobParams = default(JobParams);
             
             do
             {
-                // allocate a free thread
+                // allocate job params blocks
+                lock (freeJobs)
+                {
+                    if (freeJobs.Count > 0)
+                    {
+                        jobParams = freeJobs.Pop();
+                        jobParams.Init(job, jobDone, jobArgument);
+                        pendingJobs.Enqueue(jobParams);
+                        if (countMaxJobs < pendingJobs.Count)
+                        {
+                            countMaxJobs = pendingJobs.Count;
+                        }
+                        result = true;
+                    }
+                    else // no room for a new job - get out
+                    {
+                        System.Console.WriteLine("Failed to place a job");
+                        break;
+                    }                        
+                }
+                
+                // just to be sure that there is a thread to serve the new 
+                // job allocate a free thread (if there is any)
                 lock (jobThreads)
                 {
                     if (jobThreads.Count > 0)
@@ -161,7 +187,7 @@ namespace JQuant
                     }
                 }
 
-                jobThread.Start(job, jobDone, jobArgument);
+                jobThread.Start();
 
                     
                 result = true;
@@ -171,8 +197,7 @@ namespace JQuant
             return result;
         }
 
-
-        protected void JobDone(JobThread jobThread)
+        protected void JobDone(JobThread jobThread, JobParams jobParams)
         {
             lock (jobThreads)
             {
@@ -180,11 +205,22 @@ namespace JQuant
                 jobThreads.Push(jobThread);
                 runningThreads.Remove(jobThread);
             }
+
+            lock (freeJobs)
+            {
+                jobParams.Init();
+                freeJobs.Push(jobParams);
+            }
         }
 
-        public int GetSize()
+        public int GetThreads()
         {
-            return Size;
+            return Threads;
+        }
+        
+        public int GetJobs()
+        {
+            return Jobs;
         }
         
         public string GetName()
@@ -194,7 +230,7 @@ namespace JQuant
         
         public int GetMaxCount()
         {
-            return (Size-MinThreadsFree);
+            return (Threads-MinThreadsFree);
         }
         
         public int GetCountStart()
@@ -207,36 +243,57 @@ namespace JQuant
             return countDone;
         }
         
+        public int GetCountMaxJobs()
+        {
+            return countMaxJobs;
+        }
+        
         protected string Name;
-        protected int Size;
+        protected int Threads;
+        protected int Jobs;
         protected int MinThreadsFree;
+        protected int countMaxJobs;
         protected int countStart;
         protected int countDone;
 
         Stack<JobThread> jobThreads;
         List<JobThread> runningThreads;
-        List<JobParams> pendingJobs;
+        Queue<JobParams> pendingJobs;
+        Stack<JobParams> freeJobs;
 
         protected class JobParams
         {
-            public JobParams(Job job, JobDone jobDone, object jobArgument)
+            public JobParams()
+            {
+                Init();
+            }
+            
+            public void Init(Job job, JobDone jobDone, object jobArgument)
             {
                 this.job = job;
                 this.jobDone = jobDone;
                 this.jobArgument = jobArgument;
             }
             
+            public void Init()
+            {
+                this.job = null;
+                this.jobDone = null;
+                this.jobArgument = null;
+            }
+            
             public Job job;
             public JobDone jobDone;
             public object jobArgument;
         }
-
+        
         protected class JobThread: IDisposable
         {
-            public JobThread(ThreadPool threadPool)
+            public JobThread(ThreadPool threadPool, System.Threading.ThreadPriority priority)
             {
                 thread = new Thread(Run);
                 thread.IsBackground = true;
+                thread.Priority = priority;
                 IsRunning = false;
                 this.threadPool = threadPool;
                 isStoped = false;
@@ -245,12 +302,8 @@ namespace JQuant
                 thread.Start();
             }
 
-            public void Start(Job job, JobDone jobDone, object jobArgument)
+            public void Start()
             {
-                this.job = job;
-                this.jobDone = jobDone;
-                this.jobArgument = jobArgument;
-
                 lock (this)
                 {
                     Monitor.Pulse(this);
@@ -286,18 +339,46 @@ namespace JQuant
                             break;
                         }
                     }
-                    
-                    IsRunning = true;
 
-                    // execute the job and notify the application
-                    job(jobArgument);
-                    jobDone(jobArgument);
-
-                    IsRunning = false;
-                    
-                    // back to the ThreadPool
-                    threadPool.JobDone(this);
+                    // try to serve all pending jobs
+                    do
+                    {
+                        JobParams jobParams = default(JobParams);
+                        lock (threadPool.pendingJobs)
+                        {
+                            if (threadPool.pendingJobs.Count > 0)
+                            {
+                                jobParams = threadPool.pendingJobs.Dequeue();
+                            }
+                        }
+    
+                        if (jobParams != default(JobParams))
+                        {
+                            ServeJob(jobParams);
+                        }
+                        else // no more pending jobs in the queue
+                        {
+                            break;
+                        }
+                    }
+                    while (true);
                 }
+            }
+
+            protected void ServeJob(JobParams jobParams)
+            {
+                IsRunning = true;
+
+                object jobArgument = jobParams.jobArgument;
+                
+                // execute the job and notify the application
+                jobParams.job(jobArgument);
+                jobParams.jobDone(jobArgument);
+
+                IsRunning = false;
+                
+                // back to the ThreadPool
+                threadPool.JobDone(this, jobParams);
             }
 
             public bool IsRunning
@@ -306,9 +387,6 @@ namespace JQuant
                 protected set;
             }
 
-            protected Job job;
-            protected JobDone jobDone;
-            protected object jobArgument;
             protected ThreadPool threadPool;
             protected Thread thread;
             protected bool isStoped;
