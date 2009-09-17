@@ -760,6 +760,7 @@ namespace JQuant
         {
             thread.Abort();
             thread = null;
+            semaphore.Close();
         }
 
 
