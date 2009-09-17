@@ -481,7 +481,7 @@ namespace JQuant
         {
             int c = (int)argument;
             long tick = DateTime.Now.Ticks;
-            threadpoolTestTicks[c] = (tick - threadpoolTestTicks[c])*100;
+            threadpoolTestTicks[c] = (tick - threadpoolTestTicks[c]);
         }
 
         protected void debugThreadPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
