@@ -486,6 +486,14 @@ namespace JQuant
 
         protected void debugThreadPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
+            // check what is the tick
+            {
+                long tickTest = DateTime.Now.Ticks;
+                Thread.Sleep(10);
+                tickTest = DateTime.Now.Ticks - tickTest;
+                iWrite.WriteLine("10 ms contain " + tickTest/1000 + " thousands ticks");
+            }
+            
             JQuant.ThreadPool threadPool = new JQuant.ThreadPool("test", 1, 3, ThreadPriority.Lowest);
 
             threadpoolTestTicks = new long[3];
