@@ -408,6 +408,7 @@ namespace JQuant
             /// </summary>
             public void Run()
             {
+                bool shouldExit = false;
                 while (true)
                 {
                     semaphore.WaitOne();
@@ -416,6 +417,7 @@ namespace JQuant
                         break;
                     }
 
+                    threadPool.JobEnter();
                     // try to serve all pending jobs
                     do
                     {
@@ -433,10 +435,16 @@ namespace JQuant
                             ServeJob(jobParams);
                             // inform ThreadPool that the job is done
                             threadPool.JobDone(jobParams);
+                            // last time i am checking the queue
+                            if (shouldExit) break;
                         }
+                        else if (shouldExit) break;
                         else // no more pending jobs in the queue
                         {
-                            break;
+                            // let the tread pool know that i am done checking the queue
+                            threadPool.JobExit();
+                            // i will check the queue one time more
+                            shouldExit = true;
                         }
                     }
                     while (true);
@@ -450,8 +458,6 @@ namespace JQuant
 
             protected void ServeJob(JobParams jobParams)
             {
-                threadPool.JobEnter();
-                
                 IsRunning = true;
 
                 object jobArgument = jobParams.jobArgument;
@@ -462,8 +468,6 @@ namespace JQuant
                 jobParams.jobDone(jobArgument);
 
                 IsRunning = false;
-                
-                threadPool.JobExit();
             }
 
             public bool IsRunning
