@@ -196,7 +196,7 @@ namespace JQuant
         /// </summary>
         protected void RefreshQueue()
         {
-            bool mustSpawnJob;
+            bool shouldSpawnJob;
             JobThread jobThread = default(JobThread);
 
             do
@@ -206,7 +206,15 @@ namespace JQuant
                 // mandatory
                 lock (this)
                 {
-                    mustSpawnJob = (countRunningJobs == 0);
+                    shouldSpawnJob = (countRunningJobs == 0);
+                }
+
+                // if there are no available threads to start, but there are
+                // some running threads I can get out - one of the running thread will serve
+                // queue of pending jobs
+                if (!shouldSpawnJob)
+                {
+                    break;
                 }
             
                 lock (jobThreads)
@@ -229,19 +237,9 @@ namespace JQuant
                     break;
                 }
 
-                // if there are no available threads to start, but there are
-                // some running threads I can get out - one of the running thread will serve
-                // queue of pending jobs
-                if (!mustSpawnJob)
-                {
-                    break;
-                }
-                else
-                {
-                    // i have to wait. there are no available threads and no thread is
-                    // running.
-                    Thread.Sleep(1);
-                }
+                // i have to wait. there are no available threads and no thread is
+                // running.
+                Thread.Sleep(1);
             }
             while (true);
         }
@@ -435,7 +433,8 @@ namespace JQuant
                             ServeJob(jobParams);
                             // inform ThreadPool that the job is done
                             threadPool.JobDone(jobParams);
-                            // last time i am checking the queue
+                            // last time i am checking the queue of pending jobs ?
+                            // get out then
                             if (shouldExit) break;
                         }
                         else if (shouldExit) break;
@@ -443,7 +442,7 @@ namespace JQuant
                         {
                             // let the tread pool know that i am done checking the queue
                             threadPool.JobExit();
-                            // i will check the queue one time more
+                            // i will check the queue one time more and get out no matter what 
                             shouldExit = true;
                         }
                     }
