@@ -209,8 +209,8 @@ namespace JQuant
                     shouldSpawnJob = (countRunningJobs == 0);
                 }
 
-                // if there are no available threads to start, but there are
-                // some running threads I can get out - one of the running thread will serve
+                // there are some running threads
+                // I can get out - one of the running threads will serve
                 // queue of pending jobs
                 if (!shouldSpawnJob)
                 {
@@ -231,6 +231,8 @@ namespace JQuant
                     }
                 }
 
+                // there is a free thread to serve the job
+                // start the thread and get out
                 if (jobThread != default(JobThread))
                 {
                     jobThread.Start();
@@ -238,7 +240,7 @@ namespace JQuant
                 }
 
                 // i have to wait. there are no available threads and no thread is
-                // running.
+                // running. should not be too long before a thread finishes
                 Thread.Sleep(1);
             }
             while (true);
