@@ -24,7 +24,8 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
+    <DefineConstants>USEFMRSIM</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
