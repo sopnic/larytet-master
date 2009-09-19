@@ -6,6 +6,24 @@ using System.ComponentModel;
 
 namespace JQuant
 {
+
+    public interface IResourceStatistics
+    {
+        /// <summary>
+        /// returns array of debug counters
+        /// </summary>
+        void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values);
+    }
+    
+    public interface INamedResource
+    {
+        /// <summary>
+        /// returns name of the resource
+        /// </summary>
+        string GetName();
+    }
+    
+    
     /// <summary>
     /// objects implementing Mailbox
     /// </summary>
@@ -152,36 +170,11 @@ namespace JQuant
         string GetName();
     }
 
-    public interface IResourceTimerList
+    public interface IResourceTimerList :INamedResource, IResourceStatistics
     {
-        int GetPendingTimers();
-        int GetCountStart();
-        int GetCountStop();
-        int GetCountExpired();
-        int GetCountStartAttempt();
-        int GetCountStopAttempt();
-        int GetSize();
-        int GetMaxCount();
-        string GetName();
         string GetTaskName();
     }
 
-    public interface IResourceStatistics
-    {
-        /// <summary>
-        /// returns array of debug counters
-        /// </summary>
-        void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values);
-    }
-    
-    public interface INamedResource
-    {
-        /// <summary>
-        /// returns name of the resource
-        /// </summary>
-        string GetName();
-    }
-    
     public interface IResourceThreadPool :IResourceStatistics, INamedResource
     {
     }

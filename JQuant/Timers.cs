@@ -546,42 +546,7 @@ namespace JQuant
             Console.WriteLine("TimerList " + name + " from set " + timerTask.Name + " destroyed");
         }
         
-        public int GetPendingTimers()
-        {
-            return pendingTimers.Count;
-        }
-        
-        public int GetCountStart()
-        {
-            return countStart;
-        }
-        
-        public int GetMaxCount()
-        {
-            return countMax;
-        }
-        
-        public int GetCountStop()
-        {
-            return countStop;
-        }
-        
-        public int GetCountStartAttempt()
-        {
-            return countStartAttempt;
-        }
-        
-        public int GetCountStopAttempt()
-        {
-            return countStopAttempt;
-        }
-        
-        public int GetCountExpired()
-        {
-            return countExpired;
-        }
-        
-        public int GetSize()
+        protected int GetSize()
         {
             int size;
             
@@ -592,7 +557,7 @@ namespace JQuant
             
             return size;
         }
-        
+          
         public string GetName()
         {
             return name;
@@ -602,6 +567,22 @@ namespace JQuant
         {
             return timerTask.Name;
         }
+        
+        public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
+        {
+            names = new System.Collections.ArrayList(12);
+            values = new System.Collections.ArrayList(12);
+
+
+            names.Add("Size");values.Add(GetSize());
+            names.Add("Start");values.Add(countStart);
+            names.Add("Expired");values.Add(countExpired);
+            names.Add("Stop");values.Add(countStop);
+            names.Add("PendingTimers");values.Add(pendingTimers.Count);
+            names.Add("StartAttempt");values.Add(countStartAttempt);
+            names.Add("StopAttempt");values.Add(countStopAttempt);
+        }
+
         
         /// <summary>
         /// stack of free timers
