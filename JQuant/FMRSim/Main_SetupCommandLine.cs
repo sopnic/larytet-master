@@ -145,35 +145,7 @@ namespace JQuant
 
         protected void debugPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            iWrite.WriteLine(
-                OutputUtils.FormatField("Name", 10) +
-                OutputUtils.FormatField("Capacity", 10) +
-                OutputUtils.FormatField("Count", 10) +
-                OutputUtils.FormatField("MinCount", 10) +
-                OutputUtils.FormatField("AllocOk", 10) +
-                OutputUtils.FormatField("AllocFail", 10) +
-                OutputUtils.FormatField("Free", 10)
-            );
-            iWrite.WriteLine("---------------------------------------------------------------------------------");
-            bool isEmpty = true;
-            foreach (IPool iPool in Resources.Pools)
-            {
-                isEmpty = false;
-                iWrite.WriteLine(
-                    OutputUtils.FormatField(iPool.GetName(), 10) +
-                    OutputUtils.FormatField(iPool.GetCapacity(), 10) +
-                    OutputUtils.FormatField(iPool.GetCount(), 10) +
-                    OutputUtils.FormatField(iPool.GetMinCount(), 10) +
-                    OutputUtils.FormatField(iPool.GetAllocOk(), 10) +
-                    OutputUtils.FormatField(iPool.GetAllocFailed(), 10) +
-                    OutputUtils.FormatField(iPool.GetFreeOk(), 10)
-                );
-
-            }
-            if (isEmpty)
-            {
-                iWrite.WriteLine("No pools");
-            }
+            debugPrintResourcesNameAndStats(iWrite, Resources.Pools);
         }
 
         protected void debugLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)

@@ -57,15 +57,8 @@ namespace JQuant
     /// <summary>
     /// objects implementing Pool interface
     /// </summary>
-    public interface IPool
+    public interface IResourcePool: INamedResource, IResourceStatistics
     {
-        string GetName();
-        int GetCapacity();
-        int GetCount();
-        int GetMinCount();
-        int GetAllocOk();
-        int GetAllocFailed();
-        int GetFreeOk();
     }
 
     public enum LogType
@@ -169,7 +162,7 @@ namespace JQuant
         {
             Mailboxes = new System.Collections.ArrayList(10);
             Threads = new List<IThread>(10);
-            Pools = new List<IPool>(10);
+            Pools = new System.Collections.ArrayList (10);
             Loggers = new List<ILogger>(10);
             DataGenerators = new List<IDataGenerator>(10);
             TimerLists = new  List<IResourceTimerList>(5);
@@ -202,7 +195,7 @@ namespace JQuant
         /// </summary>
         public static List<IThread> Threads;
 
-        public static List<IPool> Pools;
+        public static System.Collections.ArrayList Pools;
 
         public static List<ILogger> Loggers;
 
