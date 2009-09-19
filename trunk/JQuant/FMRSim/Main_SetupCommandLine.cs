@@ -524,7 +524,9 @@ namespace JQuant
                 OutputUtils.FormatField("MaxJobs", 10) +
                 OutputUtils.FormatField("PlcdJobs", 10) +
                 OutputUtils.FormatField("PdngJobs", 10) +
-                OutputUtils.FormatField("Rnngobs", 10)
+                OutputUtils.FormatField("Rnngobs", 10) +
+                OutputUtils.FormatField("FPlcJob", 10) +
+                OutputUtils.FormatField("FRfrQ", 10)
             );
             System.Console.WriteLine("---------------------------------------------------------------------------------------------------");
             bool isEmpty = true;
@@ -541,7 +543,9 @@ namespace JQuant
                     OutputUtils.FormatField(threadPool.GetCountMaxJobs(), 10) +
                     OutputUtils.FormatField(threadPool.GetCountPlacedJobs(), 10) +
                     OutputUtils.FormatField(threadPool.GetCountPendingJobs(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountRunningJobs(), 10)
+                    OutputUtils.FormatField(threadPool.GetCountRunningJobs(), 10) +
+                    OutputUtils.FormatField(threadPool.GetCountFailedPlaceJob(), 10) +
+                    OutputUtils.FormatField(threadPool.GetCountFailedRefreshQueue(), 10)
                 );
 
             }

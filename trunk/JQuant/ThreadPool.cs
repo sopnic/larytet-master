@@ -156,6 +156,7 @@ namespace JQuant
         {
             bool result = false;
             JobParams jobParams = default(JobParams);
+            bool shouldSpawnJob;
             
             do
             {
@@ -167,6 +168,11 @@ namespace JQuant
                         jobParams = freeJobs.Pop();
                         jobParams.Init(job, jobDone, jobArgument);
                         pendingJobs.Enqueue(jobParams);
+                        
+                        // just to be sure that there is a thread to serve the new 
+                        // job allocate a free thread (if there is any)
+                        shouldSpawnJob = (countRunningThreads == 0);
+                        
                         if (countMaxJobs < pendingJobs.Count)
                         {
                             countMaxJobs = pendingJobs.Count;
@@ -181,18 +187,10 @@ namespace JQuant
                     }                        
                 }
                 
-                // just to be sure that there is a thread to serve the new 
-                // job allocate a free thread (if there is any)
-                bool shouldSpawnJob = (countRunningThreads == 0);
                 if (shouldSpawnJob)
                 {
                     RefreshQueue();
                 }
-                else
-                {
-                    System.Console.WriteLine("PlaceJob.!shouldSpawnJob");
-                }
-                    
                     
                 result = true;
             }
@@ -218,7 +216,6 @@ namespace JQuant
                 // queue of pending jobs
                 if (!shouldSpawnJob)
                 {
-                    System.Console.WriteLine("RefreshQueue.!shouldSpawnJob");
                     break;
                 }
             
@@ -244,7 +241,11 @@ namespace JQuant
                     break;
                 }
 
-                System.Console.WriteLine("RefreshQueue.shouldSpawnJob and no threads");
+                lock (this)
+                {
+                    countFailedRefreshQueue++;
+                }
+                
                 // i have to wait. there are no available threads and no thread is
                 // running. should not be too long before a thread finishes
                 Thread.Sleep(1);
@@ -353,6 +354,16 @@ namespace JQuant
             return runningThreads.Count;
         }
         
+        public int GetCountFailedPlaceJob()
+        {
+            return countFailedPlaceJob;
+        }
+        
+        public int GetCountFailedRefreshQueue()
+        {
+            return countFailedRefreshQueue;
+        }
+        
         protected string Name;
         protected int Threads;
         protected int Jobs;
@@ -364,6 +375,8 @@ namespace JQuant
         protected int countPlacedJobs;
         protected int countPendingJobs;
         protected int countRunningJobs;
+        protected int countFailedPlaceJob;
+        protected int countFailedRefreshQueue;
 
         Stack<JobThread> jobThreads;
         List<JobThread> runningThreads;

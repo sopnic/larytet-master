@@ -178,6 +178,8 @@ namespace JQuant
         int GetCountPlacedJobs();
         int GetCountPendingJobs();
         int GetCountRunningJobs();
+        int GetCountFailedPlaceJob();
+        int GetCountFailedRefreshQueue();
     }
     
     /// <summary>
