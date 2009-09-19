@@ -295,10 +295,7 @@ namespace JQuant
                 {
                     countStart++;
                     pendingTimers.Add(timer);
-                    if (countMax < pendingTimers.Count)
-                    {
-                        countMax = pendingTimers.Count;
-                    }
+                    countMax = Math.Max(countMax, pendingTimers.Count);
                 }
 
                 // send wakeup call to the task handling the timers

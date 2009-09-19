@@ -21,6 +21,7 @@ namespace JQuant
             Resources.Threads.Add(this);
 
             _state = ThreadState.Initialized;
+            longestJobTime = 0;
         }
 
         protected void Dispose()
@@ -61,7 +62,10 @@ namespace JQuant
                 bool result = _mailbox.Receive(out msg);
                 if (result)
                 {
+                    long tick = DateTime.Now.Ticks;
                     HandleMessage(msg);
+                    tick = DateTime.Now.Ticks - tick;
+                    longestJobTime = Math.Max(longestJobTime, tick);
                 }
             }
 
@@ -108,6 +112,14 @@ namespace JQuant
             return _state;
         }
 
+        /// <summary>
+        /// returns maximum time call to HandleMessage() took (microseconds)
+        /// </summary>
+        public long GetLongestJob()
+        {
+            return longestJobTime/10;
+        }
+        
         public void WaitForTermination()
         {
             _thread.Join();
@@ -124,5 +136,6 @@ namespace JQuant
         protected ThreadState _state;
         protected Thread _thread;
         protected string _name;
+        protected long longestJobTime;
     }
 }

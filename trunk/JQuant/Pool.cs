@@ -119,10 +119,7 @@ namespace JQuant
                     obj = Pop();
                     result = true;
                     _allocOk++;
-                    if (_minCount > Count)
-                    {
-                        _minCount = Count;
-                    }
+                    _minCount = Math.Min(_minCount, Count);
                 }
                 else
                 {

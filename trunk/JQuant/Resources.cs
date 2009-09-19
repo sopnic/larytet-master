@@ -36,7 +36,7 @@ namespace JQuant
     {
         [Description("Initialized")]
         Initialized,
-        [Description("Satrted")]
+        [Description("Started")]
         Started,
         [Description("Stoped")]
         Stoped,
@@ -52,6 +52,7 @@ namespace JQuant
     {
         ThreadState GetState();
         string GetName();
+        long GetLongestJob();
     }
 
     /// <summary>

@@ -24,6 +24,8 @@ namespace JQuant
             _received = 0;
             _timeouts = 0;
 
+            semaphore = new Semaphore(0, Int16.MaxValue);
+
             // add myself to the list of created mailboxes
             Resources.Mailboxes.Add(this);
         }
@@ -31,6 +33,7 @@ namespace JQuant
         public void Dispose()
         {
             Clear();
+            semaphore.Close();
 
             // remove myself from the list of created mailboxes
             Resources.Mailboxes.Remove(this);
@@ -59,7 +62,6 @@ namespace JQuant
             {
                 if (Count < _capacity)
                 {
-                    Monitor.Pulse(this);
                     Enqueue(message);
                     result = true;
                     _sent++;
@@ -69,8 +71,9 @@ namespace JQuant
                     Monitor.Pulse(this);
                     _dropped++;
                 }
+                _maxCount = Math.Max(_maxCount, Count);
             }
-            if (_maxCount < Count) _maxCount = Count;
+            semaphore.Release();
 
             return result;
         }
@@ -81,10 +84,7 @@ namespace JQuant
         /// </summary>
         public void Pulse()
         {
-            lock (this)
-            {
-                Monitor.Pulse(this);
-            }
+            semaphore.Release();
         }
 
         /// <summary>
@@ -102,17 +102,24 @@ namespace JQuant
             bool result = false;
             message = default(Message);
 
+            result = semaphore.WaitOne();
+
+
             lock (this)
             {
-                if (Count == 0) Monitor.Wait(this, 1000);
                 if (Count != 0)
                 {
                     _received++;
                     message = Dequeue();
                     result = true;
                 }
+                else
+                {
+                    result = false;
+                }
             }
 
+                
             return result;
         }
 
@@ -134,18 +141,19 @@ namespace JQuant
         {
             bool result = false;
 
+            result = semaphore.WaitOne(timeout, true);
+            
             lock (this)
             {
-                while (Count == 0) result = Monitor.Wait(this, timeout);
-                if (result)
+                if ((result) && (Count > 0))
                 {
                     _received++;
                     message = Dequeue();
-                    result = true;
                 }
                 else
                 {
                     _timeouts++;
+                    result = false;
                 }
             }
 
@@ -159,8 +167,8 @@ namespace JQuant
 
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
-            names = new System.Collections.ArrayList(12);
-            values = new System.Collections.ArrayList(12);
+            names = new System.Collections.ArrayList(8);
+            values = new System.Collections.ArrayList(8);
 
             names.Add("Size");values.Add(_capacity);
             names.Add("MaxCount");values.Add(_maxCount);
@@ -180,6 +188,8 @@ namespace JQuant
         protected int _sent;
         protected int _received;
         protected int _timeouts;
+
+        protected Semaphore semaphore;
 
     }
 }
