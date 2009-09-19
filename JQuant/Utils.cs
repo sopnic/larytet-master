@@ -41,7 +41,7 @@ namespace JQuant
         /// <summary>
         /// add trailing blanks to the integer if neccessary 
         /// </summary>
-        static public string FormatField(int value, int fieldSize)
+        static public string FormatField(long value, int fieldSize)
         {
             StringBuilder s = new StringBuilder("" + value, fieldSize);
 

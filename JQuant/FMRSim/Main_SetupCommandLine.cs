@@ -110,18 +110,21 @@ namespace JQuant
 
         protected void debugThreadShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
+            iWrite.WriteLine();
             iWrite.WriteLine(
                 OutputUtils.FormatField("Name", 10) +
-                OutputUtils.FormatField("State", 14)
+                OutputUtils.FormatField("State", 14) +
+                OutputUtils.FormatField("Ticks", 10)
             );
-            iWrite.WriteLine("---------------------------------");
+            iWrite.WriteLine("-------------------------------------------");
             bool isEmpty = true;
             foreach (IThread iThread in Resources.Threads)
             {
                 isEmpty = false;
                 iWrite.WriteLine(
                     OutputUtils.FormatField(iThread.GetName(), 10) +
-                    OutputUtils.FormatField(EnumUtils.GetDescription(iThread.GetState()), 14)
+                    OutputUtils.FormatField(EnumUtils.GetDescription(iThread.GetState()), 14) +
+                    OutputUtils.FormatField(iThread.GetLongestJob(), 10)
                 );
 
             }
