@@ -165,21 +165,25 @@ namespace JQuant
         string GetName();
         string GetTaskName();
     }
-    
-    public interface IResourceThreadPool
+
+    public interface IResourceStatistics
     {
-        int GetThreads();
-        int GetJobs();
+        /// <summary>
+        /// returns array of debug counters
+        /// </summary>
+        void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values);
+    }
+    
+    public interface INamedResource
+    {
+        /// <summary>
+        /// returns name of the resource
+        /// </summary>
         string GetName();
-        int GetMaxCount();
-        int GetCountStart();
-        int GetCountDone();
-        int GetCountMaxJobs();
-        int GetCountPlacedJobs();
-        int GetCountPendingJobs();
-        int GetCountRunningJobs();
-        int GetCountFailedPlaceJob();
-        int GetCountFailedRefreshQueue();
+    }
+    
+    public interface IResourceThreadPool :IResourceStatistics, INamedResource
+    {
     }
     
     /// <summary>
