@@ -27,32 +27,8 @@ namespace JQuant
     /// <summary>
     /// objects implementing Mailbox
     /// </summary>
-    public interface IMailbox
+    public interface IResourceMailbox: INamedResource, IResourceStatistics
     {
-        /// <summary>
-        /// return name of the mailbox
-        /// </summary>
-        string GetName();
-
-        /// <summary>
-        /// number of messages in the queue
-        /// </summary>
-        int GetCount();
-
-        /// <summary>
-        /// maximum size recorded
-        /// </summary>
-        int GetMaxCount();
-
-        /// <summary>
-        /// mailbox capacity
-        /// </summary>
-
-        int GetCapacity();
-        int GetSent();
-        int GetDropped();
-        int GetReceived();
-        int GetTimeouts();
     }
 
 
@@ -191,13 +167,13 @@ namespace JQuant
         /// </summary>
         protected Resources()
         {
-            Mailboxes = new List<IMailbox>(10);
+            Mailboxes = new System.Collections.ArrayList(10);
             Threads = new List<IThread>(10);
             Pools = new List<IPool>(10);
             Loggers = new List<ILogger>(10);
             DataGenerators = new List<IDataGenerator>(10);
             TimerLists = new  List<IResourceTimerList>(5);
-            ThreadPools = new List<IResourceThreadPool>(2);
+            ThreadPools = new System.Collections.ArrayList(2);
         }
 
         static public void Init()
@@ -215,7 +191,7 @@ namespace JQuant
         /// <summary>
         /// created in the system mailboxes
         /// </summary>
-        public static List<IMailbox> Mailboxes;
+        public static System.Collections.ArrayList Mailboxes;
 
         /// <summary>
         /// i expect that creation of threads is not an often operation
@@ -234,7 +210,7 @@ namespace JQuant
 
         public static List<IResourceTimerList> TimerLists;
 
-        public static List<IResourceThreadPool> ThreadPools;
+        public static System.Collections.ArrayList ThreadPools;
 
         static protected Resources r;
     }
