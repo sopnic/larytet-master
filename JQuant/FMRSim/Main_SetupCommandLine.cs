@@ -1,6 +1,7 @@
 
 using System;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace JQuant
 {
@@ -511,47 +512,108 @@ namespace JQuant
             }
             
         }
+
+
+        protected void printSeparator(IWrite iWrite, int length)
+        {
+            string s = "";
+            
+            for (int i = 0;i < length;i++)
+            {
+                s = s + "-";
+            }
+            iWrite.WriteLine(s);
+        }
+        
+        protected void printTableHeader(IWrite iWrite, System.Collections.ArrayList names, int columnSize)
+        {
+            int line = 0;
+            bool printed = true;
+            int charsInColumn = columnSize - 1;
+            int maxOutputSLength = 0;
+            
+            while (printed)
+            {
+                printed = false;
+                string outputS = "";
+                
+                for (int i = 0;i < names.Count;i++)
+                {
+                    string s = "";
+                    string name = names[i].ToString();
+                    
+                    // get (columnSize-1) chars from the name[i]
+                    if (name.Length > line * charsInColumn)
+                    {
+                        int temp = System.Math.Min(name.Length - line * charsInColumn, charsInColumn);
+                        s = name.Substring(line * charsInColumn, temp);
+                        printed = true;
+                    }
+
+                    // add blank up to columnSize
+                    s = OutputUtils.FormatField(s, columnSize);
+                    outputS += s;
+                }
+
+                if (printed)
+                {
+                    iWrite.WriteLine(outputS);
+                    if (maxOutputSLength < outputS.Length)
+                    {
+                        maxOutputSLength = outputS.Length;
+                    }
+                }
+
+                line++;
+            }
+
+            printSeparator(iWrite, maxOutputSLength);
+        }
+        
+        protected void printValues(IWrite iWrite, System.Collections.ArrayList values, int columnSize)
+        {
+            string outputS = "";
+            for (int i = 0;i < values.Count;i++)
+            {
+                string s = "";
+
+                // add blank up to columnSize
+                s = OutputUtils.FormatField(values[i].ToString(), columnSize);
+                outputS += s;
+            }
+            iWrite.WriteLine(outputS);
+        }
         
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            System.Console.WriteLine(
-                OutputUtils.FormatField("Name", 10) +
-                OutputUtils.FormatField("Thrds", 10) +
-                OutputUtils.FormatField("Jobs", 10) +
-                OutputUtils.FormatField("MaxThrds", 10) +
-                OutputUtils.FormatField("Start", 10) +
-                OutputUtils.FormatField("Done", 10) +
-                OutputUtils.FormatField("MaxJobs", 10) +
-                OutputUtils.FormatField("PlcdJobs", 10) +
-                OutputUtils.FormatField("PdngJobs", 10) +
-                OutputUtils.FormatField("Rnngobs", 10) +
-                OutputUtils.FormatField("FPlcJob", 10) +
-                OutputUtils.FormatField("FRfrQ", 10)
-            );
-            System.Console.WriteLine("---------------------------------------------------------------------------------------------------");
+            System.Collections.ArrayList names;
+            System.Collections.ArrayList values;
+            int entry = 0;
+            int columnSize = 8;
+            
             bool isEmpty = true;
+            
+            iWrite.WriteLine();
+            
             foreach (IResourceThreadPool threadPool in Resources.ThreadPools)
             {
+                threadPool.GetEventCounters(out names, out values);
                 isEmpty = false;
-                System.Console.WriteLine(
-                    OutputUtils.FormatField(threadPool.GetName(), 10) +
-                    OutputUtils.FormatField(threadPool.GetThreads(), 10) +
-                    OutputUtils.FormatField(threadPool.GetJobs(), 10) +
-                    OutputUtils.FormatField(threadPool.GetMaxCount(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountStart(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountDone(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountMaxJobs(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountPlacedJobs(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountPendingJobs(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountRunningJobs(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountFailedPlaceJob(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountFailedRefreshQueue(), 10)
-                );
+
+                if (entry == 0)
+                {
+                    names.Insert(0, "ThreadPoolName");
+                    printTableHeader(iWrite, names, columnSize);
+                }
+                values.Insert(0, OutputUtils.FormatField(threadPool.GetName(), columnSize));
+                printValues(iWrite, values, columnSize);
+                
+                entry++;
 
             }
             if (isEmpty)
             {
-                System.Console.WriteLine("No thread pool");
+                System.Console.WriteLine("No thread pools");
             }
         }
         

@@ -304,64 +304,29 @@ namespace JQuant
             }
         }
         
-        public int GetThreads()
-        {
-            return Threads;
-        }
-        
-        public int GetJobs()
-        {
-            return Jobs;
-        }
-        
         public string GetName()
         {
             return Name;
         }
         
-        public int GetMaxCount()
+        public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
-            return (Threads-MinThreadsFree);
-        }
-        
-        public int GetCountStart()
-        {
-            return countStart;
-        }
-        
-        public int GetCountDone()
-        {
-            return countDone;
-        }
-        
-        public int GetCountMaxJobs()
-        {
-            return countMaxJobs;
-        }
-        
-        public int GetCountPlacedJobs()
-        {
-            return countPlacedJobs;
-        }
-        
-        public int GetCountPendingJobs()
-        {
-            return pendingJobs.Count;
-        }
-        
-        public int GetCountRunningJobs()
-        {
-            return runningThreads.Count;
-        }
-        
-        public int GetCountFailedPlaceJob()
-        {
-            return countFailedPlaceJob;
-        }
-        
-        public int GetCountFailedRefreshQueue()
-        {
-            return countFailedRefreshQueue;
+            names = new System.Collections.ArrayList(12);
+            values = new System.Collections.ArrayList(12);
+
+
+            names.Add("Threads");values.Add(Threads);
+            names.Add("Jobs");values.Add(Jobs);
+            names.Add("MinThreadsFree");values.Add(MinThreadsFree);
+            names.Add("MaxJobs");values.Add(countMaxJobs);
+            names.Add("Start");values.Add(countStart);
+            names.Add("Done");values.Add(countDone);
+            names.Add("RunningThreads");values.Add(countRunningThreads);
+            names.Add("PlacedJobs");values.Add(countPlacedJobs);
+            names.Add("PendingJobs");values.Add(countPendingJobs);
+            names.Add("RunningJobs");values.Add(countRunningJobs);
+            names.Add("FailedPlaceJob");values.Add(countFailedPlaceJob);
+            names.Add("FailedRefreshQueue");values.Add(countFailedRefreshQueue);
         }
         
         protected string Name;
