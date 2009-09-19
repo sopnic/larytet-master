@@ -14,7 +14,7 @@ namespace JQuant
     /// The API is thread safe. Size of the pool is fixed. Initially the pool is empty.
     /// To fill the pool one of the "Fill" methods should be called
     /// </summary>
-    public class Pool<ObjectType> : Stack<ObjectType>, IPool, IDisposable
+    public class Pool<ObjectType> : Stack<ObjectType>, IResourcePool, IDisposable
     {
 
         /// <summary>
@@ -119,9 +119,9 @@ namespace JQuant
                     obj = Pop();
                     result = true;
                     _allocOk++;
-                    if (_minCount < Count)
+                    if (_minCount > Count)
                     {
-                        _minCount++;
+                        _minCount = Count;
                     }
                 }
                 else
@@ -154,34 +154,18 @@ namespace JQuant
             return _name;
         }
 
-        public int GetCapacity()
+        public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
-            return _capacity;
-        }
+            names = new System.Collections.ArrayList(7);
+            values = new System.Collections.ArrayList(7);
 
-        public int GetCount()
-        {
-            return Count;
-        }
 
-        public int GetMinCount()
-        {
-            return _minCount;
-        }
-
-        public int GetAllocOk()
-        {
-            return _allocOk;
-        }
-
-        public int GetAllocFailed()
-        {
-            return _allocFailed;
-        }
-
-        public int GetFreeOk()
-        {
-            return _freeOk;
+            names.Add("Capacity");values.Add(_capacity);
+            names.Add("Count");values.Add(Count);
+            names.Add("MinCount");values.Add(_minCount);
+            names.Add("AllocOk");values.Add(_allocOk);
+            names.Add("AllocFailed");values.Add(_allocFailed);
+            names.Add("FreeOk");values.Add(_freeOk);
         }
 
 
