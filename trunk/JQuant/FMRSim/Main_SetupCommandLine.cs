@@ -486,25 +486,20 @@ namespace JQuant
 
         protected void debugThreadPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            // check what is the tick
+            int maxJobs = 5;
+            JQuant.ThreadPool threadPool = new JQuant.ThreadPool("test", 1, maxJobs, ThreadPriority.Lowest);
+
+            threadpoolTestTicks = new long[maxJobs];
+            long tick = DateTime.Now.Ticks;
+            for (int i = 0;i < maxJobs;i++)
             {
-                long tickTest = DateTime.Now.Ticks;
-                Thread.Sleep(10);
-                tickTest = DateTime.Now.Ticks - tickTest;
-                iWrite.WriteLine("10 ms contain " + tickTest/1000 + " thousands ticks");
+                threadpoolTestTicks[i] = tick;
             }
             
-            JQuant.ThreadPool threadPool = new JQuant.ThreadPool("test", 1, 3, ThreadPriority.Lowest);
-
-            threadpoolTestTicks = new long[3];
-            long tick = DateTime.Now.Ticks;
-            threadpoolTestTicks[0] = tick;
-            threadpoolTestTicks[1] = tick;
-            threadpoolTestTicks[2] = tick;
-            
-            threadPool.PlaceJob(ThreadPoolJobEnter, ThreadPoolJobDone, 0);
-            threadPool.PlaceJob(ThreadPoolJobEnter, ThreadPoolJobDone, 1);
-            threadPool.PlaceJob(ThreadPoolJobEnter, ThreadPoolJobDone, 2);
+            for (int i = 0;i < maxJobs;i++)
+            {
+                threadPool.PlaceJob(ThreadPoolJobEnter, ThreadPoolJobDone, i);
+            }
             Thread.Sleep(500);
             
             debugThreadPoolShowCallback(iWrite, cmdName, cmdArguments);
@@ -520,27 +515,33 @@ namespace JQuant
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             System.Console.WriteLine(
-                OutputUtils.FormatField("Name", 14) +
+                OutputUtils.FormatField("Name", 10) +
                 OutputUtils.FormatField("Thrds", 10) +
                 OutputUtils.FormatField("Jobs", 10) +
                 OutputUtils.FormatField("MaxThrds", 10) +
                 OutputUtils.FormatField("Start", 10) +
                 OutputUtils.FormatField("Done", 10) +
-                OutputUtils.FormatField("MaxJobs", 10)
+                OutputUtils.FormatField("MaxJobs", 10) +
+                OutputUtils.FormatField("PlcdJobs", 10) +
+                OutputUtils.FormatField("PdngJobs", 10) +
+                OutputUtils.FormatField("Rnngobs", 10)
             );
-            System.Console.WriteLine("-------------------------------------------------------------------------------");
+            System.Console.WriteLine("---------------------------------------------------------------------------------------------------");
             bool isEmpty = true;
             foreach (IResourceThreadPool threadPool in Resources.ThreadPools)
             {
                 isEmpty = false;
                 System.Console.WriteLine(
-                    OutputUtils.FormatField(threadPool.GetName(), 14) +
+                    OutputUtils.FormatField(threadPool.GetName(), 10) +
                     OutputUtils.FormatField(threadPool.GetThreads(), 10) +
                     OutputUtils.FormatField(threadPool.GetJobs(), 10) +
                     OutputUtils.FormatField(threadPool.GetMaxCount(), 10) +
                     OutputUtils.FormatField(threadPool.GetCountStart(), 10) +
                     OutputUtils.FormatField(threadPool.GetCountDone(), 10) +
-                    OutputUtils.FormatField(threadPool.GetCountMaxJobs(), 10)
+                    OutputUtils.FormatField(threadPool.GetCountMaxJobs(), 10) +
+                    OutputUtils.FormatField(threadPool.GetCountPlacedJobs(), 10) +
+                    OutputUtils.FormatField(threadPool.GetCountPendingJobs(), 10) +
+                    OutputUtils.FormatField(threadPool.GetCountRunningJobs(), 10)
                 );
 
             }

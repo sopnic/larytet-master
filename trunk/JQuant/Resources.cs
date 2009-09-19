@@ -175,6 +175,9 @@ namespace JQuant
         int GetCountStart();
         int GetCountDone();
         int GetCountMaxJobs();
+        int GetCountPlacedJobs();
+        int GetCountPendingJobs();
+        int GetCountRunningJobs();
     }
     
     /// <summary>
