@@ -436,34 +436,31 @@ namespace JQuant
 
         protected void debugTimerShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            System.Console.WriteLine(
-                OutputUtils.FormatField("Name", 14) +
-                OutputUtils.FormatField("Task", 14) +
-                OutputUtils.FormatField("Size", 10) +
-                OutputUtils.FormatField("MaxCount", 10) +
-                OutputUtils.FormatField("Pending", 10) +
-                OutputUtils.FormatField("StartA", 10) +
-                OutputUtils.FormatField("Start", 10) +
-                OutputUtils.FormatField("StopA", 10) +
-                OutputUtils.FormatField("Stop", 10) +
-                OutputUtils.FormatField("Expired", 10)
-            );
-            System.Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+            System.Collections.ArrayList names;
+            System.Collections.ArrayList values;
+            int entry = 0;
+            int columnSize = 12;
+            
             bool isEmpty = true;
+            
+            ((JQuant.IWrite)this).WriteLine();
+            
             foreach (IResourceTimerList timerList in Resources.TimerLists)
             {
+                timerList.GetEventCounters(out names, out values);
                 isEmpty = false;
-                System.Console.WriteLine(
-                    OutputUtils.FormatField(timerList.GetName(), 14) +
-                    OutputUtils.FormatField(timerList.GetTaskName(), 14) +
-                    OutputUtils.FormatField(timerList.GetSize(), 10) +
-                    OutputUtils.FormatField(timerList.GetMaxCount(), 10) +
-                    OutputUtils.FormatField(timerList.GetPendingTimers(), 10) +
-                    OutputUtils.FormatField(timerList.GetCountStartAttempt(), 10) +
-                    OutputUtils.FormatField(timerList.GetCountStart(), 10) +
-                    OutputUtils.FormatField(timerList.GetCountStopAttempt(), 10) +
-                    OutputUtils.FormatField(timerList.GetCountStop(), 10)
-                );
+
+                if (entry == 0)
+                {
+                    names.Insert(0, "TimerListName");
+                    names.Insert(0, "TimerTaskName");
+                    CommandLineInterface.printTableHeader((JQuant.IWrite)this, names, columnSize);
+                }
+                values.Insert(0, OutputUtils.FormatField(timerList.GetName(), columnSize));
+                values.Insert(0, OutputUtils.FormatField(timerList.GetTaskName(), columnSize));
+                CommandLineInterface.printValues((JQuant.IWrite)this, values, columnSize);
+                
+                entry++;
 
             }
             if (isEmpty)
@@ -514,75 +511,6 @@ namespace JQuant
         }
 
 
-        protected void printSeparator(IWrite iWrite, int length)
-        {
-            string s = "";
-            
-            for (int i = 0;i < length;i++)
-            {
-                s = s + "-";
-            }
-            iWrite.WriteLine(s);
-        }
-        
-        protected void printTableHeader(IWrite iWrite, System.Collections.ArrayList names, int columnSize)
-        {
-            int line = 0;
-            bool printed = true;
-            int charsInColumn = columnSize - 1;
-            int maxOutputSLength = 0;
-            
-            while (printed)
-            {
-                printed = false;
-                string outputS = "";
-                
-                for (int i = 0;i < names.Count;i++)
-                {
-                    string s = "";
-                    string name = names[i].ToString();
-                    
-                    // get (columnSize-1) chars from the name[i]
-                    if (name.Length > line * charsInColumn)
-                    {
-                        int temp = System.Math.Min(name.Length - line * charsInColumn, charsInColumn);
-                        s = name.Substring(line * charsInColumn, temp);
-                        printed = true;
-                    }
-
-                    // add blank up to columnSize
-                    s = OutputUtils.FormatField(s, columnSize);
-                    outputS += s;
-                }
-
-                if (printed)
-                {
-                    iWrite.WriteLine(outputS);
-                    if (maxOutputSLength < outputS.Length)
-                    {
-                        maxOutputSLength = outputS.Length;
-                    }
-                }
-
-                line++;
-            }
-
-            printSeparator(iWrite, maxOutputSLength);
-        }
-        
-        protected void printValues(IWrite iWrite, System.Collections.ArrayList values, int columnSize)
-        {
-            string outputS = "";
-            for (int i = 0;i < values.Count;i++)
-            {
-                string s = "";
-
-                // add blank up to columnSize
-                s = OutputUtils.FormatField(values[i].ToString(), columnSize);
-                outputS += s;
-            }
-            iWrite.WriteLine(outputS);
-        }
         
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -603,10 +531,10 @@ namespace JQuant
                 if (entry == 0)
                 {
                     names.Insert(0, "ThreadPoolName");
-                    printTableHeader(iWrite, names, columnSize);
+                    CommandLineInterface.printTableHeader(iWrite, names, columnSize);
                 }
                 values.Insert(0, OutputUtils.FormatField(threadPool.GetName(), columnSize));
-                printValues(iWrite, values, columnSize);
+                CommandLineInterface.printValues(iWrite, values, columnSize);
                 
                 entry++;
 

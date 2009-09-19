@@ -341,5 +341,77 @@ namespace JQuant
             iWrite.WriteLine("");
         }
 
+
+        public static void printSeparator(IWrite iWrite, int length)
+        {
+            string s = "";
+            
+            for (int i = 0;i < length;i++)
+            {
+                s = s + "-";
+            }
+            iWrite.WriteLine(s);
+        }
+        
+        public static void printTableHeader(IWrite iWrite, System.Collections.ArrayList names, int columnSize)
+        {
+            int line = 0;
+            bool printed = true;
+            int charsInColumn = columnSize - 1;
+            int maxOutputSLength = 0;
+            
+            while (printed)
+            {
+                printed = false;
+                string outputS = "";
+                
+                for (int i = 0;i < names.Count;i++)
+                {
+                    string s = "";
+                    string name = names[i].ToString();
+                    
+                    // get (columnSize-1) chars from the name[i]
+                    if (name.Length > line * charsInColumn)
+                    {
+                        int temp = System.Math.Min(name.Length - line * charsInColumn, charsInColumn);
+                        s = name.Substring(line * charsInColumn, temp);
+                        printed = true;
+                    }
+
+                    // add blank up to columnSize
+                    s = OutputUtils.FormatField(s, columnSize);
+                    outputS += s;
+                }
+
+                if (printed)
+                {
+                    iWrite.WriteLine(outputS);
+                    if (maxOutputSLength < outputS.Length)
+                    {
+                        maxOutputSLength = outputS.Length;
+                    }
+                }
+
+                line++;
+            }
+
+            printSeparator(iWrite, maxOutputSLength);
+        }
+        
+        public static void printValues(IWrite iWrite, System.Collections.ArrayList values, int columnSize)
+        {
+            string outputS = "";
+            for (int i = 0;i < values.Count;i++)
+            {
+                string s = "";
+
+                // add blank up to columnSize
+                s = OutputUtils.FormatField(values[i].ToString(), columnSize);
+                outputS += s;
+            }
+            iWrite.WriteLine(outputS);
+        }
+
+        
     }
 }
