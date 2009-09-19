@@ -10,39 +10,46 @@ namespace JQuant
     partial class Program
     {
 
-        protected void debugMbxShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
-        {
-            iWrite.WriteLine(
-                OutputUtils.FormatField("Name", 10) +
-                OutputUtils.FormatField("Capacity", 10) +
-                OutputUtils.FormatField("Count", 10) +
-                OutputUtils.FormatField("MaxCount", 10) +
-                OutputUtils.FormatField("Dropped", 10) +
-                OutputUtils.FormatField("Sent", 10) +
-                OutputUtils.FormatField("Received", 10) +
-                OutputUtils.FormatField("Timeouts", 10)
-            );
-            iWrite.WriteLine("---------------------------------------------------------------------------------");
+        protected void debugPrintResourcesNameAndStats(IWrite iWrite, System.Collections.ArrayList list)
+        {            
+            int entry = 0;
+            int columnSize = 8;
+            
             bool isEmpty = true;
-            foreach (IMailbox iMbx in Resources.Mailboxes)
+            
+            iWrite.WriteLine();
+            
+            foreach (INamedResource resNamed in list)
             {
                 isEmpty = false;
-                iWrite.WriteLine(
-                    OutputUtils.FormatField(iMbx.GetName(), 10) +
-                    OutputUtils.FormatField(iMbx.GetCapacity(), 10) +
-                    OutputUtils.FormatField(iMbx.GetCount(), 10) +
-                    OutputUtils.FormatField(iMbx.GetMaxCount(), 10) +
-                    OutputUtils.FormatField(iMbx.GetDropped(), 10) +
-                    OutputUtils.FormatField(iMbx.GetSent(), 10) +
-                    OutputUtils.FormatField(iMbx.GetReceived(), 10) +
-                    OutputUtils.FormatField(iMbx.GetTimeouts(), 10)
-                );
+                
+                IResourceStatistics resStat = (IResourceStatistics)resNamed;
+                
+                System.Collections.ArrayList names;
+                System.Collections.ArrayList values;
+                resStat.GetEventCounters(out names, out values);
+
+                if (entry == 0)
+                {
+                    names.Insert(0, "Name");
+                    CommandLineInterface.printTableHeader(iWrite, names, columnSize);
+                }
+                values.Insert(0, OutputUtils.FormatField(resNamed.GetName(), columnSize));
+                CommandLineInterface.printValues(iWrite, values, columnSize);
+                
+                entry++;
 
             }
             if (isEmpty)
             {
-                iWrite.WriteLine("No mailboxes");
+                System.Console.WriteLine("Table is empry - no resources registered");
             }
+        }
+
+
+        protected void debugMbxShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            debugPrintResourcesNameAndStats(iWrite, Resources.Mailboxes);
         }
 
         protected void debugMbxTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -509,40 +516,10 @@ namespace JQuant
             }
             
         }
-
-
         
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            System.Collections.ArrayList names;
-            System.Collections.ArrayList values;
-            int entry = 0;
-            int columnSize = 8;
-            
-            bool isEmpty = true;
-            
-            iWrite.WriteLine();
-            
-            foreach (IResourceThreadPool threadPool in Resources.ThreadPools)
-            {
-                threadPool.GetEventCounters(out names, out values);
-                isEmpty = false;
-
-                if (entry == 0)
-                {
-                    names.Insert(0, "ThreadPoolName");
-                    CommandLineInterface.printTableHeader(iWrite, names, columnSize);
-                }
-                values.Insert(0, OutputUtils.FormatField(threadPool.GetName(), columnSize));
-                CommandLineInterface.printValues(iWrite, values, columnSize);
-                
-                entry++;
-
-            }
-            if (isEmpty)
-            {
-                System.Console.WriteLine("No thread pools");
-            }
+            debugPrintResourcesNameAndStats(iWrite, Resources.ThreadPools);
         }
         
         protected void LoadCommandLineInterface()

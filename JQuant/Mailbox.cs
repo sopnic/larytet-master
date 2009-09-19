@@ -10,7 +10,7 @@ namespace JQuant
     /// this guy is a simple Queue base implemenation of mailbox - queue of messages with
     /// send and receive methods
     /// </summary>
-    public class Mailbox<Message> : Queue<Message>, IMailbox, IDisposable
+    public class Mailbox<Message> : Queue<Message>, IResourceMailbox, IDisposable
     {
         public Mailbox(string name, int capacity)
             : base(capacity)
@@ -157,41 +157,22 @@ namespace JQuant
             return _name;
         }
 
-        public int GetCount()
+        public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
-            return Count;
+            names = new System.Collections.ArrayList(12);
+            values = new System.Collections.ArrayList(12);
+
+            names.Add("Size");values.Add(_capacity);
+            names.Add("MaxCount");values.Add(_maxCount);
+            names.Add("Pending");values.Add(Count);
+            names.Add("Timeout");values.Add(_timeouts);
+            names.Add("Received");values.Add(_received);
+            names.Add("Sent");values.Add(_sent);
+            names.Add("Dropped");values.Add(_dropped);
         }
 
-        public int GetMaxCount()
-        {
-            return _maxCount;
-        }
 
-        public int GetCapacity()
-        {
-            return _capacity;
-        }
-
-        public int GetDropped()
-        {
-            return _dropped;
-        }
-
-        public int GetSent()
-        {
-            return _sent;
-        }
-
-        public int GetReceived()
-        {
-            return _received;
-        }
-
-        public int GetTimeouts()
-        {
-            return _timeouts;
-        }
-
+        
         protected string _name;
         protected int _capacity;
         protected int _maxCount;
