@@ -172,11 +172,8 @@ namespace JQuant
                         // just to be sure that there is a thread to serve the new 
                         // job allocate a free thread (if there is any)
                         shouldSpawnJob = (countRunningThreads == 0);
-                        
-                        if (countMaxJobs < pendingJobs.Count)
-                        {
-                            countMaxJobs = pendingJobs.Count;
-                        }
+
+                        countMaxJobs = Math.Max(countMaxJobs, pendingJobs.Count);
                         countPlacedJobs++;
                         result = true;
                     }
@@ -225,10 +222,7 @@ namespace JQuant
                     {
                         jobThread = jobThreads.Pop();
                         runningThreads.Add(jobThread);
-                        if (MinThreadsFree > jobThreads.Count)
-                        {
-                            MinThreadsFree = jobThreads.Count;
-                        }
+                        MinThreadsFree = Math.Min(MinThreadsFree, jobThreads.Count);
                         countStart++;
                     }
                 }
