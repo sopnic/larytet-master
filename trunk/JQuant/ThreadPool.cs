@@ -26,7 +26,9 @@ namespace JQuant
     /// priority threads for very short important tasks and pool for low priority
     /// task which take longer.
     /// Number of service threads in the pool can be smaller than maximum number
-    /// of pending jobs. 
+    /// of pending jobs.
+    /// Order in which the jobs are executed is not defined. Use JobQueue class if you
+    /// need ordered execution
     /// 
     /// ----------- Usage Example -----------
     /// ThreadPool threadPool = new ThreadPool("Pool1", 5); // pool of 5 threads
@@ -480,4 +482,62 @@ namespace JQuant
         }
 
     }
+
+    /// <summary>
+    /// Queue of jobs served by a single thread
+    /// </summary>
+    public class JobQueue : IDisposable
+    {        
+        public JobQueue(string name, int size)
+            : this(name, size, System.Threading.ThreadPriority.Lowest)
+        {
+        }
+        
+        public JobQueue(string name, int size, System.Threading.ThreadPriority priority)
+        {
+            this.Name = name;
+            this.Size = size;
+            this.Priority = priority;
+
+            // create pool of "size" job parameters blocks
+            
+            // create job queue
+            
+            // create a thread
+        }
+
+        /// <summary>
+        /// start the thread serving the queue
+        /// </summary>
+        public void Start()
+        {
+        }
+
+        /// <summary>
+        /// final cleanup - dispose the thread. 
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
+        public string Name
+        {
+            get;
+            set;
+        }
+        
+        public int Size
+        {
+            get;
+            set;
+        }
+            
+        public System.Threading.ThreadPriority Priority
+        {
+            get;
+            set;
+        }
+            
+    }
+    
 }
