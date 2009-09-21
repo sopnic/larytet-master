@@ -300,9 +300,10 @@ namespace JQuant
             }
         }
         
-        public string GetName()
+        public string Name
         {
-            return Name;
+            get;
+            set;
         }
         
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
@@ -325,7 +326,6 @@ namespace JQuant
             names.Add("FailedRefreshQueue");values.Add(countFailedRefreshQueue);
         }
         
-        protected string Name;
         protected int Threads;
         protected int Jobs;
         protected int MinThreadsFree;

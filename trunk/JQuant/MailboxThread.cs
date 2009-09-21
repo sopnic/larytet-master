@@ -28,7 +28,7 @@ namespace JQuant
         {
             if (_isAlive)
             {
-                Console.WriteLine("MailboxThread " + GetName() + " disposed but not stopped");
+                Console.WriteLine("MailboxThread " + Name + " disposed but not stopped");
             }
 
             _mailbox.Dispose();
@@ -126,9 +126,10 @@ namespace JQuant
         }
 
 
-        public string GetName()
+        public string Name
         {
-            return _mailbox.GetName();
+            get;
+            set;
         }
 
         protected Mailbox<Message> _mailbox;

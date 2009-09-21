@@ -34,7 +34,7 @@ namespace JQuant
                     names.Insert(0, "Name");
                     CommandLineInterface.printTableHeader(iWrite, names, columnSize);
                 }
-                values.Insert(0, OutputUtils.FormatField(resNamed.GetName(), columnSize));
+                values.Insert(0, OutputUtils.FormatField(resNamed.Name, columnSize));
                 CommandLineInterface.printValues(iWrite, values, columnSize);
                 
                 entry++;
@@ -122,7 +122,7 @@ namespace JQuant
             {
                 isEmpty = false;
                 iWrite.WriteLine(
-                    OutputUtils.FormatField(iThread.GetName(), 10) +
+                    OutputUtils.FormatField(iThread.Name, 10) +
                     OutputUtils.FormatField(EnumUtils.GetDescription(iThread.GetState()), 14) +
                     OutputUtils.FormatField(iThread.GetLongestJob(), 10)
                 );
@@ -438,7 +438,7 @@ namespace JQuant
                     names.Insert(0, "TimerTaskName");
                     CommandLineInterface.printTableHeader((JQuant.IWrite)this, names, columnSize);
                 }
-                values.Insert(0, OutputUtils.FormatField(timerList.GetName(), columnSize));
+                values.Insert(0, OutputUtils.FormatField(timerList.Name, columnSize));
                 values.Insert(0, OutputUtils.FormatField(timerList.GetTaskName(), columnSize));
                 CommandLineInterface.printValues((JQuant.IWrite)this, values, columnSize);
                 
