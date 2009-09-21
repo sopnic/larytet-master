@@ -146,6 +146,7 @@ namespace JQuant
         /// </param>
         /// <param name="jobDone">
         /// A <see cref="JobDone"/>
+        /// The method call when the job is done. Can be null
         /// </param>
         /// <param name="jobArgument">
         /// A <see cref="System.Object"/>
@@ -464,7 +465,10 @@ namespace JQuant
                 // execute the job and notify the application
                 // on execution
                 jobParams.job(jobArgument);
-                jobParams.jobDone(jobArgument);
+                if (jobParams.jobDone != null)
+                {
+                    jobParams.jobDone(jobArgument);
+                }
 
                 IsRunning = false;
             }
@@ -483,40 +487,16 @@ namespace JQuant
 
     }
 
-    public class JobQueueParams
-    {
-        public JobQueueParams()
-        {
-            Init();
-        }
-        
-        public JobQueueParams(Job job, JobDone jobDone, object jobArgument)
-        {
-            Init(job, jobDone, jobArgument);
-        }
-        
-        public void Init(Job job, JobDone jobDone, object jobArgument)
-        {
-            this.job = job;
-            this.jobDone = jobDone;
-            this.jobArgument = jobArgument;
-        }
-        
-        public void Init()
-        {
-            this.job = null;
-            this.jobDone = null;
-            this.jobArgument = null;
-        }
-        
-        public Job job;
-        public JobDone jobDone;
-        public object jobArgument;
-    }
 
     /// <summary>
     /// Queue of jobs served by a single thread
     /// The service thread is a mailbox thread
+    /// 
+    /// -------------------- Usage -------------------- 
+    /// 
+    /// JobQueue jobQueue LowPriorityQ = new JobQueue("LowPQ", 10);
+    /// jobQueue.AddJob(MetodToExecute, MethodToCallWhenDone, argumentToUse);
+    /// 
     /// </summary>
     public class JobQueue : MailboxThread<JobQueueParams>, IResourceJobQueue
     {        
@@ -569,7 +549,7 @@ namespace JQuant
         /// A <see cref="System.Boolean"/>
         /// returns true is there was a place in the job queue and the job is queued
         /// </returns>
-        public bool PlaceJob(Job job, JobDone jobDone, object jobArgument)
+        public bool AddJob(Job job, JobDone jobDone, object jobArgument)
         {
             JobQueueParams jobParams = new JobQueueParams(job, jobDone, jobArgument);
 
@@ -578,14 +558,56 @@ namespace JQuant
             return result;
         }
 
+        public bool AddJob(Job job, object jobArgument)
+        {
+            JobQueueParams jobParams = new JobQueueParams(job, null, jobArgument);
+
+            bool result = Send(jobParams);
+            
+            return result;
+        }
+        
         protected override void HandleMessage(JobQueueParams jobParams)
         {
             jobParams.job(jobParams.jobArgument);
-            jobParams.jobDone(jobParams.jobArgument);
+            if (jobParams.jobDone != null)
+            {
+                jobParams.jobDone(jobParams.jobArgument);
+            }
         }
-        
-
 
     }
+
+    public class JobQueueParams
+    {
+        public JobQueueParams()
+        {
+            Init();
+        }
+        
+        public JobQueueParams(Job job, JobDone jobDone, object jobArgument)
+        {
+            Init(job, jobDone, jobArgument);
+        }
+        
+        public void Init(Job job, JobDone jobDone, object jobArgument)
+        {
+            this.job = job;
+            this.jobDone = jobDone;
+            this.jobArgument = jobArgument;
+        }
+        
+        public void Init()
+        {
+            this.job = null;
+            this.jobDone = null;
+            this.jobArgument = null;
+        }
+        
+        public Job job;
+        public JobDone jobDone;
+        public object jobArgument;
+    }
+    
     
 }
