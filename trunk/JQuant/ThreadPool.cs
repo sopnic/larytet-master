@@ -483,61 +483,109 @@ namespace JQuant
 
     }
 
+    public class JobQueueParams
+    {
+        public JobQueueParams()
+        {
+            Init();
+        }
+        
+        public JobQueueParams(Job job, JobDone jobDone, object jobArgument)
+        {
+            Init(job, jobDone, jobArgument);
+        }
+        
+        public void Init(Job job, JobDone jobDone, object jobArgument)
+        {
+            this.job = job;
+            this.jobDone = jobDone;
+            this.jobArgument = jobArgument;
+        }
+        
+        public void Init()
+        {
+            this.job = null;
+            this.jobDone = null;
+            this.jobArgument = null;
+        }
+        
+        public Job job;
+        public JobDone jobDone;
+        public object jobArgument;
+    }
+
     /// <summary>
     /// Queue of jobs served by a single thread
+    /// The service thread is a mailbox thread
     /// </summary>
-    public class JobQueue : IDisposable
+    public class JobQueue : MailboxThread<JobQueueParams>, IResourceJobQueue
     {        
         public JobQueue(string name, int size)
             : this(name, size, System.Threading.ThreadPriority.Lowest)
         {
         }
-        
+
+        /// <summary>
+        /// Create a queue and a service thread running in the specified priority
+        /// </summary>
+        /// <param name="name">
+        /// A <see cref="System.String"/>
+        /// Name of the resource 
+        /// </param>
+        /// <param name="size">
+        /// A <see cref="System.Int32"/>
+        /// size of the job queue
+        /// </param>
+        /// <param name="priority">
+        /// A <see cref="System.Threading.ThreadPriority"/>
+        /// priority of the thread
+        /// </param>
         public JobQueue(string name, int size, System.Threading.ThreadPriority priority)
+            : base(name, size)
         {
-            this.Name = name;
-            this.Size = size;
-            this.Priority = priority;
-
-            // create pool of "size" job parameters blocks
-            
-            // create job queue
-            
-            // create a thread
+            base.Priority = priority;
         }
 
         /// <summary>
-        /// start the thread serving the queue
+        /// Add job to the job queue. The method sends request to the mailbox. Thread wakes up,
+        /// pulls the request from the mailbox queue, serve the request
         /// </summary>
-        public void Start()
+        /// <param name="job">
+        /// A <see cref="Job"/>
+        /// This method is the job required to be executed. 
+        /// Method is called from the thread.
+        /// </param>
+        /// <param name="jobDone">
+        /// A <see cref="JobDone"/>
+        /// The method will be called after the job is comleted
+        /// </param>
+        /// <param name="jobArgument">
+        /// A <see cref="System.Object"/>
+        /// Arbitrary data specified by the application. Can be null
+        /// Methods "job" and "jobDone" are free to modify the state of the
+        /// object. 
+        /// </param>
+        /// <returns>
+        /// A <see cref="System.Boolean"/>
+        /// returns true is there was a place in the job queue and the job is queued
+        /// </returns>
+        public bool PlaceJob(Job job, JobDone jobDone, object jobArgument)
         {
+            JobQueueParams jobParams = new JobQueueParams(job, jobDone, jobArgument);
+
+            bool result = Send(jobParams);
+            
+            return result;
         }
 
-        /// <summary>
-        /// final cleanup - dispose the thread. 
-        /// </summary>
-        public void Dispose()
+        protected override void HandleMessage(JobQueueParams jobParams)
         {
-        }
-
-        public string Name
-        {
-            get;
-            set;
+            jobParams.job(jobParams.jobArgument);
+            jobParams.jobDone(jobParams.jobArgument);
         }
         
-        public int Size
-        {
-            get;
-            set;
-        }
-            
-        public System.Threading.ThreadPriority Priority
-        {
-            get;
-            set;
-        }
-            
+
+
     }
     
 }

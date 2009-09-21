@@ -65,6 +65,10 @@ namespace JQuant
     {
     }
 
+    public interface IResourceJobQueue: INamedResource
+    {
+    }
+
     public enum LogType
     {
         [Description("Dynamic memory")]

@@ -90,6 +90,19 @@ namespace JQuant
             return result;
         }
 
+        public System.Threading.ThreadPriority Priority
+        {
+            get
+            {
+                return _thread.Priority;
+            }
+            
+            set
+            {
+                _thread.Priority = value;
+            }
+        }
+
         public void Stop()
         {
             _isAlive = false;
