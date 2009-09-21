@@ -15,7 +15,7 @@ namespace JQuant
         public Mailbox(string name, int capacity)
             : base(capacity)
         {
-            _name = name;
+            Name = name;
             _capacity = capacity;
             _maxCount = 0;
 
@@ -41,7 +41,7 @@ namespace JQuant
 
         ~Mailbox()
         {
-            Console.WriteLine("Mailbox " + GetName() + " destroyed");
+            Console.WriteLine("Mailbox " + Name + " destroyed");
         }
 
         /// <summary>
@@ -160,9 +160,10 @@ namespace JQuant
             return result;
         }
 
-        public string GetName()
+        public string Name
         {
-            return _name;
+            get;
+            set;
         }
 
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
@@ -181,7 +182,6 @@ namespace JQuant
 
 
         
-        protected string _name;
         protected int _capacity;
         protected int _maxCount;
         protected int _dropped;

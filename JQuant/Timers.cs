@@ -179,7 +179,7 @@ namespace JQuant
         public TimerList(string name, int timeout, int size, TimerExpiredCallback timerCallback, TimerTask timerTask)
         {
 
-            this.name = name;
+            Name = name;
             this.timerCallback = timerCallback;
             // this.baseTick = DateTime.Now.Ticks;
             this.timerTask = timerTask;
@@ -540,7 +540,7 @@ namespace JQuant
 
         ~TimerList()
         {
-            Console.WriteLine("TimerList " + name + " from set " + timerTask.Name + " destroyed");
+            Console.WriteLine("TimerList " + Name + " from set " + timerTask.Name + " destroyed");
         }
         
         protected int GetSize()
@@ -555,11 +555,6 @@ namespace JQuant
             return size;
         }
           
-        public string GetName()
-        {
-            return name;
-        }
-        
         public string GetTaskName()
         {
             return timerTask.Name;
@@ -599,7 +594,11 @@ namespace JQuant
         /// </summary>
         protected List<Timer> pendingTimers;
         
-        protected string name;
+        public string Name
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// this method will be called for every expired timer

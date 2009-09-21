@@ -37,7 +37,7 @@ namespace JQuant
             : base(capacity)
         {
             _capacity = capacity;
-            _name = name;
+            Name = name;
 
             _minCount = _capacity;
             _allocOk = 0;
@@ -60,7 +60,7 @@ namespace JQuant
         ~Pool()
         {
             Clear();
-            Console.WriteLine("Pool " + GetName() + " destroyed");
+            Console.WriteLine("Pool " + Name + " destroyed");
         }
 
         public void Fill(ObjectType obj)
@@ -69,7 +69,7 @@ namespace JQuant
             {
                 if (Count >= _capacity)
                 {
-                    Console.WriteLine("Too many objects added to the pool " + _name);
+                    Console.WriteLine("Too many objects added to the pool " + Name);
                 }
                 else
                 {
@@ -89,7 +89,7 @@ namespace JQuant
                 {
                     if (Count >= _capacity)
                     {
-                        Console.WriteLine("Too many objects added to the pool " + _name);
+                        Console.WriteLine("Too many objects added to the pool " + Name);
                         break;
                     }
                     Push(obj);
@@ -146,9 +146,10 @@ namespace JQuant
             return result;
         }
 
-        public string GetName()
+        public string Name
         {
-            return _name;
+            get;
+            set;
         }
 
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
@@ -168,7 +169,6 @@ namespace JQuant
 
         // statistics 
         protected int _capacity;
-        protected string _name;
         protected int _minCount;
         protected int _allocOk;
         protected int _allocFailed;

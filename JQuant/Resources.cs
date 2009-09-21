@@ -20,7 +20,11 @@ namespace JQuant
         /// <summary>
         /// returns name of the resource
         /// </summary>
-        string GetName();
+        string Name
+        {
+            get;
+            set;
+        }
     }
     
     
@@ -48,10 +52,9 @@ namespace JQuant
     /// <summary>
     /// objects implementing MailboxThread
     /// </summary>
-    public interface IThread
+    public interface IThread :INamedResource
     {
         ThreadState GetState();
-        string GetName();
         long GetLongestJob();
     }
 
