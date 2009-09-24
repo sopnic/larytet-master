@@ -88,6 +88,9 @@
     <Compile Include="..\FMRSim\TaskBarLibSim_Orders.cs" />
     <Compile Include="..\Timers.cs" />
     <Compile Include="..\ThreadPool.cs" />
+    <Compile Include="..\Order.cs">
+      <Link>Order.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskBarLib">
