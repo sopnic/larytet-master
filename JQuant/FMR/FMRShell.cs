@@ -992,6 +992,147 @@ namespace FMRShell
         }
     }
 
+    public enum FMROrderEvent
+    {
+        SENT,
+        EXECUTED,
+        REJECTED,
+        CANCELED
+    }
+    
+    public class FMROrder: IOrderBase
+    {
+        protected FMROrder()
+        {
+        }
+        
+        public System.DateTime Created
+        {
+            get;
+            set;
+        }
+
+        public OrderType Type
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// call this method to send events to the Order Processor 
+        /// </summary>
+        /// <param name="orderEvent">
+        /// A <see cref="FMROrderEvent"/>
+        /// </param>
+        public void SendEvent(FMROrderEvent orderEvent)
+        {
+            // call Order Processor
+            newEvent(this, orderEvent);
+        }
+        
+        public delegate void NewEvent(FMROrder order, FMROrderEvent orderEvent);
+
+        /// <value>
+        /// set by Order Processor when the order is created 
+        /// </value>
+        public NewEvent newEvent
+        {
+            get;
+            set;
+        }
+    }
+
+    class FMROrderSell: FMROrder, JQuant.IOrderSell
+    {
+        public FMROrderSell()
+        {
+            Type = OrderType.SELL;
+        }
+        
+        public int Ask
+        {
+            get;
+            set;
+        }
+    }
+    
+    class FMROrderBuy: FMROrder, JQuant.IOrderBuy
+    {
+        public FMROrderBuy()
+        {
+            Type = OrderType.BUY;
+        }
+        
+        public int Bid
+        {
+            get;
+            set;
+        }
+    }
+    
+    /// <summary>
+    /// implements Maof order FSM
+    /// specific for FMR
+    /// </summary>
+    public class SimpleMaofOrderFSM: MailboxThread<object>, IOrderProcessor
+    {
+        public SimpleMaofOrderFSM() :
+            base("MaofOrderFSM", 100)
+        {
+        }
+        
+        public bool Create(OrderType type, out IOrderBase order)
+        {
+            FMROrder fmrOrder = null;
+            
+            switch (type)
+            {
+                case OrderType.BUY: 
+                fmrOrder = new FMROrderBuy();
+                break;
+                
+                case OrderType.SELL: 
+                fmrOrder = new FMROrderSell();
+                break;
+                
+                default: 
+                break;
+            }
+
+            if (fmrOrder != null)
+            {
+                // set callback - i want to get events from other tasks
+                fmrOrder.newEvent = NewEvent;
+            }
+
+            order = fmrOrder;
+
+            return (order != null);
+        }
+
+
+        /// <summary>
+        /// called by another thread when FMR has something to say about
+        /// the order, for example, Ok or rejected
+        /// </summary>
+        void NewEvent(FMROrder order, FMROrderEvent orderEvent)
+        {
+            // create a message
+
+            // send message to the mailbox
+        }
+
+        public bool Place(IOrderBase order)
+        {
+            return true;
+        }
+
+        public bool Cancel(IOrderBase order)
+        {
+            return true;
+        }
+
+    }
 
     /// <summary>
     /// Example of usage of the class, Main_ should be replaced by Main in the real application

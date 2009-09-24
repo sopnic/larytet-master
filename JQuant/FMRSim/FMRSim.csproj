@@ -63,6 +63,7 @@
     <Compile Include="..\Timers.cs" />
     <Compile Include="TaskBarLibSim_Orders.cs" />
     <Compile Include="..\ThreadPool.cs" />
+    <Compile Include="..\Order.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
