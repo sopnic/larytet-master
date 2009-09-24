@@ -15,34 +15,44 @@ namespace JQuant
         BUY
     }
 
+    /// <summary>
+    /// The values match all the order types possible on TASE.
+    /// </summary>
     public enum OrderType
     {
-        [Description("At the Openning")]
-        ATO,
+        [Description("LMO")]
+        LMO,    //Limit Opening - for Rezef securities only
 
-        [Description ("At the Closing")]
-        AOC, 
-        [Description("Market")]
-        MKT,
+        [Description("MKT")]
+        MKT,    //MKT - for Rezef securities only
 
-        [Description("Limit")]
-        LMT,
+        [Description("LMT")]
+        LMT,    //Limit
 
-        [Description("Immediate or Cancel")]
-        IOC,
+        [Description("IOC")]
+        IOC,    //Immediate or Cancel - for options only
 
-        [Description("Fill or Kill")]
-        FOK
+        [Description("FOK")]
+        FOK     //Fill or Kill - for options only
+
     }
     
     public enum CurrencyType
     {
         [Description("USD")]
-        USD,
+        USD,    //thinking NASDAQ?
         
-        [Description("NIS")]
-        NIS,
-        
+        [Description("EUR")]
+        EUR,    //who knows - maybe one day ...
+
+        [Description("GBP")]
+        GBP,    //LSE is very strong in algos :)
+
+        [Description("ILS")]
+        ILS,     //humble me :) - I'd prefer to have it in ISO 4217
+
+        [Description("CNY")]
+        CNY     //now guess what is this one... :D
     }
 
 
@@ -105,6 +115,67 @@ namespace JQuant
             get;
             set;
         }
+    }
+
+
+
+    /// <summary>
+    /// Base Order, from which all the other Order types inherit
+    /// </summary>
+    public abstract class OrderBase
+    {
+        public int Quantity
+        {
+            get
+            {
+                return quantity;
+            }
+            protected set
+            {
+                quantity = value;
+            }
+        }
+
+        public TransactionType TransType
+        {
+            get
+            {
+                return transType;
+            }
+            protected set
+            {
+                transType = value;
+            }
+        }
+
+        int quantity;               //Number of units to trade
+        TransactionType transType;  //Buy or Sell
+    }
+
+    /// <summary>
+    /// This class inherits from the basic and serves itself as a base class for all limit
+    /// orders - that is, for TASE, it's base for LMT, LMO, IOC and FOK order types
+    /// The difference is that this class contains limit price, which is not present for MKT orders
+    /// </summary>
+    public abstract class LimitOrderBase : OrderBase
+    {
+        public int Price
+        {
+            get 
+            {
+                return price;
+            }
+            protected set
+            {
+                price = value;
+            }
+        }
+        int price;
+    }
+
+    public class MaofOrder:LimitOrderBase
+    {
+
     }
     
 }

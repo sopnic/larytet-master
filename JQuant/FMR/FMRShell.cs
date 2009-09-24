@@ -49,6 +49,7 @@ namespace FMRShell
         Disposed                           // Dispose() called
     }
 
+
     /// <summary>
     /// this guy logins to the remote server
     /// and eventually will run state machine keeping the connection alive and kicking 
@@ -289,13 +290,6 @@ namespace FMRShell
             return this.userClass.get_LoginErrorDesc(ref this.sessionId);
         }
 
-        protected int sessionId;
-        protected string errMsg;
-        protected string xmlFileName;
-        protected bool useXmlFile;
-        protected ConnectionParameters _parameters;
-
-
         /// <value>
         /// in the real code TaskBarLib instead of TaskBarLibSim will be used
         /// </value>
@@ -304,6 +298,12 @@ namespace FMRShell
             get;
             protected set;
         }
+
+        protected int sessionId;
+        protected string errMsg;
+        protected string xmlFileName;
+        protected bool useXmlFile;
+        protected ConnectionParameters _parameters;
 
     }//class Connection
 
