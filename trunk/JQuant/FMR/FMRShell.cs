@@ -1012,7 +1012,7 @@ namespace FMRShell
             set;
         }
 
-        public OrderType Type
+        public TransactionType Type
         {
             get;
             set;
@@ -1046,7 +1046,7 @@ namespace FMRShell
     {
         public FMROrderSell()
         {
-            Type = OrderType.SELL;
+            Type = TransactionType.SELL;
         }
         
         public int Ask
@@ -1060,7 +1060,7 @@ namespace FMRShell
     {
         public FMROrderBuy()
         {
-            Type = OrderType.BUY;
+            Type = TransactionType.BUY;
         }
         
         public int Bid
@@ -1081,17 +1081,17 @@ namespace FMRShell
         {
         }
         
-        public bool Create(OrderType type, out IOrderBase order)
+        public bool Create(TransactionType type, out IOrderBase order)
         {
             FMROrder fmrOrder = null;
             
             switch (type)
             {
-                case OrderType.BUY: 
+                case TransactionType.BUY: 
                 fmrOrder = new FMROrderBuy();
                 break;
                 
-                case OrderType.SELL: 
+                case TransactionType.SELL: 
                 fmrOrder = new FMROrderSell();
                 break;
                 

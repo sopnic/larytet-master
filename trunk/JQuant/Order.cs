@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace JQuant
 {
-    public enum OrderType
+    public enum TransactionType
     {
         [Description("Sell")]
         SELL,
@@ -15,6 +15,26 @@ namespace JQuant
         BUY
     }
 
+    public enum OrderType
+    {
+        [Description("At the Openning")]
+        ATO,
+
+        [Description ("At the Closing")]
+        AOC, 
+        [Description("Market")]
+        MKT,
+
+        [Description("Limit")]
+        LMT,
+
+        [Description("Immediate or Cancel")]
+        IOC,
+
+        [Description("Fill or Kill")]
+        FOK
+    }
+    
     public enum CurrencyType
     {
         [Description("USD")]
@@ -31,7 +51,7 @@ namespace JQuant
     /// </summary>
     public interface IOrderProcessor
     {
-        bool Create(OrderType type, out IOrderBase order);
+        bool Create(TransactionType type, out IOrderBase order);
 
         bool Place(IOrderBase order);
 
@@ -54,7 +74,7 @@ namespace JQuant
             set;
         }
 
-        OrderType Type
+        TransactionType Type
         {
             get;
             set;
