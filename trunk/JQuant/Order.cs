@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.ComponentModel;
 
+#if USEFMRSIM
+using TaskBarLibSim;
+#else
+using TaskBarLib;
+#endif
+
 namespace JQuant
 {
     public enum TransactionType
@@ -175,7 +181,33 @@ namespace JQuant
 
     public class MaofOrder:LimitOrderBase
     {
+        MaofOrderType MaofOrder; //used for sending the trading directive   to the API
+        
+        //reference IDs
+        string Asmachta;
+        string AsmachtaFMF;
+        int OrderId;    //this one is only for taking care of internal errors
 
+        //Special variables required by FMR to treat internal errors:
+        OrdersErrorTypes ErrorType;
+        int ErrNo;
+        string VbMsg;
+        string ReEnteredValue;
+
+    }
+
+    /// <summary>
+    /// This one I keep here temporarily.
+    /// Contains all the data common to all Order objects which doesn't change 
+    /// during the trading session.
+    /// </summary>
+    public struct AccountProfile
+    {
+        public string Account;
+        public string Branch;
+        public int SessionId; //obtain it from the Connection object
+        string UserName;
+        string PassWord;
     }
     
 }
