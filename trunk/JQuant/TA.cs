@@ -86,13 +86,13 @@ namespace TA
             protected set;
         }
 
-        public static void AverageStdDeviation
+        public static void CalculateAverageStdDeviation
             (PriceVolumeSeries series, out double average, out double max, out double min, out double stdDeviation)
         {
-            AverageStdDeviation(series, 0, series.Data.Count, out average, out max, out min, out stdDeviation);
+            CalculateAverageStdDeviation(series, 0, series.Data.Count, out average, out max, out min, out stdDeviation);
         }
         
-        public static void AverageStdDeviation
+        public static void CalculateAverageStdDeviation
             (PriceVolumeSeries series, int start, int count, out double average, out double max, out double min, out double stdDeviation)
         {
             Candle candle = (Candle)series.Data[start];
@@ -119,6 +119,38 @@ namespace TA
             stdDeviation = Math.Sqrt(stdDeviation)/count;
             average = average/count;
         }
+
+        public static void CalculateAverage
+            (PriceVolumeSeries series, int start, int count, out double average, out double max, out int maxIdx, out double min, out int minIdx)
+        {
+            Candle candle = (Candle)series.Data[start];
+            double close = candle.close;
+            average = close;
+            max = close;
+            maxIdx = 0;
+            min = max;
+            minIdx = 0;
+
+            int end = start+count-1;
+            for (int i=start+1;i <= end;i++)
+            {
+                candle= (Candle)series.Data[i]; 
+                close = candle.close;
+                if (max < close)
+                {
+                    max = close;
+                    maxIdx = i;
+                }
+                if (min > close)
+                {
+                    min = close;
+                    minIdx = i;
+                }
+                average += close;
+            }
+
+            average = average/count;
+        }
         
         public void CalculateParams()
         {
@@ -126,7 +158,7 @@ namespace TA
             {
                 double average;double max;double min;double stdDeviation;
                 
-                AverageStdDeviation(this, out average, out max, out min, out stdDeviation);
+                CalculateAverageStdDeviation(this, out average, out max, out min, out stdDeviation);
                 
                 Average = average;
                 Min = min;
@@ -212,11 +244,23 @@ namespace TA
         /// A <see cref="PriceVolumeSeries"/>
         /// The data to analyse
         /// </param>
-        public AscendingTriangle(PriceVolumeSeries series)
+        public AscendingTriangle(PriceVolumeSeries series, double stdDeviations)
         {
             this.series = series;
             this.shapes = new System.Collections.Generic.List<TA.Shape>(1);
 
+            StdDeviations = stdDeviations;
+        }
+        /// <summary>
+        /// find ascending triangel in the series
+        /// </summary>
+        /// <param name="series">
+        /// A <see cref="PriceVolumeSeries"/>
+        /// The data to analyse
+        /// </param>
+        public AscendingTriangle(PriceVolumeSeries series)
+            : this (series, 1.0)
+        {
         }
 
         /// <summary>
@@ -238,18 +282,40 @@ namespace TA
         /// check if i have at least three points luying on the same ascending line and at least two
         /// points around the maximum
         /// </summary>
-        public static bool isTriangle(int start, int end, PriceVolumeSeries series)
+        public bool isTriangle(int start, int end, PriceVolumeSeries series)
         {
             bool result = false;
             
             do
             {
-                // no enough point for triangle
+                // no enough points for triangle
                 if ((end - start) < 6) break;
-
                 
                 int halfPoint = (end - start)/2;
+                double average, min1, max1, min2, max2;
+                int min1Idx, max1Idx, min2Idx, max2Idx;
+
+                double stdDeviation = StdDeviations*series.StdDeviation;
                 
+                PriceVolumeSeries.CalculateAverage(series, start, halfPoint-start+1, out average, out min1, out min1Idx, out max1, out max1Idx);
+                PriceVolumeSeries.CalculateAverage(series, halfPoint, end-halfPoint+1, out average, out min2, out min2Idx, out max2, out max2Idx);
+
+                //   max2-stdDeviation < max1 < max2+stdDeviation
+                if ( (max1 <= (max2-stdDeviation)) || (max1 >= (max2+stdDeviation)) )
+                {
+                    break;
+                }
+
+                if (min2 < min1+stdDeviation)
+                {
+                    break;
+                }
+
+                // i have two conditions - maxs are "close" and second minimum is higher than the first
+                // do i have two highs and three lows ? two highs (two maxs) are in place. now lows
+                double tangens = (min2 - min1)/(min2Idx - min1Idx);
+
+                // look for 3rd close on line described by the tangens
             }
             while (false);
 
@@ -259,6 +325,12 @@ namespace TA
 
 
         public  PriceVolumeSeries series
+        {
+            get;
+            protected set;
+        }
+
+        public double StdDeviations
         {
             get;
             protected set;
