@@ -181,7 +181,7 @@ namespace JQuant
 
     public class MaofOrder:LimitOrderBase
     {
-        MaofOrderType MaofOrder; //used for sending the trading directive   to the API
+        MaofOrderType maofOrderType; //used for sending the trading directive   to the API
         
         //reference IDs
         string Asmachta;
