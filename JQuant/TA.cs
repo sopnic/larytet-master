@@ -30,11 +30,36 @@ namespace TA
             this.volume = volume;
         }
         
-        double open;
-        double close;
-        double min;
-        double max;
-        double volume;
+        public double open
+        {
+            get;
+            protected set;
+        }
+
+        public double close
+        {
+            get;
+            protected set;
+        }
+
+        public double min
+        {
+            get;
+            protected set;
+        }
+
+        public double max
+        {
+            get;
+            protected set;
+        }
+
+        public double volume
+        {
+            get;
+            protected set;
+        }
+
     }
 
     /// <summary>
@@ -45,15 +70,98 @@ namespace TA
     {
         public PriceVolumeSeries(int size)
         {
-            series = new System.Collections.Generic.List<Candle>(size);
+            Data = new System.Collections.ArrayList(size);
+            paramsCalculated = false;
         }
 
         public void Add(double open, double close, double min, double max, double volume)
         {
-            series.Add(new Candle(open, close, min, max, volume));
+            paramsCalculated = false;
+            Data.Add(new Candle(open, close, min, max, volume));
         }
         
-        System.Collections.Generic.List<Candle> series;
+        public System.Collections.ArrayList Data
+        {
+            get;
+            protected set;
+        }
+
+        public static void AverageStdDeviation
+            (PriceVolumeSeries series, out double average, out double max, out double min, out double stdDeviation)
+        {
+            AverageStdDeviation(series, 0, series.Data.Count, out average, out max, out min, out stdDeviation);
+        }
+        
+        public static void AverageStdDeviation
+            (PriceVolumeSeries series, int start, int count, out double average, out double max, out double min, out double stdDeviation)
+        {
+            Candle candle = (Candle)series.Data[start];
+            double close = candle.close;
+            average = close;
+            max = close;
+            min = max;
+
+            stdDeviation = close*close;
+
+            int end = start+count-1;
+            for (int i=start+1;i <= end;i++)
+            {
+                candle= (Candle)series.Data[i]; 
+                close = candle.close;
+                
+                average += close;
+                max = Math.Max(max, close);
+                min = Math.Min(min, close);
+
+                stdDeviation += close * close;
+            }
+
+            stdDeviation = Math.Sqrt(stdDeviation)/count;
+            average = average/count;
+        }
+        
+        public void CalculateParams()
+        {
+            if (!paramsCalculated)
+            {
+                double average;double max;double min;double stdDeviation;
+                
+                AverageStdDeviation(this, out average, out max, out min, out stdDeviation);
+                
+                Average = average;
+                Min = min;
+                Max = max;
+                StdDeviation = stdDeviation;
+    
+                paramsCalculated = true;
+            }
+        }
+
+        public double Average
+        {
+            get;
+            protected set;
+        }
+        
+        public double Max
+        {
+            get;
+            protected set;
+        }
+        
+        public double Min
+        {
+            get;
+            protected set;
+        }
+        
+        public double StdDeviation
+        {
+            get;
+            protected set;
+        }
+
+        bool paramsCalculated;
     }
 
     /// <summary>
@@ -87,6 +195,7 @@ namespace TA
             get;
             protected set;
         }
+
     }
 
     /// <summary>
@@ -97,8 +206,7 @@ namespace TA
     {
 
         /// <summary>
-        /// default triangle - the simplest case. i ignore variation, only close price is considered
-        /// volume changes through the series are ignored
+        /// find ascending triangel in the series
         /// </summary>
         /// <param name="series">
         /// A <see cref="PriceVolumeSeries"/>
@@ -108,14 +216,45 @@ namespace TA
         {
             this.series = series;
             this.shapes = new System.Collections.Generic.List<TA.Shape>(1);
+
         }
 
         /// <summary>
         /// process the data
-        /// looks for all triangles, including nested (fractal) trinagles
+        /// looks for largest triangles, ignores nesting (fractal shapes)
         /// </summary>
         public void Process()
         {
+            // make sure that basic staff is calculated
+            series.CalculateParams();
+        }
+
+
+
+
+        /// <summary>
+        /// divide the series in two parts, calculate maximum and minimum in two parts
+        /// maximums should be "close" enough and subsequent low should be higher than the previous
+        /// check if i have at least three points luying on the same ascending line and at least two
+        /// points around the maximum
+        /// </summary>
+        public static bool isTriangle(int start, int end, PriceVolumeSeries series)
+        {
+            bool result = false;
+            
+            do
+            {
+                // no enough point for triangle
+                if ((end - start) < 6) break;
+
+                
+                int halfPoint = (end - start)/2;
+                
+            }
+            while (false);
+
+            
+            return result;
         }
 
 
