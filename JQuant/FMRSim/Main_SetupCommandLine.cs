@@ -42,7 +42,7 @@ namespace JQuant
             }
             if (isEmpty)
             {
-                System.Console.WriteLine("Table is empry - no resources registered");
+                System.Console.WriteLine("Table is empty - no resources registered");
             }
         }
 
