@@ -173,7 +173,7 @@ namespace JQuant
     /// </summary>
     public abstract class LimitOrderBase : OrderBase
     {
-        public int Price
+        public double Price
         {
             get 
             {
@@ -184,7 +184,7 @@ namespace JQuant
                 price = value;
             }
         }
-        int price;
+        double price;
     }
 
     public class MaofOrder:LimitOrderBase
