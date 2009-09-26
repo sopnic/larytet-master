@@ -496,6 +496,12 @@ namespace JQuant
         {
             debugPrintResourcesNameAndStats(iWrite, Resources.ThreadPools);
         }
+
+
+        protected void debugOrderShowCallback()
+        {
+            OrderType orderType = (OrderType.LMT | OrderType.FOK | OrderType.IOC);
+        }
         
         protected void LoadCommandLineInterface()
         {
