@@ -23,24 +23,32 @@ namespace JQuant
 
     /// <summary>
     /// The values match all the order types possible on TASE.
+    /// Attribute [Flags] allow to use boolean combinations of the order types
+    /// for example order can be of type (LMT | FOK | IOC)
     /// </summary>
+    [Flags]
     public enum OrderType
     {
         [Description("LMO")]
-        LMO,    //Limit Opening - for Rezef securities only
+        LMO = 0x0001,    // Limit Opening - for Rezef securities only
 
         [Description("MKT")]
-        MKT,    //MKT - for Rezef securities only
+        MKT = 0x0002,    // MKT - for Rezef securities only
 
         [Description("LMT")]
-        LMT,    //Limit
+        LMT = 0x0004,    // Limit
 
         [Description("IOC")]
-        IOC,    //Immediate or Cancel - for options only
+        IOC = 0x0008,    // Immediate or Cancel - for options only
 
         [Description("FOK")]
-        FOK     //Fill or Kill - for options only
+        FOK = 0x0010,    // Fill or Kill - for options only
 
+        [Description("GTC")]
+        GTC = 0x0020,    // Good till cancel
+
+        [Description("EOD")]
+        EOD = 0x0040     // End of day (on close)
     }
     
     public enum CurrencyType
