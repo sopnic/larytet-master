@@ -41,9 +41,19 @@ namespace JQuant
         /// <summary>
         /// add trailing blanks to the integer if neccessary 
         /// </summary>
-        static public string FormatField(long value, int fieldSize)
+        static public string FormatField(long val, int fieldSize)
         {
-            StringBuilder s = new StringBuilder("" + value, fieldSize);
+            string s = FormatField(""+val, fieldSize);
+
+            return s;
+        }
+
+        /// <summary>
+        /// add trailing blanks to the string if neccessary 
+        /// </summary>
+        static public string FormatField(string val, int fieldSize)
+        {
+            StringBuilder s = new StringBuilder("" + val, fieldSize);
 
             int count = s.Length;
             for (int i = count; i < fieldSize; i++)
@@ -55,21 +65,15 @@ namespace JQuant
         }
 
         /// <summary>
-        /// add trailing blanks to the string if neccessary 
+        /// add trailing blanks to the integer if neccessary 
         /// </summary>
-        static public string FormatField(string value, int fieldSize)
+        static public string FormatField(double val, int fieldSize)
         {
-            StringBuilder s = new StringBuilder("" + value, fieldSize);
+            string s = FormatField(""+val, fieldSize);
 
-            int count = s.Length;
-            for (int i = count; i < fieldSize; i++)
-            {
-                s.Insert(0, ' ');
-            }
-
-            return s.ToString();
+            return s;
         }
-
+        
         static public string RemoveLeadingBlanks(string s)
         {
             int blank_idx = s.IndexOf(' ');
