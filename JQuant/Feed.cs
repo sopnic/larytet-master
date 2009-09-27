@@ -26,6 +26,9 @@ namespace JQuant
     public interface IDataFeed
     {        
         bool GetSeries(DateTime start, DateTime end, Equity equity, DataFeed.DataType dataType, out TA.PriceVolumeSeries series);
+        
+        bool GetSeries(string fileName, out TA.PriceVolumeSeries series);
+        
         DataFeed.DataType GetDataType();
     }
 
@@ -63,6 +66,38 @@ namespace JQuant
     {        
         public FeedYahoo()
         {
+        }
+        
+        public bool GetSeries(string fileName, out TA.PriceVolumeSeries series)
+        {
+            bool result = false;
+            series = null;
+            FileStream fileStream = null;
+            do
+            {
+                try
+                {
+                    fileStream = new FileStream(fileName, FileMode.Append, FileAccess.Read, FileShare.Read);
+                }
+                catch (IOException e)
+                {
+                    System.Console.WriteLine("Failed to open file "+fileName+" for reading");
+                    System.Console.WriteLine(e.ToString());
+                    break;
+                }
+
+                // preallocate some memory
+                series = new TA.PriceVolumeSeries(50);
+                result = fillDataArray(fileStream, series);
+            }
+            while (false);
+            
+            if (fileStream != null)
+            {
+                fileStream.Close();
+            }
+                
+            return result;
         }
         
         public bool GetSeries(DateTime start, DateTime end, Equity equity, DataFeed.DataType dataType, out TA.PriceVolumeSeries series)
@@ -115,7 +150,7 @@ namespace JQuant
                     DataFeed.DataType.Dividends;
         }
 
-        bool fillDataArray(Stream readStream, TA.PriceVolumeSeries series)
+        bool fillDataArray(Stream streamReader, TA.PriceVolumeSeries series)
         {
             bool result = false;
             byte[] buf = new byte[8192];
@@ -125,7 +160,7 @@ namespace JQuant
             // read all data from the stream
             while (true)
             {
-                int count = readStream.Read(buf, 0, buf.Length);
+                int count = streamReader.Read(buf, 0, buf.Length);
                 // nothing to read ?
                 if (count == 0)
                 {
