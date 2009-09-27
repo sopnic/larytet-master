@@ -21,7 +21,7 @@ namespace TA
     
     public class Candle
     {
-        public Candle(double open, double close, double min, double max, double volume)
+        public Candle(double open, double close, double min, double max, int volume)
         {
             this.open = open;
             this.close = close;
@@ -54,7 +54,7 @@ namespace TA
             protected set;
         }
 
-        public double volume
+        public int volume
         {
             get;
             protected set;
@@ -74,7 +74,7 @@ namespace TA
             paramsCalculated = false;
         }
 
-        public void Add(double open, double close, double min, double max, double volume)
+        public void Add(double open, double close, double min, double max, int volume)
         {
             paramsCalculated = false;
             Data.Add(new Candle(open, close, min, max, volume));
