@@ -592,21 +592,29 @@ namespace JQuant
             TA.PriceVolumeSeries series;
             result = dataFeed.GetSeries(from, to, new Equity(symbol), DataFeed.DataType.Daily, out series);
             if (result)
-            {                
+            {
+                System.IO.FileStream fileStream = null;
                 iWrite.WriteLine("Parsed "+series.Data.Count+" entries");
                 if (outputToFile)
                 {
+                    bool shouldClose = false;
                     try
                     {
-                        System.IO.FileStream fileStream = new System.IO.FileStream(filename, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+                        fileStream = new System.IO.FileStream(filename, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+                        shouldClose = true;
                         StreamWriter streamWriter = new StreamWriter(fileStream);
                         streamWriter.Write(series.ToString(TA.PriceVolumeSeries.Format.Table));
                         streamWriter.Flush();
                         fileStream.Close();
+                        shouldClose = false;
                     }
                     catch (IOException e)
                     {
                         iWrite.WriteLine(e.ToString());
+                    }
+                    if (shouldClose)
+                    {
+                        fileStream.Close();
                     }
                 }
                 else

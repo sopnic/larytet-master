@@ -67,6 +67,34 @@ namespace JQuant
         public FeedYahoo()
         {
         }
+
+        /// <summary>
+        /// return list of equities SP500
+        /// 
+        /// URL: http://download.finance.yahoo.com/d/quotes.csv?s=@%5EGSPC&f=sl1d1t1c1ohgv&e=.csv&h=0
+        /// 
+        /// Content: "A",27.58,"9/25/2009","4:01pm",-0.25,27.77,27.84,27.48,3689109 followed by "0x0D0x0A"
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.Boolean"/>
+        /// True if Ok
+        /// </returns>
+        public bool GetSP500(out System.Collections.Generic.List<Equity> equities)
+        {
+            equities = null;
+
+            string url = "http://download.finance.yahoo.com/d/quotes.csv?s=@%5EGSPC&f=sl1d1t1c1ohgv&e=.csv&h=0";
+            
+            Console.WriteLine("Get data from URL "+url);
+
+            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+            Stream readStream = httpResponse.GetResponseStream();
+
+                        
+            
+            return false;
+        }
         
         public bool GetSeries(string fileName, out TA.PriceVolumeSeries series)
         {
@@ -154,7 +182,7 @@ namespace JQuant
                     DataFeed.DataType.Dividends;
         }
 
-        bool fillDataArray(Stream streamReader, TA.PriceVolumeSeries series)
+        static bool fillDataArray(Stream streamReader, TA.PriceVolumeSeries series)
         {
             bool result = false;
             byte[] buf = new byte[8192];
@@ -238,7 +266,7 @@ namespace JQuant
         /// Date,Open,High,Low,Close,Volume,Adj Close
         /// 2009-09-25,74.04,74.39,73.37,73.80,3470700,73.80
         /// </summary>
-        bool strToCandle(string str, out TA.Candle candle)
+        static bool strToCandle(string str, out TA.Candle candle)
         {
             candle = null;
             int start = 0;
@@ -350,7 +378,7 @@ namespace JQuant
         /// MMM Apr 5, 1970 - 27 Feb,2009, daily
         /// http://ichart.finance.yahoo.com/table.csv?s=MMM&a=03&b=5&c=1970&d=01&e=27&f=2009&g=d&ignore=.csv
         /// </summary>
-        bool buildURL(string symbol, DateTime start, DateTime end, DataFeed.DataType dataType, out string url)
+        static bool buildURL(string symbol, DateTime start, DateTime end, DataFeed.DataType dataType, out string url)
         {
             url = "";
             string dataTypeURL = DataTypeToURL(dataType);
@@ -374,7 +402,7 @@ namespace JQuant
             return true;
         }
 
-        string Month2Str(int month)
+        static string Month2Str(int month)
         {
             string result;
             month = month - 1;
@@ -386,7 +414,7 @@ namespace JQuant
             return result;
         }
 
-        string DataTypeToURL(DataFeed.DataType dataType)
+        static string DataTypeToURL(DataFeed.DataType dataType)
         {
             switch (dataType)
             {
@@ -403,5 +431,5 @@ namespace JQuant
             }
         }
     }
-    
+
 }

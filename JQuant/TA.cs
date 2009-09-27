@@ -1,5 +1,6 @@
 
 using System;
+using System.IO;
 using System.Text;
 
 
@@ -108,6 +109,11 @@ namespace TA
             CVS,
             XML,
             Table
+        }
+
+        public string ToString()
+        {
+            return ToString(Format.Table);
         }
         
         public string ToString(Format format)
@@ -316,6 +322,49 @@ namespace TA
         }
 
     }
+
+    /// <summary>
+    /// Class allows to create and read CVS files containing price and volume data
+    /// </summary>
+    public class CVSFile
+    {
+        public static bool Read(string filename, out PriceVolumeSeries series)
+        {
+            series = null; 
+            return false;
+        }
+            
+        public static bool Write(string filename, PriceVolumeSeries series)
+        {
+            System.IO.FileStream fileStream = null;
+            bool shouldClose = false;
+            try
+            {
+                fileStream = new System.IO.FileStream(filename, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+                shouldClose = true;
+                StreamWriter streamWriter = new StreamWriter(fileStream);
+                streamWriter.Write(series.ToString(TA.PriceVolumeSeries.Format.CVS));
+                streamWriter.Flush();
+                fileStream.Close();
+                shouldClose = false;
+                fileStream = null;
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            if (shouldClose)
+            {
+                fileStream.Close();
+            }
+
+            return false;
+        }
+    }
+
+    
+
 
     /// <summary>
     /// ascending triangle is defined as 3 lows and two highs where susequent lows are higher than previous
