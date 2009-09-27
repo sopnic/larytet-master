@@ -69,20 +69,30 @@ namespace JQuant
     {
     }
 
+
     public enum LogType
     {
         [Description("Dynamic memory")]
         RAM,
+        
         [Description("Serialization")]
         BinarySerialization,
+        
         [Description("Binary")]
         Binary,
+        
         [Description("ASCII")]
         Ascii,
+        
+        [Description("CVS")]
+        CVS,
+        
         [Description("HTML")]
         HTML,
+        
         [Description("XML")]
         XML,
+        
         [Description("SQL")]
         SQL
     };
