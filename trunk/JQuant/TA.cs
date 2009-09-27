@@ -1,5 +1,6 @@
 
 using System;
+using System.Text;
 
 
 /// <summary>
@@ -30,12 +31,12 @@ namespace TA
     
     public class Candle
     {
-        public Candle(double open, double close, double min, double max, int volume)
+        public Candle(double open, double close, double high, double low, int volume)
         {
             this.open = open;
             this.close = close;
-            this.min = min;
-            this.max = max;
+            this.high = high;
+            this.low = low;
             this.volume = volume;
         }
         
@@ -51,13 +52,13 @@ namespace TA
             protected set;
         }
 
-        public double min
+        public double low
         {
             get;
             protected set;
         }
 
-        public double max
+        public double high
         {
             get;
             protected set;
@@ -99,6 +100,54 @@ namespace TA
             (PriceVolumeSeries series, out double average, out double max, out double min, out double stdDeviation)
         {
             CalculateAverageStdDeviation(series, 0, series.Data.Count, out average, out max, out min, out stdDeviation);
+        }
+
+        public enum Format
+        {
+            ASCII,
+            CVS,
+            XML,
+            Table
+        }
+        
+        public string ToString(Format format)
+        {
+            string result = null;
+            
+            // preallocate some memory
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(Data.Count*80);
+            switch (format)
+            {
+            case Format.Table:
+                foreach (Candle candle in Data)
+                {
+                    sb.Append(JQuant.OutputUtils.FormatField(candle.open, 8)+
+                              JQuant.OutputUtils.FormatField(candle.high, 8)+
+                              JQuant.OutputUtils.FormatField(candle.low, 8)+
+                              JQuant.OutputUtils.FormatField(candle.close, 8)+
+                              JQuant.OutputUtils.FormatField(candle.volume, 10)+
+                              "\n");
+                }
+                break;
+            case Format.CVS:
+                foreach (Candle candle in Data)
+                {
+                    sb.Append(""+candle.open+","+candle.high+","+candle.low+","+candle.close+","+candle.volume+"\n");
+                }
+                break;
+            case Format.XML:
+            default:
+                foreach (Candle candle in Data)
+                {
+                    sb.Append("<Candle o="+candle.open+",h="+candle.high+
+                              ",l="+candle.low+",c="+candle.close+
+                              ",v="+candle.volume+"></Candle>\n");
+                }
+                break;
+            }
+
+            result = sb.ToString();
+            return result;
         }
         
         public static void CalculateAverageStdDeviation
@@ -181,26 +230,54 @@ namespace TA
 
         public double Average
         {
-            get;
-            protected set;
+            get
+            {
+                CalculateParams();
+                return Average; 
+            }
+            protected set
+            {
+                Average = value;
+            }
         }
         
         public double Max
         {
-            get;
-            protected set;
+            get
+            {
+                CalculateParams();
+                return Max; 
+            }
+            protected set
+            {
+                Max = value;
+            }
         }
         
         public double Min
         {
-            get;
-            protected set;
+            get
+            {
+                CalculateParams();
+                return Min; 
+            }
+            protected set
+            {
+                Min = value;
+            }
         }
         
         public double StdDeviation
         {
-            get;
-            protected set;
+            get
+            {
+                CalculateParams();
+                return StdDeviation; 
+            }
+            protected set
+            {
+                StdDeviation = value;
+            }
         }
 
         bool paramsCalculated;

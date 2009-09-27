@@ -535,7 +535,9 @@ namespace JQuant
             TA.PriceVolumeSeries series;
             result = dataFeed.GetSeries(from, to, new Equity(symbol), DataFeed.DataType.Daily, out series);
             if (result)
-            {
+            {                
+                iWrite.WriteLine("Parsed "+series.Data.Count+" entries");
+                iWrite.WriteLine(series.ToString(TA.PriceVolumeSeries.Format.Table));
             }
             else
             {
@@ -546,7 +548,7 @@ namespace JQuant
 
         protected void feedGetSeriesFromFileCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            string filename = "yahoo_feed_data_short.csv";
+            string filename = "yahoo_feed_data.csv";
             
             IDataFeed dataFeed = new FeedYahoo();
             TA.PriceVolumeSeries series;
@@ -601,6 +603,8 @@ namespace JQuant
                                    " Get data from the data feeds, TA screens");
             menuFeed.AddCommand("getseries", "Get price/volume series",
                                   " Get price/volume daily series for the specified stock symbol. Args: symbol [fromDate[toDate]]", feedGetSeriesCallback);
+            menuFeed.AddCommand("getofile", "Write price/volume series to file",
+                                  " Get price/volume daily series for the specified stock symbol and write to file. Args: symbol [fromDate[toDate]]", feedGetSeriesCallback);
             menuFeed.AddCommand("readfile", "Get price/volume series from file",
                                   " Get price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
             
