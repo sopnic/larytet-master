@@ -305,6 +305,11 @@ namespace TA
                 int min1Idx, max1Idx, min2Idx, max2Idx;
 
                 double stdDeviation = StdDeviations*series.StdDeviation;
+
+                if ((series.Max - series.Min) < 2*stdDeviation)
+                {
+                    break;
+                }
                 
                 PriceVolumeSeries.CalculateAverage(series, start, halfPoint-start+1, out average, out min1, out min1Idx, out max1, out max1Idx);
                 PriceVolumeSeries.CalculateAverage(series, halfPoint, end-halfPoint+1, out average, out min2, out min2Idx, out max2, out max2Idx);
