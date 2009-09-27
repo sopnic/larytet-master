@@ -1,6 +1,7 @@
 
 using System;
 using System.Threading;
+using System.IO;
 using System.Collections.Generic;
 
 namespace JQuant
@@ -492,7 +493,18 @@ namespace JQuant
             
         }
 
+
+        protected void feedGetToFileCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            feedGetSeriesCallback(iWrite, cmdName, cmdArguments, true);
+        }
+        
         protected void feedGetSeriesCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            feedGetSeriesCallback(iWrite, cmdName, cmdArguments, false);
+        }
+        
+        protected void feedGetSeriesCallback(IWrite iWrite, string cmdName, object[] cmdArguments, bool outputToFile)
         {
             int argsNum = cmdArguments.Length;
             string symbol = null;
@@ -501,27 +513,72 @@ namespace JQuant
             DateTime tmp;
             bool result = true;
             string[] args = (string[])cmdArguments;
+            string filename = null;
             
             switch (argsNum)
             {
             case 1:
+                result = false;
                 break;
             case 2:
-                symbol = args[1];
-                result = true;
+                if (outputToFile)
+                {
+                    result = false;
+                }
+                else
+                {
+                    symbol = args[1];
+                }
                 break;
             case 3:
-                symbol = args[1];
-                result = DateTime.TryParse(args[2], out tmp);
-                if (result) from = tmp;
+                if (outputToFile)
+                {
+                    symbol = args[1];
+                    filename = args[2];
+                }
+                else
+                {
+                    symbol = args[1];
+                    result = DateTime.TryParse(args[2], out tmp);
+                    if (result) from = tmp;
+                }
                 break;
             case 4:
-            default:    
-                symbol = args[1];
-                result = DateTime.TryParse(args[2], out tmp);
-                if (result) from = tmp;
-                result = DateTime.TryParse(args[3], out tmp);
-                if (result) to = tmp;
+                if (outputToFile)
+                {
+                    symbol = args[1];
+                    filename = args[2];
+                    result = DateTime.TryParse(args[3], out tmp);
+                    if (result) from = tmp;
+                }
+                else
+                {
+                    symbol = args[1];
+                    result = DateTime.TryParse(args[2], out tmp);
+                    if (result) from = tmp;
+                    result = DateTime.TryParse(args[3], out tmp);
+                    if (result) to = tmp;
+                }
+                break;
+            case 5:
+            default:
+                if (outputToFile)
+                {
+                    symbol = args[1];
+                    filename = args[2];
+                    result = DateTime.TryParse(args[3], out tmp);
+                    if (result) from = tmp;
+                    result = DateTime.TryParse(args[4], out tmp);
+                    if (result) to = tmp;
+                }
+                else
+                {
+                    symbol = args[1];
+                    result = DateTime.TryParse(args[2], out tmp);
+                    if (result) from = tmp;
+                    result = DateTime.TryParse(args[3], out tmp);
+                    if (result) to = tmp;
+                }
                 break;
             }
 
@@ -537,7 +594,25 @@ namespace JQuant
             if (result)
             {                
                 iWrite.WriteLine("Parsed "+series.Data.Count+" entries");
-                iWrite.WriteLine(series.ToString(TA.PriceVolumeSeries.Format.Table));
+                if (outputToFile)
+                {
+                    try
+                    {
+                        System.IO.FileStream fileStream = new System.IO.FileStream(filename, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+                        StreamWriter streamWriter = new StreamWriter(fileStream);
+                        streamWriter.Write(series.ToString(TA.PriceVolumeSeries.Format.Table));
+                        streamWriter.Flush();
+                        fileStream.Close();
+                    }
+                    catch (IOException e)
+                    {
+                        iWrite.WriteLine(e.ToString());
+                    }
+                }
+                else
+                {
+                    iWrite.WriteLine(series.ToString(TA.PriceVolumeSeries.Format.Table));
+                }
             }
             else
             {
@@ -603,8 +678,8 @@ namespace JQuant
                                    " Get data from the data feeds, TA screens");
             menuFeed.AddCommand("getseries", "Get price/volume series",
                                   " Get price/volume daily series for the specified stock symbol. Args: symbol [fromDate[toDate]]", feedGetSeriesCallback);
-            menuFeed.AddCommand("getofile", "Write price/volume series to file",
-                                  " Get price/volume daily series for the specified stock symbol and write to file. Args: symbol [fromDate[toDate]]", feedGetSeriesCallback);
+            menuFeed.AddCommand("gettofile", "Write price/volume series to file",
+                                  " Get price/volume daily series for the specified stock symbol and write to file. Args: symbol filename [fromDate[toDate]]", feedGetToFileCallback);
             menuFeed.AddCommand("readfile", "Get price/volume series from file",
                                   " Get price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
             
