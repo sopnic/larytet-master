@@ -15,8 +15,17 @@ namespace TA
             this.volume = volume;
         }
         
-        double price;
-        double volume;
+        public double price
+        {
+            get;
+            protected set;
+        }
+        
+        public double volume
+        {
+            get;
+            protected set;
+        }
     }
     
     public class Candle

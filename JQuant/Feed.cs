@@ -12,7 +12,7 @@ namespace JQuant
     {
         public Equity(string ticker)
         {
-            ticker = ticker;
+            Ticker = ticker;
         }
 
 
