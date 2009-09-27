@@ -122,7 +122,8 @@ namespace TA
                 max = Math.Max(max, close);
                 min = Math.Min(min, close);
 
-                stdDeviation += close * close;
+                double d = (candle.open-close);
+                stdDeviation += d * d;
             }
 
             stdDeviation = Math.Sqrt(stdDeviation)/count;
@@ -268,7 +269,7 @@ namespace TA
         /// The data to analyse
         /// </param>
         public AscendingTriangle(PriceVolumeSeries series)
-            : this (series, 1.0)
+            : this (series, 0.2)
         {
         }
 
