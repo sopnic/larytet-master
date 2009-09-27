@@ -311,11 +311,26 @@ namespace TA
                     break;
                 }
 
-                // i have two conditions - maxs are "close" and second minimum is higher than the first
+                // i have two conditions - maxs are "close" and second low is higher than the first
                 // do i have two highs and three lows ? two highs (two maxs) are in place. now lows
-                double tangens = (min2 - min1)/(min2Idx - min1Idx);
+                double tangent = (min2 - min1)/(min2Idx - min1Idx);
+                double target = min1;
+                // look for 3rd close on line described by the tangent
+                for (int i=start;i <= end;i++)
+                {
+                    Candle candle= (Candle)series.Data[i]; 
+                    double close = candle.close;
 
-                // look for 3rd close on line described by the tangens
+                    if ( (i != min1Idx) && (i != min2Idx) && (close > target-stdDeviation) && (close < (target+stdDeviation)) )
+                    {
+                        result = true;
+                        break;
+                    }
+                    
+                    target = target + tangent;
+                }
+
+                
             }
             while (false);
 
