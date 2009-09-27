@@ -265,7 +265,7 @@ namespace JQuant
             if (found && cmd.IsCommand())
             {
                 // temporary no parsing for the arguments
-                cmd.Handler(iWrite, cmdName, null);
+                cmd.Handler(iWrite, cmdName, SplitCommand(cmdName));
             }
             else if (found && !cmd.IsCommand())
             {
@@ -412,6 +412,11 @@ namespace JQuant
             iWrite.WriteLine(outputS);
         }
 
+        public static string[] SplitCommand(string command)
+        {
+            string[] args = command.Split(' ');
+            return args;
+        }
         
     }
 }

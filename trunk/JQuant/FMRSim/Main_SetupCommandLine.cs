@@ -494,7 +494,73 @@ namespace JQuant
 
         protected void feedGetSeriesCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
+            int argsNum = cmdArguments.Length;
+            string symbol = null;
+            DateTime from = DateTime.Today - TimeSpan.FromDays(30);
+            DateTime to = DateTime.Now;
+            DateTime tmp;
+            bool result = true;
+            string[] args = (string[])cmdArguments;
+            
+            switch (argsNum)
+            {
+            case 1:
+                break;
+            case 2:
+                symbol = args[1];
+                result = true;
+                break;
+            case 3:
+                symbol = args[1];
+                result = DateTime.TryParse(args[2], out tmp);
+                if (result) from = tmp;
+                break;
+            case 4:
+            default:    
+                symbol = args[1];
+                result = DateTime.TryParse(args[2], out tmp);
+                if (result) from = tmp;
+                result = DateTime.TryParse(args[3], out tmp);
+                if (result) to = tmp;
+                break;
+            }
+
+            if (!result)
+            {
+                iWrite.WriteLine("Please, specify symbol, from and to date");
+                return;
+            }
+
+            IDataFeed dataFeed = new FeedYahoo();
+            TA.PriceVolumeSeries series;
+            result = dataFeed.GetSeries(from, to, new Equity(symbol), DataFeed.DataType.Daily, out series);
+            if (result)
+            {
+            }
+            else
+            {
+                iWrite.WriteLine("Failed to read data from server");
+            }
+                
         }
+
+        protected void feedGetSeriesFromFileCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            string filename = "yahoo_feed_data_short.csv";
+            
+            IDataFeed dataFeed = new FeedYahoo();
+            TA.PriceVolumeSeries series;
+            bool result = dataFeed.GetSeries(filename, out series);
+            if (result)
+            {
+                iWrite.WriteLine("Parsed "+series.Data.Count+" entries");
+            }
+            else
+            {
+                iWrite.WriteLine("Failed to read data from server");
+            }
+        }
+
         
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -534,7 +600,9 @@ namespace JQuant
             Menu menuFeed = cli.RootMenu.AddMenu("Feed", "Trading data feeds",
                                    " Get data from the data feeds, TA screens");
             menuFeed.AddCommand("getseries", "Get price/volume series",
-                                  " Get price/volume series for the specified stock symbol", feedGetSeriesCallback);
+                                  " Get price/volume daily series for the specified stock symbol. Args: symbol [fromDate[toDate]]", feedGetSeriesCallback);
+            menuFeed.AddCommand("readfile", "Get price/volume series from file",
+                                  " Get price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
             
             Menu menuDebug = cli.RootMenu.AddMenu("Dbg", "System debug info",
                                    " Created objetcs, access to the system statistics");
