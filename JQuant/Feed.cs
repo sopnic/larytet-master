@@ -10,13 +10,13 @@ namespace JQuant
 
     public class Equity
     {
-        public Equity(string ticker)
+        public Equity(string symbol)
         {
-            Ticker = ticker;
+            Symbol = symbol;
         }
 
 
-        public string Ticker
+        public string Symbol
         {
             get;
             protected set;
@@ -102,7 +102,7 @@ namespace JQuant
         
         public bool GetSeries(DateTime start, DateTime end, Equity equity, DataFeed.DataType dataType, out TA.PriceVolumeSeries series)
         {
-            string ticker = equity.Ticker;
+            string symbol = equity.Symbol;
             bool result = false;
             series = null;
 
@@ -118,7 +118,7 @@ namespace JQuant
                 series = new TA.PriceVolumeSeries(size);
 
                 string url;
-                result = buildURL(ticker, start, end, dataType, out url);
+                result = buildURL(symbol, start, end, dataType, out url);
                 if (!result)
                 {
                     break;

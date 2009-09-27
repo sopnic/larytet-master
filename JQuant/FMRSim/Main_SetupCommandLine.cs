@@ -491,6 +491,10 @@ namespace JQuant
             }
             
         }
+
+        protected void feedGetSeriesCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+        }
         
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -525,6 +529,13 @@ namespace JQuant
             // Menu menuFMRLibSim = 
             cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation",
                            " Condiguration and debug of the FMR simulatoion");
+
+
+            Menu menuFeed = cli.RootMenu.AddMenu("Feed", "Trading data feeds",
+                                   " Get data from the data feeds, TA screens");
+            menuFeed.AddCommand("getseries", "Get price/volume series",
+                                  " Get price/volume series for the specified stock symbol", feedGetSeriesCallback);
+            
             Menu menuDebug = cli.RootMenu.AddMenu("Dbg", "System debug info",
                                    " Created objetcs, access to the system statistics");
             menuDebug.AddCommand("GC", "Run garbage collector",
