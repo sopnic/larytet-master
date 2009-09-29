@@ -1,3 +1,0 @@
-C:\Documents and Settings\rina\My Documents\Visual Studio 2008\Projects\TBlarytet\TBlarytet\obj\Release\ResolveAssemblyReference.cache
-C:\Documents and Settings\rina\My Documents\Visual Studio 2008\Projects\TBlarytet\TBlarytet\obj\Release\Interop.TaskBarLib.dll
-C:\Documents and Settings\rina\My Documents\Visual Studio 2008\Projects\TBlarytet\TBlarytet\obj\Release\TBlarytet.csproj.ResolveComReference.cache
