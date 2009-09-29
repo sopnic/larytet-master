@@ -154,7 +154,16 @@ namespace JQuant
 
         protected void debugLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            FMRShell.Connection connection = new FMRShell.Connection("ConnectionParameters.xml");
+            //This solution is only temporary -  we need to add a method setting and changing path variables
+            string path;
+            //Depending on the environment, set the path:
+#if USEVS
+            path=@"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\";
+#else
+            path="";
+#endif
+            string ConnFile = path + "ConnectionParameters.xml";
+            FMRShell.Connection connection = new FMRShell.Connection(ConnFile);
 
             bool openResult;
             int errResult;

@@ -14,10 +14,10 @@ namespace JQuant
 {
     public enum TransactionType
     {
-        [Description("Sell")]
+        [Description("SELL")]
         SELL,
         
-        [Description("Buy")]
+        [Description("BUY")]
         BUY
     }
 
@@ -45,10 +45,10 @@ namespace JQuant
         FOK = 0x0010,    // Fill or Kill - for options only
 
         [Description("GTC")]
-        GTC = 0x0020,    // Good till cancel
+        GTC = 0x0020,    // Good till cancel - this one is not on TASE, there are continous orders (esp. Rezef)
 
         [Description("EOD")]
-        EOD = 0x0040     // End of day (on close)
+        EOD = 0x0040     // End of day (on close) - this one is not on TASE
     }
     
     public enum CurrencyType

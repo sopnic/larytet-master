@@ -36,7 +36,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>WITHGUI_ USEFMRSIM_</DefineConstants>
+    <DefineConstants>WITHGUI_ USEFMRSIM USEVS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
@@ -46,7 +46,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DefineConstants>WITHGUI_ USEFMRSIM_</DefineConstants>
+    <DefineConstants>WITHGUI_ USEFMRSIM USEVS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -145,6 +145,14 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\AccountProfile.xml">
+      <Link>AccountProfile.xml</Link>
+    </Content>
+    <Content Include="..\ConnectionParameters.xml">
+      <Link>ConnectionParameters.xml</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
