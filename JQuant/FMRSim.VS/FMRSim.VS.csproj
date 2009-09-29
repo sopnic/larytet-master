@@ -76,6 +76,9 @@
     <Compile Include="..\Resources.cs" />
     <Compile Include="..\MailboxThread.cs" />
     <Compile Include="..\Pool.cs" />
+    <Compile Include="..\Security.cs">
+      <Link>Security.cs</Link>
+    </Compile>
     <Compile Include="..\Utils.cs" />
     <Compile Include="..\IProducer.cs" />
     <Compile Include="..\Logger.cs" />
