@@ -111,7 +111,7 @@ namespace TA
             Table
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return ToString(Format.Table);
         }
