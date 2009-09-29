@@ -381,7 +381,7 @@ namespace JQuant
         /// <param name="strike"><see cref="System.Double"/> Strike price</param>
         /// <param name="uPrice"><see cref="System.Double"/> Underlying asset price</param>
         /// <param name="T"><see cref="System.Double"/> Time to expiration (in years)</param>
-        /// <returns>Options' BSM price.</returns>
+        /// <returns>Options' BSM price, in case of error returns -1</returns>
         public static double CalcBSPrice(
             OptionType type, 
             double vol, 
@@ -394,17 +394,10 @@ namespace JQuant
             double d1 = (Math.Log(uPrice / strike) + (rf + vol * vol / 2) * T) / (vol * Math.Sqrt(T));
             double d2 = d1 - vol * Math.Sqrt(T);
 
-            switch (type)
-            {
-                case OptionType.CALL:
+                if(type== OptionType.CALL)
                     return (uPrice * NormalCalc(d1) - strike * Math.Exp(-rf * T) * NormalCalc(d2));
-                    break;
-                case OptionType.PUT:
+                else 
                     return (strike * Math.Exp(-rf * T) * NormalCalc(-d2) - uPrice * NormalCalc(-d1));
-                    break;
-                default:
-                    break;
-            }
 
         }//CalcBSPrice
 
@@ -422,7 +415,7 @@ namespace JQuant
         /// <param name="strike"><see cref="System.Double"/> Strike</param>
         /// <param name="uPrice"><see cref="System.Double"/> Underlying price</param>
         /// <param name="T"><see cref="System.Double"/> Time to expiration (in years)</param>
-        /// <returns>Delta</returns>
+        /// <returns><see cref="System.Double"/> Delta, in case of error returns -99999</returns>
         public static double CalcDelta(
             OptionType type,
             double vol,
@@ -434,16 +427,8 @@ namespace JQuant
         {
             double d1 = (Math.Log(uPrice / strike) + (rf + vol * vol / 2.0) * T) / (vol * Math.Sqrt(T));
 
-            switch (type)
-            {
-                case OptionType.CALL:
-                    return StatUtils.NormalCalc(d1);
-                    break;
-                case OptionType.PUT:
-                    return -StatUtils.NormalCalc(-d1);
-                default:
-                    break;
-            }
+            if (type == OptionType.CALL) return StatUtils.NormalCalc(d1);
+            else return -StatUtils.NormalCalc(-d1);
 
         }//CalcDelta
 
@@ -492,20 +477,14 @@ namespace JQuant
         {
             double d1 = (Math.Log(uPrice / strike) + (rf + vol * vol / 2.0) * T) / (vol * Math.Sqrt(T));
             double d2 = d1 - vol * Math.Sqrt(T);
-
-            switch (type)
-            {
-                case OptionType.CALL:
+            
+            if (type==OptionType.CALL)
                     return (-uPrice * NormalCalcPrime(d1) * vol) / (2.0 * Math.Sqrt(T)) - 
                         rf * strike * Math.Exp(-rf * T) * NormalCalc(d2);
-                    break;
-                case OptionType.PUT:
+            else
                     return (-uPrice * NormalCalcPrime(d1) * vol) / (2.0 * Math.Sqrt(T)) + 
                         rf * strike * Math.Exp(-rf * T) * NormalCalc(-d2);
-                    break;
-                default:
-                    break;
-            }
+
         }//CalcTheta
 
         /// <summary>

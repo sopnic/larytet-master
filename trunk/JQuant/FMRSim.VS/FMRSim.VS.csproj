@@ -94,6 +94,12 @@
     <Compile Include="..\Order.cs">
       <Link>Order.cs</Link>
     </Compile>
+    <Compile Include="..\Feed.cs">
+      <Link>Feed.cs</Link>
+    </Compile>
+    <Compile Include="..\TA.cs">
+      <Link>TA.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskBarLib">
