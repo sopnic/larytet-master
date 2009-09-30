@@ -78,7 +78,7 @@ namespace FMRShell
             _parameters = new ConnectionParameters(
                 "aryeh",    // user name
                 "abc123",   // password
-                ""          // app passsword
+                "12345"     // account
                 );
             Init();
         }
@@ -775,6 +775,7 @@ namespace FMRShell
     }
 
 
+    #region Connection Params;
     /// <summary>
     /// handle XML file containing connection parameters
     /// </summary>
@@ -795,16 +796,20 @@ namespace FMRShell
             USERNAME,
             [Description("PASSWORD")]
             PASSWORD,
-            [Description("APP_PASSWORD")]
-            APP_PASSWORD
+            [Description("ACCOUNT")]
+            ACCOUNT
         }
 
         public bool Parse(out ConnectionParameters parameters)
         {
             xmlState state = xmlState.BEGIN;
             string username = "";
-            string appPassword = "";
             string password = "";
+            string account = "";
+
+            string appPassword = "";
+            string branch = "000";
+
             bool result = true;
             string val;
             parameters = null;
@@ -827,9 +832,9 @@ namespace FMRShell
                         {
                             state = xmlState.PASSWORD;
                         }
-                        else if ((val.Equals("apppassword")) && (state == xmlState.PASSWORD))
+                        else if ((val.Equals("account")) && (state == xmlState.PASSWORD))
                         {
-                            state = xmlState.APP_PASSWORD;
+                            state = xmlState.ACCOUNT;
                         }
                         else
                         {
@@ -848,9 +853,9 @@ namespace FMRShell
                         {
                             password = val;
                         }
-                        else if (state == xmlState.APP_PASSWORD)
+                        else if (state == xmlState.ACCOUNT)
                         {
-                            appPassword = val;
+                            account = val;
                         }
                         else
                         {
@@ -862,7 +867,7 @@ namespace FMRShell
                     case XmlNodeType.EndElement:
                         // I will not check that endelement Name is Ok 
                         val = base.Name;
-                        if ((val.Equals("connectionparameters")) && (state == xmlState.APP_PASSWORD))
+                        if ((val.Equals("connectionparameters")) && (state == xmlState.ACCOUNT))
                         {
                         }
                         else if ((val.Equals("username")) && (state == xmlState.USERNAME))
@@ -871,7 +876,7 @@ namespace FMRShell
                         else if ((val.Equals("password")) && (state == xmlState.PASSWORD))
                         {
                         }
-                        else if ((val.Equals("apppassword")) && (state == xmlState.APP_PASSWORD))
+                        else if ((val.Equals("account")) && (state == xmlState.ACCOUNT))
                         {
                         }
                         else
@@ -882,10 +887,10 @@ namespace FMRShell
                         break;
                 }
 
-                // somethign is broken in the XML file
+                // something is broken in the XML file
                 if (result)
                 {
-                    parameters = new ConnectionParameters(username, password, appPassword);
+                    parameters = new ConnectionParameters(username, password, account);
                 }
                 else
                 {
@@ -908,18 +913,17 @@ namespace FMRShell
     /// </returns>
     public class ConnectionParameters
     {
-        public ConnectionParameters(string name, string password)
+        //use only one constructor
+        public ConnectionParameters(string name, string password, string account)
         {
             userName = name;
             userPassword = password;
-            appPassword = "";
-        }
+            Account = account;
 
-        public ConnectionParameters(string name, string password, string apassw)
-        {
-            userName = name;
-            userPassword = password;
-            appPassword = apassw;
+            //these two aren't actually used, but some TaskBar functions require them.
+            //so we set them to default values
+            appPassword = "";
+            Branch = "000";
         }
 
         public string userName
@@ -937,9 +941,25 @@ namespace FMRShell
         public string appPassword
         {
             get;
-            set;
+            protected set;
+        }
+
+        public string Account
+        {
+            get;
+            protected set;
+        }
+
+        public string Branch
+        {
+            get;
+            protected set;
         }
     }
+
+    #endregion;
+
+    #region Config AS400DateTime;
 
     /// <summary>
     /// Used to get latecny and synchronize local machine vs. AS400
@@ -996,6 +1016,10 @@ namespace FMRShell
             return new DateTime(dt.year, dt.Month, dt.day, dt.hour, dt.minute, dt.second, dt.ms);
         }
     }
+
+    #endregion;
+
+    #region Orders FSM;
 
     public enum FMROrderEvent
     {
@@ -1139,26 +1163,6 @@ namespace FMRShell
 
     }
 
-    /// <summary>
-    /// Example of usage of the class, Main_ should be replaced by Main in the real application
-    /// </summary>
-    class FMRShellTest
-    {
-        public static void Main(string[] args)
-        {
-            // use default hard coded settings
-            Connection newConn = new FMRShell.Connection();
-            int returnCode;
-            bool result = newConn.Open(out returnCode);
-            if (!result)
-            {
-                Console.WriteLine("Connection start failed: return code=" + returnCode +
-                                  ", errorMsg=" + newConn.GetErrorMsg());
-                Console.WriteLine();
-                Console.ReadLine();
-            }
-            else Console.WriteLine("Successfull connection, SessionId=" + returnCode);
-        }
-    }
+    #endregion;
 
-}
+}//namespace
