@@ -29,12 +29,9 @@ using TaskBarLib;
 /// </summary>
 namespace FMRShell
 {
-    public enum DataType
-    {
-        Maof,
-        Rezef,
-        Madad
-    }
+
+    #region Connection
+
     public enum ConnectionState
     {
         [Description("Idle")]
@@ -306,6 +303,17 @@ namespace FMRShell
         protected ConnectionParameters _parameters;
 
     }//class Connection
+
+    #endregion;
+
+    #region Collect Market Data
+
+    public enum DataType
+    {
+        Maof,
+        Rezef,
+        Madad
+    }
 
     /// <summary>
     /// generic class 
@@ -774,6 +782,8 @@ namespace FMRShell
         }
     }
 
+    #endregion
+
 
     #region Connection Params;
     /// <summary>
@@ -806,9 +816,6 @@ namespace FMRShell
             string username = "";
             string password = "";
             string account = "";
-
-            string appPassword = "";
-            string branch = "000";
 
             bool result = true;
             string val;
@@ -1021,20 +1028,38 @@ namespace FMRShell
 
     #region Orders FSM;
 
+    public enum FMROrderState
+    {
+        IDLE,
+        INITIALIZED,
+        SENT,
+        WaitingFMR,
+        WaitingTASE,
+        PASSED,
+        UpdatingCanceling,
+        EXECUTED,
+        CANCELED,
+        FATAL,
+    }
+
     public enum FMROrderEvent
     {
-        SENT,
-        EXECUTED,
-        REJECTED,
-        CANCELED
+        InitOrder,
+        Send,
+        GetOrderId,
+        GetInternalError,
+        ApproveFMR,
+        ApproveTASE,
+        ApproveCancelTASE,
+        Execution,
     }
-    
-    public class FMROrder: IOrderBase
+
+    public class FMROrder : IOrderBase
     {
         protected FMROrder()
         {
         }
-        
+
         public System.DateTime Created
         {
             get;
@@ -1042,6 +1067,12 @@ namespace FMRShell
         }
 
         public TransactionType Type
+        {
+            get;
+            set;
+        }
+
+        public OrderType OType
         {
             get;
             set;
@@ -1058,7 +1089,7 @@ namespace FMRShell
             // call Order Processor
             newEvent(this, orderEvent);
         }
-        
+
         public delegate void NewEvent(FMROrder order, FMROrderEvent orderEvent);
 
         /// <value>
@@ -1071,61 +1102,34 @@ namespace FMRShell
         }
     }
 
-    class FMROrderSell: FMROrder, JQuant.IOrderSell
-    {
-        public FMROrderSell()
-        {
-            Type = TransactionType.SELL;
-        }
-        
-        public int Ask
-        {
-            get;
-            set;
-        }
-    }
-    
-    class FMROrderBuy: FMROrder, JQuant.IOrderBuy
-    {
-        public FMROrderBuy()
-        {
-            Type = TransactionType.BUY;
-        }
-        
-        public int Bid
-        {
-            get;
-            set;
-        }
-    }
-    
+
     /// <summary>
     /// implements Maof order FSM
     /// specific for FMR
     /// </summary>
-    public class SimpleMaofOrderFSM: MailboxThread<object>, IOrderProcessor
+    public class SimpleMaofOrderFSM : MailboxThread<object>, IOrderProcessor
     {
         public SimpleMaofOrderFSM() :
             base("MaofOrderFSM", 100)
         {
         }
-        
-        public bool Create(TransactionType type, out IOrderBase order)
+
+        public bool Create(TransactionType type, OrderType otype, out IOrderBase order)
         {
             FMROrder fmrOrder = null;
-            
+
             switch (type)
             {
-                case TransactionType.BUY: 
-                fmrOrder = new FMROrderBuy();
-                break;
-                
-                case TransactionType.SELL: 
-                fmrOrder = new FMROrderSell();
-                break;
-                
-                default: 
-                break;
+                case TransactionType.BUY:
+                    //fmrOrder = new FMROrderBuy();
+                    break;
+
+                case TransactionType.SELL:
+                    //fmrOrder = new FMROrderSell();
+                    break;
+
+                default:
+                    break;
             }
 
             if (fmrOrder != null)

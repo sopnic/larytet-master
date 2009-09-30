@@ -147,9 +147,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\AccountProfile.xml">
-      <Link>AccountProfile.xml</Link>
-    </Content>
     <Content Include="..\ConnectionParameters.xml">
       <Link>ConnectionParameters.xml</Link>
     </Content>
