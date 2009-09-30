@@ -16,7 +16,7 @@ namespace JQuant
     {
         [Description("SELL")]
         SELL,
-        
+
         [Description("BUY")]
         BUY
     }
@@ -50,12 +50,12 @@ namespace JQuant
         [Description("EOD")]
         EOD = 0x0040     // End of day (on close) - this one is not on TASE
     }
-    
+
     public enum CurrencyType
     {
         [Description("USD")]
         USD,    //thinking NASDAQ?
-        
+
         [Description("EUR")]
         EUR,    //who knows - maybe one day ...
 
@@ -75,7 +75,7 @@ namespace JQuant
     /// </summary>
     public interface IOrderProcessor
     {
-        bool Create(TransactionType type, out IOrderBase order);
+        bool Create(TransactionType type, OrderType Otype, out IOrderBase order);
 
         bool Place(IOrderBase order);
 
@@ -92,39 +92,25 @@ namespace JQuant
     /// </summary>
     public interface IOrderBase
     {
-        System.DateTime Created
+        DateTime Created
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Buy or Sell
+        /// </summary>
         TransactionType Type
         {
             get;
             set;
         }
-    }
 
-    public interface IOrderSell: IOrderBase
-    {
-        /// <value>
-        /// Sell orders are characterized by Ask price. Ask prices 
-        /// is number of money units of money 
-        /// </value>
-        int Ask
-        {
-            get;
-            set;
-        }
-    }
-    
-    public interface IOrderBuy: IOrderBase
-    {
-        /// <value>
-        /// Buy orders are characterized by Bid price. Bid price
-        /// is number of units of money 
-        /// </value>
-        int Bid
+        /// <summary>
+        /// LMT, MKT, ... etc.
+        /// </summary>
+        OrderType OType
         {
             get;
             set;
@@ -138,32 +124,23 @@ namespace JQuant
     /// </summary>
     public abstract class OrderBase
     {
+        /// <summary>
+        /// Number of units to trade
+        /// </summary>
         public int Quantity
         {
-            get
-            {
-                return quantity;
-            }
-            protected set
-            {
-                quantity = value;
-            }
+            get;
+            protected set;
         }
 
+        /// <summary>
+        /// Buy or Sell
+        /// </summary>
         public TransactionType TransType
         {
-            get
-            {
-                return transType;
-            }
-            protected set
-            {
-                transType = value;
-            }
+            get;
+            protected set;
         }
-
-        int quantity;               //Number of units to trade
-        TransactionType transType;  //Buy or Sell
     }
 
     /// <summary>
@@ -173,49 +150,96 @@ namespace JQuant
     /// </summary>
     public abstract class LimitOrderBase : OrderBase
     {
+        /// <summary>
+        /// Limit price - transaction will only take place 
+        /// if the counterparty's limit (currently on the order book)
+        /// is better than mine
+        /// (for sell - it's higher than my limit, 
+        /// and for buy it's lower than mine)
+        /// </summary>
         public double Price
         {
-            get 
-            {
-                return price;
-            }
-            protected set
-            {
-                price = value;
-            }
+            get;
+            protected set;
         }
-        double price;
     }
 
-    public class MaofOrder:LimitOrderBase
+    public class MaofOrder : LimitOrderBase
     {
-        MaofOrderType maofOrderType; //used for sending the trading directive   to the API
-        
-        //reference IDs
-        string Asmachta;
-        string AsmachtaFMF;
-        int OrderId;    //this one is only for taking care of internal errors
+        /// <summary>
+        /// TaskBar object used for sending the trading directive   to the API
+        /// </summary>
+        MaofOrderType maofOrderType;
+
+        //various reference IDs
+
+        /// <summary>
+        /// TASE reference no. of approval
+        /// </summary>
+        public string Asmachta
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Exchange member's internal ref. no. of approval
+        /// </summary>
+        public string AsmachtaFMR
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// this one is only for taking care of internal errors, 
+        /// not needed if one of the Asmachtas obtained
+        /// </summary>
+        public int OrderId
+        {
+            get;
+            protected set;
+        }
+
 
         //Special variables required by FMR to treat internal errors:
-        OrdersErrorTypes ErrorType;
-        int ErrNo;
-        string VbMsg;
-        string ReEnteredValue;
 
-    }
+        /// <summary>
+        /// TaskBar type
+        /// </summary>
+        public OrdersErrorTypes ErrorType
+        {
+            get;
+            protected set;
+        }
 
-    /// <summary>
-    /// This one I keep here temporarily.
-    /// Contains all the data common to all Order objects which doesn't change 
-    /// during the trading session.
-    /// </summary>
-    public struct AccountProfile
-    {
-        public string Account;
-        public string Branch;
-        public int SessionId; //obtain it from the Connection object
-        string UserName;
-        string PassWord;
+        /// <summary>
+        /// Placeholder for the internal error ref. no.
+        /// </summary>
+        public int ErrNo
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Placeholder for the string message which accompanies internal error arrival
+        /// </summary>
+        public string VbMsg
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// placeholder for data used for resubmitting orders in case of internal error 
+        /// effectively contains only corrected price or quantity (in case of ReEnter error)
+        /// or "YES" or "NO" strings in case of Confirmation error
+        /// </summary>
+        public string ReEnteredValue
+        {
+            get;
+            protected set;
+        }
     }
-    
-}
+}//namespace
