@@ -27,30 +27,45 @@ namespace JQuant
     abstract public class Security
     {
         //Public properties
-        public int IdNum        //security's id number on TASE
+        /// <summary>
+        /// security's id number on TASE
+        /// </summary>
+        public int IdNum
         {
             get;
             protected set;
         }
-        public string Name      //security's name
-        {
-            get;
-            protected set;
-        }
-
-        public string Description   //short textual description, probably a long name
-        {
-            get;
-            protected set;
-        }
-
-        public SecurityType SecType //whether stock, bond or derivative
+        
+        /// <summary>
+        /// security's name
+        /// </summary>
+        public string Name
         {
             get;
             protected set;
         }
 
-        //Constructor
+        /// <summary>
+        /// short textual description, probably a long name
+        /// </summary>
+        public string Description
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// whether it's a stock, bond or derivative
+        /// </summary>
+        public SecurityType SecType 
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         protected Security()
         {
         }
@@ -75,17 +90,101 @@ namespace JQuant
             return EnumUtils.GetDescription(OT).Substring(0,1);
         }
 
-        //Properties
-        public OptionType Type
+        /// <summary>
+        /// How many units of underlying asset the option 
+        /// refers to. On TASE Maof and stock options it's 100, 
+        /// (like for most US stock options )
+        /// for USD-ILS it's 10,000$. I set it to 100 by default in the constructor.
+        /// Using it in computations enables us to get all the risks (Greeks) in terms of NIS.
+        /// </summary>
+        public int Multiplier
         {
-            get { return this.type; }
-            protected set { type = value; }
+            get;
+            protected set;
         }
 
+        //Properties
+        /// <summary>
+        /// PUT or CALL
+        /// </summary>
+        public OptionType Type
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Strike price
+        /// </summary>
         public double Strike
         {
-            get { return strike; }
-            protected set {strike = value; }
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Expiration date
+        /// </summary>
+        public DateTime ExpDate
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Time to expiration, in years. As the expiration gets closer, 
+        /// more precise calculation (hourly) is done. This is particularly 
+        /// important for the last couple of trading days, as Theta
+        /// (as well as Gamma) changes become significant, by hours.
+        /// </summary>
+        public double T
+        {
+            get
+            {
+                TimeSpan ts = DateTime.Today - ExpDate;
+                if (ts.TotalDays > 3)
+                {
+                    return ts.TotalDays / 365.0;
+                }
+                else return ts.TotalHours / (365.0 * 24.0);
+            }
+        }
+
+        /// <summary>
+        /// Implied volatility. Not a property, since it depends on some
+        /// outside parameters:
+        /// </summary>
+        /// <param name="Premium"><see cref="System.Double"/>Option's market price</param>
+        /// <param name="Rf"><see cref="System.Double"/>risk-free interest rate (decimal, not percent)</param>
+        /// <param name="S"><see cref="System.Double"/>underlying asset's price</param>
+        /// <returns><see cref="System.Double"/> Implied Volatility</returns>
+        public double IV(double Premium, double Rf, double S)
+        {
+            return StatUtils.CalcIV(Type, Premium/Multiplier, Rf, Strike, S, T);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="X"><see cref="System.Double"/> strike price</param>
+        /// <param name="ot"><see cref="JQuant.OptionType"/> - PUT or CALL</param>
+        /// <param name="ExDate"><see cref="System.DateTime"/> expiration date</param>
+        /// <param name="OptID"><see cref="System.Int32"/> Option's Id number</param>
+        public Option(double X, OptionType ot, DateTime ExDate, int OptID)
+        {
+            ExpDate = ExDate;
+            Strike = X;
+            Type = ot;
+            IdNum = OptID;
+            Multiplier = 100;
+
+            SecType = SecurityType.Derivative;
+            
+            Name = OptionTypeToShortString(ot) + " " + X.ToString() + " " 
+                + ExDate.Date.ToLongDateString().Split(',', ' ')[2].Substring(0, 3).ToUpper();  //3-letter month
+            
+            Description = EnumUtils.GetDescription(ot) + " " + X.ToString() + " " + ExDate.Date.ToString();
+
         }
 
         //Methods
@@ -104,8 +203,8 @@ namespace JQuant
         /// <returns>Delta, options sensitivity to the underlying price changes</returns>
         public double Delta(double vol, double rate, double S, double T, bool Numerical)
         {
-            if (Numerical) return StatUtils.CalcNDelta(type, vol, rate, strike, S, T, S+1.0);
-            else return StatUtils.CalcDelta(type, vol, rate, strike, S, T);
+            if (Numerical) return StatUtils.CalcNDelta(Type, vol, rate, Strike, S, T, S+1.0)*Multiplier;
+            else return StatUtils.CalcDelta(Type, vol, rate, Strike, S, T)*Multiplier;
         }
 
         /// <summary>
@@ -120,8 +219,8 @@ namespace JQuant
         /// to the underlying price changes</returns>
         public double Gamma(double vol, double rate, double S, double T, bool Numerical)
         {
-            if (Numerical) return StatUtils.CalcNGamma(type, vol, rate, strike, S, T, 1.0);
-            else return StatUtils.CalcGamma(vol, rate, strike, S, T);
+            if (Numerical) return StatUtils.CalcNGamma(Type, vol, rate, Strike, S, T, 1.0)*Multiplier;
+            else return StatUtils.CalcGamma(vol, rate, Strike, S, T)*Multiplier;
         }
 
         /// <summary>
@@ -136,8 +235,8 @@ namespace JQuant
         /// to the volatility changes</returns>
         public double Vega(double vol, double rate, double S, double T, bool Numerical)
         {
-            if (Numerical) return StatUtils.CalcNVega(type, vol, rate, strike, S, T, vol / 100);
-            return StatUtils.CalcVega(vol, rate, strike, S, T);
+            if (Numerical) return StatUtils.CalcNVega(Type, vol, rate, Strike, S, T, vol / 100)*Multiplier;
+            return StatUtils.CalcVega(vol, rate, Strike, S, T)*Multiplier;
         }
         /// <summary>
         /// Computes option's Theta, given the market conditions:
@@ -152,47 +251,11 @@ namespace JQuant
 
         public double Theta(double vol, double rate, double S, double T, bool Numerical)
         {
-            return StatUtils.CalcTheta(type, vol, rate, strike, S, T);
+            if (Numerical) return StatUtils.CalcNTheta(Type, vol, rate, Strike, S, T, 1.0 / 365.0) * Multiplier;
+            else return StatUtils.CalcTheta(Type, vol, rate, Strike, S, T) * Multiplier;
         }
 
         #endregion;
-
-        #region Constructors;
-        //Constructor
-
-        public Option(double X, OptionType ot, System.DateTime ExDate, int OptID): base()
-        {
-            expDate = ExDate;
-            strike = X;
-            type = ot;
-            IdNum = OptID;
-            
-            Name = OptionTypeToShortString(ot) + " " + X.ToString() + " " 
-                + ExDate.Date.ToLongDateString().Split(',', ' ')[2].Substring(0, 3).ToUpper();  //3-letter month
-            
-            Description = EnumUtils.GetDescription(ot) + " " + X.ToString() + " " + ExDate.Date.ToString();
-
-        }
-        #endregion;
-        #region Strings;
-        public override string ToString()
-        {
-            return Name;
-        }
-        #endregion;
-
-        //Members
-        private OptionType type;    //CALL or PUT
-        private double strike;      //strike price
-        private DateTime expDate;   //expiration date
-        private double T;           //Time to expiration
-        private double vol;         //volatility
-
-        // These parameters aren't specific for the option instances, 
-        // therefore they aren't members of the Option type:
-        //
-        //private double rate;              //risk-free interest
-        //private double S;                 //underlying price
 
     }//class Option
 
