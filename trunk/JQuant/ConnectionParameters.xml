@@ -1,5 +1,5 @@
 <connectionparameters>
 	<username>aryeh</username>
 	<password>abc123</password>
-	<apppassword></apppassword>
+  <account>12345</account>
 </connectionparameters>
