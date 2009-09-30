@@ -258,6 +258,7 @@ namespace JQuant
     /// </summary>
     public class StatUtils
     {
+
         #region List Statistics;
 
         /// <summary>

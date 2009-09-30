@@ -13,7 +13,7 @@ namespace JQuant
 
     public enum OptionType
     {
-        [Description("Call")]
+        [Description("CALL")]
         CALL,
         [Description("PUT")]
         PUT,
@@ -27,31 +27,33 @@ namespace JQuant
     abstract public class Security
     {
         //Public properties
-        public int IdNum
+        public int IdNum        //security's id number on TASE
         {
-            get { return idNum; }
-            set { idNum = value; }
+            get;
+            protected set;
         }
-        public string Name
+        public string Name      //security's name
         {
-            get { return name; }
-            set { name = value; }
+            get;
+            protected set;
+        }
+
+        public string Description   //short textual description, probably a long name
+        {
+            get;
+            protected set;
+        }
+
+        public SecurityType SecType //whether stock, bond or derivative
+        {
+            get;
+            protected set;
         }
 
         //Constructor
-        public Security()
+        protected Security()
         {
-            idNum = 0;
-            Name  = "Security";
-            //LimitBook = new LOB();
-            //lastTrans = new Transaction();
         }
-
-        //Security class private members
-        private int idNum;                      //security's id number on TASE
-        private string name;                    //its name
-        private SecurityType securityType;    //whether stock, bond or derivative
-        private string description;           //short textual description
 
     }   //class Security 
     #endregion;
@@ -63,19 +65,15 @@ namespace JQuant
     /// 
     class Option : Security
     {
-
-        //Members
-        private OptionType type;    //'C'all or 'P'ut
-        private double strike;      //strike
-        private DateTime expDate;   //expiration date
-        private double T;           //Time to expiration
-        private double vol;         //volatility
-
-        // These parameters aren't specific for the option instances, 
-        // therefore they aren't members of the Option type:
-        //
-        //private double rate;              //risk-free interest
-        //private double S;                 //underlying price
+        /// <summary>
+        /// Returns "C" for CALL and "P" for PUT
+        /// </summary>
+        /// <param name="OT"><see cref="JQuant.OptionType"/></param>
+        /// <returns><see cref="System.String"/></returns>
+        public static string OptionTypeToShortString(OptionType OT)
+        {
+            return EnumUtils.GetDescription(OT).Substring(0,1);
+        }
 
         //Properties
         public OptionType Type
@@ -160,23 +158,20 @@ namespace JQuant
         #endregion;
 
         #region Constructors;
-        //Constructors
-        public Option()
-            : base()
-        {
-            expDate = new DateTime(2009, 6, 30);    //uses DateTime(int,int,int) constructor
-            strike = 820;
-            //this.OptLOB = new LOB();
-        }
+        //Constructor
 
-        public Option(double X, OptionType ot, System.DateTime ExDate, int OptID)
+        public Option(double X, OptionType ot, System.DateTime ExDate, int OptID): base()
         {
             expDate = ExDate;
             strike = X;
             type = ot;
             IdNum = OptID;
-            Name = ot + " " + X.ToString() + " " +
-                ExDate.Date.ToLongDateString().Split(',', ' ')[2].Substring(0, 3).ToUpper();
+            
+            Name = OptionTypeToShortString(ot) + " " + X.ToString() + " " 
+                + ExDate.Date.ToLongDateString().Split(',', ' ')[2].Substring(0, 3).ToUpper();  //3-letter month
+            
+            Description = EnumUtils.GetDescription(ot) + " " + X.ToString() + " " + ExDate.Date.ToString();
+
         }
         #endregion;
         #region Strings;
@@ -185,6 +180,20 @@ namespace JQuant
             return Name;
         }
         #endregion;
+
+        //Members
+        private OptionType type;    //CALL or PUT
+        private double strike;      //strike price
+        private DateTime expDate;   //expiration date
+        private double T;           //Time to expiration
+        private double vol;         //volatility
+
+        // These parameters aren't specific for the option instances, 
+        // therefore they aren't members of the Option type:
+        //
+        //private double rate;              //risk-free interest
+        //private double S;                 //underlying price
+
     }//class Option
 
     #endregion;

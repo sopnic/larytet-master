@@ -986,6 +986,11 @@ namespace FMRShell
             else return false;
         }
 
+        /// <summary>
+        /// Converts AS400DateTiem to the .net 
+        /// </summary>
+        /// <param name="dt"><see cref="TaskBar.AS400DateTime"/></param>
+        /// <returns><see cref="System.DateTime"/></returns>
         public static DateTime ConvertToDateTime(AS400DateTime dt)
         {
             return new DateTime(dt.year, dt.Month, dt.day, dt.hour, dt.minute, dt.second, dt.ms);
