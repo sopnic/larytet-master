@@ -1062,7 +1062,7 @@ namespace FMRShell
         Execution,
     }
 
-    public class FMROrder : IOrderBase
+    public class FMROrder : IMaofOrder
     {
         protected FMROrder()
         {
@@ -1074,13 +1074,13 @@ namespace FMRShell
             set;
         }
 
-        public TransactionType Type
+        public TransactionType TransType
         {
             get;
             set;
         }
 
-        public OrderType OType
+        public OrderType OrdrType
         {
             get;
             set;
@@ -1116,8 +1116,51 @@ namespace FMRShell
     /// It's kept inside a list in the FSMClass, along with other outstanding orders.
     /// FSMClass takes care of its porcessing, logging and reporting.
     /// </summary>
-    public class MaofOrder : LimitOrderBase
+    public class MaofOrder : LimitOrderBase, IMaofOrder
     {
+
+        /// <summary>
+        /// call this method to send events to the Order Processor 
+        /// </summary>
+        /// <param name="orderEvent">
+        /// A <see cref="FMROrderEvent"/>
+        /// </param>
+        public void SendEvent(FMROrderEvent orderEvent)
+        {
+            // call Order Processor
+            newEvent(this, orderEvent);
+        }
+
+        public delegate void NewEvent(MaofOrder order, FMROrderEvent orderEvent);
+
+        /// <value>
+        /// set by Order Processor when the order is created 
+        /// </value>
+        public NewEvent newEvent
+        {
+            get;
+            set;
+        }
+
+        //ImplementIMaofOrder:
+        public DateTime Created
+        {
+            get;
+            protected set;
+        }
+
+        public new TransactionType TransType
+        {
+            get;
+            set;
+        }
+
+        public OrderType OrdrType
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// FSM state 
         /// </summary>
@@ -1270,37 +1313,35 @@ namespace FMRShell
 
 
 
-
-
-
-
-
-
     /// <summary>
     /// implements Maof order FSM
-    /// specific for FMR
     /// </summary>
-    public class SimpleMaofOrderFSM : MailboxThread<object>, IOrderProcessor
+    public class MaofOrderFSM : MailboxThread<object>, IOrderProcessor
     {
-        public SimpleMaofOrderFSM() :
+        //points to an active connection to the TaskBar
+        Connection conn
+        {
+            get;
+            set;
+        }
+
+        public MaofOrderFSM() :
             base("MaofOrderFSM", 100)
         {
         }
 
-        public bool Create(TransactionType type, OrderType otype, out IOrderBase order)
+        public bool Create(LimitOrderParameters OrdParams, out MaofOrder order)
         {
+            MaofOrder maofOrder = null;
+            maofOrder = new MaofOrder(conn, OrdParams.TransType, OrdParams.Opt, OrdParams.Quantity, OrdParams.Price);
             
-            FMROrder fmrOrder = null;
-
-            //fmrOrder = new FMROrder();
-
-            if (fmrOrder != null)
+            if (maofOrder != null)
             {
                 // set callback - i want to get events from other tasks
-                fmrOrder.newEvent = NewEvent;
+                maofOrder.newEvent = NewEvent;
             }
 
-            order = fmrOrder;
+            order = maofOrder;
 
             return (order != null);
         }
@@ -1310,19 +1351,19 @@ namespace FMRShell
         /// called by another thread when FMR has something to say about
         /// the order, for example, Ok or rejected
         /// </summary>
-        void NewEvent(FMROrder order, FMROrderEvent orderEvent)
+        void NewEvent(MaofOrder order, FMROrderEvent orderEvent)
         {
             // create a message
 
             // send message to the mailbox
         }
 
-        public bool Place(IOrderBase order)
+        public bool Submit(IMaofOrder order)
         {
             return true;
         }
 
-        public bool Cancel(IOrderBase order)
+        public bool Cancel(IMaofOrder order)
         {
             return true;
         }

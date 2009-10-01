@@ -71,55 +71,6 @@ namespace JQuant
 
 
     /// <summary>
-    /// Any order processor (OrderFSM) will implement this interface
-    /// </summary>
-    public interface IOrderProcessor
-    {
-        bool Create(TransactionType type, OrderType Otype, out IOrderBase order);
-
-        bool Place(IOrderBase order);
-
-        bool Cancel(IOrderBase order);
-
-        // add notification related API here
-        // only the most basic
-    }
-
-
-    /// <summary>
-    /// this interface is what external world sees
-    /// Order processor will see all the fields
-    /// </summary>
-    public interface IOrderBase
-    {
-        DateTime Created
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Buy or Sell
-        /// </summary>
-        TransactionType Type
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// LMT, MKT, ... etc.
-        /// </summary>
-        OrderType OType
-        {
-            get;
-            set;
-        }
-    }
-
-
-
-    /// <summary>
     /// Base Order, from which all the other Order types inherit
     /// </summary>
     public abstract class OrderBase
@@ -163,4 +114,71 @@ namespace JQuant
             protected set;
         }
     }
+
+    //this is a dataholder used for effective communication between 
+    //the order producer (algorithm) and the order processor (FSM)
+    public struct LimitOrderParameters
+    {
+        public TransactionType TransType;
+        public OrderType OType;
+        public int Quantity;
+        public double Price;
+        public Option Opt;
+    }
+
+
+    #region Interfaces
+
+    /// <summary>
+    /// Any order processor (OrderFSM) will implement this interface
+    /// </summary>
+    public interface IOrderProcessor
+    {
+        bool Create(LimitOrderParameters OrdParams, out FMRShell.MaofOrder order);
+
+        bool Submit(IMaofOrder order);
+
+        bool Cancel(IMaofOrder order);
+
+        // add notification related API here
+        // only the most basic
+    }
+
+    /// <summary>
+    /// this interface is what external world sees
+    /// Order processor will see all the fields
+    /// </summary>
+    public interface IMaofOrder
+    {
+        DateTime Created
+        {
+            get;        //note there is no public set here - it's determinid internally
+        }
+
+        /// <summary>
+        /// Buy or Sell
+        /// </summary>
+        TransactionType TransType
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// LMT, MKT, ... etc.
+        /// </summary>
+        OrderType OrdrType
+        {
+            get;
+            set;
+        }
+    }
+
+    #endregion
+
+
 }//namespace
+
+
+
+
