@@ -134,7 +134,7 @@ namespace JQuant
     /// </summary>
     public interface IOrderProcessor
     {
-        bool Create(LimitOrderParameters OrdParams, out FMRShell.MaofOrder order);
+        bool Create(LimitOrderParameters OrdParams, out IMaofOrder order);
 
         bool Submit(IMaofOrder order);
 

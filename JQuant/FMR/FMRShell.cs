@@ -1325,13 +1325,19 @@ namespace FMRShell
             set;
         }
 
+        /// <summary>
+        /// A storage place where FSM keeps all the active orders.
+        /// </summary>
+        List<MaofOrder> MFOrdersList;
+
         public MaofOrderFSM() :
             base("MaofOrderFSM", 100)
         {
         }
 
-        public bool Create(LimitOrderParameters OrdParams, out MaofOrder order)
+        public bool Create(LimitOrderParameters OrdParams, out IMaofOrder order)
         {
+            if (MFOrdersList == null) MFOrdersList = new List<MaofOrder>(20);   //enable initial capacity of 20 orders
             MaofOrder maofOrder = null;
             maofOrder = new MaofOrder(conn, OrdParams.TransType, OrdParams.Opt, OrdParams.Quantity, OrdParams.Price);
             
@@ -1341,11 +1347,15 @@ namespace FMRShell
                 maofOrder.newEvent = NewEvent;
             }
 
+            MFOrdersList.Add(maofOrder);
+
             order = maofOrder;
 
             return (order != null);
         }
 
+
+        #region FSM Matrix
 
         /// <summary>
         /// called by another thread when FMR has something to say about
@@ -1353,10 +1363,145 @@ namespace FMRShell
         /// </summary>
         void NewEvent(MaofOrder order, FMROrderEvent orderEvent)
         {
-            // create a message
 
-            // send message to the mailbox
+            switch (orderEvent)
+            {
+                case FMROrderEvent.InitOrder:
+                    processInitOrder(order);
+                    break;
+                case FMROrderEvent.Send:
+                    processSend(order);
+                    break;
+                case FMROrderEvent.GetOrderId:
+                    processGetOrderId(order);
+                    break;
+                case FMROrderEvent.GetInternalError:
+                    processGetInternalError(order);
+                    break;
+                case FMROrderEvent.ApproveFMR:
+                    processApproveFMR(order);
+                    break;
+                case FMROrderEvent.ApproveTASE:
+                    processApproveTASE(order);
+                    break;
+                case FMROrderEvent.ApproveCancelTASE:
+                    processApproveCancelTASE(order);
+                    break;
+                case FMROrderEvent.Execution:
+                    processExecution(order);
+                    break;
+                default:
+                    break;
+            }
+
         }
+
+        //Only appropriate states count, other cases yield error
+        void processInitOrder(MaofOrder order)
+        {
+            switch (order.State)
+            {
+                case FMROrderState.IDLE:
+                    break;
+                case FMROrderState.PASSED:
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        void processSend(MaofOrder order)
+        {
+            switch (order.State)
+            {
+                case FMROrderState.INITIALIZED:
+                    break;
+                case FMROrderState.UpdatingCanceling:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void processGetOrderId(MaofOrder order)
+        {
+            switch (order.State)
+            {
+                case FMROrderState.SENT:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void processGetInternalError(MaofOrder order)
+        {
+            switch (order.State)
+            {
+                case FMROrderState.SENT:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void processApproveFMR(MaofOrder order)
+        {
+            switch (order.State)
+            {
+                case FMROrderState.WaitingFMR:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void processApproveTASE(MaofOrder order)
+        {
+            switch (order.State)
+            {
+                case FMROrderState.WaitingFMR:
+                    break;
+                case FMROrderState.WaitingTASE:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void processApproveCancelTASE(MaofOrder order)
+        {
+            switch (order.State)
+            {
+                case FMROrderState.WaitingFMR:
+                    break;
+                case FMROrderState.WaitingTASE:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void processExecution(MaofOrder order)
+        {
+            switch (order.State)
+            {
+                case FMROrderState.WaitingFMR:
+                    break;
+                case FMROrderState.WaitingTASE:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        #endregion;
+
+
+        // create a message
+        
+        // send message to the mailbox
 
         public bool Submit(IMaofOrder order)
         {
