@@ -296,6 +296,14 @@ namespace FMRShell
             protected set;
         }
 
+        public ConnectionParameters Parameters
+        {
+            get 
+            { 
+                return _parameters;
+            }
+        }
+
         protected int sessionId;
         protected string errMsg;
         protected string xmlFileName;
@@ -1104,6 +1112,171 @@ namespace FMRShell
 
 
     /// <summary>
+    /// Represents a single trading directive. Essentially is a data container.
+    /// It's kept inside a list in the FSMClass, along with other outstanding orders.
+    /// FSMClass takes care of its porcessing, logging and reporting.
+    /// </summary>
+    public class MaofOrder : LimitOrderBase
+    {
+        /// <summary>
+        /// FSM state 
+        /// </summary>
+        public FMROrderState State
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// TaskBar object used for sending the trading directive to the API
+        /// </summary>
+        MaofOrderType maofOrderType;
+
+        //various reference IDs
+
+        /// <summary>
+        /// TASE reference no. of approval
+        /// </summary>
+        public string Asmachta
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Exchange member's internal ref. no. of approval
+        /// </summary>
+        public string AsmachtaFMR
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// this one is only for taking care of internal errors, 
+        /// not needed if one of the Asmachtas obtained
+        /// </summary>
+        public int OrderId
+        {
+            get;
+            protected set;
+        }
+
+
+        //Special variables required by FMR to treat internal errors:
+
+        /// <summary>
+        /// TaskBar type
+        /// </summary>
+        public OrdersErrorTypes ErrorType
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Placeholder for the internal error ref. no.
+        /// </summary>
+        public int ErrNo
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Placeholder for the string message which accompanies internal error arrival
+        /// </summary>
+        public string VbMsg
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// placeholder for data used for resubmitting orders in case of internal error 
+        /// effectively contains only corrected price or quantity (in case of ReEnter error)
+        /// or "YES" or "NO" strings in case of Confirmation error
+        /// </summary>
+        public string ReEnteredValue
+        {
+            get;
+            protected set;
+        }
+
+
+        //Constructor
+        /// <summary>
+        /// Default constructor - usual case is a LMT order, initialize an Order object ready to further processing.
+        /// </summary>
+        /// <param name="_conn"><see cref="FMRShell.Connection"/> currently active connection
+        /// which keeps all the needed FMR data - username, password, account no.
+        /// as well as UserClass instance used to communicate with the part of API responsible for 
+        /// processing of orders</param>
+        /// <param name="_transactionType"><see cref="JQuant.TransactionType"/>  - BUY or SELL</param>
+        /// <param name="_option"><see cref="JQuant.Option"/></param>
+        /// <param name="_quantity"><see cref="System.Int32"/> quantity of options to trade</param>
+        /// <param name="_limitPrice"><see cref="System.Double"/></param>
+        public MaofOrder(
+            FMRShell.Connection _conn,
+            TransactionType _transactionType,
+            Option _option,
+            int _quantity,
+            double _limitPrice  //probably int will match better here, because TaskBar uses it as a string
+            )
+        {
+            //create an instance of TaskBar order object:
+            maofOrderType = new MaofOrderType();
+
+            //and assign to it all the needed parameters:
+            maofOrderType.Account = _conn.Parameters.Account;
+            maofOrderType.Branch = _conn.Parameters.Branch;
+            maofOrderType.operation = "N";  //always create a new order here, update ("U") or delete ("D") will be applied to an existing object
+            maofOrderType.Option = _option.IdNum.ToString();
+            maofOrderType.Sug_Pkuda = "LMT";
+            if (_transactionType == TransactionType.BUY)
+                maofOrderType.ammount = _quantity.ToString();
+            else maofOrderType.ammount = "-" + _quantity.ToString();
+            maofOrderType.price = _limitPrice.ToString();
+        }
+
+        //overloaded constructor that addresses order types other than default LMT
+        //- either IOC or FOK (although LMT is supported by this one as well)
+        //IOC or FOK orders aren't passed to the limit order book, so they can 
+        //be used in pinging the market or for exploiting immediate arbitrage opportunities.
+        public MaofOrder(
+            FMRShell.Connection _conn,
+            TransactionType _transactionType,
+            OrderType _orderType,
+            Option _option,
+            int _quantity,
+            double _limitPrice  //probably int will match better here, because TaskBar uses it as a string
+            )
+        {
+            maofOrderType = new MaofOrderType();
+
+            maofOrderType.Account = _conn.Parameters.Account;
+            maofOrderType.Branch = _conn.Parameters.Branch;
+            maofOrderType.operation = "N";  //always create a new order here, update ("U") or delete ("D") will be applied to an existing object
+            maofOrderType.Option = _option.IdNum.ToString();
+            maofOrderType.Sug_Pkuda = EnumUtils.GetDescription(_orderType);
+            if (_transactionType == TransactionType.BUY)
+                maofOrderType.ammount = _quantity.ToString();
+            else maofOrderType.ammount = "-" + _quantity.ToString();
+            maofOrderType.price = _limitPrice.ToString();
+        }
+
+    }//class MaofOrder
+
+
+
+
+
+
+
+
+
+
+    /// <summary>
     /// implements Maof order FSM
     /// specific for FMR
     /// </summary>
@@ -1116,21 +1289,10 @@ namespace FMRShell
 
         public bool Create(TransactionType type, OrderType otype, out IOrderBase order)
         {
+            
             FMROrder fmrOrder = null;
 
-            switch (type)
-            {
-                case TransactionType.BUY:
-                    //fmrOrder = new FMROrderBuy();
-                    break;
-
-                case TransactionType.SELL:
-                    //fmrOrder = new FMROrderSell();
-                    break;
-
-                default:
-                    break;
-            }
+            //fmrOrder = new FMROrder();
 
             if (fmrOrder != null)
             {

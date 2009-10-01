@@ -78,7 +78,7 @@ namespace JQuant
     /// Currently defines MAOF index options.
     /// </summary>
     /// 
-    class Option : Security
+    public class Option : Security
     {
         /// <summary>
         /// Returns "C" for CALL and "P" for PUT
