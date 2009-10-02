@@ -70,8 +70,25 @@ namespace TA
             get;
             protected set;
         }
+        
 
     }
+
+    public class CandleDaily : Candle
+    {
+        public CandleDaily(System.DateTime date, double open, double close, double high, double low, int volume)
+            : base(open, close, high, low, volume)
+        {
+            Date = date;
+        }
+
+        public System.DateTime Date
+        {
+            get;
+            protected set;
+        }
+    }
+    
 
     /// <summary>
     /// stores price+volume series in list
@@ -87,8 +104,13 @@ namespace TA
 
         public void Add(double open, double close, double min, double max, int volume)
         {
+            Add(new Candle(open, close, min, max, volume));
+        }
+        
+        protected void Add(Candle candle)
+        {
             paramsCalculated = false;
-            Data.Add(new Candle(open, close, min, max, volume));
+            Data.Add(candle);
         }
         
         public System.Collections.ArrayList Data
@@ -289,6 +311,28 @@ namespace TA
         bool paramsCalculated;
     }
 
+
+    /// <summary>
+    /// stores price+volume series with tmestamp in list
+    /// </summary>
+    public class PriceVolumeSeriesDaily : PriceVolumeSeries
+    {
+        public PriceVolumeSeriesDaily(int size)
+            : base(size)
+        {
+        }
+
+        protected new void Add(double open, double close, double min, double max, int volume)
+        {
+            base.Add(open, close, min, max, volume);
+        }
+        
+        public void Add(System.DateTime date, double open, double close, double min, double max, int volume)
+        {
+            Add(new CandleDaily(date, open, close, min, max, volume));
+        }
+    }
+    
     /// <summary>
     /// describes triangle as a start and end index of the given series
     /// </summary>
@@ -413,10 +457,14 @@ namespace TA
 
 
         /// <summary>
-        /// divide the series in two parts, calculate maximum and minimum in two parts
+        /// divide the series in two (or three) parts, calculate maximum and minimum in each part parts
         /// maximums should be "close" enough and subsequent low should be higher than the previous
         /// check if i have at least three points luying on the same ascending line and at least two
         /// points around the maximum
+        /// 
+        /// When dividing the range in two or three segments two different approaches are used
+        /// - equal time
+        /// - fib (0.38, 0.618, 1) time
         /// </summary>
         public bool isTriangle(int start, int end, PriceVolumeSeries series)
         {
