@@ -203,7 +203,7 @@ namespace TA
                 stdDeviation += d * d;
             }
 
-            stdDeviation = Math.Sqrt(stdDeviation)/count;
+            stdDeviation = Math.Sqrt(stdDeviation/count);
             average = average/count;
         }
 
