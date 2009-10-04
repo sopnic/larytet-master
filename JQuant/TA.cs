@@ -194,6 +194,7 @@ namespace TA
         ///   }
         ///   double mean() { return mu; }
         ///   double var() { return n > 1 ? sq/n : 0.0; }
+        /// More can be found here http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
         /// </summary>
         public static void CalculateAverageStdDeviation
             (PriceVolumeSeries series, int start, int count, out double average, out double max, out double min, out double stdDeviation)
