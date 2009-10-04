@@ -178,6 +178,10 @@ namespace TA
             return result;
         }
         
+        /// <summary>
+        /// the method does not calculate series std deviation, but a measurement of the single 
+        /// candle variance or a single candle volatility
+        /// </summary>
         public static void CalculateAverageStdDeviation
             (PriceVolumeSeries series, int start, int count, out double average, out double max, out double min, out double stdDeviation)
         {
@@ -200,6 +204,7 @@ namespace TA
                 min = Math.Min(min, close);
 
                 double d = (candle.open-close);
+                // calculate "variance"
                 stdDeviation += d * d;
             }
 
