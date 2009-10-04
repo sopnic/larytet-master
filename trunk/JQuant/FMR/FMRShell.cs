@@ -298,8 +298,8 @@ namespace FMRShell
 
         public ConnectionParameters Parameters
         {
-            get 
-            { 
+            get
+            {
                 return _parameters;
             }
         }
@@ -1316,13 +1316,31 @@ namespace FMRShell
     /// <summary>
     /// implements Maof order FSM
     /// </summary>
-    public class MaofOrderFSM : MailboxThread<object>, IOrderProcessor
+    public class MaofOrderFSM : MailboxThread<object>, IOrderProcessor, ISink<LimitOrderParameters>
     {
         //points to an active connection to the TaskBar
         Connection conn
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Points to the <see cref="JQuant.Algorithm"/> class
+        /// </summary>
+        Algorithm algo
+        {
+            get;
+            set;
+        }
+
+
+        //implement ISink.Notify:
+        public void Notify(int count, LimitOrderParameters LmtParms)
+        {
+            IMaofOrder order;
+            bool rc = Create(LmtParms, out order);
+            if (!rc) Console.WriteLine("Failed creating new order.");
         }
 
         /// <summary>
@@ -1340,11 +1358,12 @@ namespace FMRShell
             if (MFOrdersList == null) MFOrdersList = new List<MaofOrder>(20);   //enable initial capacity of 20 orders
             MaofOrder maofOrder = null;
             maofOrder = new MaofOrder(conn, OrdParams.TransType, OrdParams.Opt, OrdParams.Quantity, OrdParams.Price);
-            
+
             if (maofOrder != null)
             {
                 // set callback - i want to get events from other tasks
                 maofOrder.newEvent = NewEvent;
+                maofOrder.SendEvent(FMROrderEvent.InitOrder);
             }
 
             MFOrdersList.Add(maofOrder);
@@ -1499,16 +1518,14 @@ namespace FMRShell
         #endregion;
 
 
+        //Do the work
 
         void InitOrder_IDLE()
         {
-            LimitOrderParameters parms=new LimitOrderParameters();
-            IMaofOrder order;
-            bool rc = Create(parms, out order);
         }
 
         // create a message
-        
+
         // send message to the mailbox
 
         public bool Submit(IMaofOrder order)
