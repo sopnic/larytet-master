@@ -181,20 +181,34 @@ namespace TA
         /// <summary>
         /// the method does not calculate series std deviation, but a measurement of the single 
         /// candle variance or a single candle volatility
+        /// Welford's Algorithm for single pass calculation
+        ///  long n = 0;
+        ///   double mu = 0.0;
+        ///   double sq = 0.0;
+        ///  
+        ///   void update(double x) {
+        ///       ++n;
+        ///       double muNew = mu + (x - mu)/n;
+        ///       sq += (x - mu) * (x - muNew)
+        ///       mu = muNew;
+        ///   }
+        ///   double mean() { return mu; }
+        ///   double var() { return n > 1 ? sq/n : 0.0; }
         /// </summary>
         public static void CalculateAverageStdDeviation
             (PriceVolumeSeries series, int start, int count, out double average, out double max, out double min, out double stdDeviation)
         {
-            Candle candle = (Candle)series.Data[start];
-            double close = candle.close;
-            average = close;
-            max = close;
-            min = max;
+            Candle candle;
+            double close;
+            average= 0;
+            max = 0;
+            min = Int32.MaxValue;
+            stdDeviation = 0;
 
-            stdDeviation = close*close;
-
+            double candleSize = 0;
+            
             int end = start+count-1;
-            for (int i=start+1;i <= end;i++)
+            for (int i=start;i <= end;i++)
             {
                 candle= (Candle)series.Data[i]; 
                 close = candle.close;
@@ -203,13 +217,30 @@ namespace TA
                 max = Math.Max(max, close);
                 min = Math.Min(min, close);
 
-                double d = (candle.open-close);
+                double d = Math.Abs(candle.open-close);
                 // calculate "variance"
+                candleSize += d;
+            }
+
+            average = average/count;
+            double candleSizeAverage = candleSize/count;
+            
+            for (int i=start;i <= end;i++)
+            {
+                candle= (Candle)series.Data[i]; 
+                close = candle.close;
+                
+                average += close;
+                max = Math.Max(max, close);
+                min = Math.Min(min, close);
+
+                candleSize = Math.Abs(candle.open-close);
+                double d = candleSize - candleSizeAverage;
+                // calculate "candle variance"
                 stdDeviation += d * d;
             }
 
-            stdDeviation = Math.Sqrt(stdDeviation/count);
-            average = average/count;
+            stdDeviation = Math.Sqrt(stdDeviation/(count-1));
         }
 
         public static void CalculateAverage
