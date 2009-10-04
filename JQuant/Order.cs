@@ -12,6 +12,9 @@ using TaskBarLib;
 
 namespace JQuant
 {
+    /// <summary>
+    /// Either BUY or SELL
+    /// </summary>
     public enum TransactionType
     {
         [Description("SELL")]
@@ -119,11 +122,11 @@ namespace JQuant
     //the order producer (algorithm) and the order processor (FSM)
     public struct LimitOrderParameters
     {
-        public TransactionType TransType;
-        public OrderType OType;
-        public int Quantity;
-        public double Price;
-        public Option Opt;
+        public Option Opt;                  //what to trade?
+        public TransactionType TransType;   //buy or sell?
+        public int Quantity;                //how many?
+        public double Price;                //how much per unit?
+        public OrderType OType;             //which kind of order? (LMT/FOK/IOC)
     }
 
 
