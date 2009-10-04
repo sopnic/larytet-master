@@ -1316,37 +1316,55 @@ namespace FMRShell
     /// <summary>
     /// implements Maof order FSM
     /// </summary>
-    public class MaofOrderFSM : MailboxThread<object>, IOrderProcessor, ISink<LimitOrderParameters>
+    public class MaofOrderFSM : MailboxThread<object>, IOrderProcessor
     {
+        public class OrderSink : ISink<LimitOrderParameters>
+        {
+            /// <summary>
+            /// Points to the <see cref="JQuant.Algorithm"/> class
+            /// </summary>
+            Algorithm algo
+            {
+                get;
+                set;
+            }
+
+            public LimitOrderParameters OrderParams
+            {
+                get;
+                protected set;
+            }
+
+            //implement ISink.Notify:
+            public void Notify(int count, LimitOrderParameters LmtParms)
+            {
+                OrderParams = LmtParms;
+            }
+
+            //TODO - add it to Algo object (producer)
+
+        }
+
+        //A placeholder for Order parameters - only one order a time is processed by the FSM
+        public LimitOrderParameters OrderParams
+        {
+            get;
+            protected set;
+        }
+
+
+        protected override void HandleMessage(LimitOrderParameters OrdParams)
+        {
+            this.OrderParams = OrdParams;   //keep the data received by mail from the Algo machine
+        }
+
+
         //points to an active connection to the TaskBar
         Connection conn
         {
             get;
             set;
         }
-
-        /// <summary>
-        /// Points to the <see cref="JQuant.Algorithm"/> class
-        /// </summary>
-        Algorithm algo
-        {
-            get;
-            set;
-        }
-
-
-        //implement ISink.Notify:
-        public void Notify(int count, LimitOrderParameters LmtParms)
-        {
-            IMaofOrder order;
-            bool rc = Create(LmtParms, out order);
-            if (!rc) Console.WriteLine("Failed creating new order.");
-        }
-
-        /// <summary>
-        /// A storage place where FSM keeps all the active orders.
-        /// </summary>
-        List<MaofOrder> MFOrdersList;
 
         public MaofOrderFSM() :
             base("MaofOrderFSM", 100)
@@ -1528,6 +1546,11 @@ namespace FMRShell
 
         // send message to the mailbox
 
+        
+        
+        
+        
+        
         public bool Submit(IMaofOrder order)
         {
             return true;
@@ -1537,6 +1560,14 @@ namespace FMRShell
         {
             return true;
         }
+
+        
+        
+        
+        /// <summary>
+        /// A storage place where FSM keeps all the active orders.
+        /// </summary>
+        List<MaofOrder> MFOrdersList;
 
     }
 
