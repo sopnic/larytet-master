@@ -100,6 +100,9 @@
     <Compile Include="..\TA.cs">
       <Link>TA.cs</Link>
     </Compile>
+    <Compile Include="..\AlgorithmMachine.cs">
+      <Link>AlgorithmMachine.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskBarLib">

@@ -1499,6 +1499,14 @@ namespace FMRShell
         #endregion;
 
 
+
+        void InitOrder_IDLE()
+        {
+            LimitOrderParameters parms=new LimitOrderParameters();
+            IMaofOrder order;
+            bool rc = Create(parms, out order);
+        }
+
         // create a message
         
         // send message to the mailbox
