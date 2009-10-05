@@ -259,6 +259,7 @@ namespace JQuant
             string filename = "maofLog." + DateTime.Now.ToString() + ".txt";
             filename = filename.Replace('/', ' ');
             filename = filename.Replace(' ', '_');
+            filename = "MaofLog.txt";
             iWrite.WriteLine("Log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
