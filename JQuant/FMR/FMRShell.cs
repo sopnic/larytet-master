@@ -1353,10 +1353,10 @@ namespace FMRShell
         }
 
 
-        protected override void HandleMessage(LimitOrderParameters OrdParams)
+        /*protected override void HandleMessage(LimitOrderParameters OrdParams)
         {
             this.OrderParams = OrdParams;   //keep the data received by mail from the Algo machine
-        }
+        }*/
 
 
         //points to an active connection to the TaskBar

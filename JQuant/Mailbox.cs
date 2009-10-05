@@ -181,7 +181,6 @@ namespace JQuant
         }
 
 
-        
         protected int _capacity;
         protected int _maxCount;
         protected int _dropped;

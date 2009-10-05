@@ -118,8 +118,13 @@ namespace JQuant
         }
     }
 
-    //this is a dataholder used for effective communication between 
-    //the order producer (algorithm) and the order processor (FSM)
+    /// <summary>
+    /// This one is specific to the options trading.
+    /// this is a dataholder used for effective communication between 
+    /// the order producer (algorithm) and the order processor (FSM)
+    /// all option's orders types are variations of 'LMT', therefore the parameters 
+    /// needed to initialize and process such an order are always the same.
+    /// </summary>
     public struct LimitOrderParameters
     {
         public Option Opt;                  //what to trade?
@@ -128,7 +133,6 @@ namespace JQuant
         public double Price;                //how much per unit?
         public OrderType OType;             //which kind of order? (LMT/FOK/IOC)
     }
-
 
     #region Interfaces
 
