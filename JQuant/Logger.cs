@@ -5,6 +5,12 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 
+#if USEFMRSIM
+using TaskBarLibSim;
+#else
+using TaskBarLib;
+#endif
+
 namespace JQuant
 {
     /// <summary>
@@ -261,7 +267,7 @@ namespace JQuant
     /// this class will get the data from specified data producer and write the data to the 
     /// specified file.
     /// </summary>
-    public class TradingDataLogger : AsyncLogger/*, ISink<FMRShell.MarketDataMaof>*/
+    public class TradingDataLogger : AsyncLogger
     {
         public class MaofSink : ISink<FMRShell.MarketDataMaof>
         {
@@ -543,4 +549,238 @@ namespace JQuant
         FMRShell.DataType _dt;
         StreamWriter _streamWriter;
     }
+
+    /*
+    public class AS400DateTimeDataLogger : AsyncLogger
+    {
+        public class AS400DateTimeSink : ISink<AS400DateTime>
+        {
+            public AS400DateTimeSink(TradingDataLogger TrDtaLogger)
+            {
+                tdl = TrDtaLogger;
+                tdl._collector.maofProducer.AddSink(this);
+            }
+
+            public void Stop()
+            {
+                tdl._collector.maofProducer.RemoveSink(this);
+            }
+
+            public void Notify(int count, AS400DateTime data)
+            {
+                tdl._stampLatest = System.DateTime.Now;
+                FMRShell.MarketDataMaof dataClone = (FMRShell.MarketDataMaof)(data.Clone());
+                tdl.AddEntry(dataClone);
+            }
+
+            protected AS400TradingDataLogger tdl;    //a pointer to the container class
+        }
+
+
+        /// <summary>
+        /// Create the ASCII logger
+        /// </summary>
+        /// <param name="name">
+        /// A <see cref="System.String"/>
+        /// Debuh info - name of the logger
+        /// </param>
+        /// <param name="filename">
+        /// A <see cref="System.String"/>
+        /// File to read the data
+        /// </param>
+        /// <param name="append">
+        /// A <see cref="System.Boolean"/>
+        /// If "append" is true and file exists logger will append the data to the end of the file
+        /// </param>
+        /// <param name="producer">
+        /// A <see cref="IProducer"/>
+        /// Object which provides data to log
+        /// </param>
+        public AS400DateTimeDataLogger(string name, string filename, bool append, FMRShell.Collector collector, FMRShell.DataType dt)
+            : base(name)
+        {
+            FileName = filename;
+            _fileStream = default(FileStream);
+            _streamWriter = default(StreamWriter);
+            _collector = collector;
+            _append = append;
+            _timeStamped = false;
+            _stampLatest = default(System.DateTime);
+            _stampOldest = default(System.DateTime);
+            _dt = dt;
+            Type = LogType.Ascii;
+            notStoped = false;
+
+
+
+            // I estimate size of FMRShell.MarketData struct 50 bytes
+            QueueSize = (500 * 1024) / 50;
+        }
+
+        /// <summary>
+        /// register notifier in the producer, start write file
+        /// returns True if Ok
+        /// application will check LastException if the method
+        /// returns False
+        /// </summary>
+        public override bool Start()
+        {
+            bool result = false;
+
+            // i want a loop here to break from  - i avoid multiple
+            // returns this way
+            do
+            {
+                // open file for writing
+                try
+                {
+                    if (_append) _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+                    else _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    _streamWriter = new StreamWriter(_fileStream);
+                }
+                catch (IOException e)
+                {
+                    // store the exception
+                    LastException = e;
+                    if (_fileStream != default(FileStream))
+                    {
+                        _fileStream.Close();
+                        // help Garbage collector
+                        _streamWriter = default(StreamWriter);
+                        _fileStream = default(FileStream);
+                    }
+                    // and get out
+                    break;
+                }
+
+                // register myself in the data producer
+                if (this._dt == FMRShell.DataType.Maof) this._maofSink = new MaofSink(this);
+                else if (this._dt == FMRShell.DataType.Rezef) this._dataSink = new RezefSink(this);
+
+                // write legend at the top of the file
+                try
+                {
+                    if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Legend);
+                    else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_dataSink.rezefDataToString.Legend);
+                }
+                catch (IOException e)
+                {
+                    // store the exception
+                    LastException = e;
+                    // close the file
+                    _fileStream.Close();
+                    // help Garbage collector
+                    _streamWriter = default(StreamWriter);
+                    _fileStream = default(FileStream);
+                    Console.WriteLine(e.ToString());
+                    // and get out
+                    break;
+                }
+
+                //strat write file
+                base.Start();
+
+                result = true;
+            }
+            while (false);
+
+            return result;
+        }
+
+        /// <summary>
+        /// application will call this method for clean up
+        /// remove registration from the producer
+        /// close the file, remove registration of the data sync from the producer
+        /// </summary>
+        public override void Stop()
+        {
+            base.Stop();
+            if (_dt == FMRShell.DataType.Maof) _maofSink.Stop();
+            else if (_dt == FMRShell.DataType.Rezef) _dataSink.Stop();
+
+            if (_fileStream != default(FileStream))
+            {
+                _fileStream.Close();
+                // help Garbage collector
+                _streamWriter = default(StreamWriter);
+                _fileStream = default(FileStream);
+            }
+        }
+
+        public override void Dispose()
+        {
+            if (_fileStream != default(FileStream))
+            {
+                _fileStream.Close();
+            }
+            base.Dispose();
+        }
+
+        /// <summary>
+        /// write data to the file. this method is called from a separate
+        /// thread
+        /// </summary>
+        /// <param name="data">
+        /// A <see cref="System.Object"/>
+        /// </param>
+        protected override void WriteData(object data)
+        {
+            // I have to decide on format of the log - ASCII or binary 
+            // should I write any system info like version the data/software ?
+            // at this point only ASCII is supported, no system info
+            // write all fields of K300MaofType (data.k3Maof) in one line
+            // followed by EOL
+
+            // convert the data to string - this is time consuming
+            // operation
+            _dataSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).k300RzfType);
+            // write the string to the file
+            try
+            {
+                if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Values);
+                else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_dataSink.rezefDataToString.Values);
+                // i want to make Flush from time to time
+                // the question is when ? or let the OS to manage the things ?
+                // _streamWriter.Flush();
+                lock (this)
+                {
+                    _countLog++;
+                }
+            }
+            catch (ObjectDisposedException e)
+            {
+                // store the exception
+                LastException = e;
+                Console.WriteLine(e.ToString());
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.ToString());
+                // store the exception
+                LastException = e;
+                // and get out
+                Stop();
+            }
+        }
+
+        public string FileName
+        {
+            get;
+            protected set;
+        }
+
+        public Exception LastException
+        {
+            get;
+            protected set;
+        }
+
+        protected FMRShell.Collector _collector;    //producer
+        protected AS400DateTimeSink _dataSink;             //sink
+
+        bool _append;
+        FileStream _fileStream;
+        FMRShell.DataType _dt;
+        StreamWriter _streamWriter;
+    }*/
 }
