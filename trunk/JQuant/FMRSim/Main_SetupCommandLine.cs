@@ -163,28 +163,29 @@ namespace JQuant
             path="";
 #endif
             string ConnFile = path + "ConnectionParameters.xml";
-            FMRShell.Connection connection = new FMRShell.Connection(ConnFile);
+            this.MyConn = new FMRShell.Connection(ConnFile);
+            //FMRShell.Connection connection = new FMRShell.Connection(ConnFile);
 
             bool openResult;
             int errResult;
-            openResult = connection.Open(iWrite, out errResult, true);
+            openResult = this.MyConn.Open(iWrite, out errResult, true);
 
             iWrite.WriteLine("");
             if (openResult)
             {
-                iWrite.WriteLine("Connection openned for " + connection.GetUserName());
-                iWrite.WriteLine("errResult=" + errResult);
+                iWrite.WriteLine("Connection opened for " + this.MyConn.GetUserName());
+                iWrite.WriteLine("sessionId=" + errResult);
             }
             else
             {
                 iWrite.WriteLine("Connection failed errResult=" + errResult);
-                iWrite.WriteLine("Error description: " + connection.LoginErrorDesc());
+                iWrite.WriteLine("Error description: " + this.MyConn.LoginErrorDesc());
             }
 
-            iWrite.WriteLine("Login status is " + connection.loginStatus.ToString());
+            iWrite.WriteLine("Login status is " + this.MyConn.loginStatus.ToString());
 
             // final cleanup
-            connection.Dispose();
+            this.MyConn.Dispose();
         }
 
         protected void debugPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -214,20 +215,23 @@ namespace JQuant
 
         protected void debugGetAS400DTCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            iWrite.WriteLine("Latency is " + FMRShell.AS400Synch.GetLatency().ToString());
+            /*iWrite.WriteLine("Latency is " + FMRShell.AS400Synch.GetLatency().ToString());
             iWrite.WriteLine("Time is " + FMRShell.AS400Synch.GetAS400DateTime().ToString("hh:mm:ss.fff"));
             iWrite.WriteLine("Now pinging 30 times...");
-
+            */
             int ltncy;
             DateTime dt;
-            System.Collections.Generic.List<double> lst = new System.Collections.Generic.List<double>(30);
-            for (int i = 0; i < 30; i++)
+            //System.Collections.Generic.List<double> lst = new System.Collections.Generic.List<double>(30);
+            for (int i = 0; i < 60; i++)
             {
                 FMRShell.AS400Synch.Ping(out dt, out ltncy);
-                lst.Add(Convert.ToDouble(ltncy));
-                Thread.Sleep(500);
-                iWrite.Write(".");
+                Console.Write(FMRShell.AS400Synch.ToShortCSVString(dt, ltncy));
+                //lst.Add(Convert.ToDouble(ltncy));
+                Thread.Sleep(2000);
+                //iWrite.Write(".");
+
             }
+            /*
             string M = Math.Round(Convert.ToDecimal(StatUtils.Mean(lst)), 2).ToString();
             string SD = Math.Round(Convert.ToDecimal(StatUtils.StdDev(lst)), 2).ToString();
             string Min = StatUtils.Min(lst).ToString();
@@ -246,6 +250,7 @@ namespace JQuant
             iWrite.Write(OutputUtils.FormatField(Min, 10));
             iWrite.Write(OutputUtils.FormatField(Max, 10));
             iWrite.WriteLine();
+            */
         }
 
         protected void debugLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -270,7 +275,8 @@ namespace JQuant
 
         protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            CloseDataStreamAndLog(iWrite, (FMRShell.DataType)cmdArguments[0]);
+            //CloseDataStreamAndLog(iWrite, (FMRShell.DataType)cmdArguments[0]);    //an error here - invalid cast exception
+            CloseDataStreamAndLog(iWrite, FMRShell.DataType.Maof);
         }
 
         protected void CloseDataStreamAndLog(IWrite iWrite, FMRShell.DataType dt)
@@ -304,11 +310,11 @@ namespace JQuant
 #endif
 
             // create Collector (producer) - will do it only once
-            tradingDataCollector = new FMRShell.Collector();
+            Console.WriteLine(this.MyConn.GetSessionId());
+            tradingDataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
 
             // create logger which will register itself (AddSink) in the collector
             DataLogger = new TradingDataLogger(loggerName, filename, false, tradingDataCollector, TrDataType);
-
 
             // start logger
             DataLogger.Start();

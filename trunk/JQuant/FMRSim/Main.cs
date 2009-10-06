@@ -220,6 +220,8 @@ namespace JQuant
         protected JQuantForms.ConsoleIn consoleIn;
         protected TableLayoutPanel tlp;
 
+        protected FMRShell.Connection MyConn;
+
         public static Program instance
         {
             get;

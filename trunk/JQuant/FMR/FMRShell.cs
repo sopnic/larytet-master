@@ -9,6 +9,8 @@ using System.Reflection;
 using System.ComponentModel;
 using JQuant;
 
+using System.Windows.Forms;
+
 /// <summary>
 /// depending on the compilation flags i am going to use
 /// simulation or real TaskBar namespace
@@ -185,6 +187,7 @@ namespace FMRShell
                 result = (returnCode >= 0);
                 if (result)
                 {
+                    Console.WriteLine("Return code :" + returnCode + ". SessionId: " + sessionId);
                     // according to the documentation returnCode == sessionId
                     if (sessionId != returnCode)
                     {
@@ -212,15 +215,23 @@ namespace FMRShell
         /// </returns>
         public bool Open(IWrite iWrite, out int returnCode, bool printProgress)
         {
+            Console.WriteLine(sessionId);
             state = ConnectionState.Trying;
             int percent = 0;
 
+
             bool openResult = Open(out returnCode);
 
-            //Print title + progress bar
-            iWrite.WriteLine(Environment.NewLine);
-            iWrite.WriteLine("0    10   20   30   40   50   60   70   80   90  100");
-            iWrite.WriteLine("|----+----+----+----+----+----+----+----+----+----|");
+            if (printProgress)
+            {
+                //Print title + progress bar
+                iWrite.WriteLine(Environment.NewLine);
+                iWrite.WriteLine("0    10   20   30   40   50   60   70   80   90  100");
+                iWrite.WriteLine("|----+----+----+----+----+----+----+----+----+----|");
+            }
+
+            
+            string desc_ = "";
 
             // loop until login succeeds
             while (openResult)
@@ -229,15 +240,26 @@ namespace FMRShell
                 string description;
 
                 userClass.GetLoginActivity(ref sessionId, out percent_1, out description);
-                if ((percent_1 != percent) && (printProgress))
+                Console.WriteLine(sessionId);
+                if (percent_1 != percent) 
                 {
-                    //scale the dots to the progress bar
-                    while (percent < percent_1)
+                    if (printProgress)
                     {
-                        iWrite.Write(".");
-                        percent += 2;
+                        //scale the dots to the progress bar
+                        while (percent < percent_1)
+                        {
+                            //iWrite.Write(".");
+                            percent += 2;
+                        }
                     }
                 }
+
+                if (desc_ != description)
+                {
+                    MessageBox.Show(description);
+                    desc_ = description;
+                }
+
 
                 loginStatus = userClass.get_LoginState(ref sessionId);
 
@@ -258,8 +280,8 @@ namespace FMRShell
                 // i need a short delay here before next attempt - 1s
                 Thread.Sleep(1 * 1000);
             }
-
             return openResult;
+        
         }
 
 
@@ -627,6 +649,7 @@ namespace FMRShell
             /// </param>
             protected void OnMaof(ref K300MaofType data)
             {
+                Console.Write(".");
                 // no memory allocation here - I am using allready created object 
                 mktDta.k300MaofType = data;
 
@@ -691,10 +714,18 @@ namespace FMRShell
             int countOnRezef;
         }//class RezefProducer
 
-        public Collector()
+        public Collector(int sessionId)
         {
             // create a couple of TaskBarLib objects required for access to the data stream 
+            /*if (k300Class == null)
+            {
+                k300Class = new K300Class();
+                k300Class.K300SessionId = sessionId;
+            }*/
+            k300Class = null;
             k300Class = new K300Class();
+            k300Class.K300SessionId = sessionId;
+            
             k300EventsClass = new K300EventsClass();
             //this.dt = dt;
 
@@ -708,7 +739,15 @@ namespace FMRShell
             switch (dt)
             {
                 case DataType.Maof:
-                    k300Class.K300StartStream(K300StreamType.MaofStream);
+                    int tries = 0;
+                    int rc=-1;
+                    while (rc != 0 && tries < 5)
+                    {
+                        rc = k300Class.K300StartStream(K300StreamType.MaofStream);
+                        Console.WriteLine("MaofStream Started, rc=" + rc);
+                        tries++; ;
+                        if (rc != 0) Thread.Sleep(5 * 1000);
+                    }
                     break;
                 case DataType.Rezef:
                     k300Class.K300StartStream(K300StreamType.RezefStream);
@@ -1022,13 +1061,20 @@ namespace FMRShell
         }
 
         /// <summary>
-        /// Converts AS400DateTiem to the .net 
+        /// Converts AS400DateTime to the .net 
         /// </summary>
         /// <param name="dt"><see cref="TaskBar.AS400DateTime"/></param>
         /// <returns><see cref="System.DateTime"/></returns>
         public static DateTime ConvertToDateTime(AS400DateTime dt)
         {
             return new DateTime(dt.year, dt.Month, dt.day, dt.hour, dt.minute, dt.second, dt.ms);
+        }
+
+        public static string ToShortCSVString(DateTime dt, int latency)
+        {
+            return DateTime.Now.ToString("hh:mm:ss.fff") + ";"
+                + dt.ToString("hh:mm:ss.fff") + ";"
+                + latency.ToString() + "\n";
         }
     }
 
