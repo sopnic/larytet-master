@@ -185,8 +185,8 @@ namespace FMRShell
                 result = (returnCode >= 0);
                 if (result)
                 {
-                    Console.WriteLine("Return code :" + returnCode + ". SessionId: " + sessionId);
-                    // according to the documentation returnCode == sessionId
+                    Console.WriteLine("SessionId is " + sessionId);
+                    // returnCode == sessionId - check if not
                     if (sessionId != returnCode)
                     {
                         Console.WriteLine("Session Id=" + sessionId + ",returnCode=" + returnCode + " are not equal after Login");
@@ -213,10 +213,8 @@ namespace FMRShell
         /// </returns>
         public bool Open(IWrite iWrite, out int returnCode, bool printProgress)
         {
-            Console.WriteLine(sessionId);
             state = ConnectionState.Trying;
             int percent = 0;
-
 
             bool openResult = Open(out returnCode);
 
@@ -237,7 +235,7 @@ namespace FMRShell
                 int percent_1;
                 string description;
 
-                // i need a short delay here before next attempt - 1s
+                // I need a short delay here before next attempt - 5 seconds
                 Thread.Sleep(5 * 1000);
 
                 userClass.GetLoginActivity(ref sessionId, out percent_1, out description);
@@ -271,17 +269,17 @@ namespace FMRShell
                 }
                 else if ((loginStatus == LoginStatus.LoginSessionInProgress))
                 {
+                    //do nothing - just continue the loop
                 }
-                else
+                else    //any other loginStatus indicates login error
                 {
                     openResult = false;
                     break;
                 }
             }
-            return openResult;
-        
-        }
 
+            return openResult;
+        }
 
 
         public string GetUserName()
@@ -342,6 +340,73 @@ namespace FMRShell
         Rezef,
         Madad
     }
+
+    public struct MarketDataMadad: ICloneable
+    {
+        public K300MadadType k300MddType;
+
+        public object Clone()
+        {
+            // create a new object
+            MarketDataMadad md = new MarketDataMadad();
+
+            // copy data
+            md.k300MddType.SUG_RC = this.k300MddType.SUG_RC;
+            md.k300MddType.BNO_N = this.k300MddType.BNO_N;
+            md.k300MddType.FIL1_VK = this.k300MddType.FIL1_VK;
+            md.k300MddType.MDD_COD = this.k300MddType.MDD_COD;
+            md.k300MddType.MDD_SUG = this.k300MddType.MDD_SUG;
+            md.k300MddType.MDD_N = this.k300MddType.MDD_N;
+            md.k300MddType.FIL2_VK = this.k300MddType.FIL2_VK;
+            md.k300MddType.MDD_NAME = this.k300MddType.MDD_NAME;
+            md.k300MddType.Madad = this.k300MddType.Madad;
+            md.k300MddType.FIL3_VK = this.k300MddType.FIL3_VK;
+            md.k300MddType.MDD_DF = this.k300MddType.MDD_DF;
+            md.k300MddType.CALC_TIME = this.k300MddType.CALC_TIME;
+            md.k300MddType.FIL6_VK = this.k300MddType.FIL6_VK;
+            md.k300MddType.UPD_DAT = this.k300MddType.UPD_DAT;
+            md.k300MddType.UPD_TIME = this.k300MddType.UPD_TIME;
+
+            return md;
+        }
+
+
+        public override string ToString()
+        {
+            return k300MddType.SUG_RC;
+        }
+
+        /// <summary>
+        /// Prepares a single record to be written 
+        /// to a CSV (comma-separated values) output file.
+        /// </summary>
+        /// <returns></returns>
+        public string ToCSVString()
+        {
+            return "";  //it's unclear what's the data mean - no documentation either
+            //will try to see what we understand from the logged data - Oct 08, 2009
+
+
+                /*k300MddType.BNO_Num + "," +
+                k300MddType.LMT_BY1 + "," +
+                k300MddType.LMT_BY2 + "," +
+                k300MddType.LMT_BY3 + "," +
+                k300MddType.LMT_SL1 + "," +
+                k300MddType.LMT_SL2 + "," +
+                k300MddType.LMT_SL3 + "," +
+                k300MddType.LMY_BY1_NV + "," +
+                k300MddType.LMY_BY2_NV + "," +
+                k300MddType.LMY_BY3_NV + "," +
+                k300MddType.LMY_SL1_NV + "," +
+                k300MddType.LMY_SL2_NV + "," +
+                k300MddType.LMY_SL3_NV + "," +
+                k300MddType.LST_DL_PR + "," +
+                k300MddType.LST_DL_TM + "," +
+                k300MddType.LST_DL_VL + "," +
+                k300MddType.UPD_TIME + "\n";*/
+        }
+    }//struct MarketDataMadad
+
 
     /// <summary>
     /// generic class 
@@ -592,6 +657,14 @@ namespace FMRShell
         }
     }
 
+    public class K300MadadTypeToString : StructToString<K300MaofType>
+    {
+        public K300MadadTypeToString(string delimiter)
+            : base(delimiter)
+        {
+        }
+    }
+
     /// <summary>
     /// this class used by the RxDataValidator to let the application know that
     /// something wrong with the incoming data
@@ -626,6 +699,57 @@ namespace FMRShell
     /// </summary>
     public class Collector
     {
+        public class MadadProducer : JQuant.IProducer<MarketDataMadad>
+        {
+            public MadadProducer(K300EventsClass k3)
+            {
+                MadadListeners = new List<JQuant.ISink<MarketDataMadad>>(5);
+                mktDta = new MarketDataMadad();
+                k3.OnMadad += new _IK300EventsEvents_OnMadadEventHandler(OnMadad);
+                countOnMadad = 0;
+            }
+
+            /// <summary>
+            /// Called by TaskBarLib. This method calls registered listeners and gets out 
+            /// The idea behind it to be as fast as possible
+            /// this is the point where some basic processing can be done like filter obvious
+            /// errors
+            /// </summary>
+            /// <param name="data">
+            /// A <see cref="K300MaofType"/>
+            /// </param>
+            protected void OnMadad(ref K300MadadType data)
+            {
+                //Console.Write(".");
+                // no memory allocation here - I am using allready created object 
+                mktDta.k300MddType = data;
+
+                // sink should not modify the data. sink has two options:
+                // 1) handle the data in the context of the Collector thead
+                // 2) clone the data and and postopone the procesing (delegate to another thread)
+                foreach (JQuant.ISink<MarketDataMadad> sink in MadadListeners)
+                {
+                    sink.Notify(countOnMadad, mktDta);
+                }
+            }
+
+            public bool AddSink(JQuant.ISink<MarketDataMadad> sink)
+            {
+                MadadListeners.Add(sink);
+                return true;
+            }
+
+            public bool RemoveSink(JQuant.ISink<MarketDataMadad> sink)
+            {
+                MadadListeners.Remove(sink);
+                return true;
+            }
+
+            MarketDataMadad mktDta;
+            int countOnMadad;
+
+        }//class MadadProducer
+
         public class MaofProducer : JQuant.IProducer<MarketDataMaof>
         {
             public MaofProducer(K300EventsClass k3)
@@ -738,6 +862,7 @@ namespace FMRShell
             //initialize inner producers:
             maofProducer = new MaofProducer(k300EventsClass);
             rezefProducer = new RezefProducer(k300EventsClass);
+            madadProducer = new MadadProducer(k300EventsClass);
         }
 
         public void Start(DataType dt)
@@ -759,7 +884,10 @@ namespace FMRShell
                     k300Class.K300StartStream(K300StreamType.RezefStream);
                     break;
                 case DataType.Madad:
-                    k300Class.K300StartStream(K300StreamType.IndexStream);// For future use -  add inner madad producer
+                    rc=k300Class.K300StartStream(K300StreamType.IndexStream);// For future use -  add inner madad producer
+                    //OR - try this instead:
+                    //rc = k300Class.K300StartStream(K300StreamType.MaofStream);
+                    Console.WriteLine("IndexStream Started, rc=" + rc);
                     break;
                 default:
                     break;      //do nothing
@@ -779,8 +907,8 @@ namespace FMRShell
                     k300Class.K300StopStream(K300StreamType.RezefStream);
                     break;
                 case DataType.Madad:
-                    k300Class.K300StopStream(K300StreamType.IndexStream);  // For future uses
-                    break;
+                    k300Class.K300StopStream(K300StreamType.IndexStream);   // For future uses - for now 
+                    break;                                                  //Maof stream should be stopped
                 default:
                     break;
             }
@@ -788,15 +916,18 @@ namespace FMRShell
 
         public MaofProducer maofProducer;
         public RezefProducer rezefProducer;
+        public MadadProducer madadProducer;
 
         protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;
         protected static List<JQuant.ISink<MarketDataRezef>> RezefListeners;
+        protected static List<JQuant.ISink<MarketDataMadad>> MadadListeners;
+
         protected K300Class k300Class;
         protected K300EventsClass k300EventsClass;
 
-        //protected DataType dt;
         protected MarketDataMaof marketDataOnMaof;
         protected MarketDataRezef marketDataOnRezef;
+        protected MarketDataMadad marketDataOnMadad;
 
     }   //class Collector
 
