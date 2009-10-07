@@ -210,6 +210,10 @@ namespace JQuant
 
             instance = new Program();
 
+            /*FMRShell.Collector tradingDataCollector = new FMRShell.Collector(conn.GetSessionId());
+            tradingDataCollector.Start(DataType.Maof);*/
+
+
             // run console
             instance.Run();
         }

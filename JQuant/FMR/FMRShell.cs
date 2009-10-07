@@ -127,9 +127,7 @@ namespace FMRShell
             // call userClass.Logout
             userClass.Logout(sessionId);
 
-
             // set userClass to null
-
             state = ConnectionState.Disposed;
         }
 
@@ -239,8 +237,11 @@ namespace FMRShell
                 int percent_1;
                 string description;
 
+                // i need a short delay here before next attempt - 1s
+                Thread.Sleep(5 * 1000);
+
                 userClass.GetLoginActivity(ref sessionId, out percent_1, out description);
-                Console.WriteLine(sessionId);
+
                 if (percent_1 != percent) 
                 {
                     if (printProgress)
@@ -248,7 +249,7 @@ namespace FMRShell
                         //scale the dots to the progress bar
                         while (percent < percent_1)
                         {
-                            //iWrite.Write(".");
+                            iWrite.Write(".");
                             percent += 2;
                         }
                     }
@@ -268,7 +269,7 @@ namespace FMRShell
                     openResult = true;
                     break;
                 }
-                else if ((loginStatus == LoginStatus.LoginSessionInProgress) || (loginStatus == LoginStatus.LoginSessionReLogin))
+                else if ((loginStatus == LoginStatus.LoginSessionInProgress))
                 {
                 }
                 else
@@ -276,9 +277,6 @@ namespace FMRShell
                     openResult = false;
                     break;
                 }
-
-                // i need a short delay here before next attempt - 1s
-                Thread.Sleep(1 * 1000);
             }
             return openResult;
         
@@ -649,7 +647,7 @@ namespace FMRShell
             /// </param>
             protected void OnMaof(ref K300MaofType data)
             {
-                Console.Write(".");
+                //Console.Write(".");
                 // no memory allocation here - I am using allready created object 
                 mktDta.k300MaofType = data;
 
@@ -727,7 +725,15 @@ namespace FMRShell
             k300Class.K300SessionId = sessionId;
             
             k300EventsClass = new K300EventsClass();
-            //this.dt = dt;
+            //set the filters:
+            k300EventsClass.EventsFilterBaseAsset = BaseAssetTypes.BaseAssetMaof;
+            //k300EventsClass.EventsFilterBno=??? //here we set a single option, if specified
+            k300EventsClass.EventsFilterMadad = 1; //I want to receive also madad changes
+            k300EventsClass.EventsFilterMaof = 1;
+            k300EventsClass.EventsFilterMonth = MonthType.October;
+            //k300EventsClass.EventsFilterRezef = 0;
+            //k300EventsClass.EventsFilterStockKind = StockKind.StockKindMakam;
+            k300EventsClass.EventsFilterStockMadad = MadadTypes.TLV25;
 
             //initialize inner producers:
             maofProducer = new MaofProducer(k300EventsClass);
@@ -762,10 +768,12 @@ namespace FMRShell
 
         public void Stop(DataType dt)
         {
+            int rc;
             switch (dt)
             {
                 case DataType.Maof:
-                    k300Class.K300StopStream(K300StreamType.MaofStream);
+                    rc=k300Class.K300StopStream(K300StreamType.MaofStream);
+                    Console.WriteLine("MaofStream stopped, rc= " + rc);
                     break;
                 case DataType.Rezef:
                     k300Class.K300StopStream(K300StreamType.RezefStream);
@@ -1072,8 +1080,8 @@ namespace FMRShell
 
         public static string ToShortCSVString(DateTime dt, int latency)
         {
-            return DateTime.Now.ToString("hh:mm:ss.fff") + ";"
-                + dt.ToString("hh:mm:ss.fff") + ";"
+            return DateTime.Now.ToString("hh:mm:ss.fff") + ","
+                + dt.ToString("hh:mm:ss.fff") + ","
                 + latency.ToString() + "\n";
         }
     }

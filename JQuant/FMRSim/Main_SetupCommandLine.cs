@@ -47,7 +47,6 @@ namespace JQuant
             }
         }
 
-
         protected void debugMbxShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             debugPrintResourcesNameAndStats(iWrite, Resources.Mailboxes);
@@ -88,7 +87,6 @@ namespace JQuant
             System.GC.Collect();
         }
 
-
         protected void debugThreadTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             debugThreadShowCallback(iWrite, cmdName, cmdArguments);
@@ -107,7 +105,6 @@ namespace JQuant
 
             System.GC.Collect();
         }
-
 
         protected void debugThreadShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -164,8 +161,7 @@ namespace JQuant
 #endif
             string ConnFile = path + "ConnectionParameters.xml";
             this.MyConn = new FMRShell.Connection(ConnFile);
-            //FMRShell.Connection connection = new FMRShell.Connection(ConnFile);
-
+            
             bool openResult;
             int errResult;
             openResult = this.MyConn.Open(iWrite, out errResult, true);
@@ -183,9 +179,21 @@ namespace JQuant
             }
 
             iWrite.WriteLine("Login status is " + this.MyConn.loginStatus.ToString());
+        }
 
-            // final cleanup
-            this.MyConn.Dispose();
+        protected void debugLogoutCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            if (MyConn != null)
+            {
+                int s = MyConn.GetSessionId();
+                this.MyConn.Dispose();
+                MyConn = null;  //set connection to null
+                Console.WriteLine("Session with id " + s + " was terminated.");
+            }
+            else
+            {
+                Console.WriteLine("There is no active connection - you're not logged in.");
+            }
         }
 
         protected void debugPoolTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -215,42 +223,17 @@ namespace JQuant
 
         protected void debugGetAS400DTCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            /*iWrite.WriteLine("Latency is " + FMRShell.AS400Synch.GetLatency().ToString());
-            iWrite.WriteLine("Time is " + FMRShell.AS400Synch.GetAS400DateTime().ToString("hh:mm:ss.fff"));
-            iWrite.WriteLine("Now pinging 30 times...");
-            */
             int ltncy;
             DateTime dt;
-            //System.Collections.Generic.List<double> lst = new System.Collections.Generic.List<double>(30);
+
+            //ping every 2 seconds, 60 times, write the output to the console
+            //TODO - write to a file instead of console, make it a separate thread
             for (int i = 0; i < 60; i++)
             {
                 FMRShell.AS400Synch.Ping(out dt, out ltncy);
                 Console.Write(FMRShell.AS400Synch.ToShortCSVString(dt, ltncy));
-                //lst.Add(Convert.ToDouble(ltncy));
                 Thread.Sleep(2000);
-                //iWrite.Write(".");
-
             }
-            /*
-            string M = Math.Round(Convert.ToDecimal(StatUtils.Mean(lst)), 2).ToString();
-            string SD = Math.Round(Convert.ToDecimal(StatUtils.StdDev(lst)), 2).ToString();
-            string Min = StatUtils.Min(lst).ToString();
-            string Max = StatUtils.Max(lst).ToString();
-
-            iWrite.WriteLine();
-            iWrite.Write(OutputUtils.FormatField("Mean", 10));
-            iWrite.Write(OutputUtils.FormatField("Std.Dev.", 10));
-            iWrite.Write(OutputUtils.FormatField("Min", 10));
-            iWrite.Write(OutputUtils.FormatField("Max", 10));
-            iWrite.Write(Environment.NewLine);
-            iWrite.Write("----------------------------------------");
-            iWrite.Write(Environment.NewLine);
-            iWrite.Write(OutputUtils.FormatField(M, 10));
-            iWrite.Write(OutputUtils.FormatField(SD, 10));
-            iWrite.Write(OutputUtils.FormatField(Min, 10));
-            iWrite.Write(OutputUtils.FormatField(Max, 10));
-            iWrite.WriteLine();
-            */
         }
 
         protected void debugLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -333,9 +316,6 @@ namespace JQuant
                 CloseDataStreamAndLog(iWrite, TrDataType);
             }
         }
-
-
-
 
         protected void debugLoggerShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -683,6 +663,8 @@ namespace JQuant
                                    " Login, start stream&log");
             menuOperations.AddCommand("Login", "Login to the remote server",
                                   " The call will block until login succeeds", debugLoginCallback);
+            menuOperations.AddCommand("Logout", "Perform the logout process",
+                                  " The call will block until logout succeeds", debugLogoutCallback);
             menuOperations.AddCommand("StartLog", "Log Maof stream",
                                   " Start stream and run logger", debugOperationsLogMaofCallback);
             menuOperations.AddCommand("StopLog", "Stop previosly started Log",
