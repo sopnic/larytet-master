@@ -11,21 +11,119 @@ namespace JQuant
     partial class Program
     {
 
+        #region Oper Callbacks
+        // Operations are intended to run in the real TaskBar environment - no simulated API
+
+        protected void operLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            //This is shortcut - the path works for VS only!  
+            string ConnFile = @"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\ConnectionParameters.xml";
+            this.MyConn = new FMRShell.Connection(ConnFile);
+
+            bool openResult;
+            int errResult;
+            openResult = this.MyConn.Open(iWrite, out errResult, true);
+
+            iWrite.WriteLine("");
+            if (openResult)
+            {
+                iWrite.WriteLine("Connection opened for " + this.MyConn.GetUserName());
+                iWrite.WriteLine("sessionId=" + errResult);
+            }
+            else
+            {
+                iWrite.WriteLine("Connection failed errResult=" + errResult);
+                iWrite.WriteLine("Error description: " + this.MyConn.LoginErrorDesc());
+            }
+
+            iWrite.WriteLine("Login status is " + this.MyConn.loginStatus.ToString());
+        }
+
+        protected void operLogoutCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            if (MyConn != null)
+            {
+                int s = this.MyConn.GetSessionId();
+                this.MyConn.Dispose();
+                this.MyConn = null;  //set connection to null
+                Console.WriteLine("Session with id " + s + " was terminated.");
+            }
+            else
+            {
+                Console.WriteLine("There is no active connection - you're not logged in.");
+            }
+        }
+
+        protected void operLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            // generate filename
+            string filename = "maofLog." + DateTime.Now.ToString() + ".txt";
+            Console.WriteLine(filename);  //check what's wrong with the filename
+            filename = filename.Replace('/', ' ');
+            filename = filename.Replace(' ', '_');
+            filename = "MaofLog.txt";   //this is workaround - need to fix this - see 2 lines up
+            iWrite.WriteLine("Log file " + filename);
+
+            OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
+        }
+
+        protected void operLogMadadCallBack(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            // generate filename
+            string filename = "MadadLog." + DateTime.Now.ToString() + ".txt";
+            filename = filename.Replace('/', ' ');
+            filename = filename.Replace(' ', '_');
+            iWrite.WriteLine("Log file " + filename);
+
+            OpenStreamAndLog(iWrite, false, FMRShell.DataType.Madad, filename, "MadadLogger");
+        }
+
+        protected void operLogRezefCallBack(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            // generate filename
+            string filename = "RezefLog." + DateTime.Now.ToString() + ".txt";
+            filename = filename.Replace('/', ' ');
+            filename = filename.Replace(' ', '_');
+            iWrite.WriteLine("Log file " + filename);
+
+            OpenStreamAndLog(iWrite, false, FMRShell.DataType.Rezef, filename, "RezefLogger");
+        }
+
+        protected void operStopMFLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            //CloseDataStreamAndLog(iWrite, (FMRShell.DataType)cmdArguments[0]);    //an error here - invalid cast exception
+            CloseDataStreamAndLog(iWrite, FMRShell.DataType.Maof);
+        }
+
+        protected void operStopRZLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            CloseDataStreamAndLog(iWrite, FMRShell.DataType.Rezef);
+        }
+
+        protected void operStopMDDLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            CloseDataStreamAndLog(iWrite, FMRShell.DataType.Madad);
+        }
+        
+        #endregion;
+
+        #region Debug Callbacks
+
         protected void debugPrintResourcesNameAndStats(IWrite iWrite, System.Collections.ArrayList list)
-        {            
+        {
             int entry = 0;
             int columnSize = 8;
-            
+
             bool isEmpty = true;
-            
+
             iWrite.WriteLine();
-            
+
             foreach (INamedResource resNamed in list)
             {
                 isEmpty = false;
-                
+
                 IResourceStatistics resStat = (IResourceStatistics)resNamed;
-                
+
                 System.Collections.ArrayList names;
                 System.Collections.ArrayList values;
                 resStat.GetEventCounters(out names, out values);
@@ -37,7 +135,7 @@ namespace JQuant
                 }
                 values.Insert(0, OutputUtils.FormatField(resNamed.Name, columnSize));
                 CommandLineInterface.printValues(iWrite, values, columnSize);
-                
+
                 entry++;
 
             }
@@ -155,13 +253,13 @@ namespace JQuant
             string path;
             //Depending on the environment, set the path:
 #if USEVS
-            path=@"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\";
+            path = @"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\";
 #else
             path="";
 #endif
             string ConnFile = path + "ConnectionParameters.xml";
             this.MyConn = new FMRShell.Connection(ConnFile);
-            
+
             bool openResult;
             int errResult;
             openResult = this.MyConn.Open(iWrite, out errResult, true);
@@ -272,28 +370,8 @@ namespace JQuant
 
         protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType TrDataType, string filename, string loggerName)
         {
-#if USEFMRSIM
-            if (TrDataType == FMRShell.DataType.Maof)
-            {
-                // create Maof data generator
-                TaskBarLibSim.MaofDataGeneratorRandom dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
-                // setup the data generator(s) in the K300Class
-                TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
-            }
-            else if (TrDataType == FMRShell.DataType.Rezef)
-            {
-                //create Rezef data generator
-                TaskBarLibSim.RezefDataGeneratorRandom dataRzfGenerator = new TaskBarLibSim.RezefDataGeneratorRandom();
-                TaskBarLibSim.K300Class.InitStreamSimulation(dataRzfGenerator);
-            }
-            else
-            {
-                iWrite.WriteLine("Unknown data type: " + TrDataType.ToString());
-            }
-#endif
-
             // create Collector (producer) - will do it only once
-            Console.WriteLine(this.MyConn.GetSessionId());
+            //Console.WriteLine(this.MyConn.GetSessionId());
             tradingDataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
 
             // create logger which will register itself (AddSink) in the collector
@@ -302,7 +380,7 @@ namespace JQuant
             // start logger
             DataLogger.Start();
 
-            // start collector, which will start the stream in K300Class, whch will start
+            // start collector, which will start the stream in K300Class, which will start
             // data generator
             tradingDataCollector.Start(TrDataType);
 
@@ -354,54 +432,54 @@ namespace JQuant
 
         protected void Timer5sHandler(ITimer timer)
         {
-             Console.WriteLine("5s timer expired "+ DateTime.Now);
+            Console.WriteLine("5s timer expired " + DateTime.Now);
         }
-        
+
         protected void Timer30sHandler(ITimer timer)
         {
-             Console.WriteLine("30s timer expired "+ DateTime.Now);
+            Console.WriteLine("30s timer expired " + DateTime.Now);
         }
-        
+
         protected void debugTimerTestThread()
         {
             // create set (timer task). initially empty
             TimerTask timerTask = new TimerTask("ShortTimers");
 
-            Console.WriteLine("Start timers "+ DateTime.Now);
-            
+            Console.WriteLine("Start timers " + DateTime.Now);
+
             // create two types of timers
-            TimerList timers_5sec = new TimerList("5sec", 5*1000, 100, this.Timer5sHandler, timerTask);
-            TimerList timers_30sec = new TimerList("30sec", 30*1000, 100, this.Timer30sHandler, timerTask);
-            
+            TimerList timers_5sec = new TimerList("5sec", 5 * 1000, 100, this.Timer5sHandler, timerTask);
+            TimerList timers_30sec = new TimerList("30sec", 30 * 1000, 100, this.Timer30sHandler, timerTask);
+
             timerTask.Start();
 
             // start some timers
             timers_5sec.Start();
             timers_5sec.Start();
             timers_5sec.Start();
-            Thread.Sleep(1*1000);
+            Thread.Sleep(1 * 1000);
             timers_5sec.Start();
 
             ITimer timer;
             long timerId;
-            timers_30sec.Start(out timer, out timerId, null, false);            
+            timers_30sec.Start(out timer, out timerId, null, false);
             timers_5sec.Start();
 
             debugTimerShowCallback(null, null, null);
 
             // wait for the first timer to expire
-            Thread.Sleep(10*1000);
+            Thread.Sleep(10 * 1000);
             timers_30sec.Stop(timer, timerId);
-            
-            Thread.Sleep(30*1000);
+
+            Thread.Sleep(30 * 1000);
             debugTimerShowCallback(null, null, null);
-            
+
             // clean up
             timers_5sec.Dispose();
             timers_30sec.Dispose();
-            timerTask.Dispose();            
+            timerTask.Dispose();
         }
-        
+
         protected void debugTimerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             // call once - init timers subsystem
@@ -419,11 +497,11 @@ namespace JQuant
             System.Collections.ArrayList values;
             int entry = 0;
             int columnSize = 12;
-            
+
             bool isEmpty = true;
-            
+
             ((JQuant.IWrite)this).WriteLine();
-            
+
             foreach (IResourceTimerList timerList in Resources.TimerLists)
             {
                 timerList.GetEventCounters(out names, out values);
@@ -438,7 +516,7 @@ namespace JQuant
                 values.Insert(0, OutputUtils.FormatField(timerList.Name, columnSize));
                 values.Insert(0, OutputUtils.FormatField(timerList.GetTaskName(), columnSize));
                 CommandLineInterface.printValues((JQuant.IWrite)this, values, columnSize);
-                
+
                 entry++;
 
             }
@@ -449,7 +527,7 @@ namespace JQuant
         }
 
         protected long[] threadpoolTestTicks;
-        
+
         protected void ThreadPoolJobEnter(object argument)
         {
         }
@@ -468,25 +546,25 @@ namespace JQuant
 
             threadpoolTestTicks = new long[maxJobs];
             long tick = DateTime.Now.Ticks;
-            for (int i = 0;i < maxJobs;i++)
+            for (int i = 0; i < maxJobs; i++)
             {
                 threadpoolTestTicks[i] = tick;
             }
-            
-            for (int i = 0;i < maxJobs;i++)
+
+            for (int i = 0; i < maxJobs; i++)
             {
                 threadPool.PlaceJob(ThreadPoolJobEnter, ThreadPoolJobDone, i);
             }
             Thread.Sleep(500);
-            
+
             debugThreadPoolShowCallback(iWrite, cmdName, cmdArguments);
             threadPool.Dispose();
 
-            for (int i = 0;i < threadpoolTestTicks.Length;i++)
+            for (int i = 0; i < threadpoolTestTicks.Length; i++)
             {
-                iWrite.WriteLine("ThreadPoolJob done  idx =" + i + ", time = " + (double)threadpoolTestTicks[i]/(double)(10*1) + " micros");
+                iWrite.WriteLine("ThreadPoolJob done  idx =" + i + ", time = " + (double)threadpoolTestTicks[i] / (double)(10 * 1) + " micros");
             }
-            
+
         }
 
 
@@ -494,12 +572,12 @@ namespace JQuant
         {
             feedGetSeriesCallback(iWrite, cmdName, cmdArguments, true);
         }
-        
+
         protected void feedGetSeriesCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             feedGetSeriesCallback(iWrite, cmdName, cmdArguments, false);
         }
-        
+
         protected void feedGetSeriesCallback(IWrite iWrite, string cmdName, object[] cmdArguments, bool outputToFile)
         {
             int argsNum = cmdArguments.Length;
@@ -510,72 +588,72 @@ namespace JQuant
             bool result = true;
             string[] args = (string[])cmdArguments;
             string filename = null;
-            
+
             switch (argsNum)
             {
-            case 1:
-                result = false;
-                break;
-            case 2:
-                if (outputToFile)
-                {
+                case 1:
                     result = false;
-                }
-                else
-                {
-                    symbol = args[1];
-                }
-                break;
-            case 3:
-                if (outputToFile)
-                {
-                    symbol = args[1];
-                    filename = args[2];
-                }
-                else
-                {
-                    symbol = args[1];
-                    result = DateTime.TryParse(args[2], out tmp);
-                    if (result) from = tmp;
-                }
-                break;
-            case 4:
-                if (outputToFile)
-                {
-                    symbol = args[1];
-                    filename = args[2];
-                    result = DateTime.TryParse(args[3], out tmp);
-                    if (result) from = tmp;
-                }
-                else
-                {
-                    symbol = args[1];
-                    result = DateTime.TryParse(args[2], out tmp);
-                    if (result) from = tmp;
-                    result = DateTime.TryParse(args[3], out tmp);
-                    if (result) to = tmp;
-                }
-                break;
-            case 5:
-            default:
-                if (outputToFile)
-                {
-                    symbol = args[1];
-                    filename = args[2];
-                    result = DateTime.TryParse(args[3], out tmp);
-                    if (result) from = tmp;
-                    result = DateTime.TryParse(args[4], out tmp);
-                    if (result) to = tmp;
-                }
-                else
-                {
-                    symbol = args[1];
-                    result = DateTime.TryParse(args[2], out tmp);
-                    if (result) from = tmp;
-                    result = DateTime.TryParse(args[3], out tmp);
-                    if (result) to = tmp;
-                }
-                break;
+                    break;
+                case 2:
+                    if (outputToFile)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        symbol = args[1];
+                    }
+                    break;
+                case 3:
+                    if (outputToFile)
+                    {
+                        symbol = args[1];
+                        filename = args[2];
+                    }
+                    else
+                    {
+                        symbol = args[1];
+                        result = DateTime.TryParse(args[2], out tmp);
+                        if (result) from = tmp;
+                    }
+                    break;
+                case 4:
+                    if (outputToFile)
+                    {
+                        symbol = args[1];
+                        filename = args[2];
+                        result = DateTime.TryParse(args[3], out tmp);
+                        if (result) from = tmp;
+                    }
+                    else
+                    {
+                        symbol = args[1];
+                        result = DateTime.TryParse(args[2], out tmp);
+                        if (result) from = tmp;
+                        result = DateTime.TryParse(args[3], out tmp);
+                        if (result) to = tmp;
+                    }
+                    break;
+                case 5:
+                default:
+                    if (outputToFile)
+                    {
+                        symbol = args[1];
+                        filename = args[2];
+                        result = DateTime.TryParse(args[3], out tmp);
+                        if (result) from = tmp;
+                        result = DateTime.TryParse(args[4], out tmp);
+                        if (result) to = tmp;
+                    }
+                    else
+                    {
+                        symbol = args[1];
+                        result = DateTime.TryParse(args[2], out tmp);
+                        if (result) from = tmp;
+                        result = DateTime.TryParse(args[3], out tmp);
+                        if (result) to = tmp;
+                    }
+                    break;
             }
 
             if (!result)
@@ -590,7 +668,7 @@ namespace JQuant
             if (result)
             {
                 System.IO.FileStream fileStream = null;
-                iWrite.WriteLine("Parsed "+series.Data.Count+" entries");
+                iWrite.WriteLine("Parsed " + series.Data.Count + " entries");
                 if (outputToFile)
                 {
                     bool shouldClose = false;
@@ -622,19 +700,19 @@ namespace JQuant
             {
                 iWrite.WriteLine("Failed to read data from server");
             }
-                
+
         }
 
         protected void feedGetSeriesFromFileCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             string filename = "yahoo_feed_data.csv";
-            
+
             IDataFeed dataFeed = new FeedYahoo();
             TA.PriceVolumeSeries series;
             bool result = dataFeed.GetSeries(filename, out series);
             if (result)
             {
-                iWrite.WriteLine("Parsed "+series.Data.Count+" entries");
+                iWrite.WriteLine("Parsed " + series.Data.Count + " entries");
             }
             else
             {
@@ -642,7 +720,7 @@ namespace JQuant
             }
         }
 
-        
+
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             debugPrintResourcesNameAndStats(iWrite, Resources.ThreadPools);
@@ -653,24 +731,37 @@ namespace JQuant
         {
             OrderType orderType = (OrderType.LMT | OrderType.FOK | OrderType.IOC);
         }
-        
+
+        #endregion;
+
+        #region Load Commands
+
         protected void LoadCommandLineInterface()
         {
 
-            cli.SystemMenu.AddCommand("exit", "Exit from the program", "Cleanup and exit", this.CleanupAndExit);
+            cli.SystemMenu.AddCommand("exit", "Exit from the program",
+                "Cleanup and exit", this.CleanupAndExit);
+
 
             Menu menuOperations = cli.RootMenu.AddMenu("Oper", "Operations",
                                    " Login, start stream&log");
             menuOperations.AddCommand("Login", "Login to the remote server",
-                                  " The call will block until login succeeds", debugLoginCallback);
+                                  " The call will block until login succeeds", operLoginCallback);
             menuOperations.AddCommand("Logout", "Perform the logout process",
-                                  " The call will block until logout succeeds", debugLogoutCallback);
-            menuOperations.AddCommand("StartLog", "Log Maof stream",
-                                  " Start stream and run logger", debugOperationsLogMaofCallback);
-            menuOperations.AddCommand("StopLog", "Stop previosly started Log",
-                                  " Stop stream andlogger", debugOperatonsStopLogCallback);
+                                  " The call will block until logout succeeds", operLogoutCallback);
+            menuOperations.AddCommand("StartLogMF", "Log Maof stream",
+                                  " Start Maof stream and run logger", operLogMaofCallback);
+            menuOperations.AddCommand("StartLogRZ", "Log Rezef stream",
+                                  " Start stream and run logger", operLogRezefCallBack);
+            menuOperations.AddCommand("StopLogMF", "Stop previosly started Maof Log",
+                                  " Stop Maof stream and logger", operStopMFLogCallback);
+            menuOperations.AddCommand("StopLogRZ", "Stop previosly started Rezef Log",
+                                  " Stop Rezef stream and logger", operStopMFLogCallback);
             menuOperations.AddCommand("ShowLog", "Show existing loggers",
                                   " List of created loggers with the statistics", debugLoggerShowCallback);
+            menuOperations.AddCommand("AS400TimeTest", "ping the server",
+                                  "ping AS400 server in order to get latency and synchronize local amachine time with server's",
+                                  debugGetAS400DTCallback);
 
             // Menu menuFMRLib = 
             cli.RootMenu.AddMenu("FMRLib", "Access to  FMRLib API",
@@ -682,15 +773,19 @@ namespace JQuant
 
             Menu menuFeed = cli.RootMenu.AddMenu("Feed", "Trading data feeds",
                                    " Get data from the data feeds, TA screens");
+
             menuFeed.AddCommand("getseries", "Get price/volume series",
                                   " Get price/volume daily series for the specified stock symbol. Args: symbol [fromDate[toDate]]", feedGetSeriesCallback);
             menuFeed.AddCommand("gettofile", "Write price/volume series to file",
                                   " Get price/volume daily series for the specified stock symbol and write to file. Args: symbol filename [fromDate[toDate]]", feedGetToFileCallback);
             menuFeed.AddCommand("readfile", "Get price/volume series from file",
                                   " Get price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
-            
+
+
+
             Menu menuDebug = cli.RootMenu.AddMenu("Dbg", "System debug info",
                                    " Created objetcs, access to the system statistics");
+
             menuDebug.AddCommand("GC", "Run garbage collector",
                                   " Forces garnage collection", debugGcCallback);
             menuDebug.AddCommand("mbxTest", "Run simple mailbox tests",
@@ -710,8 +805,6 @@ namespace JQuant
             menuDebug.AddCommand("AS400TimeTest", "ping the server",
                                   "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                   debugGetAS400DTCallback);
-
-
             menuDebug.AddCommand("timerTest", "Run simple timer tests",
                                   " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
             menuDebug.AddCommand("timerShow", "Show timers",
@@ -730,5 +823,6 @@ namespace JQuant
                                   " List of created loggers with the statistics", debugLoggerShowCallback);
         }
 
+        #endregion
     }
-}
+}//namespace
