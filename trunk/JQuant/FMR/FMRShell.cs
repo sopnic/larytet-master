@@ -322,6 +322,12 @@ namespace FMRShell
             }
         }
 
+        public Collector tradingDataCollector
+        {
+            get;
+            set;
+        }
+
         protected int sessionId;
         protected string errMsg;
         protected string xmlFileName;
@@ -657,7 +663,7 @@ namespace FMRShell
         }
     }
 
-    public class K300MadadTypeToString : StructToString<K300MaofType>
+    public class K300MadadTypeToString : StructToString<K300MadadType>
     {
         public K300MadadTypeToString(string delimiter)
             : base(delimiter)
@@ -747,7 +753,6 @@ namespace FMRShell
 
             MarketDataMadad mktDta;
             int countOnMadad;
-
         }//class MadadProducer
 
         public class MaofProducer : JQuant.IProducer<MarketDataMaof>
@@ -839,24 +844,27 @@ namespace FMRShell
         public Collector(int sessionId)
         {
             // create a couple of TaskBarLib objects required for access to the data stream 
-            /*if (k300Class == null)
+            if (k300Class == null)
             {
                 k300Class = new K300Class();
                 k300Class.K300SessionId = sessionId;
-            }*/
+            }
+            /*
             k300Class = null;
             k300Class = new K300Class();
             k300Class.K300SessionId = sessionId;
+            */
+            if (k300EventsClass  == null) 
+                k300EventsClass = new K300EventsClass();
             
-            k300EventsClass = new K300EventsClass();
             //set the filters:
-            k300EventsClass.EventsFilterBaseAsset = BaseAssetTypes.BaseAssetMaof;
+            //k300EventsClass.EventsFilterBaseAsset = BaseAssetTypes.BaseAssetMaof;
             //k300EventsClass.EventsFilterBno=??? //here we set a single option, if specified
             k300EventsClass.EventsFilterMadad = 1; //I want to receive also madad changes
-            k300EventsClass.EventsFilterMaof = 1;
-            k300EventsClass.EventsFilterMonth = MonthType.October;
-            //k300EventsClass.EventsFilterRezef = 0;
-            //k300EventsClass.EventsFilterStockKind = StockKind.StockKindMakam;
+            //k300EventsClass.EventsFilterMaof = 1;
+            //k300EventsClass.EventsFilterMonth = MonthType.October;
+            k300EventsClass.EventsFilterRezef = 1;
+            k300EventsClass.EventsFilterStockKind = StockKind.StockKindMenaya;
             k300EventsClass.EventsFilterStockMadad = MadadTypes.TLV25;
 
             //initialize inner producers:
@@ -884,9 +892,9 @@ namespace FMRShell
                     k300Class.K300StartStream(K300StreamType.RezefStream);
                     break;
                 case DataType.Madad:
-                    rc=k300Class.K300StartStream(K300StreamType.IndexStream);// For future use -  add inner madad producer
+                    //rc=k300Class.K300StartStream(K300StreamType.IndexStream);// For future use -  add inner madad producer
                     //OR - try this instead:
-                    //rc = k300Class.K300StartStream(K300StreamType.MaofStream);
+                    rc = k300Class.K300StartStream(K300StreamType.MaofStream);
                     Console.WriteLine("IndexStream Started, rc=" + rc);
                     break;
                 default:
@@ -907,7 +915,8 @@ namespace FMRShell
                     k300Class.K300StopStream(K300StreamType.RezefStream);
                     break;
                 case DataType.Madad:
-                    k300Class.K300StopStream(K300StreamType.IndexStream);   // For future uses - for now 
+                    k300Class.K300StopStream(K300StreamType.MaofStream);
+                    //k300Class.K300StopStream(K300StreamType.IndexStream);   // For future uses - for now 
                     break;                                                  //Maof stream should be stopped
                 default:
                     break;

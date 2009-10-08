@@ -56,12 +56,11 @@ namespace JQuant
 
         protected void operLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            // generate filename
-            string filename = "maofLog." + DateTime.Now.ToString() + ".txt";
-            Console.WriteLine(filename);  //check what's wrong with the filename
-            filename = filename.Replace('/', ' ');
+            // generate filename, display it
+            string filename = "maofLog_" + DateTime.Now.ToString() + ".txt";
+            filename = filename.Replace('/', '_');
+            filename = filename.Replace(':', '_');
             filename = filename.Replace(' ', '_');
-            filename = "MaofLog.txt";   //this is workaround - need to fix this - see 2 lines up
             iWrite.WriteLine("Log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
@@ -70,8 +69,9 @@ namespace JQuant
         protected void operLogMadadCallBack(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             // generate filename
-            string filename = "MadadLog." + DateTime.Now.ToString() + ".txt";
-            filename = filename.Replace('/', ' ');
+            string filename = "MadadLog_" + DateTime.Now.ToString() + ".txt";
+            filename = filename.Replace('/', '_');
+            filename = filename.Replace(':', '_');
             filename = filename.Replace(' ', '_');
             iWrite.WriteLine("Log file " + filename);
 
@@ -81,28 +81,51 @@ namespace JQuant
         protected void operLogRezefCallBack(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             // generate filename
-            string filename = "RezefLog." + DateTime.Now.ToString() + ".txt";
-            filename = filename.Replace('/', ' ');
+            string filename = "RezefLog_" + DateTime.Now.ToString() + ".txt";
+            filename = filename.Replace('/', '_');
+            filename = filename.Replace(':', '_');
             filename = filename.Replace(' ', '_');
-            iWrite.WriteLine("Log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Rezef, filename, "RezefLogger");
         }
 
-        protected void operStopMFLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void operStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            //CloseDataStreamAndLog(iWrite, (FMRShell.DataType)cmdArguments[0]);    //an error here - invalid cast exception
-            CloseDataStreamAndLog(iWrite, FMRShell.DataType.Maof);
-        }
-
-        protected void operStopRZLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
-        {
-            CloseDataStreamAndLog(iWrite, FMRShell.DataType.Rezef);
-        }
-
-        protected void operStopMDDLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
-        {
-            CloseDataStreamAndLog(iWrite, FMRShell.DataType.Madad);
+            bool _stopStream = false;
+            if (cmdArguments.Length == 1) iWrite.WriteLine("Please supply data type: MF | RZ | MDD");
+            else if (cmdArguments.Length > 3) iWrite.WriteLine("Too many arguments");
+            else
+            {
+                if (cmdArguments.Length == 3)
+                {
+                    _stopStream = (cmdArguments[2].ToString().ToLower() == "y");
+                    Console.WriteLine(_stopStream);
+                }
+                switch (cmdArguments[1].ToString().ToLower())
+                {
+                    case "maof":
+                        CloseLog(iWrite, FMRShell.DataType.Maof, _stopStream);
+                        break;
+                    case "mf":
+                        CloseLog(iWrite, FMRShell.DataType.Maof, _stopStream);
+                        break;
+                    case "rezef":
+                        CloseLog(iWrite, FMRShell.DataType.Rezef, _stopStream);
+                        break;
+                    case "rz":
+                        CloseLog(iWrite, FMRShell.DataType.Rezef, _stopStream);
+                        break;
+                    case "madad":
+                        CloseLog(iWrite, FMRShell.DataType.Madad, _stopStream);
+                        break;
+                    case "mdd":
+                        CloseLog(iWrite, FMRShell.DataType.Madad, _stopStream);
+                        break;
+                    default:
+                        iWrite.WriteLine("Invalid data type parameter: " + cmdArguments[1].ToString());
+                        break;
+                }
+            }
         }
         
         #endregion;
@@ -351,38 +374,44 @@ namespace JQuant
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
         }
 
-        protected FMRShell.Collector tradingDataCollector;
+        //protected FMRShell.Collector tradingDataCollector;
         protected TradingDataLogger DataLogger;
 
         protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             //CloseDataStreamAndLog(iWrite, (FMRShell.DataType)cmdArguments[0]);    //an error here - invalid cast exception
-            CloseDataStreamAndLog(iWrite, FMRShell.DataType.Maof);
+            CloseLog(iWrite, FMRShell.DataType.Maof, false);
         }
 
-        protected void CloseDataStreamAndLog(IWrite iWrite, FMRShell.DataType dt)
+        protected void CloseLog(IWrite iWrite, FMRShell.DataType dt, bool stopStream)
         {
             DataLogger.Stop();
             DataLogger.Dispose();
             DataLogger = null;
-            tradingDataCollector.Stop(dt);
+            if (stopStream) 
+                StopStream(iWrite,dt);
+                //MyConn.tradingDataCollector.Stop(dt);
+        }
+
+        protected void StopStream(IWrite iWrite, FMRShell.DataType dt)
+        {
+            MyConn.tradingDataCollector.Stop(dt);
         }
 
         protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType TrDataType, string filename, string loggerName)
         {
             // create Collector (producer) - will do it only once
             //Console.WriteLine(this.MyConn.GetSessionId());
-            tradingDataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
+            MyConn.tradingDataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
 
             // create logger which will register itself (AddSink) in the collector
-            DataLogger = new TradingDataLogger(loggerName, filename, false, tradingDataCollector, TrDataType);
+            DataLogger = new TradingDataLogger(loggerName, filename, false, MyConn.tradingDataCollector , TrDataType);
 
             // start logger
             DataLogger.Start();
 
-            // start collector, which will start the stream in K300Class, which will start
-            // data generator
-            tradingDataCollector.Start(TrDataType);
+            // start collector, which will start the stream in K300Class
+            MyConn.tradingDataCollector.Start(TrDataType);
 
             Thread.Sleep(100);
             debugLoggerShowCallback(iWrite, "", null);
@@ -391,7 +420,7 @@ namespace JQuant
             {
                 Thread.Sleep(1000);
 
-                CloseDataStreamAndLog(iWrite, TrDataType);
+                CloseLog(iWrite, TrDataType, true);
             }
         }
 
@@ -745,18 +774,25 @@ namespace JQuant
 
             Menu menuOperations = cli.RootMenu.AddMenu("Oper", "Operations",
                                    " Login, start stream&log");
+
             menuOperations.AddCommand("Login", "Login to the remote server",
                                   " The call will block until login succeeds", operLoginCallback);
             menuOperations.AddCommand("Logout", "Perform the logout process",
                                   " The call will block until logout succeeds", operLogoutCallback);
+
             menuOperations.AddCommand("StartLogMF", "Log Maof stream",
                                   " Start Maof stream and run logger", operLogMaofCallback);
             menuOperations.AddCommand("StartLogRZ", "Log Rezef stream",
-                                  " Start stream and run logger", operLogRezefCallBack);
-            menuOperations.AddCommand("StopLogMF", "Stop previosly started Maof Log",
-                                  " Stop Maof stream and logger", operStopMFLogCallback);
-            menuOperations.AddCommand("StopLogRZ", "Stop previosly started Rezef Log",
-                                  " Stop Rezef stream and logger", operStopMFLogCallback);
+                                  " Start Rezef stream and run logger", operLogRezefCallBack);
+            menuOperations.AddCommand("StartLogMDD", "Log Madad stream",
+                                  " Start Index (Maof) stream and run logger", operLogMadadCallBack);
+
+            menuOperations.AddCommand("StopLog", "Stop previosly started Maof Log - MF | MDD | RZ, to stop stream type Y",
+                                  " Stop logger - Maof(MF) | Madad (MDD) | Rezef (RZ) and stream (Y/N). ", operStopLogCallback);
+            menuOperations.AddCommand("StopStream", "Stop previosly started data stream - MF | MDD | RZ",
+                                  " Stop data stream - Maof(MF) | Madad (MDD) | Rezef (RZ) ", operStopLogCallback);
+
+
             menuOperations.AddCommand("ShowLog", "Show existing loggers",
                                   " List of created loggers with the statistics", debugLoggerShowCallback);
             menuOperations.AddCommand("AS400TimeTest", "ping the server",
