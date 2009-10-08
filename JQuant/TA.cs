@@ -449,7 +449,8 @@ namespace TA
 
 
     /// <summary>
-    /// ascending triangle is defined as 3 lows and two highs where susequent lows are higher than previous
+    /// ascending triangle is defined as 3 lows and two highs where susequent 
+    /// lows are higher than previous
     /// and tops are the same. 
     /// </summary>
     public class AscendingTriangle

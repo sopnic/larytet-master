@@ -210,6 +210,9 @@ namespace FMRShell
         /// True if Ok and returnCode is set to something meaningful
         /// Application will check that the method retruned true and only 
         /// after that analyze returnCode
+        /// 
+        /// TODO: Using of IWrite is an ugly patch. All prints should be done in
+        /// some dedicated delagate
         /// </returns>
         public bool Open(IWrite iWrite, out int returnCode, bool printProgress)
         {
@@ -322,12 +325,6 @@ namespace FMRShell
             }
         }
 
-        public Collector tradingDataCollector
-        {
-            get;
-            set;
-        }
-
         protected int sessionId;
         protected string errMsg;
         protected string xmlFileName;
@@ -344,7 +341,10 @@ namespace FMRShell
     {
         Maof,
         Rezef,
-        Madad
+        Madad,
+
+        // keep this entry last
+        Last        
     }
 
     public struct MarketDataMadad: ICloneable

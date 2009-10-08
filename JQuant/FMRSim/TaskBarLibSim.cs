@@ -463,6 +463,12 @@ namespace TaskBarLibSim
         {
         }
 
+        public int K300SessionId
+        {
+            set;
+            get;
+        }
+
         protected bool maofStreamStarted;
         protected bool rezefStreamStarted;
         protected static ISimulationDataGenerator<K300MaofType> maofGenerator;
@@ -480,7 +486,7 @@ namespace TaskBarLibSim
         // Events
         public event _IK300EventsEvents_OnMaofEventHandler OnMaof;
         public event _IK300EventsEvents_OnRezefEventHandler OnRezef;
-        //public event _IK300EventsEvents_OnMadadEventHandler OnMadad;
+        public event _IK300EventsEvents_OnMadadEventHandler OnMadad;
 
         /// <summary>
         /// part of the simulation

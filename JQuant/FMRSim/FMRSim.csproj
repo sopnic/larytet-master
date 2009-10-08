@@ -67,6 +67,7 @@
     <Compile Include="..\TA.cs" />
     <Compile Include="..\Feed.cs" />
     <Compile Include="..\Security.cs" />
+    <Compile Include="..\AlgorithmMachine.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

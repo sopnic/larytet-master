@@ -54,14 +54,21 @@ namespace JQuant
             }
         }
 
+        protected string DateNowToFilename()
+        {
+            string s = DateTime.Now.ToString();
+            s = s.Replace('/', '_');
+            s = s.Replace(':', '_');
+            s = s.Replace(' ', '_');
+
+            return s;
+        }
+        
         protected void operLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             // generate filename, display it
-            string filename = "maofLog_" + DateTime.Now.ToString() + ".txt";
-            filename = filename.Replace('/', '_');
-            filename = filename.Replace(':', '_');
-            filename = filename.Replace(' ', '_');
-            iWrite.WriteLine("Log file " + filename);
+            string filename = "maofLog_" + DateNowToFilename() + ".txt";
+            iWrite.WriteLine("Maof log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
         }
@@ -69,11 +76,8 @@ namespace JQuant
         protected void operLogMadadCallBack(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             // generate filename
-            string filename = "MadadLog_" + DateTime.Now.ToString() + ".txt";
-            filename = filename.Replace('/', '_');
-            filename = filename.Replace(':', '_');
-            filename = filename.Replace(' ', '_');
-            iWrite.WriteLine("Log file " + filename);
+            string filename = "MadadLog_" + DateNowToFilename() + ".txt";
+            iWrite.WriteLine("Madad log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Madad, filename, "MadadLogger");
         }
@@ -81,11 +85,9 @@ namespace JQuant
         protected void operLogRezefCallBack(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             // generate filename
-            string filename = "RezefLog_" + DateTime.Now.ToString() + ".txt";
-            filename = filename.Replace('/', '_');
-            filename = filename.Replace(':', '_');
-            filename = filename.Replace(' ', '_');
-
+            string filename = "RezefLog_" + DateNowToFilename() + ".txt";
+            iWrite.WriteLine("Rezef log file " + filename);
+            
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Rezef, filename, "RezefLogger");
         }
 
@@ -368,14 +370,12 @@ namespace JQuant
             string filename = "maofLog." + DateTime.Now.ToString() + ".txt";
             filename = filename.Replace('/', ' ');
             filename = filename.Replace(' ', '_');
-            filename = "MaofLog.txt";
             iWrite.WriteLine("Log file " + filename);
-
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
         }
 
-        //protected FMRShell.Collector tradingDataCollector;
-        protected TradingDataLogger DataLogger;
+        protected FMRShell.Collector[] DataCollector = new FMRShell.Collector[(int)FMRShell.DataType.Last];
+        protected TradingDataLogger[] DataLogger = new TradingDataLogger[(int)FMRShell.DataType.Last];
 
         protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -385,33 +385,37 @@ namespace JQuant
 
         protected void CloseLog(IWrite iWrite, FMRShell.DataType dt, bool stopStream)
         {
-            DataLogger.Stop();
-            DataLogger.Dispose();
-            DataLogger = null;
-            if (stopStream) 
-                StopStream(iWrite,dt);
-                //MyConn.tradingDataCollector.Stop(dt);
+            TradingDataLogger dataLogger = DataLogger[(int)dt];
+            dataLogger.Stop();
+            dataLogger.Dispose();
+            DataLogger[(int)dt] = null;
+            if (stopStream)
+            {
+                StopStream(iWrite, dt);
+            }
         }
 
         protected void StopStream(IWrite iWrite, FMRShell.DataType dt)
         {
-            MyConn.tradingDataCollector.Stop(dt);
+            FMRShell.Collector tradingDataCollector = DataCollector[(int)dt];
+            tradingDataCollector.Stop(dt);
         }
 
-        protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType TrDataType, string filename, string loggerName)
+        protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType dt, string filename, string loggerName)
         {
             // create Collector (producer) - will do it only once
-            //Console.WriteLine(this.MyConn.GetSessionId());
-            MyConn.tradingDataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
+            FMRShell.Collector dataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
+            DataCollector[(int)dt] = dataCollector;
 
             // create logger which will register itself (AddSink) in the collector
-            DataLogger = new TradingDataLogger(loggerName, filename, false, MyConn.tradingDataCollector , TrDataType);
+            TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, dataCollector, dt);
+            DataLogger[(int)dt] = dataLogger;
 
             // start logger
-            DataLogger.Start();
+            dataLogger.Start();
 
             // start collector, which will start the stream in K300Class
-            MyConn.tradingDataCollector.Start(TrDataType);
+            dataCollector.Start(dt);
 
             Thread.Sleep(100);
             debugLoggerShowCallback(iWrite, "", null);
@@ -419,8 +423,7 @@ namespace JQuant
             if (test)
             {
                 Thread.Sleep(1000);
-
-                CloseLog(iWrite, TrDataType, true);
+                CloseLog(iWrite, dt, true);
             }
         }
 
