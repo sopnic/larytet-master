@@ -16,14 +16,14 @@ namespace JQuant
 
         protected void operLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            //This is shortcut - the path works for VS only!  
-#if USEVS
-            string ConnFile = @"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\ConnectionParameters.xml";
-#else
+            // Define where the xml with connection params is.
+            // need to define an environment variable called JQUANT_ROOT
+            // in Win XP: right-click 'My Computer'->Properties->Advanced->
+            // Environment variables -> New. Reboot. 
+            // note: set from cmd doesn't work (it's for temporary EVs only)
             string ConnFile = Environment.GetEnvironmentVariable("JQUANT_ROOT");
             ConnFile += "ConnectionParameters.xml";
-#endif            
-            
+
             this.fmrConection = new FMRShell.Connection(ConnFile);
 
             bool openResult;
@@ -41,7 +41,7 @@ namespace JQuant
                 iWrite.WriteLine("Connection failed errResult=" + errResult);
                 iWrite.WriteLine("Error description: " + this.fmrConection.LoginErrorDesc());
             }
-
+            
             iWrite.WriteLine("Login status is " + this.fmrConection.loginStatus.ToString());
         }
 
@@ -280,15 +280,9 @@ namespace JQuant
 
         protected void debugLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            //This solution is only temporary -  we need to add a method setting and changing path variables
-            string path;
-            //Depending on the environment, set the path:
-#if USEVS
-            path = @"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\";
-#else
-            path = Environment.GetEnvironmentVariable("JQUANT_ROOT");
-#endif
-            string ConnFile = path + "ConnectionParameters.xml";
+            //Tell where the xml file is:
+            string ConnFile = Environment.GetEnvironmentVariable("JQUANT_ROOT");
+            ConnFile += "ConnectionParameters.xml";
             this.fmrConection = new FMRShell.Connection(ConnFile);
 
             bool openResult;
