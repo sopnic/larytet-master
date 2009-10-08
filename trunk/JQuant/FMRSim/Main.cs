@@ -206,6 +206,11 @@ namespace JQuant
 
         static void Main(string[] args)
         {
+            string jquantRoot = Environment.GetEnvironmentVariable("JQUANT_ROOT");
+            if (jquantRoot == null)
+            {
+                Console.WriteLine(Environment.NewLine+"Warning! Environment variable JQUANT_ROOT is not set"+Environment.NewLine);
+            }
             Resources.Init();
 
             instance = new Program();
@@ -224,7 +229,7 @@ namespace JQuant
         protected JQuantForms.ConsoleIn consoleIn;
         protected TableLayoutPanel tlp;
 
-        protected FMRShell.Connection MyConn;
+        protected FMRShell.Connection fmrConection;
 
         public static Program instance
         {

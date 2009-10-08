@@ -24,34 +24,34 @@ namespace JQuant
             ConnFile += "ConnectionParameters.xml";
 #endif            
             
-            this.MyConn = new FMRShell.Connection(ConnFile);
+            this.fmrConection = new FMRShell.Connection(ConnFile);
 
             bool openResult;
             int errResult;
-            openResult = this.MyConn.Open(iWrite, out errResult, true);
+            openResult = this.fmrConection.Open(iWrite, out errResult, true);
 
             iWrite.WriteLine("");
             if (openResult)
             {
-                iWrite.WriteLine("Connection opened for " + this.MyConn.GetUserName());
+                iWrite.WriteLine("Connection opened for " + this.fmrConection.GetUserName());
                 iWrite.WriteLine("sessionId=" + errResult);
             }
             else
             {
                 iWrite.WriteLine("Connection failed errResult=" + errResult);
-                iWrite.WriteLine("Error description: " + this.MyConn.LoginErrorDesc());
+                iWrite.WriteLine("Error description: " + this.fmrConection.LoginErrorDesc());
             }
 
-            iWrite.WriteLine("Login status is " + this.MyConn.loginStatus.ToString());
+            iWrite.WriteLine("Login status is " + this.fmrConection.loginStatus.ToString());
         }
 
         protected void operLogoutCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            if (MyConn != null)
+            if (fmrConection != null)
             {
-                int s = this.MyConn.GetSessionId();
-                this.MyConn.Dispose();
-                this.MyConn = null;  //set connection to null
+                int s = this.fmrConection.GetSessionId();
+                this.fmrConection.Dispose();
+                this.fmrConection = null;  //set connection to null
                 Console.WriteLine("Session with id " + s + " was terminated.");
             }
             else
@@ -289,34 +289,34 @@ namespace JQuant
             path = Environment.GetEnvironmentVariable("JQUANT_ROOT");
 #endif
             string ConnFile = path + "ConnectionParameters.xml";
-            this.MyConn = new FMRShell.Connection(ConnFile);
+            this.fmrConection = new FMRShell.Connection(ConnFile);
 
             bool openResult;
             int errResult;
-            openResult = this.MyConn.Open(iWrite, out errResult, true);
+            openResult = this.fmrConection.Open(iWrite, out errResult, true);
 
             iWrite.WriteLine("");
             if (openResult)
             {
-                iWrite.WriteLine("Connection opened for " + this.MyConn.GetUserName());
+                iWrite.WriteLine("Connection opened for " + this.fmrConection.GetUserName());
                 iWrite.WriteLine("sessionId=" + errResult);
             }
             else
             {
                 iWrite.WriteLine("Connection failed errResult=" + errResult);
-                iWrite.WriteLine("Error description: " + this.MyConn.LoginErrorDesc());
+                iWrite.WriteLine("Error description: " + this.fmrConection.LoginErrorDesc());
             }
 
-            iWrite.WriteLine("Login status is " + this.MyConn.loginStatus.ToString());
+            iWrite.WriteLine("Login status is " + this.fmrConection.loginStatus.ToString());
         }
 
         protected void debugLogoutCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            if (MyConn != null)
+            if (fmrConection != null)
             {
-                int s = MyConn.GetSessionId();
-                this.MyConn.Dispose();
-                MyConn = null;  //set connection to null
+                int s = fmrConection.GetSessionId();
+                this.fmrConection.Dispose();
+                fmrConection = null;  //set connection to null
                 Console.WriteLine("Session with id " + s + " was terminated.");
             }
             else
@@ -433,7 +433,7 @@ namespace JQuant
             }
             else
             {
-                iWrite.WriteLine("Warning data type not supported in FMR simulation: " + dt.ToString());
+                iWrite.WriteLine(Environment.NewLine+"Warning data type not supported in FMR simulation: " + dt.ToString()+Environment.NewLine);
             }
 #endif
             
@@ -441,11 +441,11 @@ namespace JQuant
             FMRShell.Collector dataCollector = DataCollector[(int)dt];
             if (dataCollector != null)
             {
-                iWrite.WriteLine("Warning! Data collector for "+dt+" is not null");
+                iWrite.WriteLine(Environment.NewLine+"Warning! Data collector for "+dt+" is not null"+Environment.NewLine);
             }
             
             // create Collector (producer) - will do it only once
-            dataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
+            dataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());
             DataCollector[(int)dt] = dataCollector;
 
             // create logger which will register itself (AddSink) in the collector
