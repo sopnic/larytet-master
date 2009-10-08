@@ -553,7 +553,7 @@ namespace TaskBarLibSim
                     DateTime current = DateTime.Now;
                     if ((_loginStarted + ts) <= current)
                     {
-                        _loginProgress += 20;
+                        _loginProgress += 50;
                         _loginStarted = current;
                     }
                     if (_loginProgress >= 100)
@@ -563,7 +563,7 @@ namespace TaskBarLibSim
                     break;
             }
             percent = _loginProgress;
-            description = "No login description";
+            description = "";
             sessionId = _sessionId;
         }
 
