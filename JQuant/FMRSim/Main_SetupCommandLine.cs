@@ -20,7 +20,8 @@ namespace JQuant
 #if USEVS
             string ConnFile = @"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\ConnectionParameters.xml";
 #else
-            string ConnFile = "ConnectionParameters.xml";
+            string ConnFile = Environment.GetEnvironmentVariable("JQUANT_ROOT");
+            ConnFile += "ConnectionParameters.xml";
 #endif            
             
             this.MyConn = new FMRShell.Connection(ConnFile);
@@ -285,7 +286,7 @@ namespace JQuant
 #if USEVS
             path = @"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\";
 #else
-            path="";
+            path = Environment.GetEnvironmentVariable("JQUANT_ROOT");
 #endif
             string ConnFile = path + "ConnectionParameters.xml";
             this.MyConn = new FMRShell.Connection(ConnFile);
