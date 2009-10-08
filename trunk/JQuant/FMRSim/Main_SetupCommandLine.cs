@@ -17,7 +17,12 @@ namespace JQuant
         protected void operLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             //This is shortcut - the path works for VS only!  
+#if USEVS
             string ConnFile = @"C:\Documents and Settings\Aryeh\My Documents\SVN\JQuant\ConnectionParameters.xml";
+#else
+            string ConnFile = "ConnectionParameters.xml";
+#endif            
+            
             this.MyConn = new FMRShell.Connection(ConnFile);
 
             bool openResult;
@@ -367,14 +372,22 @@ namespace JQuant
         protected void debugOperationsLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             // generate filename
-            string filename = "maofLog." + DateTime.Now.ToString() + ".txt";
-            filename = filename.Replace('/', ' ');
-            filename = filename.Replace(' ', '_');
+            string filename = "maofLog." + DateNowToFilename() + ".txt";
             iWrite.WriteLine("Log file " + filename);
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
         }
 
+        /// <summary>
+        /// i can support multiple data collectors and loggers. Because this is CLI i am going to assume
+        /// that there is exactly one logger for one data collector. 
+        /// </summary>
         protected FMRShell.Collector[] DataCollector = new FMRShell.Collector[(int)FMRShell.DataType.Last];
+
+        
+        /// <summary>
+        /// i can support multiple data collectors and loggers. Because this is CLI i am going to assume
+        /// that there is exactly one logger for one data collector. 
+        /// </summary>
         protected TradingDataLogger[] DataLogger = new TradingDataLogger[(int)FMRShell.DataType.Last];
 
         protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -403,6 +416,26 @@ namespace JQuant
 
         protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType dt, string filename, string loggerName)
         {
+#if USEFMRSIM
+            if (dt == FMRShell.DataType.Maof)
+            {
+                // create Maof data generator
+                TaskBarLibSim.MaofDataGeneratorRandom dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
+                // setup the data generator(s) in the K300Class
+                TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
+            }
+            else if (dt == FMRShell.DataType.Rezef)
+            {
+                //create Rezef data generator
+                TaskBarLibSim.RezefDataGeneratorRandom dataRzfGenerator = new TaskBarLibSim.RezefDataGeneratorRandom();
+                TaskBarLibSim.K300Class.InitStreamSimulation(dataRzfGenerator);
+            }
+            else
+            {
+                iWrite.WriteLine("Warning data type not supported in FMR simulation: " + dt.ToString());
+            }
+#endif
+            
             // Check that there is no data collector created already
             FMRShell.Collector dataCollector = DataCollector[(int)dt];
             if (dataCollector != null)
