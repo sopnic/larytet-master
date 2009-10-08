@@ -403,8 +403,15 @@ namespace JQuant
 
         protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType dt, string filename, string loggerName)
         {
+            // Check that there is no data collector created already
+            FMRShell.Collector dataCollector = DataCollector[(int)dt];
+            if (dataCollector != null)
+            {
+                iWrite.WriteLine("Warning! Data collector for "+dt+" is not null");
+            }
+            
             // create Collector (producer) - will do it only once
-            FMRShell.Collector dataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
+            dataCollector = new FMRShell.Collector(this.MyConn.GetSessionId());
             DataCollector[(int)dt] = dataCollector;
 
             // create logger which will register itself (AddSink) in the collector
