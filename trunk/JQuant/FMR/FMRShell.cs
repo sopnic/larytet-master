@@ -239,7 +239,9 @@ namespace FMRShell
                 string description;
 
                 // I need a short delay here before next attempt - 5 seconds
-                Thread.Sleep(5 * 1000);
+                // but do it only when already in the process - this saves me time when 
+                // I have connection already established - don't wait on the first attempt.
+                if (percent>0) Thread.Sleep(5 * 1000);
 
                 userClass.GetLoginActivity(ref sessionId, out percent_1, out description);
 
@@ -892,9 +894,9 @@ namespace FMRShell
                     k300Class.K300StartStream(K300StreamType.RezefStream);
                     break;
                 case DataType.Madad:
-                    //rc=k300Class.K300StartStream(K300StreamType.IndexStream);// For future use -  add inner madad producer
+                    rc=k300Class.K300StartStream(K300StreamType.IndexStream);
                     //OR - try this instead:
-                    rc = k300Class.K300StartStream(K300StreamType.MaofStream);
+                    //rc = k300Class.K300StartStream(K300StreamType.MaofStream);
                     Console.WriteLine("IndexStream Started, rc=" + rc);
                     break;
                 default:
@@ -911,13 +913,27 @@ namespace FMRShell
                     rc=k300Class.K300StopStream(K300StreamType.MaofStream);
                     Console.WriteLine("MaofStream stopped, rc= " + rc);
                     break;
+                
                 case DataType.Rezef:
-                    k300Class.K300StopStream(K300StreamType.RezefStream);
+                    rc = k300Class.K300StopStream(K300StreamType.RezefStream);
+                    Console.WriteLine("RezefStream stopped, rc= " + rc);
                     break;
+                
                 case DataType.Madad:
-                    k300Class.K300StopStream(K300StreamType.MaofStream);
-                    //k300Class.K300StopStream(K300StreamType.IndexStream);   // For future uses - for now 
-                    break;                                                  //Maof stream should be stopped
+                    // It is still not clear which stream to start here, 
+                    // because Madad data is supported either in the Maof stream
+                    // or in a special Index stream - both do the job
+                    //so chose one of the following:
+                    
+                    // ** 1 **
+                    //k300Class.K300StopStream(K300StreamType.MaofStream);
+                    //Console.WriteLine("MaofStream stopped, rc= " + rc);
+
+                    // ** 2 **
+                    rc = k300Class.K300StopStream(K300StreamType.IndexStream);
+                    Console.WriteLine("IndexStream stopped, rc= " + rc);
+                    break;
+                
                 default:
                     break;
             }
