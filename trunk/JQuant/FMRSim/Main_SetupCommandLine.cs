@@ -17,10 +17,7 @@ namespace JQuant
         protected void operLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             // Define where the xml with connection params is.
-            // need to define an environment variable called JQUANT_ROOT
-            // in Win XP: right-click 'My Computer'->Properties->Advanced->
-            // Environment variables -> New. Reboot. 
-            // note: set from cmd doesn't work (it's for temporary EVs only)
+            // To define JQUANT_ROOT - see howto in Main(...) in Main.cs
             string ConnFile = Environment.GetEnvironmentVariable("JQUANT_ROOT");
             ConnFile += "ConnectionParameters.xml";
 
