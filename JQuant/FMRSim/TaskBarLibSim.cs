@@ -289,19 +289,19 @@ namespace TaskBarLibSim
 
     public struct K300MadadType
     {
-        public string BNO_N;
-        public string CALC_TIME;
-        public string FIL1_VK;
-        public string FIL2_VK;
-        public string FIL3_VK;
-        public string FIL6_VK;
-        public string Madad;
-        public string MDD_COD;
-        public string MDD_DF;
-        public string MDD_N;
-        public string MDD_NAME;
-        public string MDD_SUG;
         public string SUG_RC;
+        public string BNO_N;
+        public string FIL1_VK;
+        public string MDD_COD;
+        public string MDD_SUG;
+        public string MDD_N;
+        public string FIL2_VK;
+        public string MDD_NAME;
+        public string Madad;
+        public string FIL3_VK;
+        public string MDD_DF;
+        public string CALC_TIME;
+        public string FIL6_VK;
         public string UPD_DAT;
         public string UPD_TIME;
     }
@@ -404,7 +404,6 @@ namespace TaskBarLibSim
                         maofGenerator.Start();
 
                         // set flag to keep track of the started streams
-
                         maofStreamStarted = true;
                         break;
                     }
@@ -415,6 +414,14 @@ namespace TaskBarLibSim
                         rezefStreamStarted = true;
                         break;
                     }
+
+                case K300StreamType.IndexStream:
+                    {
+                        madadGenerator.Start();
+                        madadStreamStarted = true;
+                        break;
+                    }
+                
                 default:
                     break;
             }
@@ -435,6 +442,11 @@ namespace TaskBarLibSim
             K300Class.rezefGenerator = rzfGenerator;
         }
 
+        public static void InitStreamSimulation(ISimulationDataGenerator<K300MadadType> mddGenerator)
+        {
+            K300Class.madadGenerator = mddGenerator;
+        }
+
         public virtual int K300StopStream(K300StreamType streamType)
         {
             switch (streamType)
@@ -445,6 +457,10 @@ namespace TaskBarLibSim
 
                 case K300StreamType.RezefStream:
                     rezefGenerator.Stop();
+                    break;
+
+                case K300StreamType.IndexStream:
+                    madadGenerator.Stop();
                     break;
 
                 default:
@@ -471,8 +487,10 @@ namespace TaskBarLibSim
 
         protected bool maofStreamStarted;
         protected bool rezefStreamStarted;
+        protected bool madadStreamStarted;
         protected static ISimulationDataGenerator<K300MaofType> maofGenerator;
         protected static ISimulationDataGenerator<K300RzfType> rezefGenerator;
+        protected static ISimulationDataGenerator<K300MadadType> madadGenerator;
     }
 
     public class K300EventsClass : IK300Events, K300Events, _IK300EventsEvents_Event
@@ -503,6 +521,14 @@ namespace TaskBarLibSim
         public void SendEventRzf(ref K300RzfType data)
         {
             OnRezef(ref data);
+        }
+
+        /// <summary>
+        /// Send simulated Rezef data to all registered users
+        /// </summary>
+        public void SendEventMdd(ref K300MadadType data)
+        {
+            OnMadad(ref data);
         }
 
         // Properties - are used to filter the events data 
@@ -982,6 +1008,84 @@ namespace TaskBarLibSim
         protected FieldInfo[] fields;
         int count;
     }
+
+
+    /// <summary>
+    /// this is a thread generating 
+    /// very siimple all fields are random Madad data generator
+    /// objects of this type used as an argument to the InitStreamSimulation
+    /// </summary>
+    /// <param name="maofGenerator">
+    /// A <see cref="ISimulationStreamGenerator"/>
+    /// </param>
+    public class MadadDataGeneratorRandom : EventGenerator<K300MadadType>, ISimulationDataGenerator<K300MadadType>, JQuant.IDataGenerator
+    {
+        public MadadDataGeneratorRandom()
+        {
+            randomString = new JQuant.RandomNumericalString(21, 80155);
+
+            Type t = typeof(K300MadadType);
+            fields = t.GetFields();
+            count = 0;
+
+            return;
+        }
+
+        protected override bool GetData(out K300MadadType data)
+        {
+            // delay - usually delay will be in the GetData
+            // GetData reads log, pulls the time stamps and simulates
+            // timing of the real data stream
+            Thread.Sleep(50);
+
+            // create a new object
+            data = new K300MadadType();
+
+            // set all fields in the object
+            data.SUG_RC = randomString.Next();
+            data.BNO_N = randomString.Next();
+            data.FIL1_VK = randomString.Next();	
+            data.MDD_COD = randomString.Next();	
+            data.MDD_SUG = randomString.Next();
+            data.MDD_N = randomString.Next();
+            data.FIL2_VK = randomString.Next();
+            data.MDD_NAME = randomString.Next();
+            data.Madad = randomString.Next();	
+            data.FIL3_VK = randomString.Next();	
+            data.MDD_DF = randomString.Next();
+            data.CALC_TIME = randomString.Next();	
+            data.FIL6_VK = randomString.Next();
+            data.UPD_DAT = randomString.Next();
+            data.UPD_TIME = randomString.Next();
+            count += 1;
+            
+            return true;
+        }
+
+        protected override void SendEvents(ref K300MadadType data)
+        {
+            SimulationTop.k300EventsClass.SendEventMdd(ref data);
+            // avoid tight loops in the system
+            Thread.Sleep(50);
+        }
+
+        public int GetCount()
+        {
+            return count;
+        }
+
+        public string GetName()
+        {
+            return "Madad data random generator";
+        }
+
+
+        JQuant.IRandomString randomString;
+        protected FieldInfo[] fields;
+        int count;
+    }
+
+
 
     /// <summary>
     /// I need some class where all apparently disconnected classes are connected

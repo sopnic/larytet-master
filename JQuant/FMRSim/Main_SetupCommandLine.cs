@@ -4,9 +4,14 @@ using System.Threading;
 using System.IO;
 using System.Collections.Generic;
 
+#if USEFMRSIM
+using TaskBarLibSim;
+#else
+using TaskBarLib;
+#endif
+
 namespace JQuant
 {
-
 
     partial class Program
     {
@@ -16,30 +21,47 @@ namespace JQuant
 
         protected void operLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            // Define where the xml with connection params is.
-            // To define JQUANT_ROOT - see howto in Main(...) in Main.cs
-            string ConnFile = Environment.GetEnvironmentVariable("JQUANT_ROOT");
-            ConnFile += "ConnectionParameters.xml";
-
-            this.fmrConection = new FMRShell.Connection(ConnFile);
-
-            bool openResult;
-            int errResult;
-            openResult = this.fmrConection.Open(iWrite, out errResult, true);
-
-            iWrite.WriteLine("");
-            if (openResult)
+            //check if there is connection already open:
+            if (this.fmrConection != null)
             {
-                iWrite.WriteLine("Connection opened for " + this.fmrConection.GetUserName());
-                iWrite.WriteLine("sessionId=" + errResult);
+                iWrite.WriteLine(
+                    Environment.NewLine
+                    + "WARNING !!! You're already logged in with SessionId="
+                    + this.fmrConection.GetSessionId()
+                    + Environment.NewLine
+                    + "Login Status: "
+                    + this.fmrConection.loginStatus
+                    + Environment.NewLine
+                    );
             }
+            //if no open connection - perform login process:
             else
             {
-                iWrite.WriteLine("Connection failed errResult=" + errResult);
-                iWrite.WriteLine("Error description: " + this.fmrConection.LoginErrorDesc());
+                // Define where the xml with connection params is.
+                // To define JQUANT_ROOT - see howto in Main(...) in Main.cs
+                string ConnFile = Environment.GetEnvironmentVariable("JQUANT_ROOT");
+                ConnFile += "ConnectionParameters.xml";
+
+                this.fmrConection = new FMRShell.Connection(ConnFile);
+
+                bool openResult;
+                int errResult;
+                openResult = this.fmrConection.Open(iWrite, out errResult, true);
+
+                iWrite.WriteLine("");
+                if (openResult)
+                {
+                    iWrite.WriteLine("Connection opened for " + this.fmrConection.GetUserName());
+                    iWrite.WriteLine("sessionId=" + errResult);
+                }
+                else
+                {
+                    iWrite.WriteLine("Connection failed errResult=" + errResult);
+                    iWrite.WriteLine("Error description: " + this.fmrConection.LoginErrorDesc());
+                }
+
+                iWrite.WriteLine("Login status is " + this.fmrConection.loginStatus.ToString());
             }
-            
-            iWrite.WriteLine("Login status is " + this.fmrConection.loginStatus.ToString());
         }
 
         protected void operLogoutCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -67,27 +89,81 @@ namespace JQuant
             return s;
         }
         
-        protected void operLogMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void operLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            // generate filename, display it
-            string filename = "maofLog_" + DateNowToFilename() + ".txt";
+            //first check if logged in:
+            if (this.fmrConection == null)
+            {
+                iWrite.WriteLine(Environment.NewLine 
+                    + "WARNING !!! You're not logged in. Please log in first!");
+            }
+
+            //then check if connection is OK. TaksBar takes care of keeping it alive
+            //in all times. If loginStatus != LoginSessionActive - there probably a big trouble
+            else if (this.fmrConection.loginStatus != LoginStatus.LoginSessionActive)
+            {
+                iWrite.WriteLine(Environment.NewLine
+                    + "WARNING !!! Your login status is "
+                    + this.fmrConection.loginStatus.ToString()
+                    + "Please check your connection!");
+            }
+
+            // check the entered arguments:
+            else if (cmdArguments.Length > 2)
+            {
+                iWrite.WriteLine(Environment.NewLine + "Too many arguments. Try again");
+            }
+
+            //this one with no args initializes all the three logs
+            else if (cmdArguments.Length == 1)
+            {
+                LogMaof(iWrite);
+                LogRezef(iWrite);
+                LogMadad(iWrite);
+            }
+            
+            else    //start one specified log
+            {
+                switch (cmdArguments[1].ToString().ToLower())
+                {
+                    case "mf":
+                        LogMaof(iWrite);
+                        break;
+                    case "rz":
+                        LogRezef(iWrite);
+                        break;
+                    case "mdd":
+                        LogMadad(iWrite);
+                        break;
+                    default:
+                        iWrite.WriteLine(Environment.NewLine
+                            + "Invalid data type argument '"
+                            + cmdArguments[1].ToString()
+                            + "'. Type 'startlog + (optional) MF|RZ|MDD'");
+                        break;
+                }
+            }
+        }
+
+        protected void LogMaof(IWrite iWrite)
+        {
+            // generate filename and display it
+            string filename = "MaofLog_" + DateNowToFilename() + ".txt";
             iWrite.WriteLine("Maof log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
         }
 
-        protected void operLogMadadCallBack(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void LogMadad(IWrite iWrite)
         {
-            // generate filename
             string filename = "MadadLog_" + DateNowToFilename() + ".txt";
             iWrite.WriteLine("Madad log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Madad, filename, "MadadLogger");
         }
 
-        protected void operLogRezefCallBack(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void LogRezef(IWrite iWrite)
         {
-            // generate filename
             string filename = "RezefLog_" + DateNowToFilename() + ".txt";
             iWrite.WriteLine("Rezef log file " + filename);
             
@@ -129,6 +205,77 @@ namespace JQuant
                     default:
                         iWrite.WriteLine("Invalid data type parameter: " + cmdArguments[1].ToString());
                         break;
+                }
+            }
+        }
+
+        protected void StopStream(IWrite iWrite, FMRShell.DataType dt)
+        {
+            FMRShell.Collector tradingDataCollector = DataCollector[(int)dt];
+            tradingDataCollector.Stop(dt);
+        }
+
+        protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType dt, string filename, string loggerName)
+        {
+#if USEFMRSIM
+            if (dt == FMRShell.DataType.Maof)
+            {
+                // create Maof data generator
+                TaskBarLibSim.MaofDataGeneratorRandom dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
+                // setup the data generator(s) in the K300Class
+                TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
+            }
+            else if (dt == FMRShell.DataType.Rezef)
+            {
+                //create Rezef data generator
+                TaskBarLibSim.RezefDataGeneratorRandom dataRzfGenerator = new TaskBarLibSim.RezefDataGeneratorRandom();
+                TaskBarLibSim.K300Class.InitStreamSimulation(dataRzfGenerator);
+            }
+            else if(dt==FMRShell.DataType.Madad)
+            {
+                //create Madad data generator
+                TaskBarLibSim.MadadDataGeneratorRandom dataMddGenerator = new TaskBarLibSim.MadadDataGeneratorRandom();
+                TaskBarLibSim.K300Class.InitStreamSimulation(dataMddGenerator);
+            }
+
+            else
+            {
+                iWrite.WriteLine(Environment.NewLine + "Warning data type not supported in FMR simulation: " + dt.ToString() + Environment.NewLine);
+            }
+#endif
+
+            // Check that there is no data collector created already
+            FMRShell.Collector dataCollector = DataCollector[(int)dt];
+            Console.WriteLine("DT= " + ((int) dt).ToString());
+            if (dataCollector != null)
+            {
+                iWrite.WriteLine(Environment.NewLine + "Warning! Data collector for " + dt + " is not null" 
+                    + Environment.NewLine + "Stop it and / or its data stream before you attempt again.");
+            }
+
+            else
+            {
+                // create Collector (producer) - will do it only once
+                dataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());
+                DataCollector[(int)dt] = dataCollector;
+
+                // create logger which will register itself (AddSink) in the collector
+                TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, dataCollector, dt);
+                DataLogger[(int)dt] = dataLogger;
+
+                // start logger
+                dataLogger.Start();
+
+                // start collector, which will start the stream in K300Class
+                dataCollector.Start(dt);
+
+                Thread.Sleep(100);
+                debugLoggerShowCallback(iWrite, "", null);
+
+                if (test)
+                {
+                    Thread.Sleep(1000);
+                    CloseLog(iWrite, dt, true);
                 }
             }
         }
@@ -277,7 +424,7 @@ namespace JQuant
 
         protected void debugLoginCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            //Tell where the xml file is:
+            //Tell where the xml file is (see also howto in Main(...) in Main.cs ):
             string ConnFile = Environment.GetEnvironmentVariable("JQUANT_ROOT");
             ConnFile += "ConnectionParameters.xml";
             this.fmrConection = new FMRShell.Connection(ConnFile);
@@ -397,65 +544,6 @@ namespace JQuant
             if (stopStream)
             {
                 StopStream(iWrite, dt);
-            }
-        }
-
-        protected void StopStream(IWrite iWrite, FMRShell.DataType dt)
-        {
-            FMRShell.Collector tradingDataCollector = DataCollector[(int)dt];
-            tradingDataCollector.Stop(dt);
-        }
-
-        protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType dt, string filename, string loggerName)
-        {
-#if USEFMRSIM
-            if (dt == FMRShell.DataType.Maof)
-            {
-                // create Maof data generator
-                TaskBarLibSim.MaofDataGeneratorRandom dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
-                // setup the data generator(s) in the K300Class
-                TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
-            }
-            else if (dt == FMRShell.DataType.Rezef)
-            {
-                //create Rezef data generator
-                TaskBarLibSim.RezefDataGeneratorRandom dataRzfGenerator = new TaskBarLibSim.RezefDataGeneratorRandom();
-                TaskBarLibSim.K300Class.InitStreamSimulation(dataRzfGenerator);
-            }
-            else
-            {
-                iWrite.WriteLine(Environment.NewLine+"Warning data type not supported in FMR simulation: " + dt.ToString()+Environment.NewLine);
-            }
-#endif
-            
-            // Check that there is no data collector created already
-            FMRShell.Collector dataCollector = DataCollector[(int)dt];
-            if (dataCollector != null)
-            {
-                iWrite.WriteLine(Environment.NewLine+"Warning! Data collector for "+dt+" is not null"+Environment.NewLine);
-            }
-            
-            // create Collector (producer) - will do it only once
-            dataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());
-            DataCollector[(int)dt] = dataCollector;
-
-            // create logger which will register itself (AddSink) in the collector
-            TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, dataCollector, dt);
-            DataLogger[(int)dt] = dataLogger;
-
-            // start logger
-            dataLogger.Start();
-
-            // start collector, which will start the stream in K300Class
-            dataCollector.Start(dt);
-
-            Thread.Sleep(100);
-            debugLoggerShowCallback(iWrite, "", null);
-
-            if (test)
-            {
-                Thread.Sleep(1000);
-                CloseLog(iWrite, dt, true);
             }
         }
 
@@ -815,12 +903,8 @@ namespace JQuant
             menuOperations.AddCommand("Logout", "Perform the logout process",
                                   " The call will block until logout succeeds", operLogoutCallback);
 
-            menuOperations.AddCommand("StartLogMF", "Log Maof stream",
-                                  " Start Maof stream and run logger", operLogMaofCallback);
-            menuOperations.AddCommand("StartLogRZ", "Log Rezef stream",
-                                  " Start Rezef stream and run logger", operLogRezefCallBack);
-            menuOperations.AddCommand("StartLogMDD", "Log Madad stream",
-                                  " Start Index (Maof) stream and run logger", operLogMadadCallBack);
+            menuOperations.AddCommand("StartLog", "Log data stream - choose MF|RZ|MDD",
+                                  " Start trading data stream and run logger", operLogCallback);
 
             menuOperations.AddCommand("StopLog", "Stop previosly started Maof Log - MF | MDD | RZ, to stop stream type Y",
                                   " Stop logger - Maof(MF) | Madad (MDD) | Rezef (RZ) and stream (Y/N). ", operStopLogCallback);
