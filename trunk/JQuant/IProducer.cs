@@ -31,9 +31,34 @@ namespace JQuant
         void Notify(int count, DataType data);
     }
 
-    public interface IProducer<DataType>
+    public interface IProducer<DataType>: IResourceProducer
     {
         bool AddSink(ISink<DataType> sink);
         bool RemoveSink(ISink<DataType> sink);
+    }
+
+    public abstract class ProducerBase<DataType>: IDisposable, IProducer<DataType>
+    {
+        protected ProducerBase()
+        {
+            Resources.Producers.Add(this);
+        }
+
+        public void Dispose()
+        {
+            Resources.Producers.Remove(this);
+        }
+
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public abstract bool AddSink(ISink<DataType> sink);
+        public abstract bool RemoveSink(ISink<DataType> sink);
+        
+        public abstract void GetEventCounters(out System.Collections.ArrayList names, 
+                                         out System.Collections.ArrayList values);
     }
 }

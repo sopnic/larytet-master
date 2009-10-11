@@ -707,7 +707,7 @@ namespace FMRShell
     /// </summary>
     public class Collector
     {
-        public class MadadProducer : JQuant.IProducer<MarketDataMadad>
+        public class MadadProducer : ProducerBase<MarketDataMadad>
         {
             public MadadProducer(K300EventsClass k3)
             {
@@ -715,6 +715,7 @@ namespace FMRShell
                 mktDta = new MarketDataMadad();
                 k3.OnMadad += new _IK300EventsEvents_OnMadadEventHandler(OnMadad);
                 countOnMadad = 0;
+                Name = "Madad";
             }
 
             /// <summary>
@@ -731,6 +732,7 @@ namespace FMRShell
                 //Console.Write(".");
                 // no memory allocation here - I am using allready created object 
                 mktDta.k300MddType = data;
+                countEvents++;
 
                 // sink should not modify the data. sink has two options:
                 // 1) handle the data in the context of the Collector thead
@@ -741,20 +743,44 @@ namespace FMRShell
                 }
             }
 
-            public bool AddSink(JQuant.ISink<MarketDataMadad> sink)
+            public override bool AddSink(JQuant.ISink<MarketDataMadad> sink)
             {
+                Console.WriteLine("MadadListeners.Add(sink)");
                 MadadListeners.Add(sink);
                 return true;
             }
 
-            public bool RemoveSink(JQuant.ISink<MarketDataMadad> sink)
+            public override bool RemoveSink(JQuant.ISink<MarketDataMadad> sink)
             {
                 MadadListeners.Remove(sink);
                 return true;
             }
 
+            public override void GetEventCounters(out System.Collections.ArrayList names, 
+                                                 out System.Collections.ArrayList values)
+            {
+                names = new System.Collections.ArrayList(4);
+                values = new System.Collections.ArrayList(4);
+    
+                names.Add("Events");values.Add(GetEvents());
+                names.Add("Sinks");values.Add(GetSinks());
+            }
+
+            protected int GetSinks()
+            {
+                return MadadListeners.Count;
+            }
+
+
+            protected int GetEvents()
+            {
+                return countEvents;
+            }
+            
+            protected static List<JQuant.ISink<MarketDataMadad>> MadadListeners;
             MarketDataMadad mktDta;
             int countOnMadad;
+            int countEvents;
         }//class MadadProducer
 
         public class MaofProducer : JQuant.IProducer<MarketDataMaof>
@@ -765,6 +791,7 @@ namespace FMRShell
                 mktDta = new MarketDataMaof();
                 k3.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
                 countOnMaof = 0;
+                Name = "Maof";
             }
 
             /// <summary>
@@ -781,6 +808,7 @@ namespace FMRShell
                 //Console.Write(".");
                 // no memory allocation here - I am using allready created object 
                 mktDta.k300MaofType = data;
+                countEvents++;
 
                 // sink should not modify the data. sink has two options:
                 // 1) handle the data in the context of the Collector thead
@@ -793,6 +821,7 @@ namespace FMRShell
 
             public bool AddSink(JQuant.ISink<MarketDataMaof> sink)
             {
+                Console.WriteLine("MaofListeners.Add(sink)");
                 MaofListeners.Add(sink);
                 return true;
             }
@@ -803,44 +832,97 @@ namespace FMRShell
                 return true;
             }
 
+
+            public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
+            {
+                names = new System.Collections.ArrayList(4);
+                values = new System.Collections.ArrayList(4);
+    
+                names.Add("Events");values.Add(GetEvents());
+                names.Add("Sinks");values.Add(GetSinks());
+            }
+
+            protected int GetSinks()
+            {
+                return MaofListeners.Count;
+            }
+
+            protected int GetEvents()
+            {
+                return countEvents;
+            }
+            
+            public string Name
+            {
+                get;
+                set;
+            }
+            
+            protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;        
             MarketDataMaof mktDta;
             int countOnMaof;
-
+            int countEvents;
         }//class MaofProducer
 
-        public class RezefProducer : JQuant.IProducer<MarketDataRezef>
+        public class RezefProducer : ProducerBase<MarketDataRezef>
         {
             public RezefProducer(K300EventsClass k3)
             {
                 RezefListeners = new List<JQuant.ISink<MarketDataRezef>>(5);
                 mktDta = new MarketDataRezef();
                 k3.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
+                Name = "Rezef";
                 countOnRezef = 0;
             }
 
             protected void OnRezef(ref K300RzfType data)
             {
                 mktDta.k300RzfType = data;
+                countEvents++;
+                
                 foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners)
                 {
                     sink.Notify(countOnRezef, mktDta);
                 }
             }
 
-            public bool AddSink(JQuant.ISink<MarketDataRezef> sink)
+            public override bool AddSink(JQuant.ISink<MarketDataRezef> sink)
             {
+                Console.WriteLine("RezefListeners.Add(sink)");
                 RezefListeners.Add(sink);
                 return true;
             }
 
-            public bool RemoveSink(JQuant.ISink<MarketDataRezef> sink)
+            public override bool RemoveSink(JQuant.ISink<MarketDataRezef> sink)
             {
                 RezefListeners.Remove(sink);
                 return true;
             }
 
+            public override void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
+            {
+                names = new System.Collections.ArrayList(4);
+                values = new System.Collections.ArrayList(4);
+    
+                names.Add("Events");values.Add(GetEvents());
+                names.Add("Sinks");values.Add(GetSinks());
+            }
+
+            protected int GetSinks()
+            {
+                return RezefListeners.Count;
+            }
+            
+            protected int GetEvents()
+            {
+                return countEvents;
+            }
+            
+            
+            protected static List<JQuant.ISink<MarketDataRezef>> RezefListeners;
             MarketDataRezef mktDta;
             int countOnRezef;
+            int countEvents;
         }//class RezefProducer
 
         public Collector(int sessionId)
@@ -943,9 +1025,6 @@ namespace FMRShell
         public RezefProducer rezefProducer;
         public MadadProducer madadProducer;
 
-        protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;
-        protected static List<JQuant.ISink<MarketDataRezef>> RezefListeners;
-        protected static List<JQuant.ISink<MarketDataMadad>> MadadListeners;
 
         protected K300Class k300Class;
         protected K300EventsClass k300EventsClass;
@@ -966,8 +1045,13 @@ namespace FMRShell
     /// and if there is no match (miss) notifies all registered listeners (sinks) about
     /// data mismatch
     /// </summary>
-    public class RxDataValidator : JQuant.IProducer<DataValidatorEvent>, JQuant.ISink<MarketDataMaof>
+    public abstract class RxDataValidator : JQuant.IProducer<DataValidatorEvent>, JQuant.ISink<MarketDataMaof>
     {
+        // child will implment public constructor and set Name
+        protected RxDataValidator()
+        {
+        }
+        
         public bool AddSink(JQuant.ISink<DataValidatorEvent> sink)
         {
             return true;
@@ -978,7 +1062,14 @@ namespace FMRShell
             return true;
         }
 
+        public string Name
+        {
+            get;
+            set;
+        }
 
+        public abstract void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values);
+        
         /// <summary>
         /// called by Collector to notify about incoming event. Add the event to the FIFO
         /// </summary>

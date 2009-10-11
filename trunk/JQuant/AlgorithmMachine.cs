@@ -184,6 +184,7 @@ namespace JQuant
             OrderListeners = new List<ISink<LimitOrderParameters>>(5);
             Alg.SendMaofOrder += new SendOrder(onSendMaofOrder);
             countOrders = 0;
+            Name = "MaofOrder";
         }
 
         protected void onSendMaofOrder(object source, OrderEventArgs args)
@@ -201,6 +202,19 @@ namespace JQuant
             }
         }
 
+        public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
+        {
+            names = new System.Collections.ArrayList(0);
+            values = new System.Collections.ArrayList(0);
+
+        }
+
+        public string Name
+        {
+            get;
+            set;
+        }
+        
         public bool AddSink(ISink<LimitOrderParameters> sink)
         {
             OrderListeners.Add(sink);
