@@ -64,6 +64,10 @@ namespace JQuant
     public interface IResourcePool: INamedResource, IResourceStatistics
     {
     }
+    
+    public interface IResourceProducer: INamedResource, IResourceStatistics
+    {
+    }
 
     public interface IResourceJobQueue: INamedResource
     {
@@ -185,6 +189,7 @@ namespace JQuant
             DataGenerators = new List<IDataGenerator>(10);
             TimerLists = new  List<IResourceTimerList>(5);
             ThreadPools = new System.Collections.ArrayList(2);
+            Producers = new List<IResourceProducer>(5);
         }
 
         static public void Init()
@@ -220,6 +225,8 @@ namespace JQuant
         public static List<IDataGenerator> DataGenerators;
 
         public static List<IResourceTimerList> TimerLists;
+        
+        public static List<IResourceProducer> Producers;
 
         public static System.Collections.ArrayList ThreadPools;
 

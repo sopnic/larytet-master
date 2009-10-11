@@ -211,8 +211,7 @@ namespace JQuant
 
         protected void StopStream(IWrite iWrite, FMRShell.DataType dt)
         {
-            FMRShell.Collector tradingDataCollector = DataCollector[(int)dt];
-            tradingDataCollector.Stop(dt);
+            DataCollector.Stop(dt);
         }
 
         protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType dt, string filename, string loggerName)
@@ -245,38 +244,30 @@ namespace JQuant
 #endif
 
             // Check that there is no data collector created already
-            FMRShell.Collector dataCollector = DataCollector[(int)dt];
             Console.WriteLine("DT= " + ((int) dt).ToString());
-            if (dataCollector != null)
-            {
-                iWrite.WriteLine(Environment.NewLine + "Warning! Data collector for " + dt + " is not null" 
-                    + Environment.NewLine + "Stop it and / or its data stream before you attempt again.");
-            }
-
-            else
+            if (DataCollector == null)
             {
                 // create Collector (producer) - will do it only once
-                dataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());
-                DataCollector[(int)dt] = dataCollector;
+                DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());                
+            }
 
-                // create logger which will register itself (AddSink) in the collector
-                TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, dataCollector, dt);
-                DataLogger[(int)dt] = dataLogger;
+                
+            // create logger which will register itself (AddSink) in the collector
+            TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, DataCollector, dt);
+            DataLogger[(int)dt] = dataLogger;
+            
+            // start logger
+            dataLogger.Start();
 
-                // start logger
-                dataLogger.Start();
+            // start collector, which will start the stream in K300Class
+            DataCollector.Start(dt);
+            
+            debugLoggerShowCallback(iWrite, "", null);
 
-                // start collector, which will start the stream in K300Class
-                dataCollector.Start(dt);
-
-                Thread.Sleep(100);
-                debugLoggerShowCallback(iWrite, "", null);
-
-                if (test)
-                {
-                    Thread.Sleep(1000);
-                    CloseLog(iWrite, dt, true);
-                }
+            if (test)
+            {
+                Thread.Sleep(1000);
+                CloseLog(iWrite, dt, true);
             }
         }
         
@@ -520,7 +511,7 @@ namespace JQuant
         /// i can support multiple data collectors and loggers. Because this is CLI i am going to assume
         /// that there is exactly one logger for one data collector. 
         /// </summary>
-        protected FMRShell.Collector[] DataCollector = new FMRShell.Collector[(int)FMRShell.DataType.Last];
+        protected FMRShell.Collector DataCollector;
 
         
         /// <summary>
@@ -528,6 +519,7 @@ namespace JQuant
         /// that there is exactly one logger for one data collector. 
         /// </summary>
         protected TradingDataLogger[] DataLogger = new TradingDataLogger[(int)FMRShell.DataType.Last];
+
 
         protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -540,7 +532,7 @@ namespace JQuant
             TradingDataLogger dataLogger = DataLogger[(int)dt];
             dataLogger.Stop();
             dataLogger.Dispose();
-            DataLogger[(int)dt] = null;
+            DataLogger = null;
             if (stopStream)
             {
                 StopStream(iWrite, dt);
@@ -582,6 +574,41 @@ namespace JQuant
             }
         }
 
+
+        protected void debugProducerShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            System.Collections.ArrayList names;
+            System.Collections.ArrayList values;
+            int entry = 0;
+            int columnSize = 12;
+
+            bool isEmpty = true;
+
+            iWrite.WriteLine();
+
+            foreach (IResourceProducer producer in Resources.Producers)
+            {
+                producer.GetEventCounters(out names, out values);
+                isEmpty = false;
+
+                if (entry == 0)
+                {
+                    names.Insert(0, "Name");
+                    CommandLineInterface.printTableHeader((JQuant.IWrite)this, names, columnSize);
+                }
+                values.Insert(0, OutputUtils.FormatField(producer.Name, columnSize));
+                CommandLineInterface.printValues((JQuant.IWrite)this, values, columnSize);
+
+                entry++;
+
+            }
+            if (isEmpty)
+            {
+                iWrite.WriteLine("No producers");
+            }
+            
+        }
+        
         protected void Timer5sHandler(ITimer timer)
         {
             Console.WriteLine("5s timer expired " + DateTime.Now);
@@ -976,6 +1003,9 @@ namespace JQuant
 #endif
             menuDebug.AddCommand("loggerShow", "Show existing loggers",
                                   " List of created loggers with the statistics", debugLoggerShowCallback);
+            
+            menuDebug.AddCommand("prodShow", "Show producers",
+                                  " List of created producers", debugProducerShowCallback);
         }
 
         #endregion
