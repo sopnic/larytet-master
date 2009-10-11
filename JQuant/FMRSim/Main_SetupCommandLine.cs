@@ -251,7 +251,7 @@ namespace JQuant
                 DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());                
             }
 
-            DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());                
+            //DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());                
 
             // create logger which will register itself (AddSink) in the collector
             TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, DataCollector, dt);
