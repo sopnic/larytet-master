@@ -184,20 +184,11 @@ namespace JQuant
                 }
                 switch (cmdArguments[1].ToString().ToLower())
                 {
-                    case "maof":
-                        CloseLog(iWrite, FMRShell.DataType.Maof, _stopStream);
-                        break;
                     case "mf":
                         CloseLog(iWrite, FMRShell.DataType.Maof, _stopStream);
                         break;
-                    case "rezef":
-                        CloseLog(iWrite, FMRShell.DataType.Rezef, _stopStream);
-                        break;
                     case "rz":
                         CloseLog(iWrite, FMRShell.DataType.Rezef, _stopStream);
-                        break;
-                    case "madad":
-                        CloseLog(iWrite, FMRShell.DataType.Madad, _stopStream);
                         break;
                     case "mdd":
                         CloseLog(iWrite, FMRShell.DataType.Madad, _stopStream);
@@ -250,8 +241,6 @@ namespace JQuant
                 // create Collector (producer) - will do it only once
                 DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());                
             }
-
-            //DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());                
 
             // create logger which will register itself (AddSink) in the collector
             TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, DataCollector, dt);

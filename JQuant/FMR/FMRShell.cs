@@ -933,20 +933,16 @@ namespace FMRShell
                 k300Class = new K300Class();
                 k300Class.K300SessionId = sessionId;
             }
-            /*
-            k300Class = null;
-            k300Class = new K300Class();
-            k300Class.K300SessionId = sessionId;
-            */
+
             if (k300EventsClass  == null) 
                 k300EventsClass = new K300EventsClass();
             
             //set the filters:
-            //k300EventsClass.EventsFilterBaseAsset = BaseAssetTypes.BaseAssetMaof;
-            //k300EventsClass.EventsFilterBno=??? //here we set a single option, if specified
-            k300EventsClass.EventsFilterMadad = 1; //I want to receive also madad changes
-            //k300EventsClass.EventsFilterMaof = 1;
-            //k300EventsClass.EventsFilterMonth = MonthType.October;
+            k300EventsClass.EventsFilterBaseAsset = BaseAssetTypes.BaseAssetMaof;
+            //k300EventsClass.EventsFilterBno=??? //here we set a single security, if specified
+            k300EventsClass.EventsFilterMadad = 1; //I want to receive also madad changes - no way to filter specific madad here, get them all
+            k300EventsClass.EventsFilterMaof = 1;
+            k300EventsClass.EventsFilterMonth = MonthType.October;
             k300EventsClass.EventsFilterRezef = 1;
             k300EventsClass.EventsFilterStockKind = StockKind.StockKindMenaya;
             k300EventsClass.EventsFilterStockMadad = MadadTypes.TLV25;
@@ -973,7 +969,7 @@ namespace FMRShell
                     }
                     break;
                 case DataType.Rezef:
-                    k300Class.K300StartStream(K300StreamType.RezefStream);
+                    rc = k300Class.K300StartStream(K300StreamType.RezefStream);
                     break;
                 case DataType.Madad:
                     rc=k300Class.K300StartStream(K300StreamType.IndexStream);
@@ -1007,11 +1003,13 @@ namespace FMRShell
                     // or in a special Index stream - both do the job
                     //so chose one of the following:
                     
-                    // ** 1 **
+                    // ** 1 ** - here you need to register yorself with the 
+                    // index events with appropriate method 'OnMadad'
                     //k300Class.K300StopStream(K300StreamType.MaofStream);
                     //Console.WriteLine("MaofStream stopped, rc= " + rc);
 
                     // ** 2 **
+                    // this one definitely does the job so far
                     rc = k300Class.K300StopStream(K300StreamType.IndexStream);
                     Console.WriteLine("IndexStream stopped, rc= " + rc);
                     break;
