@@ -148,7 +148,8 @@ namespace JQuant
         protected void LogMaof(IWrite iWrite)
         {
             // generate filename and display it
-            string filename = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "MaofLog_" + DateNowToFilename() + ".csv";
+            string filename = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "DataLogs" 
+                + Path.DirectorySeparatorChar + "MaofLog_" + DateNowToFilename() + ".csv";
             iWrite.WriteLine("Maof log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
@@ -156,7 +157,8 @@ namespace JQuant
 
         protected void LogMadad(IWrite iWrite)
         {
-            string filename = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "MadadLog_" + DateNowToFilename() + ".csv";
+            string filename = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "DataLogs" 
+                + Path.DirectorySeparatorChar + "MadadLog_" + DateNowToFilename() + ".csv";
             iWrite.WriteLine("Madad log file " + filename);
 
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Madad, filename, "MadadLogger");
@@ -164,7 +166,8 @@ namespace JQuant
 
         protected void LogRezef(IWrite iWrite)
         {
-            string filename = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "RezefLog_" + DateNowToFilename() + ".csv";
+            string filename = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "DataLogs"
+                + Path.DirectorySeparatorChar + "RezefLog_" + DateNowToFilename() + ".csv";
             iWrite.WriteLine("Rezef log file " + filename);
             
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Rezef, filename, "RezefLogger");
