@@ -88,8 +88,8 @@ namespace JQuant
         [Description("ASCII")]
         Ascii,
         
-        [Description("CVS")]
-        CVS,
+        [Description("CSV")]
+        CSV,
         
         [Description("HTML")]
         HTML,
