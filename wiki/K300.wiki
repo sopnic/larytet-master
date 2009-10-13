@@ -1,12 +1,66 @@
-The K300 object represents a connection to the data source that provides on-line market information.The data source can be either AS400 or Kav 300 {{{(jquant-looks as outdated - only AS400 are in use today)}}} server depending on the configuration set for the user. From the point of view of the application the source of market data is unimportant since data received from both sources is identical.
+#summary Rezef market data records structure, used to parse the raw records from Rezef stream.
 
-{{{
-    coclass K300 {
-        [default] interface IK300;
-        [default, source] interface IK300Event;
-    };
-}}}
+*K300 Rezef stucture*
 
-See also:
- * [IK300]
- * [IK300Event]
+||	No.	||	Record Name	||	Description	||	Comments	||
+||	1	||	SUG_REC	||	סוג רשומה	||		||
+||	2	||	BNO_Num	||	מס בורסה	||		||
+||	3	||	BNO_NAME	||	שם נייר	||		||
+||	4	||	Symbol	||	סימבול	||		||
+||	5	||	TRADE_METH	||	שיטת מסחר	||		||
+||	6	||	SIDURI_Num	||	מס סדורי	||		||
+||	7	||	RWR_VA	||	שידור חוזר/תיקון	||		||
+||	8	||	MIN_UNIT	||	MIN גודל פקודה	||		||
+||	9	||	HARIG_NV	||	גבול פקודה חריגה	||		||
+||	10	||	MIN_PR_OPN	||	שער רצפה-פתיחה	||		||
+||	11	||	MAX_PR_OPN	||	שער תקרה-פתיחה	||		||
+||	12	||	MIN_PR_CNT	||	שער רצפה-רציף	||		||
+||	13	||	MAX_PR_CNT	||	שער תקרה-רציף	||		||
+||	14	||	BASIS_PRC	||	שער בסיס	||		||
+||	15	||	STATUS	||	קוד מצב נייר	||		||
+||	16	||	EX_COD	||	EX קוד	||		||
+||	17	||	EX_DETAIL	||	EX תאור קוד	||		||
+||	18	||	RWR_VB	||	שידור חוזר/תיקון	||		||
+||	19	||	shlav	||	שלב מסחר	||		||
+||	20	||	LAST_PRC	||	שער אחרון	||		||
+||	21	||	TRD_STP_N	||	סיבת הפסקת מסחר	||		||
+||	22	||	STP_OPN_TM	||	שעת פתיחת הפסקה	||		||
+||	23	||	RWR_VD	||	שידור חוזר/תיקון	||		||
+||	24	||	LMT_BY1	||	1 לימיט קניה	||		||
+||	25	||	LMT_BY2	||	2 לימיט קניה	||		||
+||	26	||	LMT_BY3	||	3 לימיט קניה	||		||
+||	27	||	LMY_BY1_NV	||	1כמות לימיט קניה	||		||
+||	28	||	LMY_BY2_NV	||	2כמות לימיט קניה	||		||
+||	29	||	LMY_BY3_NV	||	3כמות לימיט קניה	||		||
+||	30	||	MKT_NV_BY	||	בשוק-קניה	||		||
+||	31	||	MKT_NV_BY_NUM	||	קוד בשוק-קניה	||		||
+||	32	||	RWR_VE	||	שידור חוזר/תיקון	||		||
+||	33	||	LMT_SL1	||	1 לימיט מכירה	||		||
+||	34	||	LMT_SL2	||	2 לימיט מכירה	||		||
+||	35	||	LMT_SL3	||	3 לימיט מכירה	||		||
+||	36	||	LMY_SL1_NV	||	1כמות לימיט מכירה	||		||
+||	37	||	LMY_SL2_NV	||	2כמות לימיט מכירה	||		||
+||	38	||	LMY_SL3_NV	||	3כמות לימיט מכירה	||		||
+||	39	||	MKT_NV_SL	||	בשוק-מכירה	||		||
+||	40	||	MKT_NV_SL_NUM	||	קוד בשוק-מכירה	||		||
+||	41	||	RWR_VF	||	שידור חוזר/תיקון	||		||
+||	42	||	THEOR_PR	||	שער תאורטי	||		||
+||	43	||	THEOR_VL	||	מחזור שער תאורטי	||		||
+||	44	||	RWR_VG	||	שידור חוזר/תיקון	||		||
+||	45	||	LST_DL_PR	||	שער עסקה אחרונה	||		||
+||	46	||	LST_DL_TM	||	שעת עסקה אחרונה	||		||
+||	47	||	LST_DF_BS	||	עליה מהבסיס %	||		||
+||	48	||	LST_DF_OPN	||	עליה מהפתיחה %	||		||
+||	49	||	LST_DL_VL	||	מחזור עסקה אחרונה	||		||
+||	50	||	DAY_VL	||	מחזור מתחילת היום	||		||
+||	51	||	DAY_VL_NIS	||	מחזור בשח היום	||		||
+||	52	||	DAY_DIL_NO	||	מספר עסקאות היום	||		||
+||	53	||	DAY_MAX_PR	||	שער יומי גבוה	||		||
+||	54	||	DAY_MIN_PR	||	שער יומי נמוך	||		||
+||	55	||	BNO_NAME_E	||	שם נייר אנגלי	||		||
+||	56	||	SYMBOL_E	||	סימבול אנגלי	||		||
+||	57	||	STP_COD	||	קוד הפסקת מסחר	||		||
+||	58	||	COD_SHAAR	||	קוד שער תא/פת/סג	||		||
+||	59	||	UPD_DAT	||	תאריך	||		||
+||	60	||	UPD_TIME	||	שעה	||		||
+
