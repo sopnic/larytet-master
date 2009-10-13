@@ -273,7 +273,7 @@ namespace JQuant
         {
             public MadadSink (TradingDataLogger TrDtaLogger)
             {
-                madadDataToString = new FMRShell.K300MadadTypeToString("\t");
+                madadDataToString = new FMRShell.K300MadadTypeToString(",");
                 tdl = TrDtaLogger;
                 tdl._collector.madadProducer.AddSink(this);
             }
@@ -299,7 +299,7 @@ namespace JQuant
         {
             public MaofSink(TradingDataLogger TrDtaLogger)
             {
-                maofDataToString = new FMRShell.K300MaofTypeToString("\t");
+                maofDataToString = new FMRShell.K300MaofTypeToString(",");
                 tdl = TrDtaLogger;
                 tdl._collector.maofProducer.AddSink(this);
             }
@@ -324,7 +324,7 @@ namespace JQuant
         {
             public RezefSink(TradingDataLogger TrDtaLogger)
             {
-                rezefDataToString = new FMRShell.K300RzfTypeToString("\t");
+                rezefDataToString = new FMRShell.K300RzfTypeToString(",");
                 tdl = TrDtaLogger;
                 tdl._collector.rezefProducer.AddSink(this);
             }
@@ -376,7 +376,7 @@ namespace JQuant
             _stampLatest = default(System.DateTime);
             _stampOldest = default(System.DateTime);
             _dt = dt;
-            Type = LogType.Ascii;
+            Type = LogType.CSV;
             notStoped = false;
 
 

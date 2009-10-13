@@ -128,7 +128,7 @@ namespace TA
         public enum Format
         {
             ASCII,
-            CVS,
+            CSV,
             XML,
             Table
         }
@@ -157,7 +157,7 @@ namespace TA
                               "\n");
                 }
                 break;
-            case Format.CVS:
+            case Format.CSV:
                 foreach (Candle candle in Data)
                 {
                     sb.Append(""+candle.open+","+candle.high+","+candle.low+","+candle.close+","+candle.volume+"\n");
@@ -406,9 +406,9 @@ namespace TA
     }
 
     /// <summary>
-    /// Class allows to create and read CVS files containing price and volume data
+    /// Class allows to create and read CSV files containing price and volume data
     /// </summary>
-    public class CVSFile
+    public class CSVFile
     {
         public static bool Read(string filename, out PriceVolumeSeries series)
         {
@@ -425,7 +425,7 @@ namespace TA
                 fileStream = new System.IO.FileStream(filename, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
                 shouldClose = true;
                 StreamWriter streamWriter = new StreamWriter(fileStream);
-                streamWriter.Write(series.ToString(TA.PriceVolumeSeries.Format.CVS));
+                streamWriter.Write(series.ToString(TA.PriceVolumeSeries.Format.CSV));
                 streamWriter.Flush();
                 fileStream.Close();
                 shouldClose = false;
