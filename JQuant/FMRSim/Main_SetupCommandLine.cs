@@ -105,6 +105,12 @@ namespace JQuant
                 iWrite.WriteLine(Environment.NewLine + "Too many arguments. Try again");
             }
 
+            //Check whether log directory exists
+            else if (Resources.GetLogsFolder() == null)
+            {
+                iWrite.WriteLine("Can't perform the commmand. Define the logs directory.");
+            }
+
             //this one with no args initializes all the three logs
             else if (cmdArguments.Length == 1)
             {
