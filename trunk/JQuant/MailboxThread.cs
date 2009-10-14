@@ -16,7 +16,6 @@ namespace JQuant
             _mailbox = new Mailbox<Message>(name, mailboxCapacity);
             _isAlive = false;
             _name = name;
-            _thread = new Thread(this.Run);
 
             // add myself to the list of created mailboxes
             Resources.Threads.Add(this);
@@ -95,12 +94,16 @@ namespace JQuant
         {
             get
             {
-                return _thread.Priority;
+                return threadPriority;
             }
             
             set
             {
-                _thread.Priority = value;
+                threadPriority = value;
+                if (_thread != null)
+                {
+                    _thread.Priority = value;
+                }
             }
         }
 
@@ -117,6 +120,8 @@ namespace JQuant
         public void Start()
         {
             _isAlive = true;
+            _thread = new Thread(this.Run);
+            _thread.Priority = Priority;
             _thread.Start();
         }
 
@@ -151,5 +156,6 @@ namespace JQuant
         protected Thread _thread;
         protected string _name;
         protected long longestJobTime;
+        protected ThreadPriority threadPriority;
     }
 }
