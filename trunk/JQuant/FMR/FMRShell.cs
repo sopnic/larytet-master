@@ -2096,16 +2096,17 @@ namespace FMRShell
         }
 
 
-        protected static JobQueue CreateJobQueue()
+        protected static JQuant.JobQueue CreateJobQueue()
         {
-            return new JobQueue("FMRPngJQ", 3);
+            JQuant.JobQueue jobQueue = new JQuant.JobQueue("FMRPngJQ", 3);
+            return jobQueue;
         }
         
         protected TimerTask timerTask;
         protected TimerList timers_5sec;
         protected TimerList timers_2sec;
         protected int countPings;
-        JobQueue jobQueue;
+        JQuant.JobQueue jobQueue;
     }
 
 }//namespace
