@@ -9,7 +9,7 @@ namespace JQuant
     /// <summary>
     /// this method will be called from a context of the job thread
     /// </summary>
-    public delegate void Job(object argument);
+    public delegate void Job(ref object argument);
 
     /// <summary>
     /// this method will be called when job is done and just before the job 
@@ -464,7 +464,7 @@ namespace JQuant
                 
                 // execute the job and notify the application
                 // on execution
-                jobParams.job(jobArgument);
+                jobParams.job(ref jobArgument);
                 if (jobParams.jobDone != null)
                 {
                     jobParams.jobDone(jobArgument);
@@ -569,7 +569,7 @@ namespace JQuant
         
         protected override void HandleMessage(JobQueueParams jobParams)
         {
-            jobParams.job(jobParams.jobArgument);
+            jobParams.job(ref jobParams.jobArgument);
             if (jobParams.jobDone != null)
             {
                 jobParams.jobDone(jobParams.jobArgument);

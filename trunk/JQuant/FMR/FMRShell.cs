@@ -1876,6 +1876,11 @@ namespace FMRShell
     /// <summary>
     /// FSM which handles ebvents Login, Logout, Timer and can be in states - Idle, LinkUp, LinkDown
     /// If timer expires in LinkDown state FSM produces audible signal (beep)
+    /// 
+    /// ------------- Usage -------------
+    /// FMRPing fmrPing = FMRPing.GetInstance();
+    /// fmrPing.Start();   // start the FSM
+    /// fmrPing.SendLogin(); // notify the FSM that ping should work now
     /// </summary>
     public class FMRPing : MailboxThread<FMRPing.Events>
     {
@@ -1922,7 +1927,10 @@ namespace FMRShell
             PingTimer,
     
             // Ping returned
-            PingOk
+            PingOk,
+            
+            // Ping failed
+            PingFailed
         }
         
         protected State state;
@@ -1935,7 +1943,7 @@ namespace FMRShell
             // i need a timer and a working thread
             timerTask = new TimerTask("FMRPngTmr");
             timers_5sec = new TimerList("FMRPng5", 5*1000, 2, this.TimerExpiredHandler, timerTask);
-            timers_2sec = new TimerList("FMRPng2", 2*1000, 2, this.TimerExpiredHandler, timerTask);
+            timers_2sec = new TimerList("FMRPng2", 2*1000, 2, this.PingTimerExpiredHandler, timerTask);
             timerTask.Start();
             state = State.Idle;
             jobQueue = CreateJobQueue();
@@ -1963,6 +1971,7 @@ namespace FMRShell
             {
             case Events.Login:
                 countPings = 0;
+                configClass = new ConfigClass();
                 StartTimer();
                 StartPingTimer();
                 state = State.LinkUp; // assume link up state
@@ -1977,6 +1986,9 @@ namespace FMRShell
                 // do not restart the timer
                 break;
             case Events.PingOk:
+                // ignore ping results 
+                break;
+            case Events.PingFailed:
                 // ignore ping results 
                 break;
             }
@@ -2013,6 +2025,9 @@ namespace FMRShell
             case Events.PingOk:
                 countPings++;
                 break;
+            case Events.PingFailed:
+                Console.WriteLine("FMRPing: ping failed in the linkup state");
+                break;
             }
         }
         
@@ -2033,7 +2048,7 @@ namespace FMRShell
             case Events.Timer:
                 if (countPings != 0)
                 {
-                    Console.WriteLine("FMRPing: move to Linkup in linkdown state");
+                    Console.WriteLine("FMRPing: move to linkup state");
                     state = State.LinkUp;
                 }
                 countPings = 0;
@@ -2041,13 +2056,17 @@ namespace FMRShell
                 StartTimer();
                 break;
             case Events.PingTimer:
+                SendPing();
                 StartPingTimer();
                 DoBeep();
                 break;
             case Events.PingOk:
-                Console.WriteLine("FMRPing: ping Ok in linkdown state");
+                Console.WriteLine("FMRPing: ping Ok, move to linkup state");
+                state = State.LinkUp;
                 countPings++;
-                SendPing();
+                break;
+            case Events.PingFailed:
+                // nothing new here
                 break;
             }
         }
@@ -2060,6 +2079,11 @@ namespace FMRShell
             this.Send(Events.Timer);
         }
 
+        protected void PingTimerExpiredHandler(ITimer timer)
+        {
+            this.Send(Events.PingTimer);
+        }
+        
         protected void DoBeep()
         {
             Console.Beep();
@@ -2068,12 +2092,14 @@ namespace FMRShell
         /// <summary>
         /// delegate called by working thread 
         /// </summary>
-        protected void DoPing(object o)
+        protected void DoPing(ref object o)
         {
-            int ltncy;
-            DateTime dt;
-
-            FMRShell.AS400Synch.Ping(out dt, out ltncy);
+            int latency;
+            AS400DateTime AS400dt;
+            int ret = configClass.GetAS400DateTime(out AS400dt, out latency);
+            // dt = ConvertToDateTime(AS400dt);
+            bool b = (ret == 0);
+            o = b;
         }
 
         /// <summary>
@@ -2081,7 +2107,14 @@ namespace FMRShell
         /// </summary>
         protected void PingDone(object o)
         {
-            this.Send(Events.PingOk);
+            if ((bool)o)
+            {
+                this.Send(Events.PingOk);
+            }
+            else
+            {
+                this.Send(Events.PingFailed);
+            }
         }
         
         protected void SendPing()
@@ -2103,9 +2136,12 @@ namespace FMRShell
         protected static JQuant.JobQueue CreateJobQueue()
         {
             JQuant.JobQueue jobQueue = new JQuant.JobQueue("FMRPngJQ", 3);
+            jobQueue.Start();
+            
             return jobQueue;
         }
         
+        protected ConfigClass configClass;
         protected TimerTask timerTask;
         protected TimerList timers_5sec;
         protected TimerList timers_2sec;

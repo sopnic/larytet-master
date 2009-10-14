@@ -675,12 +675,16 @@ namespace TaskBarLibSim
             dt.ms = now.Millisecond;
 
             //An arbitrary value for latency
-            latency = new Random().Next(15, 250);
+            latency = random.Next(15, 250);
 
-            bool success = true;
+            countGetAS400DateTime++;
+            bool success = (random.Next(0,2) == 0);
             if (success) return 0;
             else return -1;
         }
+
+        protected static int countGetAS400DateTime;
+        protected static Random random = new Random();
     }
 
 
