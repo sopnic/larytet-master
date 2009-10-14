@@ -775,6 +775,10 @@ namespace JQuant
             feedGetSeriesCallback(iWrite, cmdName, cmdArguments, false);
         }
 
+        protected void printIntStatistics(IWrite iWrite, IntStatistics statistics)
+        {
+        }
+        
         protected void debugFMRPingCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int argsNum = cmdArguments.Length;
@@ -799,6 +803,12 @@ namespace JQuant
                 {
                     fmrPing.SendLogout();
                     iWrite.WriteLine("FMRPing Logout");
+                }
+                if (arg.Equals("stats"))
+                {
+                    printIntStatistics(iWrite, fmrPing.Statistics2min);
+                    printIntStatistics(iWrite, fmrPing.Statistics10min);
+                    printIntStatistics(iWrite, fmrPing.Statistics1hour);
                 }
                 break;
             }
@@ -1036,7 +1046,7 @@ namespace JQuant
                                   "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                   debugGetAS400DTCallback);
             menuDebug.AddCommand("fmrPing", "Start FMR ping thread",
-                                  " Ping AS400 server continuosly [login|logout]", debugFMRPingCallback);
+                                  " Ping AS400 server continuosly [login|logout|stats]", debugFMRPingCallback);
             
             menuDebug.AddCommand("timerTest", "Run simple timer tests",
                                   " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);

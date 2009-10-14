@@ -1932,6 +1932,7 @@ namespace FMRShell
             // Ping failed
             PingFailed
         }
+
         
         protected State state;
 
@@ -1940,11 +1941,18 @@ namespace FMRShell
         /// </summary>
         protected FMRPing() : base("FMRPing", 10)
         {
+            int pingPeriod  = 2;
+            
             // i need a timer and a working thread
             timerTask = new TimerTask("FMRPngTmr");
             timers_5sec = new TimerList("FMRPng5", 5*1000, 2, this.TimerExpiredHandler, timerTask);
-            timers_2sec = new TimerList("FMRPng2", 2*1000, 2, this.PingTimerExpiredHandler, timerTask);
+            timers_2sec = new TimerList("FMRPng2", pingPeriod*1000, 2, this.PingTimerExpiredHandler, timerTask);
             timerTask.Start();
+
+            Statistics2min = new IntStatistics("2 min", 2*60/pingPeriod); // pings in 2 min
+            Statistics10min = new IntStatistics("10 min", 10*60/pingPeriod); // pings in 10 min
+            Statistics1hour = new IntStatistics("1 hour", 1*60*60/pingPeriod); // pings in 1 hour
+            
             state = State.Idle;
             jobQueue = CreateJobQueue();
         }
@@ -2024,9 +2032,11 @@ namespace FMRShell
                 break;
             case Events.PingOk:
                 countPings++;
+                CountPingOk++;
                 break;
             case Events.PingFailed:
                 Console.WriteLine("FMRPing: ping failed in the linkup state");
+                CountPingFailed++;
                 break;
             }
         }
@@ -2064,9 +2074,11 @@ namespace FMRShell
                 Console.WriteLine("FMRPing: ping Ok, move to linkup state");
                 state = State.LinkUp;
                 countPings++;
+                CountPingOk++;
                 break;
             case Events.PingFailed:
                 // nothing new here
+                CountPingFailed++;
                 break;
             }
         }
@@ -2097,7 +2109,12 @@ namespace FMRShell
             int latency;
             AS400DateTime AS400dt;
             int ret = configClass.GetAS400DateTime(out AS400dt, out latency);
-            // dt = ConvertToDateTime(AS400dt);
+
+            // update statistics
+            Statistics2min.Add(latency);
+            Statistics10min.Add(latency);
+            Statistics1hour.Add(latency);
+            
             bool b = (ret == 0);
             o = b;
         }
@@ -2132,6 +2149,35 @@ namespace FMRShell
             timers_2sec.Start();
         }
 
+        public IntStatistics Statistics2min
+        {
+            get;
+            protected set;
+        }
+
+        public IntStatistics Statistics10min
+        {
+            get;
+            protected set;
+        }
+
+        public IntStatistics Statistics1hour
+        {
+            get;
+            protected set;
+        }
+
+        public int CountPingFailed
+        {
+            get;
+            protected set;
+        }
+
+        public int CountPingOk
+        {
+            get;
+            protected set;
+        }
 
         protected static JQuant.JobQueue CreateJobQueue()
         {
