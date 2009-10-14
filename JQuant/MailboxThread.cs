@@ -16,6 +16,7 @@ namespace JQuant
             _mailbox = new Mailbox<Message>(name, mailboxCapacity);
             _isAlive = false;
             _name = name;
+            _thread = new Thread(this.Run);
 
             // add myself to the list of created mailboxes
             Resources.Threads.Add(this);
@@ -116,7 +117,6 @@ namespace JQuant
         public void Start()
         {
             _isAlive = true;
-            _thread = new Thread(this.Run);
             _thread.Start();
         }
 
