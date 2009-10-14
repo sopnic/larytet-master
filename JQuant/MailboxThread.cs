@@ -8,7 +8,7 @@ namespace JQuant
     /// <summary>
     /// Thread waiting forever for a message
     /// </summary>
-    public class MailboxThread<Message> : IThread
+    public class MailboxThread<Message> : IThread, IDisposable
     {
 
         public MailboxThread(string name, int mailboxCapacity)
@@ -24,7 +24,7 @@ namespace JQuant
             longestJobTime = 0;
         }
 
-        protected void Dispose()
+        public void Dispose()
         {
             if (_isAlive)
             {

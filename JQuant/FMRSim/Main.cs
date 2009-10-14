@@ -223,7 +223,11 @@ namespace JQuant
             {
                 Console.WriteLine(Environment.NewLine+"Warning! Environment variable JQUANT_ROOT is not set"+Environment.NewLine);
             }
+            // lists of critical system objects
             Resources.Init();
+
+            // timers subsystem
+            Timers.Init();
 
             instance = new Program();
 

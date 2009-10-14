@@ -775,6 +775,31 @@ namespace JQuant
             feedGetSeriesCallback(iWrite, cmdName, cmdArguments, false);
         }
 
+        protected void debugFMRPingCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            int argsNum = cmdArguments.Length;
+            string[] args = (string[])cmdArguments;
+            FMRShell.FMRPing fmrPing = FMRShell.FMRPing.GetInstance();
+            
+            switch (argsNum)
+            {
+                case 1:
+                break;
+                
+                default:
+                string arg = args[1];
+                if (arg.Equals("login"))
+                {
+                    fmrPing.SendLogin();
+                }
+                if (arg.Equals("logout"))
+                {
+                    fmrPing.SendLogout();
+                }
+                break;
+            }
+        }
+
         protected void feedGetSeriesCallback(IWrite iWrite, string cmdName, object[] cmdArguments, bool outputToFile)
         {
             int argsNum = cmdArguments.Length;
@@ -1002,9 +1027,13 @@ namespace JQuant
                                   " List of created pools with the current status and statistics", debugPoolShowCallback);
             menuDebug.AddCommand("loginTest", "Run simple test of the login",
                                   " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
+            
             menuDebug.AddCommand("AS400TimeTest", "ping the server",
                                   "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                   debugGetAS400DTCallback);
+            menuDebug.AddCommand("fmrPing", "Start FMR ping thread",
+                                  " Ping AS400 server continuosly [login|logout]", debugFMRPingCallback);
+            
             menuDebug.AddCommand("timerTest", "Run simple timer tests",
                                   " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
             menuDebug.AddCommand("timerShow", "Show timers",
@@ -1014,6 +1043,7 @@ namespace JQuant
                                   " Create a thread pool, start a couple of jobs, destroy the pool", debugThreadPoolTestCallback);
             menuDebug.AddCommand("threadPoolShow", "Show thread pools",
                                   " List of created thread pools", debugThreadPoolShowCallback);
+
 
 #if USEFMRSIM
             menuDebug.AddCommand("loggerTest", "Run simple test of the logger",

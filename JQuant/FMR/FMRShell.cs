@@ -1872,4 +1872,240 @@ namespace FMRShell
 
     #endregion;
 
+
+    /// <summary>
+    /// FSM which handles ebvents Login, Logout, Timer and can be in states - Idle, LinkUp, LinkDown
+    /// If timer expires in LinkDown state FSM produces audible signal (beep)
+    /// </summary>
+    public class FMRPing : MailboxThread<FMRPing.Events>
+    {
+
+        public static FMRPing GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new FMRPing();
+            }
+            return instance;
+        }
+
+        public void SendLogin()
+        {
+            this.Send(Events.Login);
+        }
+
+        public void SendLogout()
+        {
+            this.Send(Events.Logout);
+        }
+
+        protected static FMRPing instance = null;
+        protected enum State
+        {
+            Idle,
+            LinkUp,
+            LinkDown
+        }
+        
+        public enum Events
+        {
+            // start the ping
+            Login,
+    
+            // stop the ping
+            Logout,
+    
+            // timer expired
+            Timer,
+    
+            // send Ping
+            PingTimer,
+    
+            // Ping returned
+            PingOk
+        }
+        
+        protected State state;
+
+        /// <summary>
+        /// use GetInstance() to get reference to the instance of the FMRPing 
+        /// </summary>
+        protected FMRPing() : base("FMRPing", 10)
+        {
+            // i need a timer and a working thread
+            timerTask = new TimerTask("FMRPngTmr");
+            timers_5sec = new TimerList("FMRPng5", 5*1000, 2, this.TimerExpiredHandler, timerTask);
+            timers_2sec = new TimerList("FMRPng2", 2*1000, 2, this.TimerExpiredHandler, timerTask);
+            timerTask.Start();
+            state = State.Idle;
+            jobQueue = CreateJobQueue();
+        }
+
+        protected override void HandleMessage(Events taskEvent)
+        {
+            switch (state)
+            {
+            case State.Idle:
+                HandleIdle(taskEvent);
+                break;
+            case State.LinkUp:
+                HandleLinkUp(taskEvent);
+                break;
+            case State.LinkDown:
+                HandleLinkDown(taskEvent);
+                break;
+            }
+        }
+        
+        protected void HandleIdle(Events taskEvent)
+        {
+            switch (taskEvent)
+            {
+            case Events.Login:
+                countPings = 0;
+                StartTimer();
+                StartPingTimer();
+                state = State.LinkUp; // assume link up state
+                break;
+            case Events.Logout:
+                Console.WriteLine("FMRPing: logout in the idle state");
+                break;
+            case Events.Timer:
+                // do not restart the timer
+                break;
+            case Events.PingTimer:
+                // do not restart the timer
+                break;
+            case Events.PingOk:
+                // ignore ping results 
+                break;
+            }
+        }
+        
+        protected void HandleLinkUp(Events taskEvent)
+        {
+            switch (taskEvent)
+            {
+            case Events.Login:
+                Console.WriteLine("FMRPing: Login in the linkup state");
+                break;
+            case Events.Logout:
+                state = State.Idle;
+                jobQueue.Dispose();
+                jobQueue = CreateJobQueue();
+                break;
+            case Events.Timer:
+                if (countPings == 0)
+                {
+                    Console.WriteLine("FMRPing: ping failed in linkup state, move to linkdown");
+                    state = State.LinkDown;
+                }
+                countPings = 0;
+                // restart expired timer
+                StartTimer();
+                break;
+            case Events.PingTimer:
+                SendPing();
+                StartPingTimer();
+                break;
+            case Events.PingOk:
+                countPings++;
+                break;
+            }
+        }
+        
+        protected void HandleLinkDown(Events taskEvent)
+        {
+            switch (taskEvent)
+            {
+            case Events.Login:
+                Console.WriteLine("FMRPing: Login in the linkdown state");
+                break;
+            case Events.Logout:
+                state = State.Idle;
+                jobQueue.Dispose();
+                jobQueue = CreateJobQueue();
+                break;
+            case Events.Timer:
+                if (countPings != 0)
+                {
+                    Console.WriteLine("FMRPing: move to Linkup in linkdown state");
+                    state = State.LinkUp;
+                }
+                countPings = 0;
+                // restart expired timer
+                StartTimer();
+                break;
+            case Events.PingTimer:
+                StartPingTimer();
+                DoBeep();
+                break;
+            case Events.PingOk:
+                Console.WriteLine("FMRPing: ping Ok in linkdown state");
+                countPings++;
+                SendPing();
+                break;
+            }
+        }
+
+        /// <summary>
+        /// send timer expired to the FSM 
+        /// </summary>
+        protected void TimerExpiredHandler(ITimer timer)
+        {
+            this.Send(Events.Timer);
+        }
+
+        protected void DoBeep()
+        {
+            Console.Beep();
+        }
+        
+        /// <summary>
+        /// delegate called by working thread 
+        /// </summary>
+        protected void DoPing(object o)
+        {
+            int ltncy;
+            DateTime dt;
+
+            FMRShell.AS400Synch.Ping(out dt, out ltncy);
+        }
+
+        /// <summary>
+        /// delegate called by working thread 
+        /// </summary>
+        protected void PingDone(object o)
+        {
+            this.Send(Events.PingOk);
+        }
+        
+        protected void SendPing()
+        {
+            jobQueue.AddJob(DoPing, PingDone, null);            
+        }
+
+        protected void StartTimer()
+        {
+            timers_5sec.Start();
+        }
+
+        protected void StartPingTimer()
+        {
+            timers_2sec.Start();
+        }
+
+
+        protected static JobQueue CreateJobQueue()
+        {
+            return new JobQueue("FMRPngJQ", 3);
+        }
+        
+        protected TimerTask timerTask;
+        protected TimerList timers_5sec;
+        protected TimerList timers_2sec;
+        protected int countPings;
+        JobQueue jobQueue;
+    }
+
 }//namespace
