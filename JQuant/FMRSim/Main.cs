@@ -207,7 +207,7 @@ namespace JQuant
         static void Main(string[] args)
         {
             //check whether JQUANT_ROOT environment variable is set on the system
-            if (Resources.RootDirectoryDefined()) 
+            if (!Resources.RootDirectoryDefined()) 
                 Console.WriteLine(Environment.NewLine 
                     + "Warning! Environment variable JQUANT_ROOT is not set" + Environment.NewLine);
 

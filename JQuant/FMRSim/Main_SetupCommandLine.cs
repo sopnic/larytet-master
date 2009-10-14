@@ -79,13 +79,13 @@ namespace JQuant
             }
         }
 
-        
+
         protected void operLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             //first check if logged in:
             if (this.fmrConection == null)
             {
-                iWrite.WriteLine(Environment.NewLine 
+                iWrite.WriteLine(Environment.NewLine
                     + "WARNING !!! You're not logged in. Please log in first!");
             }
 
@@ -118,7 +118,7 @@ namespace JQuant
                 LogRezef(iWrite);
                 LogMadad(iWrite);
             }
-            
+
             else    //start one specified log
             {
                 switch (cmdArguments[1].ToString().ToLower())
@@ -163,7 +163,7 @@ namespace JQuant
         {
             string filename = Resources.CreateLogFileName("RezefLog_", LogType.CSV);
             iWrite.WriteLine("Rezef log file " + filename);
-            
+
             OpenStreamAndLog(iWrite, false, FMRShell.DataType.Rezef, filename, "RezefLogger");
         }
 
@@ -243,7 +243,7 @@ namespace JQuant
                 TaskBarLibSim.RezefDataGeneratorRandom dataRzfGenerator = new TaskBarLibSim.RezefDataGeneratorRandom();
                 TaskBarLibSim.K300Class.InitStreamSimulation(dataRzfGenerator);
             }
-            else if(dt==FMRShell.DataType.Madad)
+            else if (dt == FMRShell.DataType.Madad)
             {
                 //create Madad data generator
                 TaskBarLibSim.MadadDataGeneratorRandom dataMddGenerator = new TaskBarLibSim.MadadDataGeneratorRandom();
@@ -257,23 +257,23 @@ namespace JQuant
 #endif
 
             // Check that there is no data collector created already
-            Console.WriteLine("DT= " + ((int) dt).ToString());
+            Console.WriteLine("DT= " + ((int)dt).ToString());
             if (DataCollector == null)
             {
                 // create Collector (producer) - will do it only once
-                DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());                
+                DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());
             }
 
             // create logger which will register itself (AddSink) in the collector
             TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, DataCollector, dt);
             DataLogger[(int)dt] = dataLogger;
-            
+
             // start logger
             dataLogger.Start();
 
             // start collector, which will start the stream in K300Class
             DataCollector.Start(dt);
-            
+
             debugLoggerShowCallback(iWrite, "", null);
 
             if (test)
@@ -282,7 +282,7 @@ namespace JQuant
                 CloseLog(iWrite, dt, true);
             }
         }
-        
+
         #endregion;
 
         #region Debug Callbacks
@@ -525,7 +525,7 @@ namespace JQuant
         /// </summary>
         protected FMRShell.Collector DataCollector;
 
-        
+
         /// <summary>
         /// i can support multiple data collectors and loggers. Because this is CLI i am going to assume
         /// that there is exactly one logger for one data collector. 
@@ -618,9 +618,9 @@ namespace JQuant
             {
                 iWrite.WriteLine("No producers");
             }
-            
+
         }
-        
+
         protected void Timer5sHandler(ITimer timer)
         {
             Console.WriteLine("5s timer expired " + DateTime.Now);
@@ -772,39 +772,39 @@ namespace JQuant
         protected void printIntStatistics(IWrite iWrite, IntStatistics statistics)
         {
         }
-        
+
         protected void debugFMRPingCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int argsNum = cmdArguments.Length;
             string[] args = (string[])cmdArguments;
             FMRShell.FMRPing fmrPing = FMRShell.FMRPing.GetInstance();
-            
+
             switch (argsNum)
             {
                 case 1:
-                fmrPing.Start();
-                iWrite.WriteLine("FMRPing started");
-                break;
-                
+                    fmrPing.Start();
+                    iWrite.WriteLine("FMRPing started");
+                    break;
+
                 default:
-                string arg = args[1];
-                if (arg.Equals("login"))
-                {
-                    fmrPing.SendLogin();
-                    iWrite.WriteLine("FMRPing Login");
-                }
-                if (arg.Equals("logout"))
-                {
-                    fmrPing.SendLogout();
-                    iWrite.WriteLine("FMRPing Logout");
-                }
-                if (arg.Equals("stats"))
-                {
-                    printIntStatistics(iWrite, fmrPing.Statistics2min);
-                    printIntStatistics(iWrite, fmrPing.Statistics10min);
-                    printIntStatistics(iWrite, fmrPing.Statistics1hour);
-                }
-                break;
+                    string arg = args[1];
+                    if (arg.Equals("login"))
+                    {
+                        fmrPing.SendLogin();
+                        iWrite.WriteLine("FMRPing Login");
+                    }
+                    if (arg.Equals("logout"))
+                    {
+                        fmrPing.SendLogout();
+                        iWrite.WriteLine("FMRPing Logout");
+                    }
+                    if (arg.Equals("stats"))
+                    {
+                        printIntStatistics(iWrite, fmrPing.Statistics2min);
+                        printIntStatistics(iWrite, fmrPing.Statistics10min);
+                        printIntStatistics(iWrite, fmrPing.Statistics1hour);
+                    }
+                    break;
             }
         }
 
@@ -1035,13 +1035,13 @@ namespace JQuant
                                   " List of created pools with the current status and statistics", debugPoolShowCallback);
             menuDebug.AddCommand("loginTest", "Run simple test of the login",
                                   " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
-            
+
             menuDebug.AddCommand("AS400TimeTest", "ping the server",
                                   "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                   debugGetAS400DTCallback);
             menuDebug.AddCommand("fmrPing", "Start FMR ping thread",
                                   " Ping AS400 server continuosly [login|logout|stats]", debugFMRPingCallback);
-            
+
             menuDebug.AddCommand("timerTest", "Run simple timer tests",
                                   " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
             menuDebug.AddCommand("timerShow", "Show timers",
@@ -1059,7 +1059,7 @@ namespace JQuant
 #endif
             menuDebug.AddCommand("loggerShow", "Show existing loggers",
                                   " List of created loggers with the statistics", debugLoggerShowCallback);
-            
+
             menuDebug.AddCommand("prodShow", "Show producers",
                                   " List of created producers", debugProducerShowCallback);
         }
