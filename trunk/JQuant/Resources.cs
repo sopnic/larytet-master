@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.ComponentModel;
+using System.IO;
 
 namespace JQuant
 {
@@ -231,5 +232,86 @@ namespace JQuant
         public static System.Collections.ArrayList ThreadPools;
 
         static protected Resources r;
+
+
+        protected static string DateNowToFilename()
+        {
+            string s = DateTime.Now.ToString();
+            s = s.Replace('/', '_');
+            s = s.Replace(':', '_');
+            s = s.Replace(' ', '_');
+
+            return s;
+        }
+
+
+        public static string CreateLogFileName(string name, LogType type)
+        {
+            string filename = GetLogsFolder();
+            if (filename != null)
+            {
+                filename += name;
+                filename += DateNowToFilename();
+            }
+
+            switch (type)
+            {
+                case LogType.Ascii:
+                    filename += ".txt";
+                    break;
+                case LogType.CSV:
+                    filename += ".csv";
+                    break;
+                default:
+                    break;
+            }
+
+            return filename;
+        }
+
+        public static string GetLogsFolder()
+        {
+            if (RootDirectoryDefined())
+            {
+                string path = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "DataLogs";
+                if (Directory.Exists(path)) 
+                    return path;
+                else
+                {
+                    Console.WriteLine(Environment.NewLine 
+                        + "WARNING! Directory {0} doesn't exist. Define it first."
+                        + Environment.NewLine, path);
+                    return null;
+                } 
+            }
+            else
+            {
+                Console.WriteLine(Environment.NewLine
+                    + "WARNING! Environment variable JQUANT_ROOT is not set" + Environment.NewLine);
+
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Need to define an environment variable called JQUANT_ROOT
+        /// which defines the directory where different configuration
+        /// and data files are located (like xml with connection params)
+        /// 
+        /// Howoto:
+        /// === Win XP: right-click 'My Computer'->Properties->Advanced->
+        /// Environment variables -> New. Reboot. 
+        /// To check use 'set' w/o parameters from cmd.
+        /// note: set from cmd doesn't work (it's for temporary EVs only)
+        /// === *NIX:
+        /// [ please add short instructions here ]
+        /// </summary>
+        public static bool RootDirectoryDefined()
+        {
+            string jquantRoot = Environment.GetEnvironmentVariable("JQUANT_ROOT");
+            return (jquantRoot != null);
+        }
+
     }
 }

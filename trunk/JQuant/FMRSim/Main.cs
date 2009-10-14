@@ -206,23 +206,11 @@ namespace JQuant
 
         static void Main(string[] args)
         {
-            // Need to define an environment variable called JQUANT_ROOT
-            // which defines the directory where different configuration
-            // and data files are located (like xml with connection params)
-            // 
-            // Howoto:
-            // === Win XP: right-click 'My Computer'->Properties->Advanced->
-            // Environment variables -> New. Reboot. 
-            // To check use 'set' w/o parameters from cmd.
-            // note: set from cmd doesn't work (it's for temporary EVs only)
-            //
-            // === *NIX:
-            // [ please add short instructions here ]
-            string jquantRoot = Environment.GetEnvironmentVariable("JQUANT_ROOT");
-            if (jquantRoot == null)
-            {
-                Console.WriteLine(Environment.NewLine+"Warning! Environment variable JQUANT_ROOT is not set"+Environment.NewLine);
-            }
+            //check whether JQUANT_ROOT environment variable is set on the system
+            if (Resources.RootDirectoryDefined()) 
+                Console.WriteLine(Environment.NewLine 
+                    + "Warning! Environment variable JQUANT_ROOT is not set" + Environment.NewLine);
+
             // lists of critical system objects
             Resources.Init();
 
@@ -230,10 +218,6 @@ namespace JQuant
             Timers.Init();
 
             instance = new Program();
-
-            /*FMRShell.Collector tradingDataCollector = new FMRShell.Collector(conn.GetSessionId());
-            tradingDataCollector.Start(DataType.Maof);*/
-
 
             // run console
             instance.Run();
