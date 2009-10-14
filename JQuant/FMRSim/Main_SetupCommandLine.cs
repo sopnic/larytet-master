@@ -725,7 +725,7 @@ namespace JQuant
 
         protected long[] threadpoolTestTicks;
 
-        protected void ThreadPoolJobEnter(object argument)
+        protected void ThreadPoolJobEnter(ref object argument)
         {
         }
 
@@ -784,6 +784,8 @@ namespace JQuant
             switch (argsNum)
             {
                 case 1:
+                fmrPing.Start();
+                iWrite.WriteLine("FMRPing started");
                 break;
                 
                 default:
@@ -791,10 +793,12 @@ namespace JQuant
                 if (arg.Equals("login"))
                 {
                     fmrPing.SendLogin();
+                    iWrite.WriteLine("FMRPing Login");
                 }
                 if (arg.Equals("logout"))
                 {
                     fmrPing.SendLogout();
+                    iWrite.WriteLine("FMRPing Logout");
                 }
                 break;
             }
