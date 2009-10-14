@@ -1990,9 +1990,11 @@ namespace FMRShell
                 Console.WriteLine("FMRPing: Login in the linkup state");
                 break;
             case Events.Logout:
-                state = State.Idle;
+                jobQueue.Stop();
                 jobQueue.Dispose();
                 jobQueue = CreateJobQueue();
+                
+                state = State.Idle;
                 break;
             case Events.Timer:
                 if (countPings == 0)
@@ -2022,9 +2024,11 @@ namespace FMRShell
                 Console.WriteLine("FMRPing: Login in the linkdown state");
                 break;
             case Events.Logout:
-                state = State.Idle;
+                jobQueue.Stop();
                 jobQueue.Dispose();
                 jobQueue = CreateJobQueue();
+                
+                state = State.Idle;
                 break;
             case Events.Timer:
                 if (countPings != 0)
