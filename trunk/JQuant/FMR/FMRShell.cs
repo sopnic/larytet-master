@@ -1965,7 +1965,9 @@ namespace FMRShell
         public void Dispose()
         {
             jobQueue.Dispose();
+            timerTask.Dispose();
             base.Dispose();
+            instance = null;
         }
 
         protected override void HandleMessage(Events taskEvent)

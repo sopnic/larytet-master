@@ -851,6 +851,10 @@ namespace JQuant
                     printIntMaxMin(iWrite, fmrPing.MaxMin10min);
                     printIntMaxMin(iWrite, fmrPing.MaxMin1hour);
                 }
+                if (arg.Equals("kill"))
+                {
+                    fmrPing.Dispose();
+                }
                 break;
             }
         }
@@ -1087,7 +1091,7 @@ namespace JQuant
                                   "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                   debugGetAS400DTCallback);
             menuDebug.AddCommand("fmrPing", "Start FMR ping thread",
-                                  " Ping AS400 server continuosly [login|logout|stat]", debugFMRPingCallback);
+                                  " Ping AS400 server continuosly [login|logout|stat|kill]", debugFMRPingCallback);
 
             menuDebug.AddCommand("timerTest", "Run simple timer tests",
                                   " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
