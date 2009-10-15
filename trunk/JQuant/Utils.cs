@@ -768,4 +768,167 @@ namespace JQuant
 
     }
     #endregion;
+
+
+    /// <summary>
+    /// Cyclic buffers of integers
+    /// Can be used to calculate average over last X minutes
+    /// </summary>
+    public class IntStatistics: JQuant.CyclicBuffer
+    {
+        public IntStatistics(string name, int size)
+            : base(size)
+        {
+            summ = 0;
+            Name = name;
+        }
+
+        public void Add(int val)
+        {
+            if (Count < Size)
+            {
+                Count++;
+            }
+            else
+            {
+                // moving summ
+                summ -= (int)(buffer[head]);
+                
+            }
+            summ += val;                    
+            buffer[head] = val;
+            
+            head = IncIndex(head, Size);
+            
+        }
+
+        protected void Add(object o)
+        {
+            base.Add(o);
+        }
+
+        protected object Remove()
+        {
+            object o = base.Remove();
+            return o;
+        }
+
+        public double Mean
+        {
+            get
+            {
+                double mean = 0;
+                
+                // moving average
+                if (Count != 0)
+                {
+                    mean = summ/Count;
+                }
+                return mean;
+            }
+            protected set
+            {
+            }
+        }
+
+        public string Name
+        {
+            get;
+            protected set;
+        }
+
+        int summ;
+    }
+    
+    /// <summary>
+    /// Cyclic buffers of integers
+    /// Can be used to calculate maximum and minimum value over last X
+    /// entries
+    /// </summary>
+    public class IntMaxMin: JQuant.CyclicBuffer
+    {
+        public IntMaxMin(string name, int size)
+            : base(size)
+        {
+            sortedList = new System.Collections.SortedList(size);
+            Name = name;
+        }
+
+        public void Add(int val)
+        {
+            if (Count < Size)
+            {
+                Count++;
+            }
+            if (sortedList.Count >= Size)
+            {
+                // sorted list is full - remove one entry
+                sortedList.Remove(buffer[head]);
+            }
+
+            buffer[head] = val;
+
+            // add only new value
+            if (!sortedList.ContainsKey(val))
+            {
+                sortedList.Add(val, val);
+            }
+            
+            head = IncIndex(head, Size);
+        }
+
+        protected void Add(object o)
+        {
+            base.Add(o);
+        }
+
+        protected object Remove()
+        {
+            object o = base.Remove();
+            return o;
+        }
+
+        public int Max
+        {
+            get
+            {
+                int val = 0;
+                if (sortedList.Count > 0)
+                {
+                    val = (int)sortedList.GetByIndex(sortedList.Count-1);
+                }
+                return val;
+            }
+            
+            protected set
+            {
+            }
+        }
+
+        public int Min
+        {
+            get
+            {
+                int val = 0;
+                if (sortedList.Count > 0)
+                {
+                    val = (int)sortedList.GetByIndex(0);
+                }
+                return val;
+            }
+            
+            protected set
+            {
+            }
+        }
+
+        public string Name
+        {
+            get;
+            protected set;
+        }
+
+        System.Collections.SortedList sortedList;
+    }
+    
 }

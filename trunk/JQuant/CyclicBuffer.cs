@@ -52,6 +52,11 @@ namespace JQuant
             return (Count == 0);
         }
         
+        public bool Full()
+        {
+            return (Count == Size);
+        }
+        
         public bool NotEmpty()
         {
             return (Count != 0);
@@ -95,99 +100,4 @@ namespace JQuant
         protected int head;
     }
 
-    /// <summary>
-    /// Cyclic buffers of integers
-    /// Can be used to calculate average over last X minutes
-    /// </summary>
-    public class IntStatistics: JQuant.CyclicBuffer
-    {
-        public IntStatistics(string name, int size)
-            : base(size)
-        {
-            summ = 0;
-            Max = System.Int32.MinValue;
-            Min = System.Int32.MaxValue;
-            Name = name;
-        }
-
-        public void Add(int val)
-        {
-            if (Count < Size)
-            {
-                Count++;
-            }
-            else
-            {
-                // moving summ
-                summ -= (int)(buffer[head]);
-                
-            }
-            summ += val;                    
-            buffer[head] = val;
-            
-            head = IncIndex(head, Size);
-            
-            if (val > Max)
-            {
-                Max = val;
-            }
-            
-            if (val < Min)
-            {
-                Min = val;
-            }
-
-        }
-
-        public bool Ready()
-        {
-            return (Count == Size);
-        }
-        
-        protected void Add(object o)
-        {
-            base.Add(o);
-        }
-
-        protected object Remove()
-        {
-            object o = base.Remove();
-            return o;
-        }
-
-
-        public int Min
-        {
-            get;
-            protected set;
-        }
-        
-        public int Max
-        {
-            get;
-            protected set;
-        }
-        
-        public double Mean
-        {
-            get
-            {
-                // moving average
-                double mean = summ/Count;
-                return mean;
-            }
-            protected set
-            {
-            }
-        }
-
-        public string Name
-        {
-            get;
-            protected set;
-        }
-
-        int summ;
-    }
-    
 }

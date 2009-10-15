@@ -675,9 +675,11 @@ namespace TaskBarLibSim
             dt.ms = now.Millisecond;
 
             //An arbitrary value for latency
-            latency = random.Next(15, 250);
+            latency = random.Next(15, 20*1000);
 
             countGetAS400DateTime++;
+            
+            // produce failure from time to time
             bool success = (random.Next(0,2) == 0);
             if (success) return 0;
             else return -1;

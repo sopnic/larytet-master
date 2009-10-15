@@ -1949,9 +1949,13 @@ namespace FMRShell
             timers_2sec = new TimerList("FMRPng2", pingPeriod*1000, 2, this.PingTimerExpiredHandler, timerTask);
             timerTask.Start();
 
-            Statistics2min = new IntStatistics("2 min", 2*60/pingPeriod); // pings in 2 min
+            Statistics2min = new IntStatistics("1 min", 1*60/pingPeriod); // pings in 2 min
             Statistics10min = new IntStatistics("10 min", 10*60/pingPeriod); // pings in 10 min
             Statistics1hour = new IntStatistics("1 hour", 1*60*60/pingPeriod); // pings in 1 hour
+            
+            MaxMin2min = new IntMaxMin("1 min", 1*60/pingPeriod); // pings in 2 min
+            MaxMin10min = new IntMaxMin("10 min", 10*60/pingPeriod); // pings in 10 min
+            MaxMin1hour = new IntMaxMin("1 hour", 1*60*60/pingPeriod); // pings in 1 hour
             
             state = State.Idle;
             jobQueue = CreateJobQueue();
@@ -2117,6 +2121,10 @@ namespace FMRShell
                 Statistics2min.Add(latency);
                 Statistics10min.Add(latency);
                 Statistics1hour.Add(latency);
+                
+                MaxMin2min.Add(latency);
+                MaxMin10min.Add(latency);
+                MaxMin1hour.Add(latency);
             }
             
             o = b;
@@ -2170,6 +2178,25 @@ namespace FMRShell
             protected set;
         }
 
+        public IntMaxMin MaxMin2min
+        {
+            get;
+            protected set;
+        }
+
+        public IntMaxMin MaxMin10min
+        {
+            get;
+            protected set;
+        }
+
+        public IntMaxMin MaxMin1hour
+        {
+            get;
+            protected set;
+        }
+
+        
         public int CountPingFailed
         {
             get;
