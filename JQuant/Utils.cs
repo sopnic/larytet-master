@@ -774,7 +774,7 @@ namespace JQuant
     /// Cyclic buffers of integers
     /// Can be used to calculate average over last X minutes
     /// </summary>
-    public class IntStatistics: JQuant.CyclicBuffer
+    public class IntStatistics: JQuant.CyclicBuffer<int>
     {
         public IntStatistics(string name, int size)
             : base(size)
@@ -792,7 +792,7 @@ namespace JQuant
             else
             {
                 // moving summ
-                summ -= (int)(buffer[head]);
+                summ -= (buffer[head]);
                 
             }
             summ += val;                    
@@ -802,14 +802,9 @@ namespace JQuant
             
         }
 
-        protected void Add(object o)
+        protected int Remove()
         {
-            base.Add(o);
-        }
-
-        protected object Remove()
-        {
-            object o = base.Remove();
+            int o = base.Remove();
             return o;
         }
 
@@ -845,7 +840,7 @@ namespace JQuant
     /// Can be used to calculate maximum and minimum value over last X
     /// entries
     /// </summary>
-    public class IntMaxMin: JQuant.CyclicBuffer
+    public class IntMaxMin: JQuant.CyclicBuffer<int>
     {
         public IntMaxMin(string name, int size)
             : base(size)
@@ -877,14 +872,9 @@ namespace JQuant
             head = IncIndex(head, Size);
         }
 
-        protected void Add(object o)
+        protected int Remove()
         {
-            base.Add(o);
-        }
-
-        protected object Remove()
-        {
-            object o = base.Remove();
+            int o = base.Remove();
             return o;
         }
 
