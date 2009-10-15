@@ -273,7 +273,7 @@ namespace JQuant
         {
             if (RootDirectoryDefined())
             {
-                string path = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "DataLogs";
+                string path = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "DataLogs" + Path.DirectorySeparatorChar;
                 if (Directory.Exists(path)) 
                     return path;
                 else
