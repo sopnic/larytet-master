@@ -25,7 +25,9 @@ namespace JQuant
         /// For example, 24 hours statistics can look like cyclic buffer containing 24 counters - a counter
         /// of errors for every hour.
         /// </summary>
-        public class Errors : JQuant.CyclicBuffer<int>, Interface<Errors.Event>
+        public class Errors : JQuant.CyclicBuffer<int>, 
+                            Interface<Errors.Event>, 
+                            System.Collections.Generic.IEnumerable<int>
         {
             public enum Event
             {
@@ -72,6 +74,30 @@ namespace JQuant
                 }
             }
 
+            /// <value>
+            /// currently does not follow the order. just return the entries in the buffer 
+            /// </value>
+            protected System.Collections.Generic.IEnumerator<int> Entry
+            {
+                get
+                {
+                    for (int i = 0; i < Count; i++)
+                    {
+                        yield return buffer[i];
+                    }
+                }
+            }
+            
+            public System.Collections.Generic.IEnumerator<int> GetEnumerator()
+            {
+                return Entry;
+            }
+            
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return Entry;
+            }
+            
             protected void Add(int o)
             {
             }
