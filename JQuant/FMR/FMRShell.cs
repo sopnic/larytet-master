@@ -1882,7 +1882,7 @@ namespace FMRShell
     /// fmrPing.Start();   // start the FSM
     /// fmrPing.SendLogin(); // notify the FSM that ping should work now
     /// </summary>
-    public class FMRPing : MailboxThread<FMRPing.Events>
+    public class FMRPing : MailboxThread<FMRPing.Events>, IDisposable
     {
 
         public static FMRPing GetInstance()
@@ -1959,6 +1959,13 @@ namespace FMRShell
             
             state = State.Idle;
             jobQueue = CreateJobQueue();
+        }
+
+
+        public void Dispose()
+        {
+            jobQueue.Dispose();
+            base.Dispose();
         }
 
         protected override void HandleMessage(Events taskEvent)
