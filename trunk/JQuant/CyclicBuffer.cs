@@ -118,6 +118,7 @@ namespace JQuant
             }
             else
             {
+                // moving summ
                 summ -= (int)(buffer[head]);
                 
             }
@@ -135,8 +136,14 @@ namespace JQuant
             {
                 Min = val;
             }
+
         }
 
+        public bool Ready()
+        {
+            return (Count == Size);
+        }
+        
         protected void Add(object o)
         {
             base.Add(o);
@@ -165,6 +172,7 @@ namespace JQuant
         {
             get
             {
+                // moving average
                 double mean = summ/Count;
                 return mean;
             }

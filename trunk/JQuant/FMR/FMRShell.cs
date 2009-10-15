@@ -2109,13 +2109,16 @@ namespace FMRShell
             int latency;
             AS400DateTime AS400dt;
             int ret = configClass.GetAS400DateTime(out AS400dt, out latency);
+            bool b = (ret == 0);
 
             // update statistics
-            Statistics2min.Add(latency);
-            Statistics10min.Add(latency);
-            Statistics1hour.Add(latency);
+            if (b)
+            {
+                Statistics2min.Add(latency);
+                Statistics10min.Add(latency);
+                Statistics1hour.Add(latency);
+            }
             
-            bool b = (ret == 0);
             o = b;
         }
 
