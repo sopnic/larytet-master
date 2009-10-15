@@ -772,8 +772,6 @@ namespace JQuant
         protected void printIntStatisticsHeader(IWrite iWrite)
         {
             iWrite.WriteLine(OutputUtils.FormatField("Name", 8) +
-                         OutputUtils.FormatField("Max", 8) +
-                         OutputUtils.FormatField("Min", 8) +
                          OutputUtils.FormatField("Mean", 8) +
                          OutputUtils.FormatField("Ready", 8) +
                          OutputUtils.FormatField("Size", 8) +
@@ -785,15 +783,36 @@ namespace JQuant
         protected void printIntStatistics(IWrite iWrite, IntStatistics statistics)
         {
             iWrite.WriteLine(OutputUtils.FormatField(statistics.Name, 8) +
-                         OutputUtils.FormatField(statistics.Max, 8) +
-                         OutputUtils.FormatField(statistics.Min, 8) +
                          OutputUtils.FormatField(statistics.Mean, 8) +
-                         OutputUtils.FormatField(statistics.Ready().ToString(), 8) +
+                         OutputUtils.FormatField(statistics.Full().ToString(), 8) +
                          OutputUtils.FormatField(statistics.Size, 8) +
                          OutputUtils.FormatField(statistics.Count, 8)
                         );
         }
 
+        protected void printIntMaxMinHeader(IWrite iWrite)
+        {
+            iWrite.WriteLine(OutputUtils.FormatField("Name", 8) +
+                         OutputUtils.FormatField("Max", 8) +
+                         OutputUtils.FormatField("Min", 8) +
+                         OutputUtils.FormatField("Ready", 8) +
+                         OutputUtils.FormatField("Size", 8) +
+                         OutputUtils.FormatField("Count", 8) 
+                        );
+            iWrite.WriteLine("----------------------------------------------------------------");
+        }
+
+        protected void printIntMaxMin(IWrite iWrite, IntMaxMin maxMin)
+        {
+            iWrite.WriteLine(OutputUtils.FormatField(maxMin.Name, 8) +
+                         OutputUtils.FormatField(maxMin.Max, 8) +
+                         OutputUtils.FormatField(maxMin.Min, 8) +
+                         OutputUtils.FormatField(maxMin.Full().ToString(), 8) +
+                         OutputUtils.FormatField(maxMin.Size, 8) +
+                         OutputUtils.FormatField(maxMin.Count, 8)
+                        );
+        }
+        
         protected void debugFMRPingCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int argsNum = cmdArguments.Length;
@@ -826,6 +845,11 @@ namespace JQuant
                     printIntStatistics(iWrite, fmrPing.Statistics2min);
                     printIntStatistics(iWrite, fmrPing.Statistics10min);
                     printIntStatistics(iWrite, fmrPing.Statistics1hour);
+                    iWrite.WriteLine();
+                    printIntMaxMinHeader(iWrite);
+                    printIntMaxMin(iWrite, fmrPing.MaxMin2min);
+                    printIntMaxMin(iWrite, fmrPing.MaxMin10min);
+                    printIntMaxMin(iWrite, fmrPing.MaxMin1hour);
                 }
                 break;
             }

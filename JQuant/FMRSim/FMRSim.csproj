@@ -69,6 +69,7 @@
     <Compile Include="..\Security.cs" />
     <Compile Include="..\AlgorithmMachine.cs" />
     <Compile Include="..\CyclicBuffer.cs" />
+    <Compile Include="..\PerformanceMonitor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
