@@ -7,20 +7,20 @@ namespace JQuant
     /// <summary>
     /// implements cyclic buffer
     /// </summary>
-    public class CyclicBuffer
+    public class CyclicBuffer<DataType>
     {        
         public CyclicBuffer(int size)
         {
             tail = 0;
             head = 0;
             Size = size;
-            buffer = new object[size];
+            buffer = new DataType[size];
         }
 
         /// <summary>
         /// add object to the head
         /// </summary>
-        public void Add(object o)
+        public void Add(DataType o)
         {
             buffer[head] = o;
             
@@ -35,9 +35,9 @@ namespace JQuant
         /// <summary>
         /// remove object from the tail
         /// </summary>
-        public object Remove()
+        public DataType Remove()
         {
-            object o = null;
+            DataType o = default(DataType);
             if (Count > 0)
             {
                 Count--;
@@ -95,7 +95,7 @@ namespace JQuant
         }
                 
         
-        protected object[] buffer;
+        protected DataType[] buffer;
         protected int tail;
         protected int head;
     }
