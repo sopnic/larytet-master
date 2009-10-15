@@ -768,9 +768,30 @@ namespace JQuant
         {
             feedGetSeriesCallback(iWrite, cmdName, cmdArguments, false);
         }
+        
+        protected void printIntStatisticsHeader(IWrite iWrite)
+        {
+            iWrite.WriteLine(OutputUtils.FormatField("Name", 8) +
+                         OutputUtils.FormatField("Max", 8) +
+                         OutputUtils.FormatField("Min", 8) +
+                         OutputUtils.FormatField("Mean", 8) +
+                         OutputUtils.FormatField("Ready", 8) +
+                         OutputUtils.FormatField("Size", 8) +
+                         OutputUtils.FormatField("Count", 8) 
+                        );
+            iWrite.WriteLine("----------------------------------------------------------------");
+        }
 
         protected void printIntStatistics(IWrite iWrite, IntStatistics statistics)
         {
+            iWrite.WriteLine(OutputUtils.FormatField(statistics.Name, 8) +
+                         OutputUtils.FormatField(statistics.Max, 8) +
+                         OutputUtils.FormatField(statistics.Min, 8) +
+                         OutputUtils.FormatField(statistics.Mean, 8) +
+                         OutputUtils.FormatField(statistics.Ready().ToString(), 8) +
+                         OutputUtils.FormatField(statistics.Size, 8) +
+                         OutputUtils.FormatField(statistics.Count, 8)
+                        );
         }
 
         protected void debugFMRPingCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -787,24 +808,26 @@ namespace JQuant
                     break;
 
                 default:
-                    string arg = args[1];
-                    if (arg.Equals("login"))
-                    {
-                        fmrPing.SendLogin();
-                        iWrite.WriteLine("FMRPing Login");
-                    }
-                    if (arg.Equals("logout"))
-                    {
-                        fmrPing.SendLogout();
-                        iWrite.WriteLine("FMRPing Logout");
-                    }
-                    if (arg.Equals("stats"))
-                    {
-                        printIntStatistics(iWrite, fmrPing.Statistics2min);
-                        printIntStatistics(iWrite, fmrPing.Statistics10min);
-                        printIntStatistics(iWrite, fmrPing.Statistics1hour);
-                    }
-                    break;
+                string arg = args[1];
+                if (arg.Equals("login"))
+                {
+                    fmrPing.SendLogin();
+                    iWrite.WriteLine("FMRPing Login");
+                }
+                if (arg.Equals("logout"))
+                {
+                    fmrPing.SendLogout();
+                    iWrite.WriteLine("FMRPing Logout");
+                }
+                if (arg.Equals("stat"))
+                {
+                    iWrite.WriteLine("Failed "+fmrPing.CountPingFailed+" from "+(fmrPing.CountPingOk+fmrPing.CountPingFailed));
+                    printIntStatisticsHeader(iWrite);
+                    printIntStatistics(iWrite, fmrPing.Statistics2min);
+                    printIntStatistics(iWrite, fmrPing.Statistics10min);
+                    printIntStatistics(iWrite, fmrPing.Statistics1hour);
+                }
+                break;
             }
         }
 
@@ -1040,7 +1063,7 @@ namespace JQuant
                                   "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                   debugGetAS400DTCallback);
             menuDebug.AddCommand("fmrPing", "Start FMR ping thread",
-                                  " Ping AS400 server continuosly [login|logout|stats]", debugFMRPingCallback);
+                                  " Ping AS400 server continuosly [login|logout|stat]", debugFMRPingCallback);
 
             menuDebug.AddCommand("timerTest", "Run simple timer tests",
                                   " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
