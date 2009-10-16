@@ -106,6 +106,9 @@
     <Compile Include="..\CyclicBuffer.cs">
       <Link>CyclicBuffer.cs</Link>
     </Compile>
+    <Compile Include="..\Locks.cs">
+      <Link>Locks.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskBarLib">
