@@ -140,7 +140,7 @@ namespace JQuant
                 if (cb.Full()) 
                 {
                     index = cb.head;
-                    index = IncIndex(index, cb.Size);
+                    index = DecIndex(index, cb.Size);
                 }
                 else
                 {
@@ -182,6 +182,16 @@ namespace JQuant
         protected DataType[] buffer;
         protected int tail;
         protected int head;
+    }
+
+
+    public class CyclicBufferSynchronized<DataType> : CyclicBuffer<DataType>
+    {
+        public CyclicBufferSynchronized(int size)
+            : base (size)
+        {
+        }
+        
     }
 
 }
