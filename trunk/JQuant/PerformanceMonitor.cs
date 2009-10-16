@@ -74,30 +74,6 @@ namespace JQuant
                 }
             }
 
-            /// <value>
-            /// currently does not follow the order. just return the entries in the buffer 
-            /// </value>
-            protected System.Collections.Generic.IEnumerator<int> Entry
-            {
-                get
-                {
-                    for (int i = 0; i < Count; i++)
-                    {
-                        yield return buffer[i];
-                    }
-                }
-            }
-            
-            public System.Collections.Generic.IEnumerator<int> GetEnumerator()
-            {
-                return Entry;
-            }
-            
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return Entry;
-            }
-            
             protected new void Add(int o)
             {
             }

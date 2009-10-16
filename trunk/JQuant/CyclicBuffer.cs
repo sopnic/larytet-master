@@ -9,7 +9,8 @@ namespace JQuant
     /// inherit the class and add functionality and protection locks
     /// as required
     /// </summary>
-    public class CyclicBuffer<DataType>
+    public class CyclicBuffer<DataType> :
+        System.Collections.Generic.IEnumerable<DataType>
     {
         /// <summary>
         /// This class should be inherited before using
@@ -103,6 +104,29 @@ namespace JQuant
             return index;
         }
                 
+        /// <value>
+        /// currently does not follow the order. just return the entries in the buffer 
+        /// </value>
+        protected System.Collections.Generic.IEnumerator<DataType> Entry
+        {
+            get
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    yield return buffer[i];
+                }
+            }
+        }
+        
+        public System.Collections.Generic.IEnumerator<DataType> GetEnumerator()
+        {
+            return Entry;
+        }
+        
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return Entry;
+        }
         
         protected DataType[] buffer;
         protected int tail;
