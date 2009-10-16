@@ -3,28 +3,54 @@ using System;
 
 namespace JQuant
 {
-    
     /// <summary>
     /// implements cyclic buffer
-    /// inherit the class and add functionality and protection locks
-    /// as required
     /// </summary>
     public class CyclicBuffer<DataType> :
         System.Collections.Generic.IEnumerable<DataType>
     {
         /// <summary>
-        /// This class should be inherited before using
+        /// Syncronized CyclicBuffer - upper layer provides mutual exclusion API 
         /// </summary>
         /// <param name="size">
         /// A <see cref="System.Int32"/>
         /// Size of the buffer
         /// </param>
-        protected CyclicBuffer(int size)
+        public CyclicBuffer(int size, ICriticalSection sectionlock)
         {
-            tail = 0;
-            head = 0;
+            this.sectionlock = sectionlock;
+            Init(size);
+        }
+
+        /// <summary>
+        /// Not syncronized CyclicBuffer - upper layer takes care of locks 
+        /// </summary>
+        /// <param name="size">
+        /// A <see cref="System.Int32"/>
+        /// Size of the buffer
+        /// </param>
+        public CyclicBuffer(int size)
+        {
+            this.sectionlock = dummyCriticalSection;
+            Init(size);
+        }
+
+        protected void Init(int size)
+        {
             Size = size;
             buffer = new DataType[size];
+            Reset();
+        }
+        
+        public void Reset()
+        {
+            sectionlock.Enter();
+            
+            tail = 0;
+            head = 0;
+            Count = 0;
+            
+            sectionlock.Exit();
         }
 
         /// <summary>
@@ -32,6 +58,8 @@ namespace JQuant
         /// </summary>
         public void Add(DataType o)
         {
+            sectionlock.Enter();
+            
             buffer[head] = o;
             
             head = IncIndex(head, Size);
@@ -40,6 +68,8 @@ namespace JQuant
             {
                 Count++;
             }
+            
+            sectionlock.Exit();
         }
 
         /// <summary>
@@ -47,6 +77,8 @@ namespace JQuant
         /// </summary>
         public DataType Remove()
         {
+            sectionlock.Enter();
+            
             DataType o = default(DataType);
             if (Count > 0)
             {
@@ -54,6 +86,10 @@ namespace JQuant
                 o = buffer[tail];
                 tail = IncIndex(tail, Size);
             }
+            
+            sectionlock.Exit();
+            
+            
             return o;
         }
 
@@ -233,14 +269,17 @@ namespace JQuant
         protected DataType[] buffer;
         protected int tail;
         protected int head;
+        protected ICriticalSection sectionlock;
+        protected static DummyCriticalSection dummyCriticalSection = new DummyCriticalSection();
     }
 
 
     public class CyclicBufferSynchronized<DataType> : CyclicBuffer<DataType>
     {
         public CyclicBufferSynchronized(int size)
-            : base (size)
+            : base(size)
         {
+            sectionlock = new LockCriticalSection(this);
         }
         
     }
