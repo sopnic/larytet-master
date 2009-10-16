@@ -166,6 +166,8 @@ namespace JQuant
         /// currently does not follow the order. just return the entries in the buffer
         /// When in foreach Reset is called once, followed by MoveNext-Current sequence
         /// second call is MoveNext
+        /// 
+        /// Upper layer should take care of proper synchronization between Add/Remove/foreach
         /// </value>
         protected class Enumerator : System.Collections.Generic.IEnumerator<DataType>
         {
@@ -251,7 +253,12 @@ namespace JQuant
             /// </summary>
             protected int count;
         }
-        
+
+        /// <summary>
+        /// Calling thread should take care of proper synchronization 
+        /// between Add/Remove/foreach
+        /// This method is part of IEnumerable interface
+        /// </summary>
         public System.Collections.Generic.IEnumerator<DataType> GetEnumerator()
         {
             return new Enumerator(this);
@@ -276,10 +283,10 @@ namespace JQuant
 
     public class CyclicBufferSynchronized<DataType> : CyclicBuffer<DataType>
     {
-        public CyclicBufferSynchronized(int size)
+        public CyclicBufferSynchronized(string name, int size)
             : base(size)
         {
-            sectionlock = new LockCriticalSection(this);
+            sectionlock = new LockCriticalSection(name, this);
         }
         
     }
