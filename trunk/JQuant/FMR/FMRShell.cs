@@ -1962,7 +1962,7 @@ namespace FMRShell
         }
 
 
-        public void Dispose()
+        public new void Dispose()
         {
             jobQueue.Dispose();
             timerTask.Dispose();

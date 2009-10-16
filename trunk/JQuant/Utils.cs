@@ -783,7 +783,7 @@ namespace JQuant
             Name = name;
         }
 
-        public void Add(int val)
+        public new void Add(int val)
         {
             if (Count < Size)
             {
@@ -802,7 +802,7 @@ namespace JQuant
             
         }
 
-        protected int Remove()
+        protected new int Remove()
         {
             int o = base.Remove();
             return o;
@@ -849,7 +849,7 @@ namespace JQuant
             Name = name;
         }
 
-        public void Add(int val)
+        public new void Add(int val)
         {
             if (Count < Size)
             {
@@ -872,7 +872,7 @@ namespace JQuant
             head = IncIndex(head, Size);
         }
 
-        protected int Remove()
+        protected new int Remove()
         {
             int o = base.Remove();
             return o;
