@@ -6,10 +6,19 @@ namespace JQuant
     
     /// <summary>
     /// implements cyclic buffer
+    /// inherit the class and add functionality and protection locks
+    /// as required
     /// </summary>
     public class CyclicBuffer<DataType>
-    {        
-        public CyclicBuffer(int size)
+    {
+        /// <summary>
+        /// This class should be inherited before using
+        /// </summary>
+        /// <param name="size">
+        /// A <see cref="System.Int32"/>
+        /// Size of the buffer
+        /// </param>
+        protected CyclicBuffer(int size)
         {
             tail = 0;
             head = 0;

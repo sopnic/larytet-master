@@ -98,11 +98,11 @@ namespace JQuant
                 return Entry;
             }
             
-            protected void Add(int o)
+            protected new void Add(int o)
             {
             }
     
-            protected int Remove()
+            protected new int Remove()
             {
                 return 0;
             }
