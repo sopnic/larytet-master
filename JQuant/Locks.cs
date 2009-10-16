@@ -25,11 +25,56 @@ namespace JQuant
     }
 
     /// <summary>
+    /// counts entries and exits. This class will not be used directly
+    /// Use child classes instead
+    /// </summary>
+    public class CriticalSection : ICriticalSection
+    {
+
+        protected CriticalSection(string name)
+        {
+            Name = name;
+            count = 0;
+        }
+        
+        public void Enter()
+        {
+            if (count > 0)
+            {
+                Console.WriteLine("Lock "+Name+" is taken more than once count="+count);
+                count = 0;
+            }
+            count++;
+        }
+        
+        public void Exit()
+        {
+            if (count < 1)
+            {
+                Console.WriteLine("Lock "+Name+" is freed more than once count="+count);
+                count = 1;
+            }
+            count--;
+        }
+        
+        public string Name
+        {
+            get;
+            protected set;
+        }
+
+        
+        protected int count;
+    }
+    
+
+    /// <summary>
     /// use System.Threading.Monitor API (similar to lock)
     /// </summary>
-    public class LockCriticalSection : ICriticalSection
+    public class LockCriticalSection : CriticalSection
     {
-        public LockCriticalSection(object lockObject)
+        public LockCriticalSection(string name, object lockObject)
+            : base(name)
         {
             this.lockObject = lockObject;
         }
@@ -37,10 +82,12 @@ namespace JQuant
         public void Enter()
         {
             System.Threading.Monitor.Enter(lockObject);
+            base.Enter();
         }
         
         public void Exit()
         {
+            base.Exit();
             System.Threading.Monitor.Exit(lockObject);
         }
 
@@ -51,8 +98,14 @@ namespace JQuant
     /// use System.Threading.Monitor API (similar to lock)
     /// The object itself is a synchronization object
     /// </summary>
-    public class SyncObject : ICriticalSection
+    public class SyncObject : CriticalSection
     {
+        public SyncObject(string name)
+            : base(name)
+        {
+        }
+            
+
         public void Enter()
         {
             System.Threading.Monitor.Enter(this);

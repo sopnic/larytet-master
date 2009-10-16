@@ -1003,7 +1003,7 @@ namespace JQuant
 
         protected void debugCyclicBufferTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            CyclicBuffer<int> cb = new CyclicBufferSynchronized<int>(3);
+            CyclicBuffer<int> cb = new CyclicBufferSynchronized<int>("cliCbTest", 3);
 
             iWrite.WriteLine();
             foreach (int i in cb)
