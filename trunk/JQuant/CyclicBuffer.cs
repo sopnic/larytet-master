@@ -23,7 +23,8 @@ namespace JQuant
         }
 
         /// <summary>
-        /// Not syncronized CyclicBuffer - upper layer takes care of locks 
+        /// Not syncronized CyclicBuffer - upper layer takes care of locks
+        /// For example CyclicBuffer object is used only by one thread
         /// </summary>
         /// <param name="size">
         /// A <see cref="System.Int32"/>
@@ -163,22 +164,27 @@ namespace JQuant
         }
 
         /// <value>
-        /// currently does not follow the order. just return the entries in the buffer
+        /// This class is part of implementation of IEnumerable interface 
         /// When in foreach Reset is called once, followed by MoveNext-Current sequence
         /// second call is MoveNext
         /// 
-        /// Upper layer should take care of proper synchronization between Add/Remove/foreach
+        /// Lock will be taken while in the loop - the same lock used in the CyclicBuffer
         /// </value>
         protected class Enumerator : System.Collections.Generic.IEnumerator<DataType>
         {
             public Enumerator(CyclicBuffer<DataType> cb)
             {
                 this.cb = cb;
+
+                // take the lock - "foreach" is a critical section
+                cb.sectionlock.Enter();
                 Reset();
             }
 
             public void Dispose()
             {
+                // release the lock after "foreach" ends
+                cb.sectionlock.Exit();
             }
 
             public bool MoveNext()
@@ -255,8 +261,7 @@ namespace JQuant
         }
 
         /// <summary>
-        /// Calling thread should take care of proper synchronization 
-        /// between Add/Remove/foreach
+        /// Lock will be taken while in the loop - the same lock used in the CyclicBuffer
         /// This method is part of IEnumerable interface
         /// </summary>
         public System.Collections.Generic.IEnumerator<DataType> GetEnumerator()
