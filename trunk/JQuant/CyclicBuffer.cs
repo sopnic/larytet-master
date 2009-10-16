@@ -57,33 +57,52 @@ namespace JQuant
             return o;
         }
 
+        /// <summary>
+        /// returns true if CyclicBuffer is empty
+        /// </summary>
         public bool Empty()
         {
             return (Count == 0);
         }
         
+        /// <summary>
+        /// returns true if CyclicBuffer is full - number of stored elements
+        /// is equal to size
+        /// </summary>
         public bool Full()
         {
             return (Count == Size);
         }
         
+        /// <summary>
+        /// returns true if CyclicBuffer contains at least one element
+        /// </summary>
         public bool NotEmpty()
         {
             return (Count != 0);
         }
         
+        /// <summary>
+        /// size of the cyclic buffer
+        /// </summary>
         public int Size
         {
             get;
             protected set;
         }
 
+        /// <summary>
+        /// number of elements in the cyclic buffer
+        /// </summary>
         public int Count
         {
             get;
             protected set;
         }
         
+        /// <summary>
+        /// increment index and take care of wrap around
+        /// </summary>
         protected static int IncIndex(int index, int size)
         {
             index++;
@@ -94,6 +113,9 @@ namespace JQuant
             return index;
         }
                 
+        /// <summary>
+        /// decrement index and take care of wrap around
+        /// </summary>
         protected static int DecIndex(int index, int size)
         {
             index--;
@@ -105,7 +127,9 @@ namespace JQuant
         }
 
         /// <value>
-        /// currently does not follow the order. just return the entries in the buffer 
+        /// currently does not follow the order. just return the entries in the buffer
+        /// When in foreach Reset is called once, followed by MoveNext-Current sequence
+        /// second call is MoveNext
         /// </value>
         protected class Enumerator : System.Collections.Generic.IEnumerator<DataType>
         {
@@ -121,10 +145,15 @@ namespace JQuant
 
             public bool MoveNext()
             {
+                // MoveNext will return false if there is nothing more
+                // in the buffer to return - all elements handled
                 bool result = (count < cb.Count);
-                if (count < cb.Count)
+                
+                if (result)
                 {
                     index = IncIndex(index, cb.Size);
+
+                    // number of returned elements so far
                     count++;
                 }
 
@@ -140,6 +169,9 @@ namespace JQuant
                 if (cb.Full()) 
                 {
                     index = cb.head;
+
+                    // I want MoveNext to do the same thing - increment index
+                    // I have to start from one element less (from -1)
                     index = DecIndex(index, cb.Size);
                 }
                 else
@@ -156,6 +188,10 @@ namespace JQuant
                 }                    
             }
 
+            /// <value>
+            /// this is explicit property required by System.Collections.IEnumerable
+            /// will not be called 
+            /// </value>
             object System.Collections.IEnumerator.Current
             {
                 get
@@ -164,8 +200,19 @@ namespace JQuant
                 }                    
             }
 
+            /// <summary>
+            /// reference to the cyclicbuffer
+            /// </summary>
             protected CyclicBuffer<DataType> cb;
+
+            /// <summary>
+            /// keeps where I am now
+            /// </summary>
             protected int index;
+
+            /// <summary>
+            /// keeps how many elements were returned so far
+            /// </summary>
             protected int count;
         }
         
@@ -174,6 +221,10 @@ namespace JQuant
             return new Enumerator(this);
         }
         
+        /// <value>
+        /// this method is required by System.Collections.IEnumerable
+        /// will not be called 
+        /// </value>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return new Enumerator(this);

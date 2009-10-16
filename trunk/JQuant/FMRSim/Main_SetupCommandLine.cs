@@ -1005,16 +1005,20 @@ namespace JQuant
         {
             CyclicBuffer<int> cb = new CyclicBufferSynchronized<int>(3);
 
+            iWrite.WriteLine();
             foreach (int i in cb)
             {
                 iWrite.WriteLine("No elements "+i);
             }
-            
+
+            iWrite.WriteLine();
             cb.Add(0);
             foreach (int i in cb)
             {
                 iWrite.WriteLine("One element "+i);
             }
+            
+            iWrite.WriteLine();
             cb.Add(1);
             cb.Add(2);
             cb.Add(3);
