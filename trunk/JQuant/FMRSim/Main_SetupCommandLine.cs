@@ -1001,6 +1001,31 @@ namespace JQuant
             }
         }
 
+        protected void debugCyclicBufferTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            CyclicBuffer<int> cb = new CyclicBuffer<int>(3);
+
+            foreach (int i in cb)
+            {
+                iWrite.WriteLine("No elements "+i);
+            }
+            
+            cb.Add(0);
+            foreach (int i in cb)
+            {
+                iWrite.WriteLine("One element "+i);
+            }
+            cb.Add(1);
+            cb.Add(2);
+            cb.Add(3);
+            cb.Add(4);
+            foreach (int i in cb)
+            {
+                iWrite.WriteLine("Three elements "+i);
+            }
+        }
+        
+
 
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -1065,25 +1090,9 @@ namespace JQuant
             menuFeed.AddCommand("readfile", "Get price/volume series from file",
                                   " Get price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
 
-
-
             Menu menuDebug = cli.RootMenu.AddMenu("Dbg", "System debug info",
                                    " Created objetcs, access to the system statistics");
 
-            menuDebug.AddCommand("GC", "Run garbage collector",
-                                  " Forces garnage collection", debugGcCallback);
-            menuDebug.AddCommand("mbxTest", "Run simple mailbox tests",
-                                  " Create a mailbox, send a message, receive a message, print debug info", debugMbxTestCallback);
-            menuDebug.AddCommand("mbxShow", "Show mailboxes",
-                                  " List of created mailboxes with the current status and statistics", debugMbxShowCallback);
-            menuDebug.AddCommand("threadTest", "Run simple thread",
-                                  " Create a mailbox thread, send a message, print debug info", debugThreadTestCallback);
-            menuDebug.AddCommand("threadShow", "Show threads",
-                                  " List of created threads and thread states", debugThreadShowCallback);
-            menuDebug.AddCommand("poolTest", "Run simple pool tests",
-                                  " Create a pool, add object, allocate object, free object", debugPoolTestCallback);
-            menuDebug.AddCommand("poolShow", "Show pools",
-                                  " List of created pools with the current status and statistics", debugPoolShowCallback);
             menuDebug.AddCommand("loginTest", "Run simple test of the login",
                                   " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
 
@@ -1093,17 +1102,16 @@ namespace JQuant
             menuDebug.AddCommand("fmrPing", "Start FMR ping thread",
                                   " Ping AS400 server continuosly [login|logout|stat|kill]", debugFMRPingCallback);
 
-            menuDebug.AddCommand("timerTest", "Run simple timer tests",
-                                  " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
-            menuDebug.AddCommand("timerShow", "Show timers",
-                                  " List of created timers and timer tasks", debugTimerShowCallback);
-
-            menuDebug.AddCommand("threadPoolTest", "Run simple thread pool tests",
-                                  " Create a thread pool, start a couple of jobs, destroy the pool", debugThreadPoolTestCallback);
             menuDebug.AddCommand("threadPoolShow", "Show thread pools",
                                   " List of created thread pools", debugThreadPoolShowCallback);
-
-
+            menuDebug.AddCommand("timerShow", "Show timers",
+                                  " List of created timers and timer tasks", debugTimerShowCallback);
+            menuDebug.AddCommand("threadShow", "Show threads",
+                                  " List of created threads and thread states", debugThreadShowCallback);
+            menuDebug.AddCommand("mbxShow", "Show mailboxes",
+                                  " List of created mailboxes with the current status and statistics", debugMbxShowCallback);
+            menuDebug.AddCommand("poolShow", "Show pools",
+                                  " List of created pools with the current status and statistics", debugPoolShowCallback);
 #if USEFMRSIM
             menuDebug.AddCommand("loggerTest", "Run simple test of the logger",
                                   " Create a Collector and start a random data simulator", debugLoggerTestCallback);
@@ -1113,6 +1121,38 @@ namespace JQuant
 
             menuDebug.AddCommand("prodShow", "Show producers",
                                   " List of created producers", debugProducerShowCallback);
+
+            Menu menuTests = cli.RootMenu.AddMenu("tst", "Short tests",
+                                   " Infrastructure/API tests");
+
+            menuTests.AddCommand("GC", "Run garbage collector",
+                                  " Forces garnage collection", debugGcCallback);
+            menuTests.AddCommand("mbxTest", "Run simple mailbox tests",
+                                  " Create a mailbox, send a message, receive a message, print debug info", debugMbxTestCallback);
+            menuTests.AddCommand("mbxShow", "Show mailboxes",
+                                  " List of created mailboxes with the current status and statistics", debugMbxShowCallback);
+            menuTests.AddCommand("threadTest", "Run simple thread",
+                                  " Create a mailbox thread, send a message, print debug info", debugThreadTestCallback);
+            menuTests.AddCommand("threadShow", "Show threads",
+                                  " List of created threads and thread states", debugThreadShowCallback);
+            menuTests.AddCommand("poolTest", "Run simple pool tests",
+                                  " Create a pool, add object, allocate object, free object", debugPoolTestCallback);
+            menuTests.AddCommand("poolShow", "Show pools",
+                                  " List of created pools with the current status and statistics", debugPoolShowCallback);
+            
+            menuTests.AddCommand("timerTest", "Run simple timer tests",
+                                  " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
+            menuTests.AddCommand("timerShow", "Show timers",
+                                  " List of created timers and timer tasks", debugTimerShowCallback);
+
+            menuTests.AddCommand("threadPoolTest", "Run simple thread pool tests",
+                                  " Create a thread pool, start a couple of jobs, destroy the pool", debugThreadPoolTestCallback);
+            menuTests.AddCommand("threadPoolShow", "Show thread pools",
+                                  " List of created thread pools", debugThreadPoolShowCallback);
+
+            menuTests.AddCommand("cbtest", "Cyclic buffer class test",
+                                  " Create a cyclic buffer, check functionality", debugCyclicBufferTestCallback);
+            
         }
 
         #endregion

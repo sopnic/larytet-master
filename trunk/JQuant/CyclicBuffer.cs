@@ -103,29 +103,80 @@ namespace JQuant
             }
             return index;
         }
-                
+
         /// <value>
         /// currently does not follow the order. just return the entries in the buffer 
         /// </value>
-        protected System.Collections.Generic.IEnumerator<DataType> Entry
+        protected class Enumerator : System.Collections.Generic.IEnumerator<DataType>
         {
-            get
+            public Enumerator(CyclicBuffer<DataType> cb)
             {
-                for (int i = 0; i < Count; i++)
+                this.cb = cb;
+                Reset();
+            }
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+            {
+                bool result = (count < cb.Count);
+                if (count < cb.Count)
                 {
-                    yield return buffer[i];
+                    index = IncIndex(index, cb.Size);
+                    count++;
+                }
+
+                return result;
+            }
+
+            public void Reset()
+            {
+                count = 0;
+                
+                // in the full cyclic buffer next element after head is oldest
+                // if not full - oldest element is at zero
+                if (cb.Full()) 
+                {
+                    index = cb.head;
+                    index = IncIndex(index, cb.Size);
+                }
+                else
+                {
+                    index = 0;
                 }
             }
+
+            public DataType Current
+            {
+                get
+                {
+                    return cb.buffer[index];
+                }                    
+            }
+
+            object System.Collections.IEnumerator.Current
+            {
+                get
+                {
+                    return Current;
+                }                    
+            }
+
+            protected CyclicBuffer<DataType> cb;
+            protected int index;
+            protected int count;
         }
         
         public System.Collections.Generic.IEnumerator<DataType> GetEnumerator()
         {
-            return Entry;
+            return new Enumerator(this);
         }
         
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return Entry;
+            return new Enumerator(this);
         }
         
         protected DataType[] buffer;
