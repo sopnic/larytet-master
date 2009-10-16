@@ -5,9 +5,13 @@ namespace JQuant
 {
     /// <summary>
     /// implements cyclic buffer
+    /// I need generic here to save performance in case of value types
+    /// Peformance monitors use cyclic buffers and Add() 
+    /// should be very efficient
+    /// T is, for example, "int"
     /// </summary>
-    public class CyclicBuffer<DataType> :
-        System.Collections.Generic.IEnumerable<DataType>
+    public class CyclicBuffer<T> :
+        System.Collections.Generic.IEnumerable<T>
     {
         /// <summary>
         /// Syncronized CyclicBuffer - upper layer provides mutual exclusion API 
@@ -15,6 +19,10 @@ namespace JQuant
         /// <param name="size">
         /// A <see cref="System.Int32"/>
         /// Size of the buffer
+        /// </param>
+        /// <param name="sectionlock">
+        /// A <see cref="ICriticalSection"/>
+        /// Crtical section lock to use
         /// </param>
         public CyclicBuffer(int size, ICriticalSection sectionlock)
         {
@@ -32,6 +40,7 @@ namespace JQuant
         /// </param>
         public CyclicBuffer(int size)
         {
+            // this is the fastest I can do - static object, empty methods
             this.sectionlock = dummyCriticalSection;
             Init(size);
         }
@@ -39,7 +48,7 @@ namespace JQuant
         protected void Init(int size)
         {
             Size = size;
-            buffer = new DataType[size];
+            buffer = new T[size];
             Reset();
         }
         
@@ -56,8 +65,10 @@ namespace JQuant
 
         /// <summary>
         /// add object to the head
+        /// Peformance monitors use cyclic buffers and Add() 
+        /// should be very efficient
         /// </summary>
-        public void Add(DataType o)
+        public void Add(T o)
         {
             sectionlock.Enter();
             
@@ -76,11 +87,11 @@ namespace JQuant
         /// <summary>
         /// remove object from the tail
         /// </summary>
-        public DataType Remove()
+        public T Remove()
         {
             sectionlock.Enter();
             
-            DataType o = default(DataType);
+            T o = default(T);
             if (Count > 0)
             {
                 Count--;
@@ -170,9 +181,9 @@ namespace JQuant
         /// 
         /// Lock will be taken while in the loop - the same lock used in the CyclicBuffer
         /// </value>
-        protected class Enumerator : System.Collections.Generic.IEnumerator<DataType>
+        protected class Enumerator : System.Collections.Generic.IEnumerator<T>
         {
-            public Enumerator(CyclicBuffer<DataType> cb)
+            public Enumerator(CyclicBuffer<T> cb)
             {
                 this.cb = cb;
 
@@ -224,7 +235,7 @@ namespace JQuant
                 }
             }
 
-            public DataType Current
+            public T Current
             {
                 get
                 {
@@ -247,7 +258,7 @@ namespace JQuant
             /// <summary>
             /// reference to the cyclicbuffer
             /// </summary>
-            protected CyclicBuffer<DataType> cb;
+            protected CyclicBuffer<T> cb;
 
             /// <summary>
             /// keeps where I am now
@@ -264,7 +275,7 @@ namespace JQuant
         /// Lock will be taken while in the loop - the same lock used in the CyclicBuffer
         /// This method is part of IEnumerable interface
         /// </summary>
-        public System.Collections.Generic.IEnumerator<DataType> GetEnumerator()
+        public System.Collections.Generic.IEnumerator<T> GetEnumerator()
         {
             return new Enumerator(this);
         }
@@ -278,7 +289,7 @@ namespace JQuant
             return new Enumerator(this);
         }
         
-        protected DataType[] buffer;
+        protected T[] buffer;
         protected int tail;
         protected int head;
         protected ICriticalSection sectionlock;
@@ -286,7 +297,7 @@ namespace JQuant
     }
 
 
-    public class CyclicBufferSynchronized<DataType> : CyclicBuffer<DataType>
+    public class CyclicBufferSynchronized<T> : CyclicBuffer<T>
     {
         public CyclicBufferSynchronized(string name, int size)
             : base(size)
