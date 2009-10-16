@@ -11,7 +11,7 @@ namespace JQuant
 
     /// <summary>
     /// do nothing to protect a critical section
-    /// debug only
+    /// hopefully CLI will optimize out empty non-virtual methods
     /// </summary>
     public class DummyCriticalSection : ICriticalSection
     {
