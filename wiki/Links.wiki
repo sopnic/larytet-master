@@ -1,0 +1,6 @@
+#summary Web pages.
+= Tel Aviv Stock Exchange =
+
+||Page||Address||Description||
+||Main Page:||[http://tase.co.il/]||||
+||TA25 Stock Index||http://tase.co.il/NR/rdonlyres/F3DF2D11-4E27-46BE-91B3-6A1516E62305/0/NR_MAOFClearing_2_107125.pdf#page=6||Detailed guide on pages ב-4 -- ב-9||
