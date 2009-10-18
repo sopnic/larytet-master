@@ -79,13 +79,13 @@ namespace JQuant
             this.lockObject = lockObject;
         }
         
-        public void Enter()
+        public new void Enter()
         {
             System.Threading.Monitor.Enter(lockObject);
             base.Enter();
         }
         
-        public void Exit()
+        public new void Exit()
         {
             base.Exit();
             System.Threading.Monitor.Exit(lockObject);
@@ -106,13 +106,15 @@ namespace JQuant
         }
             
 
-        public void Enter()
+        public new void Enter()
         {
             System.Threading.Monitor.Enter(this);
+            base.Enter();
         }
         
-        public void Exit()
+        public new void Exit()
         {
+            base.Exit();
             System.Threading.Monitor.Exit(this);
         }
     }
