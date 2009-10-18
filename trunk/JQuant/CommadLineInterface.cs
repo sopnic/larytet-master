@@ -339,6 +339,9 @@ namespace JQuant
             iWrite.WriteLine("=====================================");
             iWrite.WriteLine("help, exit, one level up - .., main menu - ~");
             iWrite.WriteLine("");
+#if USEFMRSIM
+            iWrite.WriteLine(Environment.NewLine + "    WARNING!!!    OPERATION IN SIMULATED MODE" + Environment.NewLine);
+#endif
         }
 
 
