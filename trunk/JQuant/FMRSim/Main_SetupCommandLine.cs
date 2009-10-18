@@ -491,6 +491,16 @@ namespace JQuant
             System.GC.Collect();
         }
 
+        protected void GetSH161Data(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            if (DataCollector == null)
+            {
+                // create Collector (producer) - will do it only once
+                DataCollector = new FMRShell.Collector(this.fmrConection.GetSessionId());
+            }
+            DataCollector.GetSH161Data(iWrite);
+        }
+
         protected void debugGetAS400DTCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int ltncy;
@@ -1100,6 +1110,9 @@ namespace JQuant
             menuDebug.AddCommand("loginTest", "Run simple test of the login",
                                   " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
 
+            menuDebug.AddCommand("sh161", "Get TA25 Index weights",
+                                  "Get TA25 Index weights",
+                                  GetSH161Data);
             menuDebug.AddCommand("AS400TimeTest", "ping the server",
                                   "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                   debugGetAS400DTCallback);
