@@ -1019,6 +1019,37 @@ namespace FMRShell
             }
         }
 
+        public void GetSH161Data(IWrite iWrite)
+        {
+            Array x = null;
+            int rc = k300Class.GetSH161(ref x, MadadTypes.TLV25);
+            iWrite.WriteLine(rc.ToString());
+            iWrite.WriteLine(x.GetLength(0).ToString());
+            if (rc > 0)
+            {
+                for (int i = 0; i < x.GetLength(0); i++)
+                {
+                    iWrite.WriteLine(SH161ToString((SH161Type)x.GetValue(i)));
+                }
+            }
+        }
+
+        public string SH161ToString(SH161Type t)
+        {
+            string r = "";
+            r += t.BNO + ",";
+            r += t.BNO_NAME + ",";
+            r += t.PRC + ",";
+            r += t.HON_RASHUM + ",";
+            r += t.PCNT + ",";
+            r += t.MIN_NV + ",";
+            r += t.BNO_IN_MDD + ",";
+            r += t.PUBLIC_PRCNT + ",";
+            r += t.NV_TZAFA;
+
+            return r;
+        }
+
         public MaofProducer maofProducer;
         public RezefProducer rezefProducer;
         public MadadProducer madadProducer;
