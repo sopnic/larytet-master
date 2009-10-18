@@ -92,7 +92,7 @@ namespace JQuant
         protected void Run()
         {
 
-            cli.PrintTitle(this);
+            //cli.PrintTitle(this);
             cli.PrintCommands(this);
 
             // While exit command not entered, process each command
