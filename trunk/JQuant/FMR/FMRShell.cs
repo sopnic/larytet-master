@@ -673,6 +673,14 @@ namespace FMRShell
         }
     }
 
+    public class SH161TypeToString : StructToString<SH161Type>
+    {
+        public SH161TypeToString(string delimiter)
+            : base(delimiter)
+        {
+        }
+    }
+
     /// <summary>
     /// this class used by the RxDataValidator to let the application know that
     /// something wrong with the incoming data
@@ -1019,6 +1027,12 @@ namespace FMRShell
             }
         }
 
+        /// <summary>
+        /// SH161 Data contains weights of securities in TASE indices
+        /// I use this one to retrieve weights for TA25 Index
+        /// Call this method only once - the weights are the same for the rest of the trading session.
+        /// </summary>
+        /// <param name="iWrite"></param>
         public void GetSH161Data(IWrite iWrite)
         {
             Array x = null;
@@ -1034,6 +1048,11 @@ namespace FMRShell
             }
         }
 
+        /// <summary>
+        /// Writes a SH161Type structure to a csv string
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         public string SH161ToString(SH161Type t)
         {
             string r = "";

@@ -306,6 +306,23 @@ namespace TaskBarLibSim
         public string UPD_TIME;
     }
 
+    /// <summary>
+    /// Defines securitys' weights in different TASE indices
+    /// (the weights change daily)
+    /// </summary>
+    public struct SH161Type
+    {
+        long BNO;               // מספר נייר ערך    Security's TASE Id
+        string BNO_NAME;        // שם נייר ערך      security's Hebrew name
+        double PRC;             // מחיר             Base price (usually it's previous close adjusted for splits and dividends
+        double HON_RASHUM;      // הון רשום         registered capital
+        double PCNT;            // אחוז             security's weight in the index
+        long MIN_NV;            // כמות מינימלית    
+        double BNO_IN_MDD;      // מספר מניות במדד = מממ
+        double PUBLIC_PRCNT;    // אחוז אחזקות בציבור
+        double NV_TZAFA;        // כמות צפה = מממ* אחוז אחזקות בציבור
+    }
+
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireMaofEventHandler(ref Array psaStrRecords, ref int nRecords);
     public delegate void IK300Event_FireRezefCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
@@ -393,6 +410,21 @@ namespace TaskBarLibSim
             psaRecords = null;
             return -1;
         }
+
+        /// <summary>
+        /// retreive weight of securities in indexes.
+        /// </summary>
+        /// <param name="vecRecords">Array in which <see cref="TaskBarLibSim.SH161Type"/>
+        /// data is kept. Containing all the records for the index specified in parameter madadSymbol </param>
+        /// <param name="madadSymbol">Only stocks included in this MadadType index will be retrieved. </param>
+        /// <returns>Upon success the function returns the total 
+        /// number of SH161Type records retrieved into the vecRecords array. 0 if no records were found. </returns>
+        public virtual int GetSH161(ref System.Array vecRecords, MadadTypes madadSymbol)
+        {
+            vecRecords = null;
+            return 0;
+        }
+
 
         public virtual int K300StartStream(K300StreamType streamType)
         {

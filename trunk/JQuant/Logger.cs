@@ -559,5 +559,46 @@ namespace JQuant
         StreamWriter _streamWriter;
     }
 
+    /// <summary>
+    /// This guy is called once a day in order to keep weights of securities in 
+    /// a csv file. 
+    /// </summary>
+    public class SH161DataLogger
+    {
+        public SH161DataLogger(string fileName)
+        {
+            //No append - run it once a day
+            _fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+            _streamWriter = new StreamWriter(_fileStream);
+            _sh161DataToString = new FMRShell.SH161TypeToString(",");
+        }
+
+        protected void WriteData()
+        {
+
+        }
+
+        public void GetSH161Data(K300Class k300Class)
+        {
+            Array x = null;
+            int rc = k300Class.GetSH161(ref x, MadadTypes.TLV25);
+            if (rc > 0)
+            {
+                for (int i = 0; i < x.GetLength(0); i++)
+                {
+                    WriteData();
+                }
+            }
+        }
+
+        public static void SH161ToCSVFile(SH161Type sh161, FileStream fs)
+        {
+
+        }
+        FileStream _fileStream;
+        StreamWriter _streamWriter;
+        FMRShell.SH161TypeToString _sh161DataToString;
+    }//SH161DataLogger
+
     
 }//namespace
