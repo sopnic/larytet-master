@@ -1319,7 +1319,7 @@ namespace FMRShell
     #region Config AS400DateTime;
 
     /// <summary>
-    /// Used to get latecny and synchronize local machine vs. AS400
+    /// Used to get latency and synchronize local machine vs. AS400
     /// </summary>
     /// 
     public class AS400Synch
@@ -1338,11 +1338,18 @@ namespace FMRShell
             else return ret;
         }
 
+        /// <summary>
+        /// this method is used by CLI and probably redundant
+        /// </summary>
         public static DateTime GetAS400DateTime()
         {
             ConfigClass cs = new ConfigClass();
             AS400DateTime dt;
             int ltncy;
+            
+            // larytet - we have to do something with ret, for example if non-zero
+            // we should return null
+            // GetLatency() and DoPing() handle return code            
             int ret = cs.GetAS400DateTime(out dt, out ltncy);
             return ConvertToDateTime(dt);
         }
