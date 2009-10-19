@@ -1,4 +1,3 @@
-
 using System;
 using System.Reflection;
 using System.Threading;
@@ -312,15 +311,15 @@ namespace TaskBarLibSim
     /// </summary>
     public struct SH161Type
     {
-        long BNO;               // осфш рййш тшк    Security's TASE Id
-        string BNO_NAME;        // щн рййш тшк      security's Hebrew name
-        double PRC;             // озйш             Base price (usually it's previous close adjusted for splits and dividends
-        double HON_RASHUM;      // деп шщен         registered capital
-        double PCNT;            // азеж             security's weight in the index
-        long MIN_NV;            // лоеъ ойрйомйъ    
-        double BNO_IN_MDD;      // осфш орйеъ богг = ооо
-        double PUBLIC_PRCNT;    // азеж азжчеъ бцйбеш
-        double NV_TZAFA;        // лоеъ цфд = ооо* азеж азжчеъ бцйбеш
+        long BNO;               // Г®Г±ГґГё Г°Г©Г©Гё ГІГёГЄ    Security's TASE Id
+        string BNO_NAME;        // Г№Г­ Г°Г©Г©Гё ГІГёГЄ      security's Hebrew name
+        double PRC;             // Г®Г§Г©Гё             Base price (usually it's previous close adjusted for splits and dividends
+        double HON_RASHUM;      // Г¤ГҐГЇ ГёГ№ГҐГ­         registered capital
+        double PCNT;            // Г Г§ГҐГ¦             security's weight in the index
+        long MIN_NV;            // Г«Г®ГҐГє Г®Г©Г°Г©Г®Г¬Г©Гє    
+        double BNO_IN_MDD;      // Г®Г±ГґГё Г®Г°Г©ГҐГє ГЎГ®ГЈГЈ = Г®Г®Г®
+        double PUBLIC_PRCNT;    // Г Г§ГҐГ¦ Г Г§Г¦Г·ГҐГє ГЎГ¶Г©ГЎГҐГё
+        double NV_TZAFA;        // Г«Г®ГҐГє Г¶ГґГ¤ = Г®Г®Г®* Г Г§ГҐГ¦ Г Г§Г¦Г·ГҐГє ГЎГ¶Г©ГЎГҐГё
     }
 
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
