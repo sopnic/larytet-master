@@ -311,15 +311,15 @@ namespace TaskBarLibSim
     /// </summary>
     public struct SH161Type
     {
-        long BNO;               // îñôø ðééø òøê    Security's TASE Id
-        string BNO_NAME;        // ùí ðééø òøê      security's Hebrew name
-        double PRC;             // îçéø             Base price (usually it's previous close adjusted for splits and dividends
-        double HON_RASHUM;      // äåï øùåí         registered capital
-        double PCNT;            // àçåæ             security's weight in the index
-        long MIN_NV;            // ëîåú îéðéîìéú    
-        double BNO_IN_MDD;      // îñôø îðéåú áîãã = îîî
-        double PUBLIC_PRCNT;    // àçåæ àçæ÷åú áöéáåø
-        double NV_TZAFA;        // ëîåú öôä = îîî* àçåæ àçæ÷åú áöéáåø
+        public long BNO;               // îñôø ðééø òøê    Security's TASE Id
+        public string BNO_NAME;        // ùí ðééø òøê      security's Hebrew name
+        public double PRC;             // îçéø             Base price (usually it's previous close adjusted for splits and dividends
+        public double HON_RASHUM;      // äåï øùåí         registered capital
+        public double PCNT;            // àçåæ             security's weight in the index
+        public long MIN_NV;            // ëîåú îéðéîìéú    
+        public double BNO_IN_MDD;      // îñôø îðéåú áîãã = îîî
+        public double PUBLIC_PRCNT;    // àçåæ àçæ÷åú áöéáåø
+        public double NV_TZAFA;        // ëîåú öôä = îîî* àçåæ àçæ÷åú áöéáåø
     }
 
     public delegate void IK300Event_FireMaofCNTEventHandler(ref Array psaStrRecords, ref int nRecords);
