@@ -1053,7 +1053,7 @@ namespace FMRShell
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public string SH161ToString(SH161Type t)
+        public static string SH161ToString(SH161Type t)
         {
             string r = "";
             r += t.BNO + ",";

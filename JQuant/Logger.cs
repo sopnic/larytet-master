@@ -573,28 +573,25 @@ namespace JQuant
             _sh161DataToString = new FMRShell.SH161TypeToString(",");
         }
 
-        protected void WriteData()
-        {
-
-        }
-
-        public void GetSH161Data(K300Class k300Class)
+        public void GetAndLogSH161Data(int _sessionId)
         {
             Array x = null;
+            K300Class k300Class = new K300Class();
+            k300Class.K300SessionId = _sessionId;
+
             int rc = k300Class.GetSH161(ref x, MadadTypes.TLV25);
             if (rc > 0)
             {
+                _streamWriter.WriteLine(_sh161DataToString.Legend);
                 for (int i = 0; i < x.GetLength(0); i++)
                 {
-                    WriteData();
+                    _sh161DataToString.Init((SH161Type)x.GetValue(i));
+                    _streamWriter.WriteLine(_sh161DataToString.Values);
                 }
+                Console.WriteLine(rc + " SH161 records collected");    
             }
         }
 
-        public static void SH161ToCSVFile(SH161Type sh161, FileStream fs)
-        {
-
-        }
         FileStream _fileStream;
         StreamWriter _streamWriter;
         FMRShell.SH161TypeToString _sh161DataToString;
