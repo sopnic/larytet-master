@@ -583,13 +583,18 @@ namespace JQuant
             if (rc > 0)
             {
                 _streamWriter.WriteLine(_sh161DataToString.Legend);
-                for (int i = 0; i < x.GetLength(0); i++)
+                for (int i = 0; i < rc; i++)
                 {
                     _sh161DataToString.Init((SH161Type)x.GetValue(i));
                     _streamWriter.WriteLine(_sh161DataToString.Values);
                 }
                 Console.WriteLine(rc + " SH161 records collected");    
             }
+
+            _streamWriter.Close();
+            _fileStream.Close();
+            _streamWriter.Dispose();
+            _fileStream.Dispose();
         }
 
         FileStream _fileStream;
