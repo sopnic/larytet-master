@@ -229,7 +229,7 @@ namespace FMRShell
                 iWrite.WriteLine("|----+----+----+----+----+----+----+----+----+----|");
             }
 
-            
+
             string desc_ = "";
 
             // loop until login succeeds
@@ -241,11 +241,11 @@ namespace FMRShell
                 // I need a short delay here before next attempt - 5 seconds
                 // but do it only when already in the process - this saves me time when 
                 // I have connection already established - don't wait on the first attempt.
-                if (percent>0) Thread.Sleep(5 * 1000);
+                if (percent > 0) Thread.Sleep(5 * 1000);
 
                 userClass.GetLoginActivity(ref sessionId, out percent_1, out description);
 
-                if (percent_1 != percent) 
+                if (percent_1 != percent)
                 {
                     if (printProgress)
                     {
@@ -346,10 +346,10 @@ namespace FMRShell
         Madad,
 
         // keep this entry last
-        Last        
+        Last
     }
 
-    public struct MarketDataMadad: ICloneable
+    public struct MarketDataMadad : ICloneable
     {
         public K300MadadType k300MddType;
 
@@ -395,23 +395,23 @@ namespace FMRShell
             //will try to see what we understand from the logged data - Oct 08, 2009
 
 
-                /*k300MddType.BNO_Num + "," +
-                k300MddType.LMT_BY1 + "," +
-                k300MddType.LMT_BY2 + "," +
-                k300MddType.LMT_BY3 + "," +
-                k300MddType.LMT_SL1 + "," +
-                k300MddType.LMT_SL2 + "," +
-                k300MddType.LMT_SL3 + "," +
-                k300MddType.LMY_BY1_NV + "," +
-                k300MddType.LMY_BY2_NV + "," +
-                k300MddType.LMY_BY3_NV + "," +
-                k300MddType.LMY_SL1_NV + "," +
-                k300MddType.LMY_SL2_NV + "," +
-                k300MddType.LMY_SL3_NV + "," +
-                k300MddType.LST_DL_PR + "," +
-                k300MddType.LST_DL_TM + "," +
-                k300MddType.LST_DL_VL + "," +
-                k300MddType.UPD_TIME + "\n";*/
+            /*k300MddType.BNO_Num + "," +
+            k300MddType.LMT_BY1 + "," +
+            k300MddType.LMT_BY2 + "," +
+            k300MddType.LMT_BY3 + "," +
+            k300MddType.LMT_SL1 + "," +
+            k300MddType.LMT_SL2 + "," +
+            k300MddType.LMT_SL3 + "," +
+            k300MddType.LMY_BY1_NV + "," +
+            k300MddType.LMY_BY2_NV + "," +
+            k300MddType.LMY_BY3_NV + "," +
+            k300MddType.LMY_SL1_NV + "," +
+            k300MddType.LMY_SL2_NV + "," +
+            k300MddType.LMY_SL3_NV + "," +
+            k300MddType.LST_DL_PR + "," +
+            k300MddType.LST_DL_TM + "," +
+            k300MddType.LST_DL_VL + "," +
+            k300MddType.UPD_TIME + "\n";*/
         }
     }//struct MarketDataMadad
 
@@ -764,14 +764,14 @@ namespace FMRShell
                 return true;
             }
 
-            public override void GetEventCounters(out System.Collections.ArrayList names, 
+            public override void GetEventCounters(out System.Collections.ArrayList names,
                                                  out System.Collections.ArrayList values)
             {
                 names = new System.Collections.ArrayList(4);
                 values = new System.Collections.ArrayList(4);
-    
-                names.Add("Events");values.Add(GetEvents());
-                names.Add("Sinks");values.Add(GetSinks());
+
+                names.Add("Events"); values.Add(GetEvents());
+                names.Add("Sinks"); values.Add(GetSinks());
             }
 
             protected int GetSinks()
@@ -784,7 +784,7 @@ namespace FMRShell
             {
                 return countEvents;
             }
-            
+
             protected static List<JQuant.ISink<MarketDataMadad>> MadadListeners;
             MarketDataMadad mktDta;
             int countOnMadad;
@@ -845,9 +845,9 @@ namespace FMRShell
             {
                 names = new System.Collections.ArrayList(4);
                 values = new System.Collections.ArrayList(4);
-    
-                names.Add("Events");values.Add(GetEvents());
-                names.Add("Sinks");values.Add(GetSinks());
+
+                names.Add("Events"); values.Add(GetEvents());
+                names.Add("Sinks"); values.Add(GetSinks());
             }
 
             protected int GetSinks()
@@ -859,14 +859,14 @@ namespace FMRShell
             {
                 return countEvents;
             }
-            
+
             public string Name
             {
                 get;
                 set;
             }
-            
-            protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;        
+
+            protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;
             MarketDataMaof mktDta;
             int countOnMaof;
             int countEvents;
@@ -887,7 +887,7 @@ namespace FMRShell
             {
                 mktDta.k300RzfType = data;
                 countEvents++;
-                
+
                 foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners)
                 {
                     sink.Notify(countOnRezef, mktDta);
@@ -911,22 +911,22 @@ namespace FMRShell
             {
                 names = new System.Collections.ArrayList(4);
                 values = new System.Collections.ArrayList(4);
-    
-                names.Add("Events");values.Add(GetEvents());
-                names.Add("Sinks");values.Add(GetSinks());
+
+                names.Add("Events"); values.Add(GetEvents());
+                names.Add("Sinks"); values.Add(GetSinks());
             }
 
             protected int GetSinks()
             {
                 return RezefListeners.Count;
             }
-            
+
             protected int GetEvents()
             {
                 return countEvents;
             }
-            
-            
+
+
             protected static List<JQuant.ISink<MarketDataRezef>> RezefListeners;
             MarketDataRezef mktDta;
             int countOnRezef;
@@ -942,9 +942,9 @@ namespace FMRShell
                 k300Class.K300SessionId = sessionId;
             }
 
-            if (k300EventsClass  == null) 
+            if (k300EventsClass == null)
                 k300EventsClass = new K300EventsClass();
-            
+
             //set the filters:
             k300EventsClass.EventsFilterBaseAsset = BaseAssetTypes.BaseAssetMaof;
             //k300EventsClass.EventsFilterBno=??? //here we set a single security, if specified
@@ -967,7 +967,7 @@ namespace FMRShell
             {
                 case DataType.Maof:
                     int tries = 0;
-                    int rc=-1;
+                    int rc = -1;
                     while (rc != 0 && tries < 5)
                     {
                         rc = k300Class.K300StartStream(K300StreamType.MaofStream);
@@ -980,7 +980,7 @@ namespace FMRShell
                     rc = k300Class.K300StartStream(K300StreamType.RezefStream);
                     break;
                 case DataType.Madad:
-                    rc=k300Class.K300StartStream(K300StreamType.IndexStream);
+                    rc = k300Class.K300StartStream(K300StreamType.IndexStream);
                     //OR - try this instead:
                     //rc = k300Class.K300StartStream(K300StreamType.MaofStream);
                     Console.WriteLine("IndexStream Started, rc=" + rc);
@@ -996,21 +996,21 @@ namespace FMRShell
             switch (dt)
             {
                 case DataType.Maof:
-                    rc=k300Class.K300StopStream(K300StreamType.MaofStream);
+                    rc = k300Class.K300StopStream(K300StreamType.MaofStream);
                     Console.WriteLine("MaofStream stopped, rc= " + rc);
                     break;
-                
+
                 case DataType.Rezef:
                     rc = k300Class.K300StopStream(K300StreamType.RezefStream);
                     Console.WriteLine("RezefStream stopped, rc= " + rc);
                     break;
-                
+
                 case DataType.Madad:
                     // It is still not clear which stream to start here, 
                     // because Madad data is supported either in the Maof stream
                     // or in a special Index stream - both do the job
                     //so chose one of the following:
-                    
+
                     // ** 1 ** - here you need to register yorself with the 
                     // index events with appropriate method 'OnMadad'
                     //k300Class.K300StopStream(K300StreamType.MaofStream);
@@ -1021,7 +1021,7 @@ namespace FMRShell
                     rc = k300Class.K300StopStream(K300StreamType.IndexStream);
                     Console.WriteLine("IndexStream stopped, rc= " + rc);
                     break;
-                
+
                 default:
                     break;
             }
@@ -1099,7 +1099,7 @@ namespace FMRShell
         protected RxDataValidator()
         {
         }
-        
+
         public bool AddSink(JQuant.ISink<DataValidatorEvent> sink)
         {
             return true;
@@ -1117,7 +1117,7 @@ namespace FMRShell
         }
 
         public abstract void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values);
-        
+
         /// <summary>
         /// called by Collector to notify about incoming event. Add the event to the FIFO
         /// </summary>
@@ -1346,7 +1346,7 @@ namespace FMRShell
             ConfigClass cs = new ConfigClass();
             AS400DateTime dt;
             int ltncy;
-            
+
             // larytet - we have to do something with ret, for example if non-zero
             // we should return null
             // GetLatency() and DoPing() handle return code            
@@ -1384,7 +1384,7 @@ namespace FMRShell
         {
             return DateTime.Now.ToString("hh:mm:ss.fff") + ","
                 + dt.ToString("hh:mm:ss.fff") + ","
-                + latency.ToString() + "\n";
+                + latency.ToString();
         }
     }
 
@@ -1902,11 +1902,11 @@ namespace FMRShell
 
         // send message to the mailbox
 
-        
-        
-        
-        
-        
+
+
+
+
+
         public bool Submit(IMaofOrder order)
         {
             return true;
@@ -1917,9 +1917,9 @@ namespace FMRShell
             return true;
         }
 
-        
-        
-        
+
+
+
         /// <summary>
         /// A storage place where FSM keeps all the active orders.
         /// </summary>
@@ -1930,8 +1930,9 @@ namespace FMRShell
     #endregion;
 
 
+    #region FMRPing
     /// <summary>
-    /// FSM which handles ebvents Login, Logout, Timer and can be in states - Idle, LinkUp, LinkDown
+    /// FSM which handles events Login, Logout, Timer and can be in states - Idle, LinkUp, LinkDown
     /// If timer expires in LinkDown state FSM produces audible signal (beep)
     /// 
     /// ------------- Usage -------------
@@ -1968,52 +1969,53 @@ namespace FMRShell
             LinkUp,
             LinkDown
         }
-        
+
         public enum Events
         {
             // start the ping
             Login,
-    
+
             // stop the ping
             Logout,
-    
+
             // timer expired
             Timer,
-    
+
             // send Ping
             PingTimer,
-    
+
             // Ping returned
             PingOk,
-            
+
             // Ping failed
             PingFailed
         }
 
-        
+
         protected State state;
 
         /// <summary>
         /// use GetInstance() to get reference to the instance of the FMRPing 
         /// </summary>
-        protected FMRPing() : base("FMRPing", 10)
+        protected FMRPing()
+            : base("FMRPing", 10)
         {
-            int pingPeriod  = 2;
-            
+            int pingPeriod = 2;
+
             // i need a timer and a working thread
             timerTask = new TimerTask("FMRPngTmr");
-            timers_5sec = new TimerList("FMRPng5", 5*1000, 2, this.TimerExpiredHandler, timerTask);
-            timers_2sec = new TimerList("FMRPng2", pingPeriod*1000, 2, this.PingTimerExpiredHandler, timerTask);
+            timers_5sec = new TimerList("FMRPng5", 5 * 1000, 2, this.TimerExpiredHandler, timerTask);
+            timers_2sec = new TimerList("FMRPng2", pingPeriod * 1000, 2, this.PingTimerExpiredHandler, timerTask);
             timerTask.Start();
 
-            Statistics2min = new IntStatistics("1 min", 1*60/pingPeriod); // pings in 2 min
-            Statistics10min = new IntStatistics("10 min", 10*60/pingPeriod); // pings in 10 min
-            Statistics1hour = new IntStatistics("1 hour", 1*60*60/pingPeriod); // pings in 1 hour
-            
-            MaxMin2min = new IntMaxMin("1 min", 1*60/pingPeriod); // pings in 2 min
-            MaxMin10min = new IntMaxMin("10 min", 10*60/pingPeriod); // pings in 10 min
-            MaxMin1hour = new IntMaxMin("1 hour", 1*60*60/pingPeriod); // pings in 1 hour
-            
+            Statistics2min = new IntStatistics("1 min", 1 * 60 / pingPeriod); // pings in 2 min
+            Statistics10min = new IntStatistics("10 min", 10 * 60 / pingPeriod); // pings in 10 min
+            Statistics1hour = new IntStatistics("1 hour", 1 * 60 * 60 / pingPeriod); // pings in 1 hour
+
+            MaxMin2min = new IntMaxMin("1 min", 1 * 60 / pingPeriod); // pings in 2 min
+            MaxMin10min = new IntMaxMin("10 min", 10 * 60 / pingPeriod); // pings in 10 min
+            MaxMin1hour = new IntMaxMin("1 hour", 1 * 60 * 60 / pingPeriod); // pings in 1 hour
+
             state = State.Idle;
             jobQueue = CreateJobQueue();
         }
@@ -2031,125 +2033,125 @@ namespace FMRShell
         {
             switch (state)
             {
-            case State.Idle:
-                HandleIdle(taskEvent);
-                break;
-            case State.LinkUp:
-                HandleLinkUp(taskEvent);
-                break;
-            case State.LinkDown:
-                HandleLinkDown(taskEvent);
-                break;
+                case State.Idle:
+                    HandleIdle(taskEvent);
+                    break;
+                case State.LinkUp:
+                    HandleLinkUp(taskEvent);
+                    break;
+                case State.LinkDown:
+                    HandleLinkDown(taskEvent);
+                    break;
             }
         }
-        
+
         protected void HandleIdle(Events taskEvent)
         {
             switch (taskEvent)
             {
-            case Events.Login:
-                countPings = 0;
-                configClass = new ConfigClass();
-                StartTimer();
-                StartPingTimer();
-                state = State.LinkUp; // assume link up state
-                break;
-            case Events.Logout:
-                Console.WriteLine("FMRPing: logout in the idle state");
-                break;
-            case Events.Timer:
-                // do not restart the timer
-                break;
-            case Events.PingTimer:
-                // do not restart the timer
-                break;
-            case Events.PingOk:
-                // ignore ping results 
-                break;
-            case Events.PingFailed:
-                // ignore ping results 
-                break;
+                case Events.Login:
+                    countPings = 0;
+                    configClass = new ConfigClass();
+                    StartTimer();
+                    StartPingTimer();
+                    state = State.LinkUp; // assume link up state
+                    break;
+                case Events.Logout:
+                    Console.WriteLine("FMRPing: logout in the idle state");
+                    break;
+                case Events.Timer:
+                    // do not restart the timer
+                    break;
+                case Events.PingTimer:
+                    // do not restart the timer
+                    break;
+                case Events.PingOk:
+                    // ignore ping results 
+                    break;
+                case Events.PingFailed:
+                    // ignore ping results 
+                    break;
             }
         }
-        
+
         protected void HandleLinkUp(Events taskEvent)
         {
             switch (taskEvent)
             {
-            case Events.Login:
-                Console.WriteLine("FMRPing: Login in the linkup state");
-                break;
-            case Events.Logout:
-                jobQueue.Stop();
-                jobQueue.Dispose();
-                jobQueue = CreateJobQueue();
-                
-                state = State.Idle;
-                break;
-            case Events.Timer:
-                if (countPings == 0)
-                {
-                    Console.WriteLine("FMRPing: ping failed in linkup state, move to linkdown");
-                    state = State.LinkDown;
-                }
-                countPings = 0;
-                // restart expired timer
-                StartTimer();
-                break;
-            case Events.PingTimer:
-                SendPing();
-                StartPingTimer();
-                break;
-            case Events.PingOk:
-                countPings++;
-                CountPingOk++;
-                break;
-            case Events.PingFailed:
-                Console.WriteLine("FMRPing: ping failed in the linkup state");
-                CountPingFailed++;
-                break;
+                case Events.Login:
+                    Console.WriteLine("FMRPing: Login in the linkup state");
+                    break;
+                case Events.Logout:
+                    jobQueue.Stop();
+                    jobQueue.Dispose();
+                    jobQueue = CreateJobQueue();
+
+                    state = State.Idle;
+                    break;
+                case Events.Timer:
+                    if (countPings == 0)
+                    {
+                        Console.WriteLine("FMRPing: ping failed in linkup state, move to linkdown");
+                        state = State.LinkDown;
+                    }
+                    countPings = 0;
+                    // restart expired timer
+                    StartTimer();
+                    break;
+                case Events.PingTimer:
+                    SendPing();
+                    StartPingTimer();
+                    break;
+                case Events.PingOk:
+                    countPings++;
+                    CountPingOk++;
+                    break;
+                case Events.PingFailed:
+                    Console.WriteLine("FMRPing: ping failed in the linkup state");
+                    CountPingFailed++;
+                    break;
             }
         }
-        
+
         protected void HandleLinkDown(Events taskEvent)
         {
             switch (taskEvent)
             {
-            case Events.Login:
-                Console.WriteLine("FMRPing: Login in the linkdown state");
-                break;
-            case Events.Logout:
-                jobQueue.Stop();
-                jobQueue.Dispose();
-                jobQueue = CreateJobQueue();
-                
-                state = State.Idle;
-                break;
-            case Events.Timer:
-                if (countPings != 0)
-                {
-                    Console.WriteLine("FMRPing: move to linkup state");
+                case Events.Login:
+                    Console.WriteLine("FMRPing: Login in the linkdown state");
+                    break;
+                case Events.Logout:
+                    jobQueue.Stop();
+                    jobQueue.Dispose();
+                    jobQueue = CreateJobQueue();
+
+                    state = State.Idle;
+                    break;
+                case Events.Timer:
+                    if (countPings != 0)
+                    {
+                        Console.WriteLine("FMRPing: move to linkup state");
+                        state = State.LinkUp;
+                    }
+                    countPings = 0;
+                    // restart expired timer
+                    StartTimer();
+                    break;
+                case Events.PingTimer:
+                    SendPing();
+                    StartPingTimer();
+                    DoBeep();
+                    break;
+                case Events.PingOk:
+                    Console.WriteLine("FMRPing: ping Ok, move to linkup state");
                     state = State.LinkUp;
-                }
-                countPings = 0;
-                // restart expired timer
-                StartTimer();
-                break;
-            case Events.PingTimer:
-                SendPing();
-                StartPingTimer();
-                DoBeep();
-                break;
-            case Events.PingOk:
-                Console.WriteLine("FMRPing: ping Ok, move to linkup state");
-                state = State.LinkUp;
-                countPings++;
-                CountPingOk++;
-                break;
-            case Events.PingFailed:
-                // nothing new here
-                CountPingFailed++;
-                break;
+                    countPings++;
+                    CountPingOk++;
+                    break;
+                case Events.PingFailed:
+                    // nothing new here
+                    CountPingFailed++;
+                    break;
             }
         }
 
@@ -2165,12 +2167,12 @@ namespace FMRShell
         {
             this.Send(Events.PingTimer);
         }
-        
+
         protected void DoBeep()
         {
             Console.Beep();
         }
-        
+
         /// <summary>
         /// delegate called by working thread 
         /// </summary>
@@ -2187,12 +2189,12 @@ namespace FMRShell
                 Statistics2min.Add(latency);
                 Statistics10min.Add(latency);
                 Statistics1hour.Add(latency);
-                
+
                 MaxMin2min.Add(latency);
                 MaxMin10min.Add(latency);
                 MaxMin1hour.Add(latency);
             }
-            
+
             o = b;
         }
 
@@ -2210,10 +2212,10 @@ namespace FMRShell
                 this.Send(Events.PingFailed);
             }
         }
-        
+
         protected void SendPing()
         {
-            jobQueue.AddJob(DoPing, PingDone, null);            
+            jobQueue.AddJob(DoPing, PingDone, null);
         }
 
         protected void StartTimer()
@@ -2262,7 +2264,7 @@ namespace FMRShell
             protected set;
         }
 
-        
+
         public int CountPingFailed
         {
             get;
@@ -2279,16 +2281,16 @@ namespace FMRShell
         {
             JQuant.JobQueue jobQueue = new JQuant.JobQueue("FMRPngJQ", 3);
             jobQueue.Start();
-            
+
             return jobQueue;
         }
-        
+
         protected ConfigClass configClass;
         protected TimerTask timerTask;
         protected TimerList timers_5sec;
         protected TimerList timers_2sec;
         protected int countPings;
         JQuant.JobQueue jobQueue;
-    }
-
+    }// Class FmrPing
+    #endregion
 }//namespace
