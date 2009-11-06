@@ -510,11 +510,11 @@ namespace JQuant
             DateTime dt;
 
             //ping every 2 seconds, 60 times, write the output to the console
-            //TODO - write to a file instead of console, make it a separate thread
+            //TODO - write to a file instead of console, make it a separate low priority thread
             for (int i = 0; i < 60; i++)
             {
                 FMRShell.AS400Synch.Ping(out dt, out ltncy);
-                Console.Write(FMRShell.AS400Synch.ToShortCSVString(dt, ltncy));
+                Console.WriteLine(FMRShell.AS400Synch.ToShortCSVString(dt, ltncy));
                 Thread.Sleep(2000);
             }
         }
