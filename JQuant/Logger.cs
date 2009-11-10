@@ -429,9 +429,9 @@ namespace JQuant
                 // write legend at the top of the file
                 try
                 {
-                    if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Legend);
-                    else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Legend);
-                    else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Legend);
+                    if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Legend+"TimeStamp,Ticks");
+                    else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Legend + "TimeStamp,Ticks");
+                    else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Legend + "TimeStamp,Ticks");
                 }
                 catch (IOException e)
                 {
@@ -503,15 +503,26 @@ namespace JQuant
             // followed by EOL
 
             // convert the data to string - this is time consuming operation
-            if (_dt == FMRShell.DataType.Maof) _maofSink.maofDataToString.Init(((FMRShell.MarketDataMaof)data).k300MaofType);
-            else if (_dt == FMRShell.DataType.Rezef) _rezefSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).k300RzfType);
-            else if (_dt == FMRShell.DataType.Madad) _madadSink.madadDataToString.Init(((FMRShell.MarketDataMadad)data).k300MddType); 
+            if (_dt == FMRShell.DataType.Maof)
+            {
+                _maofSink.maofDataToString.Init(((FMRShell.MarketDataMaof)data).k300MaofType);
+
+            }
+            else if (_dt == FMRShell.DataType.Rezef)
+            {
+                _rezefSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).k300RzfType);
+            }
+            else if (_dt == FMRShell.DataType.Madad)
+            {
+                _madadSink.madadDataToString.Init(((FMRShell.MarketDataMadad)data).k300MddType);
+            }
+
             // write the string to the file
             try
             {
-                if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Values);
-                else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Values);
-                else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Values);
+                if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Values + ((FMRShell.MarketDataMaof)data).timeStmp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataMaof)data).ts);
+                else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Values + ((FMRShell.MarketDataRezef)data).timeStmp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataRezef)data).ts);
+                else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Values + ((FMRShell.MarketDataMadad)data).timeStmp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataMadad)data).ts);
                 // i want to make Flush from time to time
                 // the question is when ? or let the OS to manage the things ?
                 // _streamWriter.Flush();

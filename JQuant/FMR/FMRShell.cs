@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Threading;
 
+using System.Diagnostics;
 using System.Reflection;
 using System.ComponentModel;
 using JQuant;
@@ -353,6 +354,19 @@ namespace FMRShell
     {
         public K300MadadType k300MddType;
 
+        public DateTime timeStmp
+        {
+            get;
+            set;
+        }
+        
+        public long ts
+        {
+            get;
+            set;
+        }
+
+
         public object Clone()
         {
             // create a new object
@@ -375,44 +389,12 @@ namespace FMRShell
             md.k300MddType.UPD_DAT = this.k300MddType.UPD_DAT;
             md.k300MddType.UPD_TIME = this.k300MddType.UPD_TIME;
 
+            md.timeStmp = this.timeStmp;
+            md.ts = this.ts;
+
             return md;
         }
 
-
-        public override string ToString()
-        {
-            return k300MddType.SUG_RC;
-        }
-
-        /// <summary>
-        /// Prepares a single record to be written 
-        /// to a CSV (comma-separated values) output file.
-        /// </summary>
-        /// <returns></returns>
-        public string ToCSVString()
-        {
-            return "";  //it's unclear what's the data mean - no documentation either
-            //will try to see what we understand from the logged data - Oct 08, 2009
-
-
-            /*k300MddType.BNO_Num + "," +
-            k300MddType.LMT_BY1 + "," +
-            k300MddType.LMT_BY2 + "," +
-            k300MddType.LMT_BY3 + "," +
-            k300MddType.LMT_SL1 + "," +
-            k300MddType.LMT_SL2 + "," +
-            k300MddType.LMT_SL3 + "," +
-            k300MddType.LMY_BY1_NV + "," +
-            k300MddType.LMY_BY2_NV + "," +
-            k300MddType.LMY_BY3_NV + "," +
-            k300MddType.LMY_SL1_NV + "," +
-            k300MddType.LMY_SL2_NV + "," +
-            k300MddType.LMY_SL3_NV + "," +
-            k300MddType.LST_DL_PR + "," +
-            k300MddType.LST_DL_TM + "," +
-            k300MddType.LST_DL_VL + "," +
-            k300MddType.UPD_TIME + "\n";*/
-        }
     }//struct MarketDataMadad
 
 
@@ -425,6 +407,18 @@ namespace FMRShell
     public struct MarketDataRezef : ICloneable
     {
         public K300RzfType k300RzfType;
+
+        public DateTime timeStmp
+        {
+            get;
+            set;
+        }
+
+        public long ts
+        {
+            get;
+            set;
+        }
 
         public object Clone()
         {
@@ -493,40 +487,10 @@ namespace FMRShell
             md.k300RzfType.UPD_DAT = this.k300RzfType.UPD_DAT;
             md.k300RzfType.UPD_TIME = this.k300RzfType.UPD_TIME;
 
+            md.timeStmp = this.timeStmp;
+            md.ts = this.ts;
+
             return md;
-        }
-
-
-        public override string ToString()
-        {
-            return k300RzfType.SUG_REC;
-        }
-
-        /// <summary>
-        /// Prepares a single record to be written 
-        /// to a CSV (comma-separated values) output file.
-        /// </summary>
-        /// <returns></returns>
-        public string ToCSVString()
-        {
-            return
-                k300RzfType.BNO_Num + "," +
-                k300RzfType.LMT_BY1 + "," +
-                k300RzfType.LMT_BY2 + "," +
-                k300RzfType.LMT_BY3 + "," +
-                k300RzfType.LMT_SL1 + "," +
-                k300RzfType.LMT_SL2 + "," +
-                k300RzfType.LMT_SL3 + "," +
-                k300RzfType.LMY_BY1_NV + "," +
-                k300RzfType.LMY_BY2_NV + "," +
-                k300RzfType.LMY_BY3_NV + "," +
-                k300RzfType.LMY_SL1_NV + "," +
-                k300RzfType.LMY_SL2_NV + "," +
-                k300RzfType.LMY_SL3_NV + "," +
-                k300RzfType.LST_DL_PR + "," +
-                k300RzfType.LST_DL_TM + "," +
-                k300RzfType.LST_DL_VL + "," +
-                k300RzfType.UPD_TIME + "\n";
         }
     }//struct MarketDataRezef
 
@@ -539,7 +503,27 @@ namespace FMRShell
     /// </summary>
     public struct MarketDataMaof : ICloneable
     {
+        /// <summary>
+        /// The data received from the stream
+        /// </summary>
         public K300MaofType k300MaofType;
+        /// <summary>
+        /// Timestamp
+        /// </summary>
+        public DateTime timeStmp
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// StopWatch precision measure
+        /// </summary>
+        public long ts
+        {
+            get;
+            set;
+        }
 
         public object Clone()
         {
@@ -612,39 +596,10 @@ namespace FMRShell
             md.k300MaofType.UPD_TIME = this.k300MaofType.UPD_TIME;
             md.k300MaofType.FILER = this.k300MaofType.FILER;
 
+            md.timeStmp = this.timeStmp;
+            md.ts = this.ts;
+
             return md;
-        }
-
-        public override string ToString()
-        {
-            return k300MaofType.SUG_REC;
-        }
-
-        /// <summary>
-        /// Prepares a single record to be written 
-        /// to a CSV (comma-separated values) output file.
-        /// </summary>
-        /// <returns></returns>
-        public string ToCSVString()
-        {
-            return
-                k300MaofType.BNO_Num + "," +
-                k300MaofType.LMT_BY1 + "," +
-                k300MaofType.LMT_BY2 + "," +
-                k300MaofType.LMT_BY3 + "," +
-                k300MaofType.LMT_SL1 + "," +
-                k300MaofType.LMT_SL2 + "," +
-                k300MaofType.LMT_SL3 + "," +
-                k300MaofType.LMY_BY1_NV + "," +
-                k300MaofType.LMY_BY2_NV + "," +
-                k300MaofType.LMY_BY3_NV + "," +
-                k300MaofType.LMY_SL1_NV + "," +
-                k300MaofType.LMY_SL2_NV + "," +
-                k300MaofType.LMY_SL3_NV + "," +
-                k300MaofType.LST_DL_PR + "," +
-                k300MaofType.LST_DL_TM + "," +
-                k300MaofType.LST_DL_VL + "," +
-                k300MaofType.UPD_TIME + "\n";
         }
     }//struct MarketDataMaof
 
@@ -739,8 +694,11 @@ namespace FMRShell
             {
                 //Console.Write(".");
                 // no memory allocation here - I am using allready created object 
+                mktDta.timeStmp = DateTime.Now;
+                mktDta.ts = Stopwatch.GetTimestamp();
                 mktDta.k300MddType = data;
                 countEvents++;
+
 
                 // sink should not modify the data. sink has two options:
                 // 1) handle the data in the context of the Collector thead
@@ -753,7 +711,7 @@ namespace FMRShell
 
             public override bool AddSink(JQuant.ISink<MarketDataMadad> sink)
             {
-                Console.WriteLine("MadadListeners.Add(sink)");
+                //Console.WriteLine("MadadListeners.Add(sink)");
                 MadadListeners.Add(sink);
                 return true;
             }
@@ -815,6 +773,8 @@ namespace FMRShell
             {
                 //Console.Write(".");
                 // no memory allocation here - I am using allready created object 
+                mktDta.timeStmp = DateTime.Now;
+                mktDta.ts = Stopwatch.GetTimestamp();
                 mktDta.k300MaofType = data;
                 countEvents++;
 
@@ -829,7 +789,7 @@ namespace FMRShell
 
             public bool AddSink(JQuant.ISink<MarketDataMaof> sink)
             {
-                Console.WriteLine("MaofListeners.Add(sink)");
+                //Console.WriteLine("MaofListeners.Add(sink)");
                 MaofListeners.Add(sink);
                 return true;
             }
@@ -885,7 +845,10 @@ namespace FMRShell
 
             protected void OnRezef(ref K300RzfType data)
             {
+                mktDta.timeStmp = DateTime.Now;
+                mktDta.ts = Stopwatch.GetTimestamp();
                 mktDta.k300RzfType = data;
+
                 countEvents++;
 
                 foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners)
@@ -896,7 +859,7 @@ namespace FMRShell
 
             public override bool AddSink(JQuant.ISink<MarketDataRezef> sink)
             {
-                Console.WriteLine("RezefListeners.Add(sink)");
+                //Console.WriteLine("RezefListeners.Add(sink)");
                 RezefListeners.Add(sink);
                 return true;
             }

@@ -6,11 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.ComponentModel;
-
+using System.Diagnostics;
 
 namespace JQuant
 {
-
     /// <summary>
     /// C# enum does not allow to reload ToString method
     /// I need patch here 
@@ -769,8 +768,8 @@ namespace JQuant
 
     }
     #endregion;
-
-
+    
+    #region Cyclic Buffers
     /// <summary>
     /// Cyclic buffers of integers
     /// Can be used to calculate average over last X minutes
@@ -921,5 +920,5 @@ namespace JQuant
 
         System.Collections.SortedList sortedList;
     }
-    
+    #endregion
 }
