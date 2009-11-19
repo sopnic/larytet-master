@@ -285,7 +285,11 @@ namespace JQuant
     }
 
     /// <summary>
-    /// Returns fixed time. In Windows DateTime.Now returns 
+    /// Returns fixed time. In Windows DateTime.Now returns tikcs rounded to 15ms
+    /// System tick is not real time and drifts by approximately 20s in a day
+    /// Method Now() returns fixed value of DateTime.Now
+    /// I substract from DateTime.Now the milliseconds part and add ticks 
+    /// as returned by Stopwatch over last 1s
     /// </summary>
     public class PreciseTime : IDisposable
     {
@@ -295,14 +299,20 @@ namespace JQuant
             timer1s.AutoReset = true;
             timer1s.Interval = 1000;
             timer1s.Elapsed += new ElapsedEventHandler(ResetTick);
-            
+
+            // i want to be reasonably close to the start of a second
             WaitNextSec();
 
+            // Start 1s time which will set delta to the current system tick
             timer1s.Start();
+            // read current system tick
             delta = Stopwatch.GetTimestamp();
             StartTime = DateTime.Now;
         }
 
+        /// <summary>
+        /// wait for the current time to change a second 
+        /// </summary>
         protected void WaitNextSec()
         {
             DateTime dt1;
@@ -336,6 +346,9 @@ namespace JQuant
             }            
         }
 
+        /// <summary>
+        /// Timer calls this method every second. Read the system tick
+        /// </summary>
         protected void ResetTick( object source, ElapsedEventArgs e)
         {
             lock (this)
@@ -347,16 +360,23 @@ namespace JQuant
         public DateTime Now()
         {
             long tick;
-            tick = Stopwatch.GetTimestamp();
-            
+            DateTime dt;
+
             lock (this)
             {
+                // read the system tick
+                tick = Stopwatch.GetTimestamp();
+                
+                // calculate number of ticks went from the last timer
+                // timer resets delta to the system tick every second  
                 tick = tick - delta;
+                
+                // get current DateTime
+                dt = DateTime.Now;
             }
 
-            DateTime dt = DateTime.Now;
-            
-            // 100 nanos per tick or 10 ticks per 1ms
+            // Fix the millisceconds part of the current DateTime
+            // assuming 100 nanos per tick or 10 ticks per 1ms
             dt.AddMilliseconds(-dt.Millisecond+tick/10);
             
             return dt;
