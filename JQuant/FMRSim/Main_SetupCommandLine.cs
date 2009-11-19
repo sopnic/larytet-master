@@ -1090,6 +1090,7 @@ namespace JQuant
             PreciseTime pt = PreciseTime.Get();
             DateTime dtRT0 = pt.Now();
             int tests = 0;
+            long maxDelta = 0;
             
             do
             {
@@ -1105,10 +1106,17 @@ namespace JQuant
                                      " delta="+(dtRT0.Ticks-dtRT1.Ticks));
                 }
                 tests++;
-                if ((tests & 0x3FFFF) == 0x3FFFF)
+                if ((tests & 0x7FFFF) == 0x7FFFF)
                 {
                     iWrite.Write(".");
+                    long delta = Math.Abs(dtRT1.Ticks - dtRT0.Ticks);
+                    if (delta > maxDelta)
+                    {
+                        maxDelta = delta;
+                        iWrite.Write(""+delta);
+                    }
                 }
+                dtRT0 = dtRT1;
             }
             while (true);
         }
