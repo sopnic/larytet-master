@@ -1017,8 +1017,8 @@ namespace JQuant
         protected int debugRTClockSleep(Random random)
         {
             int res = 0;
-            int ms = random.Next(1, 2*1000);
-            int loops = random.Next(1*1000, 5*1000*1000);
+            int ms = random.Next(0, 2*100);
+            int loops = random.Next(1*100, 50*1000);
 
             Thread.Sleep(ms);
             for (int i =0;i < loops;i++)
@@ -1037,24 +1037,41 @@ namespace JQuant
             do
             {
                 // read time stamps - system and PreciseTime
-                DateTime dt = DateTime.Now;
-                DateTime dtA = dt.Add(new TimeSpan(0,0,1));
-                DateTime dtB = dt.Subtract(new TimeSpan(0,0,1));
+                DateTime dt;
+                
+                dt = DateTime.Now;
+                DateTime dtB = dt.Subtract(new TimeSpan(1000));
+                
                 DateTime dtRT1 = pt.Now();
+                
+                dt = DateTime.Now;
+                DateTime dtA = dt.Add(new TimeSpan(1000));
 
 
                 // run checks
                 if (dtRT1 < dtRT0)
                 {
-                    iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+" dtRT0="+dtRT0);
+                    iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
+                                      " dtRT0="+dtRT0+"."+dtRT0.Millisecond);
+                    iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
+                                     " dtA="+dtRT0.Ticks+
+                                     " delta="+(dtRT0.Ticks-dtRT1.Ticks));
                 }
                 if (dtRT1 < dtB)
                 {
-                    iWrite.WriteLine("Timer slower dtRT1="+dtRT1+" dtB="+dtB);
+                    iWrite.WriteLine("Timer slower dtRT1="+dtRT1+"."+dtRT1.Millisecond+
+                                      " dtB="+dtB+"."+dtB.Millisecond);
+                    iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
+                                     " dtA="+dtB.Ticks+
+                                     " delta="+(dtB.Ticks-dtRT1.Ticks));
                 }
                 if (dtRT1 > dtA)
                 {
-                    iWrite.WriteLine("Timer slower dtRT1="+dtRT1+" dtA="+dtA);
+                    iWrite.WriteLine("Timer faster dtRT1="+dtRT1+"."+dtRT1.Millisecond+
+                                     " dtA="+dtA+"."+dtA.Millisecond);
+                    iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
+                                     " dtA="+dtA.Ticks+
+                                     " delta="+(dtRT1.Ticks-dtB.Ticks));
                 }
                 
                 dtRT0 = dtRT1;
@@ -1062,7 +1079,10 @@ namespace JQuant
                 // sleep little bit
                 debugRTClockSleep(random);
                 tests++;
-                iWrite.Write(".");
+                if ((tests & 0xFF) == 0xFF)
+                {
+                    iWrite.Write(".");
+                }
             }
             while (true);
         }

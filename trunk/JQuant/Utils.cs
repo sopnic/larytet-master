@@ -296,19 +296,22 @@ namespace JQuant
             timer1s.Interval = 1000;
             timer1s.Elapsed += new ElapsedEventHandler(ResetTick);
             
+            WaitNextSec();
+
+            timer1s.Start();
+            delta = Stopwatch.GetTimestamp();
+            StartTime = DateTime.Now;
+        }
+
+        protected void WaitNextSec()
+        {
+            DateTime dt1;
             DateTime dt0 = DateTime.Now;
             do
             {
-                delta = Stopwatch.GetTimestamp();
-                StartTime = DateTime.Now;
-                if (dt0.Second != StartTime.Second)
-                {
-                    break;
-                }
+                dt1 = DateTime.Now;
             }
-            while (true);
-
-            timer1s.Start();
+            while (dt1.Second == dt0.Second);
         }
 
         public void Dispose()
@@ -323,7 +326,7 @@ namespace JQuant
         }
 
         /// <summary>
-        /// Can block the calling thread by up to 1s 
+        /// Can block the calling thread by 3s 
         /// </summary>
         public static void Init()
         {
@@ -344,10 +347,10 @@ namespace JQuant
         public DateTime Now()
         {
             long tick;
+            tick = Stopwatch.GetTimestamp();
             
             lock (this)
             {
-                tick = Stopwatch.GetTimestamp();
                 tick = tick - delta;
             }
 
