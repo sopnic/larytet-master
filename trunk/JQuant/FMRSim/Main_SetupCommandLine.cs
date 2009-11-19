@@ -1014,6 +1014,59 @@ namespace JQuant
             }
         }
 
+        protected int debugRTClockSleep(Random random)
+        {
+            int res = 0;
+            int ms = random.Next(1, 2*1000);
+            int loops = random.Next(1*1000, 5*1000*1000);
+
+            Thread.Sleep(ms);
+            for (int i =0;i < loops;i++)
+            {
+                res++;
+            }
+            return res;
+        }
+
+        protected void debugRTClockCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            Random random = new Random();
+            PreciseTime pt = PreciseTime.Get();
+            DateTime dtRT0 = pt.Now();
+            int tests = 0;
+            do
+            {
+                // read time stamps - system and PreciseTime
+                DateTime dt = DateTime.Now;
+                DateTime dtA = dt.Add(new TimeSpan(0,0,1));
+                DateTime dtB = dt.Subtract(new TimeSpan(0,0,1));
+                DateTime dtRT1 = pt.Now();
+
+
+                // run checks
+                if (dtRT1 < dtRT0)
+                {
+                    iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+" dtRT0="+dtRT0);
+                }
+                if (dtRT1 < dtB)
+                {
+                    iWrite.WriteLine("Timer slower dtRT1="+dtRT1+" dtB="+dtB);
+                }
+                if (dtRT1 > dtA)
+                {
+                    iWrite.WriteLine("Timer slower dtRT1="+dtRT1+" dtA="+dtA);
+                }
+                
+                dtRT0 = dtRT1;
+                
+                // sleep little bit
+                debugRTClockSleep(random);
+                tests++;
+                iWrite.Write(".");
+            }
+            while (true);
+        }
+
         protected void debugCyclicBufferTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             CyclicBuffer<int> cb = new CyclicBufferSynchronized<int>("cliCbTest", 3);
@@ -1054,6 +1107,8 @@ namespace JQuant
         {
             OrderType orderType = (OrderType.LMT | OrderType.FOK | OrderType.IOC);
         }
+
+        
 
         #endregion;
 
@@ -1172,6 +1227,8 @@ namespace JQuant
             menuTests.AddCommand("cbtest", "Cyclic buffer class test",
                                   " Create a cyclic buffer, check functionality", debugCyclicBufferTestCallback);
             
+            menuTests.AddCommand("rtclock", "RT clock test",
+                                  " Calls PreciseTime periodically and checks that the returned time is reasonable", debugRTClockCallback);
         }
 
         #endregion

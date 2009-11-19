@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using System.Reflection;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -248,6 +249,127 @@ namespace JQuant
         Random rand;
         int minLength;
         int maxLength;
+    }
+
+    interface ITimeStamp
+    {
+        DateTime Date
+        {
+            get;
+            set;
+        }
+
+        //// <value>
+        /// always in microseconds 
+        /// </value>
+        long Ticks
+        {
+            get;
+            set;
+        }        
+    }
+
+    class TimeUtils
+    {
+        public static void TimeStamp(ref ITimeStamp o)
+        {
+            o.Date = System.DateTime.Now;
+#if WINDOWS
+            o.Ticks = DateTime.Now.Ticks;
+#else
+            // in Linux 10 ticks is a micro
+            o.Ticks = (long)((double)DateTime.Now.Ticks / (double)(10 * 1));
+#endif
+        }
+        
+    }
+
+    /// <summary>
+    /// Returns fixed time. In Windows DateTime.Now returns 
+    /// </summary>
+    public class PreciseTime : IDisposable
+    {
+        protected PreciseTime()
+        {
+            timer1s = new System.Timers.Timer();
+            timer1s.AutoReset = true;
+            timer1s.Interval = 1000;
+            timer1s.Elapsed += new ElapsedEventHandler(ResetTick);
+            
+            DateTime dt0 = DateTime.Now;
+            do
+            {
+                delta = Stopwatch.GetTimestamp();
+                StartTime = DateTime.Now;
+                if (dt0.Second != StartTime.Second)
+                {
+                    break;
+                }
+            }
+            while (true);
+
+            timer1s.Start();
+        }
+
+        public void Dispose()
+        {
+            timer1s.Stop();
+            preciseTime = null;
+        }
+
+        public static PreciseTime Get()
+        {
+            return preciseTime;
+        }
+
+        /// <summary>
+        /// Can block the calling thread by up to 1s 
+        /// </summary>
+        public static void Init()
+        {
+            if (preciseTime == null)
+            {
+                preciseTime = new PreciseTime();
+            }            
+        }
+
+        protected void ResetTick( object source, ElapsedEventArgs e)
+        {
+            lock (this)
+            {
+                delta = Stopwatch.GetTimestamp();
+            }
+        }
+
+        public DateTime Now()
+        {
+            long tick;
+            
+            lock (this)
+            {
+                tick = Stopwatch.GetTimestamp();
+                tick = tick - delta;
+            }
+
+            DateTime dt = DateTime.Now;
+            
+            // 100 nanos per tick or 10 ticks per 1ms
+            dt.AddMilliseconds(-dt.Millisecond+tick/10);
+            
+            return dt;
+        }
+
+        public DateTime StartTime
+        {
+            get;
+            protected set;
+        }
+        
+        
+        protected static PreciseTime preciseTime;
+        
+        protected long delta;
+        protected System.Timers.Timer timer1s;
     }
 
     #region StatUtils;

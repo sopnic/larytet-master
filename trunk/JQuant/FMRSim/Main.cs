@@ -211,6 +211,9 @@ namespace JQuant
                 Console.WriteLine(Environment.NewLine 
                     + "Warning! Environment variable JQUANT_ROOT is not set" + Environment.NewLine);
 
+            // init precision clock 
+            PreciseTime.Init();
+
             // lists of critical system objects
             Resources.Init();
 
