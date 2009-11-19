@@ -1018,13 +1018,9 @@ namespace JQuant
         {
             int res = 0;
             int ms = random.Next(0, 2*100);
-            int loops = random.Next(1*100, 50*1000);
 
             Thread.Sleep(ms);
-            for (int i =0;i < loops;i++)
-            {
-                res++;
-            }
+            
             return res;
         }
 
@@ -1051,7 +1047,7 @@ namespace JQuant
 
 
                 // run checks
-                if (dtRT1 < dtRT0)
+                if (dtRT1 <= dtRT0)
                 {
                     iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
                                       " dtRT0="+dtRT0+"."+dtRT0.Millisecond);
@@ -1089,6 +1085,34 @@ namespace JQuant
             while (true);
         }
 
+        protected void debugRTClockTCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            PreciseTime pt = PreciseTime.Get();
+            DateTime dtRT0 = pt.Now();
+            int tests = 0;
+            
+            do
+            {
+                DateTime dtRT1 = pt.Now();
+
+                // run checks
+                if (dtRT1 <= dtRT0)
+                {
+                    iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
+                                      " dtRT0="+dtRT0+"."+dtRT0.Millisecond);
+                    iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
+                                     " dtA="+dtRT0.Ticks+
+                                     " delta="+(dtRT0.Ticks-dtRT1.Ticks));
+                }
+                tests++;
+                if ((tests & 0x3FFFF) == 0x3FFFF)
+                {
+                    iWrite.Write(".");
+                }
+            }
+            while (true);
+        }
+        
         protected void debugCyclicBufferTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             CyclicBuffer<int> cb = new CyclicBufferSynchronized<int>("cliCbTest", 3);
@@ -1251,6 +1275,8 @@ namespace JQuant
             
             menuTests.AddCommand("rtclock", "RT clock test",
                                   " Calls PreciseTime periodically and checks that the returned time is reasonable", debugRTClockCallback);
+            menuTests.AddCommand("rtclock_t", "RT clock test",
+                                  " Calls PreciseTime in tight loop and checks that the returned time is reasonable", debugRTClockTCallback);
         }
 
         #endregion
