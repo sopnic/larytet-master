@@ -1034,18 +1034,20 @@ namespace JQuant
             PreciseTime pt = PreciseTime.Get();
             DateTime dtRT0 = pt.Now();
             int tests = 0;
+            
             do
             {
                 // read time stamps - system and PreciseTime
-                DateTime dt;
+                DateTime dt, dtNow;
                 
                 dt = DateTime.Now;
-                DateTime dtB = dt.Subtract(new TimeSpan(1000));
+                dtNow = dt;
+                DateTime dtB = dt.Subtract(new TimeSpan(100));
                 
                 DateTime dtRT1 = pt.Now();
                 
                 dt = DateTime.Now;
-                DateTime dtA = dt.Add(new TimeSpan(1000));
+                DateTime dtA = dt.Add(new TimeSpan(100));
 
 
                 // run checks
@@ -1081,7 +1083,7 @@ namespace JQuant
                 tests++;
                 if ((tests & 0xFF) == 0xFF)
                 {
-                    iWrite.Write(".");
+                    iWrite.Write("."+(dtRT0.Ticks-dtNow.Ticks));
                 }
             }
             while (true);
