@@ -1133,7 +1133,7 @@ namespace JQuant
                 Thread.Sleep(delay);
                 DateTime dtRT1 = pt.Now();
 
-                iWrite.WriteLine("delay="+delay+" tiks="+(dtRT1.Ticks-dtRT0.Ticks));
+                iWrite.WriteLine("delay="+delay+"ms ticks="+(dtRT1.Ticks-dtRT0.Ticks));
             }
             while (true);
         }
