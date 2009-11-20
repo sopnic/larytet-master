@@ -1085,7 +1085,7 @@ namespace JQuant
             while (true);
         }
 
-        protected void debugRTClockTCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void debugRTClock1Callback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             PreciseTime pt = PreciseTime.Get();
             DateTime dtRT0 = pt.Now();
@@ -1120,7 +1120,25 @@ namespace JQuant
             }
             while (true);
         }
-        
+
+        protected void debugRTClock2Callback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            PreciseTime pt = PreciseTime.Get();
+            Random random = new Random();
+
+            do
+            {
+                DateTime dtRT0 = pt.Now();
+                int delay = random.Next(0,50);
+                Thread.Sleep(delay);
+                DateTime dtRT1 = pt.Now();
+
+                iWrite.WriteLine("delay="+delay+" tiks="+(dtRT1.Ticks-dtRT0.Ticks));
+            }
+            while (true);
+        }
+            
+
         protected void debugCyclicBufferTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             CyclicBuffer<int> cb = new CyclicBufferSynchronized<int>("cliCbTest", 3);
@@ -1283,8 +1301,10 @@ namespace JQuant
             
             menuTests.AddCommand("rtclock", "RT clock test",
                                   " Calls PreciseTime periodically and checks that the returned time is reasonable", debugRTClockCallback);
-            menuTests.AddCommand("rtclock_t", "RT clock test",
-                                  " Calls PreciseTime in tight loop and checks that the returned time is reasonable", debugRTClockTCallback);
+            menuTests.AddCommand("rtclock_1", "RT clock test",
+                                  " Calls PreciseTime in tight loop and checks that the returned time is reasonable", debugRTClock1Callback);
+            menuTests.AddCommand("rtclock_2", "RT clock test",
+                                  " Calls PreciseTime and print out ticks", debugRTClock2Callback);
         }
 
         #endregion
