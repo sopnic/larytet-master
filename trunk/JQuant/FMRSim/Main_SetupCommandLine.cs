@@ -1047,7 +1047,7 @@ namespace JQuant
 
 
                 // run checks
-                if (dtRT1 <= dtRT0)
+                if (dtRT1 < dtRT0)
                 {
                     iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
                                       " dtRT0="+dtRT0+"."+dtRT0.Millisecond);
@@ -1097,7 +1097,7 @@ namespace JQuant
                 DateTime dtRT1 = pt.Now();
 
                 // run checks
-                if (dtRT1 <= dtRT0)
+                if (dtRT1 < dtRT0)
                 {
                     iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
                                       " dtRT0="+dtRT0+"."+dtRT0.Millisecond);
