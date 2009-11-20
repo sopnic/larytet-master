@@ -376,8 +376,8 @@ namespace JQuant
             }
 
             // Fix the millisceconds part of the current DateTime
-            // assuming 100 nanos per tick or 10 ticks per 1ms
-            dt.AddMilliseconds(-dt.Millisecond+tick/10);
+            // assuming 100 nanos per tick or 10*1000 ticks per 1ms
+            dt.AddMilliseconds(-dt.Millisecond+tick/(10*1000));
             
             return dt;
         }
