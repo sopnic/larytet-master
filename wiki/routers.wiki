@@ -1,3 +1,5 @@
 SMC2804
 
 http://www.ubnt.com/products/rspro.php
+
+https://dev.openwrt.org/wiki/ar71xx
