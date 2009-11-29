@@ -870,7 +870,7 @@ namespace TaskBarLibSim
                 }
 
                 // first line is legend
-                const string HEADER = "SUG_REC,TRADE_METH,BNO_Num,LAST_REC,SIDURI_Num,SYMBOL_E,Symbol,BNO_NAME_E,BNO_NAME,BRANCH_NO,BRANCH_U,SUG_BNO,MIN_UNIT,HARIG_NV,MIN_PR,MAX_PR,BASIS_PRC,BASIS_COD,STATUS_COD,EX_DATE,EX_PRC,VL_MULT,VL_COD,ZERO_COD,shlav,STATUS,TRD_STP_CD,TRD_STP_N,STP_OPN_TM,LMT_BY1,LMT_BY2,LMT_BY3,LMY_BY1_NV,LMY_BY2_NV,LMY_BY3_NV,RWR_FE,LMT_SL1,LMT_SL2,LMT_SL3,LMY_SL1_NV,LMY_SL2_NV,LMY_SL3_NV,RWR_FF,PRC,COD_PRC,SUG_PRC,LST_DF_BS,RWR_FG,LST_DL_PR,LST_DL_TM,LST_DL_VL,DAY_VL,DAY_VL_NIS,DAY_DIL_NO,RWR_FH,DAY_MAX_PR,DAY_MIN_PR,POS_OPN,POS_OPN_DF,STS_NXT_DY,UPD_DAT,UPD_TIME,FILER,";
+                const string HEADER = "SUG_REC,TRADE_METH,BNO_Num,LAST_REC,SIDURI_Num,SYMBOL_E,Symbol,BNO_NAME_E,BNO_NAME,BRANCH_NO,BRANCH_U,SUG_BNO,MIN_UNIT,HARIG_NV,MIN_PR,MAX_PR,BASIS_PRC,BASIS_COD,STATUS_COD,EX_DATE,EX_PRC,VL_MULT,VL_COD,ZERO_COD,shlav,STATUS,TRD_STP_CD,TRD_STP_N,STP_OPN_TM,LMT_BY1,LMT_BY2,LMT_BY3,LMY_BY1_NV,LMY_BY2_NV,LMY_BY3_NV,RWR_FE,LMT_SL1,LMT_SL2,LMT_SL3,LMY_SL1_NV,LMY_SL2_NV,LMY_SL3_NV,RWR_FF,PRC,COD_PRC,SUG_PRC,LST_DF_BS,RWR_FG,LST_DL_PR,LST_DL_TM,LST_DL_VL,DAY_VL,DAY_VL_NIS,DAY_DIL_NO,RWR_FH,DAY_MAX_PR,DAY_MIN_PR,POS_OPN,POS_OPN_DF,STS_NXT_DY,UPD_DAT,UPD_TIME,FILER,TimeStamp,Ticks";
                 if (!str.Equals(HEADER))
                 {
                     System.Console.WriteLine("First line match failed in the file "+filename);
@@ -914,14 +914,12 @@ namespace TaskBarLibSim
 
                 // parse the string
                 res = parseLogString(str, out data);
+                string time = data.UPD_TIME;
+                
             }
             while (false);
-            
-            
-
 
             count += 1;
-
 
             return true;
         }
@@ -953,6 +951,15 @@ namespace TaskBarLibSim
 
                 // unboxing of the structure
                 data = (K300MaofType)o;
+
+                // the tricky part
+                // last two fields in the record - TimeStamp and Ticks were not parsed
+                // parse them now and calculate delay
+
+                string timeStamp = getNextField(str, ref commaIndex);commaIndex++;
+                string ticks = getNextField(str, ref commaIndex);commaIndex++;
+                System.Console.WriteLine("timeStamp="+timeStamp);
+                System.Console.WriteLine("ticks="+ticks);
                 
                 res = true;
             }
@@ -966,6 +973,13 @@ namespace TaskBarLibSim
             string res;
             
             int to = src.IndexOf(",", from);
+            
+            if (to < 0) // may be end of line ?
+            {
+                // fix the value - reference the char after end of line
+                to = src.Length;
+            }
+            
             if ((to-1) >= from)
             {
                 res = src.Substring(from, (to-from));
