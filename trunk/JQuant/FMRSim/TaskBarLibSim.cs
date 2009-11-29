@@ -1010,7 +1010,7 @@ namespace TaskBarLibSim
         {
             SimulationTop.k300EventsClass.SendEventMaof(ref data);
             // avoid tight loops in the system
-            Thread.Sleep(50);
+            Thread.Sleep(0);
         }
 
         public int GetCount()
