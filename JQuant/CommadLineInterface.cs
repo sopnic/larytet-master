@@ -247,8 +247,9 @@ namespace JQuant
             // after that remove the prefix from the string
             // CurrentMenu reference will be restored from copy
             // in the end of the function
+            int firstBlankIdx = cmdName.IndexOf(" ");
             int slashIdx = cmdName.IndexOf("/");
-            while (slashIdx >= 0)
+            while ((slashIdx >= 0) && (slashIdx < firstBlankIdx))
             {
                 string subcommand = cmdName.Substring(0, slashIdx);
                 ProcessCommand(iWrite, subcommand);

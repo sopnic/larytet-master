@@ -815,9 +815,11 @@ namespace TaskBarLibSim
         /// </param>
         public MaofDataGeneratorLogFile(string filename, double speedup)
         {
+            System.Console.WriteLine("Simulation playback data from "+filename);
             // initial delay is 0 - start immediately
             // fololowing delays will be taken from the log file
             delay = 0;
+            
             fileStream = default(FileStream);
             this.filename = filename;
             streamReader = default(StreamReader);
@@ -896,10 +898,19 @@ namespace TaskBarLibSim
             // delay - usually delay will be in the GetData
             // GetData reads log, pulls the time stamps and simulates
             // timing of the real data stream
-            Thread.Sleep(delay);
+            if (delay != 0)
+            {
+                Thread.Sleep(delay);
+            }
 
             do
             {
+                if (streamReader.EndOfStream)
+                {
+                    res = false;
+                    break;
+                }
+                
                 // let's try to read
                 try
                 {
@@ -921,7 +932,7 @@ namespace TaskBarLibSim
 
             count += 1;
 
-            return true;
+            return res;
         }
 
 
@@ -957,8 +968,8 @@ namespace TaskBarLibSim
 
                 string timeStamp = getNextField(str, ref commaIndex);commaIndex++;
                 string ticks = getNextField(str, ref commaIndex);commaIndex++;
-                System.Console.WriteLine("timeStamp="+timeStamp);
-                System.Console.WriteLine("ticks="+ticks);
+//                System.Console.WriteLine("timeStamp="+timeStamp);
+//                System.Console.WriteLine("ticks="+ticks);
                 
                 res = true;
             }
@@ -1009,7 +1020,7 @@ namespace TaskBarLibSim
 
         public string GetName()
         {
-            return "Maof data random generator";
+            return "Maof playback generator";
         }
 
 
