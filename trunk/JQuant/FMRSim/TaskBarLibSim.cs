@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Threading;
+using System.IO;
 
 
 /// <summary>
@@ -798,8 +799,219 @@ namespace TaskBarLibSim
 
 
     /// <summary>
+    /// this is a thread generating event based on the Maof log file
+    /// </summary>
+    public class MaofDataGeneratorLogFile : EventGenerator<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
+    {
+        /// <summary>
+        /// Create Maof Data generator for backtesting 
+        /// </summary>
+        /// Log file to read the data from
+        /// <param name="filename">
+        /// A <see cref="System.String"/>
+        /// </param>
+        /// <param name="speedup">
+        /// Number of times to accelerate the time. For example, if speedup is 2
+        /// then events of 1s in the log file will be sent in 500ms
+        /// A <see cref="System.Int32"/>
+        /// </param>
+        public MaofDataGeneratorLogFile(string filename, int speedup)
+        {
+            // initial delay is 0 - start immediately
+            // fololowing delays will be taken from the log file
+            delay = 0;
+            fileStream = default(FileStream);
+            this.filename = filename;
+            streamReader = default(StreamReader);
+
+            try
+            {
+                fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+                streamReader = new StreamReader(fileStream);
+            }
+            catch (IOException e)
+            {
+                System.Console.WriteLine("Failed to open file "+filename);
+                if (fileStream != default(FileStream))
+                {
+                    fileStream.Close();
+                    // help Garbage collector
+                    streamReader = default(StreamReader);
+                    fileStream = default(FileStream);
+                }
+                System.Console.WriteLine(e.ToString());
+            }
+
+            checkFile(fileStream);
+            
+            
+            // open file for reading
+            // make sure that the file is reasonable and first line is Ok
+            return;
+        }
+
+        protected bool checkFile(FileStream fileStream)
+        {
+            bool res = false;
+            string str;
+            do
+            {
+                
+                // let's try to read
+                try
+                {
+                    str = streamReader.ReadLine();
+                }
+                catch (IOException e)
+                {
+                    System.Console.WriteLine("Failed to read file "+filename);
+                    System.Console.WriteLine(e.ToString());
+                    break;
+                }
+
+                // first line is legend
+                const string HEADER = "SUG_REC,TRADE_METH,BNO_Num,LAST_REC,SIDURI_Num,SYMBOL_E,Symbol,BNO_NAME_E,BNO_NAME,BRANCH_NO,BRANCH_U,SUG_BNO,MIN_UNIT,HARIG_NV,MIN_PR,MAX_PR,BASIS_PRC,BASIS_COD,STATUS_COD,EX_DATE,EX_PRC,VL_MULT,VL_COD,ZERO_COD,shlav,STATUS,TRD_STP_CD,TRD_STP_N,STP_OPN_TM,LMT_BY1,LMT_BY2,LMT_BY3,LMY_BY1_NV,LMY_BY2_NV,LMY_BY3_NV,RWR_FE,LMT_SL1,LMT_SL2,LMT_SL3,LMY_SL1_NV,LMY_SL2_NV,LMY_SL3_NV,RWR_FF,PRC,COD_PRC,SUG_PRC,LST_DF_BS,RWR_FG,LST_DL_PR,LST_DL_TM,LST_DL_VL,DAY_VL,DAY_VL_NIS,DAY_DIL_NO,RWR_FH,DAY_MAX_PR,DAY_MIN_PR,POS_OPN,POS_OPN_DF,STS_NXT_DY,UPD_DAT,UPD_TIME,FILER,";
+                if (!str.Equals(HEADER))
+                {
+                    System.Console.WriteLine("First line match failed in the file "+filename);
+                    System.Console.WriteLine("Expected "+HEADER);
+                    System.Console.WriteLine("Read "+str);
+                    break;
+                }
+
+                res = true;
+            }
+            while (false);
+
+
+            return res;
+        }
+        
+        protected override bool GetData(out K300MaofType data)
+        {
+            bool res = false;
+            string str;
+            data = default(K300MaofType);
+
+            // delay - usually delay will be in the GetData
+            // GetData reads log, pulls the time stamps and simulates
+            // timing of the real data stream
+            Thread.Sleep(delay);
+
+            do
+            {
+                // let's try to read
+                try
+                {
+                    str = streamReader.ReadLine();
+                    res = true;
+                }
+                catch (IOException e)
+                {
+                    res = false;
+                    break;
+                }
+
+                // parse the string
+                res = parseLogString(str, out data);
+            }
+            while (false);
+            
+            
+
+
+            count += 1;
+
+
+            return true;
+        }
+
+
+        protected bool parseLogString(string str, out K300MaofType data)
+        {
+            bool res = false;
+            int commaIndex = 0;
+
+            // create a new object
+            data = new K300MaofType();
+
+            // boxing of the structure
+            object o = (object)data;
+            
+            do
+            {
+                // set all fields in the object
+                for (int i = 0;i < fields.Length;i++)
+                {
+                    string fieldValue = getNextField(str, ref commaIndex);
+                    // commaIndex_1 points to comma
+                    commaIndex++;
+                    
+                    FieldInfo fi = fields[0];
+                    fi.SetValue(o, fieldValue);
+                }
+
+                // unboxing of the structure
+                data = (K300MaofType)o;
+                
+                res = true;
+            }
+            while (false);
+
+            return res;
+        }
+
+        protected string getNextField(string src, ref int from)
+        {
+            string res;
+            
+            int to = src.IndexOf(",", from);
+            if ((to-1) >= from)
+            {
+                res = src.Substring(from, (to-from));
+            }
+            else
+            {
+                System.Console.WriteLine("Failed to find comma from index "+from);
+                System.Console.WriteLine("Line "+src);
+                res = "-";
+            }
+
+            from = to;
+
+            return res;
+        }
+
+        protected override void SendEvents(ref K300MaofType data)
+        {
+            SimulationTop.k300EventsClass.SendEventMaof(ref data);
+            // avoid tight loops in the system
+            Thread.Sleep(50);
+        }
+
+        public int GetCount()
+        {
+            return count;
+        }
+
+        public string GetName()
+        {
+            return "Maof data random generator";
+        }
+
+
+        protected FieldInfo[] fields;
+        int delay;
+        int count;
+        FileStream fileStream;
+        StreamReader streamReader;
+        string filename;
+    }
+
+    
+    /// <summary>
     /// this is a thread generating 
-    /// very siimple all fields are random Maof data generator
+    /// very simple all fields are random Maof data generator
     /// objects of this type used as an argument to the InitStreamSimulation
     /// </summary>
     /// <param name="maofGenerator">
@@ -828,70 +1040,19 @@ namespace TaskBarLibSim
             // create a new object
             data = new K300MaofType();
 
+            // box the structure
+            object o = (object)data;
             // set all fields in the object
-            data.SUG_REC = randomString.Next();
-            data.TRADE_METH = randomString.Next();
-            data.BNO_Num = randomString.Next();
-            data.LAST_REC = randomString.Next();
-            data.SIDURI_Num = randomString.Next();
-            data.SYMBOL_E = randomString.Next();
-            data.Symbol = randomString.Next();
-            data.BNO_NAME_E = randomString.Next();
-            data.BNO_NAME = randomString.Next();
-            data.BRANCH_NO = randomString.Next();
-            data.BRANCH_U = randomString.Next();
-            data.SUG_BNO = randomString.Next();
-            data.MIN_UNIT = randomString.Next();
-            data.HARIG_NV = randomString.Next();
-            data.MIN_PR = randomString.Next();
-            data.MAX_PR = randomString.Next();
-            data.BASIS_PRC = randomString.Next();
-            data.BASIS_COD = randomString.Next();
-            data.STATUS_COD = randomString.Next();
-            data.EX_DATE = randomString.Next();
-            data.EX_PRC = randomString.Next();
-            data.VL_MULT = randomString.Next();
-            data.VL_COD = randomString.Next();
-            data.ZERO_COD = randomString.Next();
-            data.shlav = randomString.Next();
-            data.STATUS = randomString.Next();
-            data.TRD_STP_CD = randomString.Next();
-            data.TRD_STP_N = randomString.Next();
-            data.STP_OPN_TM = randomString.Next();
-            data.LMT_BY1 = randomString.Next();
-            data.LMT_BY2 = randomString.Next();
-            data.LMT_BY3 = randomString.Next();
-            data.LMY_BY1_NV = randomString.Next();
-            data.LMY_BY2_NV = randomString.Next();
-            data.LMY_BY3_NV = randomString.Next();
-            data.RWR_FE = randomString.Next();
-            data.LMT_SL1 = randomString.Next();
-            data.LMT_SL2 = randomString.Next();
-            data.LMT_SL3 = randomString.Next();
-            data.LMY_SL1_NV = randomString.Next();
-            data.LMY_SL2_NV = randomString.Next();
-            data.LMY_SL3_NV = randomString.Next();
-            data.RWR_FF = randomString.Next();
-            data.PRC = randomString.Next();
-            data.COD_PRC = randomString.Next();
-            data.SUG_PRC = randomString.Next();
-            data.LST_DF_BS = randomString.Next();
-            data.RWR_FG = randomString.Next();
-            data.LST_DL_PR = randomString.Next();
-            data.LST_DL_TM = randomString.Next();
-            data.LST_DL_VL = randomString.Next();
-            data.DAY_VL = randomString.Next();
-            data.DAY_VL_NIS = randomString.Next();
-            data.DAY_DIL_NO = randomString.Next();
-            data.RWR_FH = randomString.Next();
-            data.DAY_MAX_PR = randomString.Next();
-            data.DAY_MIN_PR = randomString.Next();
-            data.POS_OPN = randomString.Next();
-            data.POS_OPN_DF = randomString.Next();
-            data.STS_NXT_DY = randomString.Next();
-            data.UPD_DAT = randomString.Next();
-            data.UPD_TIME = randomString.Next();
-            data.FILER = randomString.Next();
+            for (int i = 0;i < fields.Length;i++)
+            {
+                string fieldValue = randomString.Next();
+                
+                FieldInfo fi = fields[0];
+                fi.SetValue(o, fieldValue);
+            }
+            // unboxing of the structure
+            data = (K300MaofType)o;
+            
 
             count += 1;
 
@@ -955,67 +1116,19 @@ namespace TaskBarLibSim
             // create a new object
             data = new K300RzfType();
 
+            // box the structure
+            object o = (object)data;
             // set all fields in the object
-            data.SUG_REC = randomString.Next();
-            data.BNO_Num = randomString.Next();
-            data.BNO_NAME = randomString.Next();
-            data.Symbol = randomString.Next();
-            data.TRADE_METH = randomString.Next();
-            data.SIDURI_Num = randomString.Next();
-            data.RWR_VA = randomString.Next();
-            data.MIN_UNIT = randomString.Next();
-            data.HARIG_NV = randomString.Next();
-            data.MIN_PR_OPN = randomString.Next();
-            data.MAX_PR_OPN = randomString.Next();
-            data.MIN_PR_CNT = randomString.Next();
-            data.MAX_PR_CNT = randomString.Next();
-            data.BASIS_PRC = randomString.Next();
-            data.STATUS = randomString.Next();
-            data.EX_COD = randomString.Next();
-            data.EX_DETAIL = randomString.Next();
-            data.RWR_VB = randomString.Next();
-            data.shlav = randomString.Next();
-            data.LAST_PRC = randomString.Next();
-            data.TRD_STP_N = randomString.Next();
-            data.STP_OPN_TM = randomString.Next();
-            data.RWR_VD = randomString.Next();
-            data.LMT_BY1 = randomString.Next();
-            data.LMT_BY2 = randomString.Next();
-            data.LMT_BY3 = randomString.Next();
-            data.LMY_BY1_NV = randomString.Next();
-            data.LMY_BY2_NV = randomString.Next();
-            data.LMY_BY3_NV = randomString.Next();
-            data.MKT_NV_BY = randomString.Next();
-            data.MKT_NV_BY_NUM = randomString.Next();
-            data.RWR_VE = randomString.Next();
-            data.LMT_SL1 = randomString.Next();
-            data.LMT_SL2 = randomString.Next();
-            data.LMT_SL3 = randomString.Next();
-            data.LMY_SL1_NV = randomString.Next();
-            data.LMY_SL2_NV = randomString.Next();
-            data.LMY_SL3_NV = randomString.Next();
-            data.MKT_NV_SL = randomString.Next();
-            data.MKT_NV_SL_NUM = randomString.Next();
-            data.RWR_VF = randomString.Next();
-            data.THEOR_PR = randomString.Next();
-            data.THEOR_VL = randomString.Next();
-            data.RWR_VG = randomString.Next();
-            data.LST_DL_PR = randomString.Next();
-            data.LST_DL_TM = randomString.Next();
-            data.LST_DF_BS = randomString.Next();
-            data.LST_DF_OPN = randomString.Next();
-            data.LST_DL_VL = randomString.Next();
-            data.DAY_VL = randomString.Next();
-            data.DAY_VL_NIS = randomString.Next();
-            data.DAY_DIL_NO = randomString.Next();
-            data.DAY_MAX_PR = randomString.Next();
-            data.DAY_MIN_PR = randomString.Next();
-            data.BNO_NAME_E = randomString.Next();
-            data.SYMBOL_E = randomString.Next();
-            data.STP_COD = randomString.Next();
-            data.COD_SHAAR = randomString.Next();
-            data.UPD_DAT = randomString.Next();
-            data.UPD_TIME = randomString.Next();
+            for (int i = 0;i < fields.Length;i++)
+            {
+                string fieldValue = randomString.Next();
+                
+                FieldInfo fi = fields[0];
+                fi.SetValue(o, fieldValue);
+            }
+            // unboxing of the structure
+            data = (K300RzfType)o;
+
 
             count += 1;
 
@@ -1078,22 +1191,19 @@ namespace TaskBarLibSim
             // create a new object
             data = new K300MadadType();
 
+            // box the structure
+            object o = (object)data;
             // set all fields in the object
-            data.SUG_RC = randomString.Next();
-            data.BNO_N = randomString.Next();
-            data.FIL1_VK = randomString.Next();	
-            data.MDD_COD = randomString.Next();	
-            data.MDD_SUG = randomString.Next();
-            data.MDD_N = randomString.Next();
-            data.FIL2_VK = randomString.Next();
-            data.MDD_NAME = randomString.Next();
-            data.Madad = randomString.Next();	
-            data.FIL3_VK = randomString.Next();	
-            data.MDD_DF = randomString.Next();
-            data.CALC_TIME = randomString.Next();	
-            data.FIL6_VK = randomString.Next();
-            data.UPD_DAT = randomString.Next();
-            data.UPD_TIME = randomString.Next();
+            for (int i = 0;i < fields.Length;i++)
+            {
+                string fieldValue = randomString.Next();
+                
+                FieldInfo fi = fields[0];
+                fi.SetValue(o, fieldValue);
+            }
+            // unboxing of the structure
+            data = (K300MadadType)o;
+
             count += 1;
             
             return true;
