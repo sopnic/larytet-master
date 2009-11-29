@@ -415,13 +415,7 @@ namespace JQuant
         /// <returns><see cref="System.Int32"/></returns>
         public static int Length(List<double> lst)
         {
-            // larytet: this is one liner - "return lst.Count;"
-            int n = 0;
-            foreach (double x in lst)
-            {
-                n++;
-            }
-            return n;
+            return lst.Count;
         }
 
         /// <summary>
