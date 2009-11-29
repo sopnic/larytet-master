@@ -797,11 +797,42 @@ namespace TaskBarLibSim
         private bool notStopped;
     }
 
+    public abstract class EventGeneratorPlayback<DataType> : EventGenerator<DataType>
+    {
+        protected static string getNextField(string src, ref int from)
+        {
+            string res;
+            
+            int to = src.IndexOf(",", from);
+            
+            if (to < 0) // may be end of line ?
+            {
+                // fix the value - reference the char after end of line
+                to = src.Length;
+            }
+            
+            if ((to-1) >= from)
+            {
+                res = src.Substring(from, (to-from));
+            }
+            else
+            {
+                System.Console.WriteLine("Failed to find comma from index "+from);
+                System.Console.WriteLine("Line "+src);
+                res = "-";
+            }
+
+            from = to;
+
+            return res;
+        }
+
+    }
 
     /// <summary>
     /// this is a thread generating event based on the Maof log file
     /// </summary>
-    public class MaofDataGeneratorLogFile : EventGenerator<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
+    public class MaofDataGeneratorLogFile : EventGeneratorPlayback<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
     {
         /// Log file to read the data from
         /// <param name="filename">
@@ -919,14 +950,13 @@ namespace TaskBarLibSim
                 }
                 catch (IOException e)
                 {
+                    System.Console.WriteLine(e.ToString());
                     res = false;
                     break;
                 }
 
                 // parse the string
                 res = parseLogString(str, out data);
-                string time = data.UPD_TIME;
-                
             }
             while (false);
 
@@ -966,42 +996,14 @@ namespace TaskBarLibSim
                 // last two fields in the record - TimeStamp and Ticks were not parsed
                 // parse them now and calculate delay
 
-                string timeStamp = getNextField(str, ref commaIndex);commaIndex++;
-                string ticks = getNextField(str, ref commaIndex);commaIndex++;
+//                string timeStamp = getNextField(str, ref commaIndex);commaIndex++;
+//                string ticks = getNextField(str, ref commaIndex);commaIndex++;
 //                System.Console.WriteLine("timeStamp="+timeStamp);
 //                System.Console.WriteLine("ticks="+ticks);
                 
                 res = true;
             }
             while (false);
-
-            return res;
-        }
-
-        protected string getNextField(string src, ref int from)
-        {
-            string res;
-            
-            int to = src.IndexOf(",", from);
-            
-            if (to < 0) // may be end of line ?
-            {
-                // fix the value - reference the char after end of line
-                to = src.Length;
-            }
-            
-            if ((to-1) >= from)
-            {
-                res = src.Substring(from, (to-from));
-            }
-            else
-            {
-                System.Console.WriteLine("Failed to find comma from index "+from);
-                System.Console.WriteLine("Line "+src);
-                res = "-";
-            }
-
-            from = to;
 
             return res;
         }
@@ -1025,7 +1027,7 @@ namespace TaskBarLibSim
 
 
         protected FieldInfo[] fields;
-        int delay;
+        protected int delay;
         int count;
         FileStream fileStream;
         StreamReader streamReader;
