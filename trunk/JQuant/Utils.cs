@@ -162,9 +162,12 @@ namespace JQuant
             this.data = data;
             StringBuilder sbData = new StringBuilder(50);
 
+            // i do boxing only once
+            object o = data;
+
             foreach (FieldInfo field in fields)
             {
-                object val = field.GetValue(data);
+                object val = field.GetValue(o);
                 sbData.Append(val.ToString());
                 sbData.Append(delimiter);
             }
