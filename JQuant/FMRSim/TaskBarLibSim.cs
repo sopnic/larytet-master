@@ -803,19 +803,17 @@ namespace TaskBarLibSim
     /// </summary>
     public class MaofDataGeneratorLogFile : EventGenerator<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
     {
-        /// <summary>
-        /// Create Maof Data generator for backtesting 
-        /// </summary>
         /// Log file to read the data from
         /// <param name="filename">
         /// A <see cref="System.String"/>
         /// </param>
         /// <param name="speedup">
         /// Number of times to accelerate the time. For example, if speedup is 2
-        /// then events of 1s in the log file will be sent in 500ms
-        /// A <see cref="System.Int32"/>
+        /// then events which took 1s in the log file will be sent in 500ms
+        /// if speedup is 0.1 the play back will be slower by 10 times 
+        /// A <see cref="System.Double"/>
         /// </param>
-        public MaofDataGeneratorLogFile(string filename, int speedup)
+        public MaofDataGeneratorLogFile(string filename, double speedup)
         {
             // initial delay is 0 - start immediately
             // fololowing delays will be taken from the log file
@@ -844,6 +842,8 @@ namespace TaskBarLibSim
 
             checkFile(fileStream);
             
+            Type t = typeof(K300MaofType);
+            fields = t.GetFields();
             
             // open file for reading
             // make sure that the file is reasonable and first line is Ok
@@ -871,7 +871,7 @@ namespace TaskBarLibSim
 
                 // first line is legend
                 const string HEADER = "SUG_REC,TRADE_METH,BNO_Num,LAST_REC,SIDURI_Num,SYMBOL_E,Symbol,BNO_NAME_E,BNO_NAME,BRANCH_NO,BRANCH_U,SUG_BNO,MIN_UNIT,HARIG_NV,MIN_PR,MAX_PR,BASIS_PRC,BASIS_COD,STATUS_COD,EX_DATE,EX_PRC,VL_MULT,VL_COD,ZERO_COD,shlav,STATUS,TRD_STP_CD,TRD_STP_N,STP_OPN_TM,LMT_BY1,LMT_BY2,LMT_BY3,LMY_BY1_NV,LMY_BY2_NV,LMY_BY3_NV,RWR_FE,LMT_SL1,LMT_SL2,LMT_SL3,LMY_SL1_NV,LMY_SL2_NV,LMY_SL3_NV,RWR_FF,PRC,COD_PRC,SUG_PRC,LST_DF_BS,RWR_FG,LST_DL_PR,LST_DL_TM,LST_DL_VL,DAY_VL,DAY_VL_NIS,DAY_DIL_NO,RWR_FH,DAY_MAX_PR,DAY_MIN_PR,POS_OPN,POS_OPN_DF,STS_NXT_DY,UPD_DAT,UPD_TIME,FILER,TimeStamp,Ticks";
-                if (!str.Equals(HEADER))
+                if (str.IndexOf(HEADER) != 0)
                 {
                     System.Console.WriteLine("First line match failed in the file "+filename);
                     System.Console.WriteLine("Expected "+HEADER);
@@ -939,13 +939,12 @@ namespace TaskBarLibSim
             do
             {
                 // set all fields in the object
-                for (int i = 0;i < fields.Length;i++)
+                foreach (FieldInfo fi in fields)
                 {
                     string fieldValue = getNextField(str, ref commaIndex);
                     // commaIndex_1 points to comma
                     commaIndex++;
                     
-                    FieldInfo fi = fields[0];
                     fi.SetValue(o, fieldValue);
                 }
 
@@ -1057,11 +1056,9 @@ namespace TaskBarLibSim
             // box the structure
             object o = (object)data;
             // set all fields in the object
-            for (int i = 0;i < fields.Length;i++)
+            foreach (FieldInfo fi in fields)
             {
                 string fieldValue = randomString.Next();
-                
-                FieldInfo fi = fields[0];
                 fi.SetValue(o, fieldValue);
             }
             // unboxing of the structure
@@ -1133,11 +1130,9 @@ namespace TaskBarLibSim
             // box the structure
             object o = (object)data;
             // set all fields in the object
-            for (int i = 0;i < fields.Length;i++)
+            foreach (FieldInfo fi in fields)
             {
                 string fieldValue = randomString.Next();
-                
-                FieldInfo fi = fields[0];
                 fi.SetValue(o, fieldValue);
             }
             // unboxing of the structure
@@ -1208,11 +1203,9 @@ namespace TaskBarLibSim
             // box the structure
             object o = (object)data;
             // set all fields in the object
-            for (int i = 0;i < fields.Length;i++)
+            foreach (FieldInfo fi in fields)
             {
                 string fieldValue = randomString.Next();
-                
-                FieldInfo fi = fields[0];
                 fi.SetValue(o, fieldValue);
             }
             // unboxing of the structure

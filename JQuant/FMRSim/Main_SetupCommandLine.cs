@@ -86,7 +86,7 @@ namespace JQuant
             if (this.fmrConection == null)
             {
                 iWrite.WriteLine(Environment.NewLine
-                    + "WARNING !!! You're not logged in. Please log in first!");
+                    + "WARNING! You're not logged in. Please log in first!");
             }
 
             //then check if connection is OK. TaksBar takes care of keeping it alive
@@ -94,13 +94,13 @@ namespace JQuant
             else if (this.fmrConection.loginStatus != LoginStatus.LoginSessionActive)
             {
                 iWrite.WriteLine(Environment.NewLine
-                    + "WARNING !!! Your login status is "
+                    + "WARNING! Your login status is "
                     + this.fmrConection.loginStatus.ToString()
                     + "Please check your connection!");
             }
 
             // check the entered arguments:
-            else if (cmdArguments.Length > 2)
+            else if (cmdArguments.Length > 3)
             {
                 iWrite.WriteLine(Environment.NewLine + "Too many arguments. Try again");
             }
@@ -118,8 +118,7 @@ namespace JQuant
                 LogRezef(iWrite);
                 LogMadad(iWrite);
             }
-
-            else    //start one specified log
+            else  if (cmdArguments.Length == 2)   // start one specified log
             {
                 switch (cmdArguments[1].ToString().ToLower())
                 {
@@ -140,15 +139,35 @@ namespace JQuant
                         break;
                 }
             }
+            else  if (cmdArguments.Length == 3)   // start a specified log
+            {                                     // using playback data generator in simulation mode
+                switch (cmdArguments[1].ToString().ToLower())
+                {
+                    case "mf":
+                        LogMaof(iWrite, cmdArguments[2].ToString());
+                        break;
+                    default:
+                        iWrite.WriteLine(Environment.NewLine
+                            + "Invalid data type argument '"
+                            + cmdArguments[1].ToString()
+                            + "'. Type 'startlog + (optional) MF' + playbackLogName");
+                        break;
+                }
+            }
+        }
+        
+        protected void LogMaof(IWrite iWrite)
+        {
+            LogMaof(iWrite, null);
         }
 
-        protected void LogMaof(IWrite iWrite)
+        protected void LogMaof(IWrite iWrite, string backlog)
         {
             // generate filename and display it
             string filename = Resources.CreateLogFileName("MaofLog_", LogType.CSV);
             iWrite.WriteLine("Maof log file " + filename);
 
-            OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger");
+            OpenStreamAndLog(iWrite, false, FMRShell.DataType.Maof, filename, "MaofLogger", backlog);
         }
 
         protected void LogMadad(IWrite iWrite)
@@ -229,11 +248,51 @@ namespace JQuant
 
         protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType dt, string filename, string loggerName)
         {
+            // use NULL for backlogfile - in simulation mode data generator is random
+            // 
+            OpenStreamAndLog(iWrite, test, dt, filename, loggerName, null);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iWrite">
+        /// A <see cref="IWrite"/>
+        /// </param>
+        /// <param name="test">
+        /// A <see cref="System.Boolean"/>
+        /// </param>
+        /// <param name="dt">
+        /// A <see cref="FMRShell.DataType"/>
+        /// </param>
+        /// <param name="filename">
+        /// A <see cref="System.String"/>
+        /// </param>
+        /// <param name="loggerName">
+        /// A <see cref="System.String"/>
+        /// </param>
+        /// <param name="backlogfile">
+        /// A <see cref="System.String"/>
+        /// Applicable only in the simulation mode
+        /// If the file is specified (not null) - play back the specified pre-recorded log file
+        /// If null use randomly generated data
+        /// </param>
+        protected void OpenStreamAndLog(IWrite iWrite, bool test, FMRShell.DataType dt, string filename, string loggerName, string backlogfile)
+        {
 #if USEFMRSIM
             if (dt == FMRShell.DataType.Maof)
             {
-                // create Maof data generator
-                TaskBarLibSim.MaofDataGeneratorRandom dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
+                TaskBarLibSim.EventGenerator<K300MaofType> dataMaofGenerator;
+                if (backlogfile == null)
+                {
+                    // create Maof data generator
+                    dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorRandom();
+                }
+                else
+                {
+                    // create Maof data generator
+                    dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorLogFile(backlogfile, 1);
+                }
                 // setup the data generator(s) in the K300Class
                 TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
             }
@@ -257,7 +316,7 @@ namespace JQuant
 #endif
 
             // Check that there is no data collector created already
-            Console.WriteLine("DT= " + ((int)dt).ToString());
+            Console.WriteLine("DT= " + dt.ToString() + " ("+(int)dt+")");
             if (DataCollector == null)
             {
                 // create Collector (producer) - will do it only once
@@ -1201,8 +1260,8 @@ namespace JQuant
             menuOperations.AddCommand("Logout", "Perform the logout process",
                                   " The call will block until logout succeeds", operLogoutCallback);
 
-            menuOperations.AddCommand("StartLog", "Log data stream - choose MF|RZ|MDD",
-                                  " Start trading data stream and run logger", operLogCallback);
+            menuOperations.AddCommand("StartLog", "Log data stream - choose MF|RZ|MDD.",
+                                  " Start trading data stream and run logger. In simulation mode playback file can be specified", operLogCallback);
 
             menuOperations.AddCommand("StopLog", "Stop previosly started Maof Log - MF | MDD | RZ, to stop stream type Y",
                                   " Stop logger - Maof(MF) | Madad (MDD) | Rezef (RZ) and stream (Y/N). ", operStopLogCallback);
