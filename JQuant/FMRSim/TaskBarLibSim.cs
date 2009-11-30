@@ -799,53 +799,12 @@ namespace TaskBarLibSim
 
     public abstract class EventGeneratorPlayback<DataType> : EventGenerator<DataType>
     {
-        protected static string getNextField(string src, ref int from)
+        protected EventGeneratorPlayback(string delimiter, string filename)
         {
-            string res;
-            
-            int to = src.IndexOf(",", from);
-            
-            if (to < 0) // may be end of line ?
-            {
-                // fix the value - reference the char after end of line
-                to = src.Length;
-            }
-            
-            if ((to-1) >= from)
-            {
-                res = src.Substring(from, (to-from));
-            }
-            else
-            {
-                System.Console.WriteLine("Failed to find comma from index "+from);
-                System.Console.WriteLine("Line "+src);
-                res = "-";
-            }
+            this.delimiter = delimiter;
+            this.filename = filename;
+            ReadyToGo = false;
 
-            from = to;
-
-            return res;
-        }
-
-    }
-
-    /// <summary>
-    /// this is a thread generating event based on the Maof log file
-    /// </summary>
-    public class MaofDataGeneratorLogFile : EventGeneratorPlayback<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
-    {
-        /// Log file to read the data from
-        /// <param name="filename">
-        /// A <see cref="System.String"/>
-        /// </param>
-        /// <param name="speedup">
-        /// Number of times to accelerate the time. For example, if speedup is 2
-        /// then events which took 1s in the log file will be sent in 500ms
-        /// if speedup is 0.1 the play back will be slower by 10 times 
-        /// A <see cref="System.Double"/>
-        /// </param>
-        public MaofDataGeneratorLogFile(string filename, double speedup)
-        {
             System.Console.WriteLine("Simulation playback data from "+filename);
             // initial delay is 0 - start immediately
             // fololowing delays will be taken from the log file
@@ -855,85 +814,93 @@ namespace TaskBarLibSim
             this.filename = filename;
             streamReader = default(StreamReader);
 
-            try
-            {
-                fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-                streamReader = new StreamReader(fileStream);
-            }
-            catch (IOException e)
-            {
-                System.Console.WriteLine("Failed to open file "+filename);
-                if (fileStream != default(FileStream))
-                {
-                    fileStream.Close();
-                    // help Garbage collector
-                    streamReader = default(StreamReader);
-                    fileStream = default(FileStream);
-                }
-                System.Console.WriteLine(e.ToString());
-            }
-
-            checkFile(fileStream);
-            
-            Type t = typeof(K300MaofType);
+            Type t = typeof(DataType);
             fields = t.GetFields();
             
-            // open file for reading
-            // make sure that the file is reasonable and first line is Ok
-            return;
-        }
-
-        protected bool checkFile(FileStream fileStream)
-        {
-            bool res = false;
-            string str;
+            
             do
             {
-                
-                // let's try to read
                 try
                 {
-                    str = streamReader.ReadLine();
+                    fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    streamReader = new StreamReader(fileStream);
                 }
                 catch (IOException e)
                 {
-                    System.Console.WriteLine("Failed to read file "+filename);
+                    System.Console.WriteLine("Failed to open file "+filename);
+                    if (fileStream != default(FileStream))
+                    {
+                        fileStream.Close();
+                        // help Garbage collector
+                        streamReader = default(StreamReader);
+                        fileStream = default(FileStream);
+                        break;
+                    }
                     System.Console.WriteLine(e.ToString());
-                    break;
                 }
-
-                // first line is legend
-                const string HEADER = "SUG_REC,TRADE_METH,BNO_Num,LAST_REC,SIDURI_Num,SYMBOL_E,Symbol,BNO_NAME_E,BNO_NAME,BRANCH_NO,BRANCH_U,SUG_BNO,MIN_UNIT,HARIG_NV,MIN_PR,MAX_PR,BASIS_PRC,BASIS_COD,STATUS_COD,EX_DATE,EX_PRC,VL_MULT,VL_COD,ZERO_COD,shlav,STATUS,TRD_STP_CD,TRD_STP_N,STP_OPN_TM,LMT_BY1,LMT_BY2,LMT_BY3,LMY_BY1_NV,LMY_BY2_NV,LMY_BY3_NV,RWR_FE,LMT_SL1,LMT_SL2,LMT_SL3,LMY_SL1_NV,LMY_SL2_NV,LMY_SL3_NV,RWR_FF,PRC,COD_PRC,SUG_PRC,LST_DF_BS,RWR_FG,LST_DL_PR,LST_DL_TM,LST_DL_VL,DAY_VL,DAY_VL_NIS,DAY_DIL_NO,RWR_FH,DAY_MAX_PR,DAY_MIN_PR,POS_OPN,POS_OPN_DF,STS_NXT_DY,UPD_DAT,UPD_TIME,FILER,TimeStamp,Ticks";
-                if (str.IndexOf(HEADER) != 0)
-                {
-                    System.Console.WriteLine("First line match failed in the file "+filename);
-                    System.Console.WriteLine("Expected "+HEADER);
-                    System.Console.WriteLine("Read "+str);
-                    break;
-                }
-
-                res = true;
+    
+                bool res = checkFile(fileStream);
+                if (!res) break;
+                
+                ReadyToGo = true;
             }
-            while (false);
-
+            while (false);            
+        }
+        
+        ~EventGeneratorPlayback()
+        {
+            // close the file I read from 
+            if (fileStream != default(FileStream))
+            {
+                fileStream.Close();
+                // help Garbage collector
+                streamReader = default(StreamReader);
+                fileStream = default(FileStream);
+            }
+        }
+        
+        protected bool getNextField(string src, ref int from, out string field)
+        {
+            
+            bool res = true;
+            int to = src.IndexOf(delimiter, from);
+            
+            if (to < 0) // may be end of line ?
+            {
+                // fix the value - reference the char after end of line
+                to = src.Length;
+            }
+            
+            if ((to-1) >= from)
+            {
+                field = src.Substring(from, (to-from));
+            }
+            else
+            {
+                System.Console.WriteLine("Failed to find delimiter " + delimiter + " position "+from + " line "+count);
+                System.Console.WriteLine("Line="+src);
+                field = "";
+                res = false;
+            }
+            from = to;
 
             return res;
         }
-        
-        protected override bool GetData(out K300MaofType data)
+
+        protected override bool GetData(out DataType data)
         {
             bool res = false;
             string str;
-            data = default(K300MaofType);
+            data = default(DataType);
+
+            if (!ReadyToGo) return false;
 
             // delay - usually delay will be in the GetData
             // GetData reads log, pulls the time stamps and simulates
             // timing of the real data stream
-            if (delay != 0)
-            {
-                Thread.Sleep(delay);
-            }
+            Thread.Sleep(delay);
 
+            bool parseRes = false;
             do
             {
                 if (streamReader.EndOfStream)
@@ -953,20 +920,105 @@ namespace TaskBarLibSim
                     System.Console.WriteLine(e.ToString());
                     res = false;
                     break;
-                }
+                }                
 
                 // parse the string
-                res = parseLogString(str, out data);
+                // if i failed to parse read next line until eof or read error
+                // i just skip the bad line
+                parseRes = parseLogString(str, out data);
             }
-            while (false);
+            while (!parseRes);
 
             count += 1;
 
             return res;
+
         }
 
+        public int GetCount()
+        {
+            return count;
+        }
 
-        protected bool parseLogString(string str, out K300MaofType data)
+        protected abstract bool parseLogString(string str, out DataType data);
+        protected abstract bool checkFile(FileStream fileStream);
+
+        private string delimiter;
+        
+        protected FieldInfo[] fields;
+        protected int delay;
+        protected int count;
+        protected FileStream fileStream;
+        protected StreamReader streamReader;
+        protected string filename;
+
+        protected bool ReadyToGo;
+    }
+
+    /// <summary>
+    /// this is a thread generating event based on the Maof log file
+    /// </summary>
+    public class MaofDataGeneratorLogFile : EventGeneratorPlayback<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
+    {
+        
+        /// Log file to read the data from
+        /// <param name="filename">
+        /// A <see cref="System.String"/>
+        /// </param>
+        /// <param name="speedup">
+        /// Number of times to accelerate the time. For example, if speedup is 2
+        /// then events which took 1s in the log file will be sent in 500ms
+        /// if speedup is 0.1 the play back will be slower by 10 times 
+        /// A <see cref="System.Double"/>
+        /// </param>
+        public MaofDataGeneratorLogFile(string filename, double speedup)
+            : base(",", filename)
+        {
+        }
+
+        ~MaofDataGeneratorLogFile()
+        {
+        }
+
+        protected override bool checkFile(FileStream fileStream)
+        {
+            const string HEADER = "SUG_REC,TRADE_METH,BNO_Num,LAST_REC,SIDURI_Num,SYMBOL_E,Symbol,BNO_NAME_E,BNO_NAME,BRANCH_NO,BRANCH_U,SUG_BNO,MIN_UNIT,HARIG_NV,MIN_PR,MAX_PR,BASIS_PRC,BASIS_COD,STATUS_COD,EX_DATE,EX_PRC,VL_MULT,VL_COD,ZERO_COD,shlav,STATUS,TRD_STP_CD,TRD_STP_N,STP_OPN_TM,LMT_BY1,LMT_BY2,LMT_BY3,LMY_BY1_NV,LMY_BY2_NV,LMY_BY3_NV,RWR_FE,LMT_SL1,LMT_SL2,LMT_SL3,LMY_SL1_NV,LMY_SL2_NV,LMY_SL3_NV,RWR_FF,PRC,COD_PRC,SUG_PRC,LST_DF_BS,RWR_FG,LST_DL_PR,LST_DL_TM,LST_DL_VL,DAY_VL,DAY_VL_NIS,DAY_DIL_NO,RWR_FH,DAY_MAX_PR,DAY_MIN_PR,POS_OPN,POS_OPN_DF,STS_NXT_DY,UPD_DAT,UPD_TIME,FILER,TimeStamp,Ticks";
+            
+            bool res = false;
+            string str;
+            do
+            {
+                
+                // let's try to read
+                try
+                {
+                    str = streamReader.ReadLine();
+                }
+                catch (IOException e)
+                {
+                    System.Console.WriteLine("Failed to read file "+filename);
+                    System.Console.WriteLine(e.ToString());
+                    break;
+                }
+
+                // first line is legend
+                if (str.IndexOf(HEADER) != 0)
+                {
+                    System.Console.WriteLine("First line match failed in the file "+filename);
+                    System.Console.WriteLine("Expected "+HEADER);
+                    System.Console.WriteLine("Read "+str);
+                    break;
+                }
+
+                res = true;
+            }
+            while (false);
+
+
+            return res;
+        }
+
+        protected override bool parseLogString(string str, out K300MaofType data)
         {
             bool res = false;
             int commaIndex = 0;
@@ -982,12 +1034,18 @@ namespace TaskBarLibSim
                 // set all fields in the object
                 foreach (FieldInfo fi in fields)
                 {
-                    string fieldValue = getNextField(str, ref commaIndex);
+                    string fieldValue;
+                    res = getNextField(str, ref commaIndex, out fieldValue);
+
+                    if (!res) break;
+                    
                     // commaIndex_1 points to comma
                     commaIndex++;
                     
                     fi.SetValue(o, fieldValue);
                 }
+
+                if (!res) break;
 
                 // unboxing of the structure
                 data = (K300MaofType)o;
@@ -1011,27 +1069,15 @@ namespace TaskBarLibSim
         protected override void SendEvents(ref K300MaofType data)
         {
             SimulationTop.k300EventsClass.SendEventMaof(ref data);
+            
             // avoid tight loops in the system
             Thread.Sleep(0);
-        }
-
-        public int GetCount()
-        {
-            return count;
         }
 
         public string GetName()
         {
             return "Maof playback generator";
         }
-
-
-        protected FieldInfo[] fields;
-        protected int delay;
-        int count;
-        FileStream fileStream;
-        StreamReader streamReader;
-        string filename;
     }
 
     
