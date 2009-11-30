@@ -471,10 +471,12 @@ namespace JQuant
 
             if (_fileStream != default(FileStream))
             {
-                _fileStream.Close();
+                _streamWriter.Flush();
+                _fileStream.Flush();
                 // help Garbage collector
                 _streamWriter = default(StreamWriter);
                 _fileStream = default(FileStream);
+                Console.WriteLine("Logger " + GetName() + " file "+FileName+" closed");
             }
         }
 
