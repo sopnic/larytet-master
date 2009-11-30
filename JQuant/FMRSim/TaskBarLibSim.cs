@@ -862,34 +862,66 @@ namespace TaskBarLibSim
         protected bool getNextField(string src, ref int from, out string field)
         {
             
-            bool res = true;
-            int to = src.IndexOf(delimiter, from);
-            
-            if (to < 0) // may be end of line ?
+            bool res = false;
+            field = "";
+
+            do
             {
-                // fix the value - reference the char after end of line
-                to = src.Length;
+                if (from < 0)
+                {
+                    System.Console.WriteLine("EventGeneratorPlayback::getNextField from="+from);
+                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position "+from + " line "+count);
+                    System.Console.WriteLine("Line="+src);
+                    break;
+                }
+
+                
+                if (from > src.Length)
+                {
+                    System.Console.WriteLine("EventGeneratorPlayback::getNextField from="+from+" src.Length="+src.Length);
+                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position "+from + " line "+count);
+                    System.Console.WriteLine("Line="+src);
+                    break;                    
+                }
+                
+                if (from == src.Length)
+                {
+                    break;
+                }
+                
+                int to = src.IndexOf(delimiter, from);
+                
+                if (to < 0) // may be end of line ?
+                {
+                    // fix the value - reference the char after end of line
+                    to = src.Length;
+                }
+                
+                if (((to-1) >= from) && (from >= 0))
+                {
+                    field = src.Substring(from, (to-from));
+                }
+                else
+                {
+                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position "+from + " line "+count);
+                    System.Console.WriteLine("Line="+src);
+                    break;
+                }
+                
+                from = to;
+                if (from >= src.Length) from = src.Length;
+
+                res= true;
             }
-            
-            if ((to-1) >= from)
-            {
-                field = src.Substring(from, (to-from));
-            }
-            else
-            {
-                System.Console.WriteLine("Failed to find delimiter " + delimiter + " position "+from + " line "+count);
-                System.Console.WriteLine("Line="+src);
-                field = "";
-                res = false;
-            }
-            from = to;
+            while (false);
+                
 
             return res;
         }
 
         protected override bool GetData(out DataType data)
         {
-            bool res = false;
+            bool res;
             string str;
             data = default(DataType);
 
@@ -901,8 +933,11 @@ namespace TaskBarLibSim
             Thread.Sleep(delay);
 
             bool parseRes = false;
+            
             do
             {
+                res = false;
+                
                 if (streamReader.EndOfStream)
                 {
                     res = false;
@@ -926,6 +961,8 @@ namespace TaskBarLibSim
                 // if i failed to parse read next line until eof or read error
                 // i just skip the bad line
                 parseRes = parseLogString(str, out data);
+
+                res = true;
             }
             while (!parseRes);
 
