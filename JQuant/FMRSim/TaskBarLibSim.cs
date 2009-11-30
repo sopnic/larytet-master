@@ -1144,7 +1144,7 @@ namespace TaskBarLibSim
             // delay - usually delay will be in the GetData
             // GetData reads log, pulls the time stamps and simulates
             // timing of the real data stream
-            Thread.Sleep(50);
+            // Thread.Sleep(50);
 
             // create a new object
             data = new K300MaofType();
@@ -1159,6 +1159,9 @@ namespace TaskBarLibSim
             }
             // unboxing of the structure
             data = (K300MaofType)o;
+            // i want to mark first and last field
+            data.SUG_REC = "SUG_REC";
+            data.FILER = "FILER";
             
 
             count += 1;
@@ -1171,7 +1174,7 @@ namespace TaskBarLibSim
         {
             SimulationTop.k300EventsClass.SendEventMaof(ref data);
             // avoid tight loops in the system
-            Thread.Sleep(50);
+            // Thread.Sleep(50);
         }
 
         public int GetCount()

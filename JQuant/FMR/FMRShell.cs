@@ -703,22 +703,31 @@ namespace FMRShell
                 // sink should not modify the data. sink has two options:
                 // 1) handle the data in the context of the Collector thead
                 // 2) clone the data and and postopone the procesing (delegate to another thread)
-                foreach (JQuant.ISink<MarketDataMadad> sink in MadadListeners)
+                lock (MadadListeners)
                 {
-                    sink.Notify(countOnMadad, mktDta);
+                    foreach (JQuant.ISink<MarketDataMadad> sink in MadadListeners)
+                    {
+                        sink.Notify(countOnMadad, mktDta);
+                    }
                 }
             }
 
             public override bool AddSink(JQuant.ISink<MarketDataMadad> sink)
             {
                 //Console.WriteLine("MadadListeners.Add(sink)");
-                MadadListeners.Add(sink);
+                lock (MadadListeners)
+                {
+                    MadadListeners.Add(sink);
+                }
                 return true;
             }
 
             public override bool RemoveSink(JQuant.ISink<MarketDataMadad> sink)
             {
-                MadadListeners.Remove(sink);
+                lock (MadadListeners)
+                {
+                    MadadListeners.Remove(sink);
+                }
                 return true;
             }
 
@@ -781,22 +790,32 @@ namespace FMRShell
                 // sink should not modify the data. sink has two options:
                 // 1) handle the data in the context of the Collector thread
                 // 2) clone the data and and postopone the procesing (delegate to another thread)
-                foreach (JQuant.ISink<MarketDataMaof> sink in MaofListeners)
+                lock (MaofListeners)
                 {
-                    sink.Notify(countOnMaof, mktDta);
+                    foreach (JQuant.ISink<MarketDataMaof> sink in MaofListeners)
+                    {
+                        sink.Notify(countOnMaof, mktDta);
+                    }
                 }
             }
 
             public bool AddSink(JQuant.ISink<MarketDataMaof> sink)
             {
                 //Console.WriteLine("MaofListeners.Add(sink)");
-                MaofListeners.Add(sink);
+
+                lock (MaofListeners)
+                {
+                    MaofListeners.Add(sink);
+                }
                 return true;
             }
 
             public bool RemoveSink(JQuant.ISink<MarketDataMaof> sink)
             {
-                MaofListeners.Remove(sink);
+                lock (MaofListeners)
+                {
+                    MaofListeners.Remove(sink);
+                }
                 return true;
             }
 
@@ -851,22 +870,31 @@ namespace FMRShell
 
                 countEvents++;
 
-                foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners)
+                lock (RezefListeners)
                 {
-                    sink.Notify(countOnRezef, mktDta);
+                    foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners)
+                    {
+                        sink.Notify(countOnRezef, mktDta);
+                    }
                 }
             }
 
             public override bool AddSink(JQuant.ISink<MarketDataRezef> sink)
             {
                 //Console.WriteLine("RezefListeners.Add(sink)");
-                RezefListeners.Add(sink);
+                lock (RezefListeners)
+                {
+                    RezefListeners.Add(sink);
+                }
                 return true;
             }
 
             public override bool RemoveSink(JQuant.ISink<MarketDataRezef> sink)
             {
-                RezefListeners.Remove(sink);
+                lock (RezefListeners)
+                {
+                    RezefListeners.Remove(sink);
+                }
                 return true;
             }
 
