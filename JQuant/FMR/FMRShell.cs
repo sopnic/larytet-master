@@ -359,218 +359,82 @@ namespace FMRShell
     /// </summary>
     public abstract class MarketData : ICloneable
     {
-        public DateTime TimeStamp
-        {
-            get;
-            set;
-        }
-        
-        public long Ticks
-        {
-            get;
-            set;
-        }
+        public DateTime TimeStamp;
+        public long Ticks;
 
         public abstract object Clone();
     }
-    
-    public class MarketDataMadad : MarketData
+
+    public abstract class MarketDataHolder<DataType> : MarketData where DataType: new()
     {
-        public K300MadadType k300MadadType;
+        public DataType Data;
+        public StructToString<DataType> S2S;
 
-
-        public override object Clone()
+        protected MarketDataHolder()
         {
-            // create a new object
-            MarketDataMadad md = new MarketDataMadad();
+            Type t = typeof(DataType);
+            fields = t.GetFields();
+            S2S = new StructToString<DataType>(",");
+        }
+            
+        protected object Clone(MarketDataHolder<DataType> mdh)
+        {
+            DataType Data = new DataType();
 
-            // copy data
-            md.k300MadadType.SUG_RC = this.k300MadadType.SUG_RC;
-            md.k300MadadType.BNO_N = this.k300MadadType.BNO_N;
-            md.k300MadadType.FIL1_VK = this.k300MadadType.FIL1_VK;
-            md.k300MadadType.MDD_COD = this.k300MadadType.MDD_COD;
-            md.k300MadadType.MDD_SUG = this.k300MadadType.MDD_SUG;
-            md.k300MadadType.MDD_N = this.k300MadadType.MDD_N;
-            md.k300MadadType.FIL2_VK = this.k300MadadType.FIL2_VK;
-            md.k300MadadType.MDD_NAME = this.k300MadadType.MDD_NAME;
-            md.k300MadadType.Madad = this.k300MadadType.Madad;
-            md.k300MadadType.FIL3_VK = this.k300MadadType.FIL3_VK;
-            md.k300MadadType.MDD_DF = this.k300MadadType.MDD_DF;
-            md.k300MadadType.CALC_TIME = this.k300MadadType.CALC_TIME;
-            md.k300MadadType.FIL6_VK = this.k300MadadType.FIL6_VK;
-            md.k300MadadType.UPD_DAT = this.k300MadadType.UPD_DAT;
-            md.k300MadadType.UPD_TIME = this.k300MadadType.UPD_TIME;
+            // boxing the struct
+            object o = (object)Data;
+            
+            // set all fields in the new object
+            foreach (FieldInfo fi in fields)
+            {
+                fi.SetValue(o, fi.GetValue(this.Data));
+            }
 
-            md.TimeStamp = this.TimeStamp;
-            md.Ticks = this.Ticks;
+            // unboxing
+            mdh.Data = (DataType)o;
 
-            return md;
+            // copy a couple of fields more
+            mdh.Ticks = this.Ticks;
+            mdh.TimeStamp = this.TimeStamp;
+
+            return mdh;
         }
 
+        public void Init(DataType data)
+        {
+            this.Data = data;
+            S2S.Init(this.Data);
+        }
+        
+        protected FieldInfo[] fields;
+    }
+    
+    public class MarketDataMadad : MarketDataHolder<K300MadadType>
+    {
+        public override object Clone()
+        {
+            object o = Clone(new MarketDataMadad());
+            return o;
+        }
     } // class MarketDataMadad
 
 
-    public class MarketDataRezef : MarketData
+    public class MarketDataRezef : MarketDataHolder<K300RzfType>
     {
-        public K300RzfType k300RezefType;
-
         public override object Clone()
         {
-            // create a new object
-            MarketDataRezef md = new MarketDataRezef();
-
-            // copy data
-            md.k300RezefType.SUG_REC = this.k300RezefType.SUG_REC;
-            md.k300RezefType.BNO_Num = this.k300RezefType.BNO_Num;
-            md.k300RezefType.BNO_NAME = this.k300RezefType.BNO_NAME;
-            md.k300RezefType.Symbol = this.k300RezefType.Symbol;
-            md.k300RezefType.TRADE_METH = this.k300RezefType.TRADE_METH;
-            md.k300RezefType.SIDURI_Num = this.k300RezefType.SIDURI_Num;
-            md.k300RezefType.RWR_VA = this.k300RezefType.RWR_VA;
-            md.k300RezefType.MIN_UNIT = this.k300RezefType.MIN_UNIT;
-            md.k300RezefType.HARIG_NV = this.k300RezefType.HARIG_NV;
-            md.k300RezefType.MIN_PR_OPN = this.k300RezefType.MIN_PR_OPN;
-            md.k300RezefType.MAX_PR_OPN = this.k300RezefType.MAX_PR_OPN;
-            md.k300RezefType.MIN_PR_CNT = this.k300RezefType.MIN_PR_CNT;
-            md.k300RezefType.MAX_PR_CNT = this.k300RezefType.MAX_PR_CNT;
-            md.k300RezefType.BASIS_PRC = this.k300RezefType.BASIS_PRC;
-            md.k300RezefType.STATUS = this.k300RezefType.STATUS;
-            md.k300RezefType.EX_COD = this.k300RezefType.EX_COD;
-            md.k300RezefType.EX_DETAIL = this.k300RezefType.EX_DETAIL;
-            md.k300RezefType.RWR_VB = this.k300RezefType.RWR_VB;
-            md.k300RezefType.shlav = this.k300RezefType.shlav;
-            md.k300RezefType.LAST_PRC = this.k300RezefType.LAST_PRC;
-            md.k300RezefType.TRD_STP_N = this.k300RezefType.TRD_STP_N;
-            md.k300RezefType.STP_OPN_TM = this.k300RezefType.STP_OPN_TM;
-            md.k300RezefType.RWR_VD = this.k300RezefType.RWR_VD;
-            md.k300RezefType.LMT_BY1 = this.k300RezefType.LMT_BY1;
-            md.k300RezefType.LMT_BY2 = this.k300RezefType.LMT_BY2;
-            md.k300RezefType.LMT_BY3 = this.k300RezefType.LMT_BY3;
-            md.k300RezefType.LMY_BY1_NV = this.k300RezefType.LMY_BY1_NV;
-            md.k300RezefType.LMY_BY2_NV = this.k300RezefType.LMY_BY2_NV;
-            md.k300RezefType.LMY_BY3_NV = this.k300RezefType.LMY_BY3_NV;
-            md.k300RezefType.MKT_NV_BY = this.k300RezefType.MKT_NV_BY;
-            md.k300RezefType.MKT_NV_BY_NUM = this.k300RezefType.MKT_NV_BY_NUM;
-            md.k300RezefType.RWR_VE = this.k300RezefType.RWR_VE;
-            md.k300RezefType.LMT_SL1 = this.k300RezefType.LMT_SL1;
-            md.k300RezefType.LMT_SL2 = this.k300RezefType.LMT_SL2;
-            md.k300RezefType.LMT_SL3 = this.k300RezefType.LMT_SL3;
-            md.k300RezefType.LMY_SL1_NV = this.k300RezefType.LMY_SL1_NV;
-            md.k300RezefType.LMY_SL2_NV = this.k300RezefType.LMY_SL2_NV;
-            md.k300RezefType.LMY_SL3_NV = this.k300RezefType.LMY_SL3_NV;
-            md.k300RezefType.MKT_NV_SL = this.k300RezefType.MKT_NV_SL;
-            md.k300RezefType.MKT_NV_SL_NUM = this.k300RezefType.MKT_NV_SL_NUM;
-            md.k300RezefType.RWR_VF = this.k300RezefType.RWR_VF;
-            md.k300RezefType.THEOR_PR = this.k300RezefType.THEOR_PR;
-            md.k300RezefType.THEOR_VL = this.k300RezefType.THEOR_VL;
-            md.k300RezefType.RWR_VG = this.k300RezefType.RWR_VG;
-            md.k300RezefType.LST_DL_PR = this.k300RezefType.LST_DL_PR;
-            md.k300RezefType.LST_DL_TM = this.k300RezefType.LST_DL_TM;
-            md.k300RezefType.LST_DF_BS = this.k300RezefType.LST_DF_BS;
-            md.k300RezefType.LST_DF_OPN = this.k300RezefType.LST_DF_OPN;
-            md.k300RezefType.LST_DL_VL = this.k300RezefType.LST_DL_VL;
-            md.k300RezefType.DAY_VL = this.k300RezefType.DAY_VL;
-            md.k300RezefType.DAY_VL_NIS = this.k300RezefType.DAY_VL_NIS;
-            md.k300RezefType.DAY_DIL_NO = this.k300RezefType.DAY_DIL_NO;
-            md.k300RezefType.DAY_MAX_PR = this.k300RezefType.DAY_MAX_PR;
-            md.k300RezefType.DAY_MIN_PR = this.k300RezefType.DAY_MIN_PR;
-            md.k300RezefType.BNO_NAME_E = this.k300RezefType.BNO_NAME_E;
-            md.k300RezefType.SYMBOL_E = this.k300RezefType.SYMBOL_E;
-            md.k300RezefType.STP_COD = this.k300RezefType.STP_COD;
-            md.k300RezefType.COD_SHAAR = this.k300RezefType.COD_SHAAR;
-            md.k300RezefType.UPD_DAT = this.k300RezefType.UPD_DAT;
-            md.k300RezefType.UPD_TIME = this.k300RezefType.UPD_TIME;
-
-            md.TimeStamp = this.TimeStamp;
-            md.Ticks = this.Ticks;
-
-            return md;
+            object o = Clone(new MarketDataRezef());
+            return o;
         }
     } // class MarketDataRezef
 
 
-    public class MarketDataMaof : MarketData
+    public class MarketDataMaof : MarketDataHolder<K300MaofType>
     {
-        /// <summary>
-        /// The data received from the stream
-        /// </summary>
-        public K300MaofType k300MaofType;
-
         public override object Clone()
         {
-            // create a new object
-            MarketDataMaof md = new MarketDataMaof();
-
-            // copy data
-            md.k300MaofType.SUG_REC = this.k300MaofType.SUG_REC;
-
-            md.k300MaofType.TRADE_METH = this.k300MaofType.TRADE_METH;
-            md.k300MaofType.BNO_Num = this.k300MaofType.BNO_Num;
-            md.k300MaofType.LAST_REC = this.k300MaofType.LAST_REC;
-            md.k300MaofType.SIDURI_Num = this.k300MaofType.SIDURI_Num;
-            md.k300MaofType.SYMBOL_E = this.k300MaofType.SYMBOL_E;
-            md.k300MaofType.Symbol = this.k300MaofType.Symbol;
-            md.k300MaofType.BNO_NAME_E = this.k300MaofType.BNO_NAME_E;
-            md.k300MaofType.BNO_NAME = this.k300MaofType.BNO_NAME;
-            md.k300MaofType.BRANCH_NO = this.k300MaofType.BRANCH_NO;
-            md.k300MaofType.BRANCH_U = this.k300MaofType.BRANCH_U;
-            md.k300MaofType.SUG_BNO = this.k300MaofType.SUG_BNO;
-            md.k300MaofType.MIN_UNIT = this.k300MaofType.MIN_UNIT;
-            md.k300MaofType.HARIG_NV = this.k300MaofType.HARIG_NV;
-            md.k300MaofType.MIN_PR = this.k300MaofType.MIN_PR;
-            md.k300MaofType.MAX_PR = this.k300MaofType.MAX_PR;
-            md.k300MaofType.BASIS_PRC = this.k300MaofType.BASIS_PRC;
-            md.k300MaofType.BASIS_COD = this.k300MaofType.BASIS_COD;
-            md.k300MaofType.STATUS_COD = this.k300MaofType.STATUS_COD;
-            md.k300MaofType.EX_DATE = this.k300MaofType.EX_DATE;
-            md.k300MaofType.EX_PRC = this.k300MaofType.EX_PRC;
-            md.k300MaofType.VL_MULT = this.k300MaofType.VL_MULT;
-            md.k300MaofType.VL_COD = this.k300MaofType.VL_COD;
-            md.k300MaofType.ZERO_COD = this.k300MaofType.ZERO_COD;
-            md.k300MaofType.shlav = this.k300MaofType.shlav;
-            md.k300MaofType.STATUS = this.k300MaofType.STATUS;
-            md.k300MaofType.TRD_STP_CD = this.k300MaofType.TRD_STP_CD;
-            md.k300MaofType.TRD_STP_N = this.k300MaofType.TRD_STP_N;
-            md.k300MaofType.STP_OPN_TM = this.k300MaofType.STP_OPN_TM;
-            md.k300MaofType.LMT_BY1 = this.k300MaofType.LMT_BY1;
-            md.k300MaofType.LMT_BY2 = this.k300MaofType.LMT_BY2;
-            md.k300MaofType.LMT_BY3 = this.k300MaofType.LMT_BY3;
-            md.k300MaofType.LMY_BY1_NV = this.k300MaofType.LMY_BY1_NV;
-            md.k300MaofType.LMY_BY2_NV = this.k300MaofType.LMY_BY2_NV;
-            md.k300MaofType.LMY_BY3_NV = this.k300MaofType.LMY_BY3_NV;
-            md.k300MaofType.RWR_FE = this.k300MaofType.RWR_FE;
-            md.k300MaofType.LMT_SL1 = this.k300MaofType.LMT_SL1;
-            md.k300MaofType.LMT_SL2 = this.k300MaofType.LMT_SL2;
-            md.k300MaofType.LMT_SL3 = this.k300MaofType.LMT_SL3;
-            md.k300MaofType.LMY_SL1_NV = this.k300MaofType.LMY_SL1_NV;
-            md.k300MaofType.LMY_SL2_NV = this.k300MaofType.LMY_SL2_NV;
-            md.k300MaofType.LMY_SL3_NV = this.k300MaofType.LMY_SL3_NV;
-            md.k300MaofType.RWR_FF = this.k300MaofType.RWR_FF;
-            md.k300MaofType.PRC = this.k300MaofType.PRC;
-            md.k300MaofType.COD_PRC = this.k300MaofType.COD_PRC;
-            md.k300MaofType.SUG_PRC = this.k300MaofType.SUG_PRC;
-            md.k300MaofType.LST_DF_BS = this.k300MaofType.LST_DF_BS;
-            md.k300MaofType.RWR_FG = this.k300MaofType.RWR_FG;
-            md.k300MaofType.LST_DL_PR = this.k300MaofType.LST_DL_PR;
-            md.k300MaofType.LST_DL_TM = this.k300MaofType.LST_DL_TM;
-            md.k300MaofType.LST_DL_VL = this.k300MaofType.LST_DL_VL;
-            md.k300MaofType.DAY_VL = this.k300MaofType.DAY_VL;
-            md.k300MaofType.DAY_VL_NIS = this.k300MaofType.DAY_VL_NIS;
-            md.k300MaofType.DAY_DIL_NO = this.k300MaofType.DAY_DIL_NO;
-            md.k300MaofType.RWR_FH = this.k300MaofType.RWR_FH;
-            md.k300MaofType.DAY_MAX_PR = this.k300MaofType.DAY_MAX_PR;
-            md.k300MaofType.DAY_MIN_PR = this.k300MaofType.DAY_MIN_PR;
-            md.k300MaofType.POS_OPN = this.k300MaofType.POS_OPN;
-            md.k300MaofType.POS_OPN_DF = this.k300MaofType.POS_OPN_DF;
-            md.k300MaofType.STS_NXT_DY = this.k300MaofType.STS_NXT_DY;
-            md.k300MaofType.UPD_DAT = this.k300MaofType.UPD_DAT;
-            md.k300MaofType.UPD_TIME = this.k300MaofType.UPD_TIME;
-            md.k300MaofType.FILER = this.k300MaofType.FILER;
-
-            md.TimeStamp = this.TimeStamp;
-            md.Ticks = this.Ticks;
-
-            return md;
+            object o = Clone(new MarketDataMaof());
+            return o;
         }
     } //  class MarketDataMaof
 
@@ -667,7 +531,7 @@ namespace FMRShell
                 // no memory allocation here - I am using allready created object 
                 mktDta.TimeStamp = DateTime.Now;
                 mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.k300MadadType = data;
+                mktDta.Init(data);
                 countEvents++;
 
 
@@ -755,7 +619,7 @@ namespace FMRShell
                 // no memory allocation here - I am using allready created object 
                 mktDta.TimeStamp = DateTime.Now;
                 mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.k300MaofType = data;
+                mktDta.Init(data);
                 countEvents++;
 
                 // sink should not modify the data. sink has two options:
@@ -837,7 +701,7 @@ namespace FMRShell
             {
                 mktDta.TimeStamp = DateTime.Now;
                 mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.k300RezefType = data;
+                mktDta.Init(data);
 
                 countEvents++;
 
@@ -1045,6 +909,9 @@ namespace FMRShell
 
     }   //class Collector
 
+
+
+    
     /// <summary>
     /// The class also is a sink registered with the Collector. When Collector sends 
     /// a new notification validator pushes the data to FIFO 

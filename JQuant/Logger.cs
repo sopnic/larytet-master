@@ -5,6 +5,8 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 
+
+
 #if USEFMRSIM
 using TaskBarLibSim;
 #else
@@ -507,16 +509,16 @@ namespace JQuant
             // convert the data to string - this is time consuming operation
             if (_dt == FMRShell.DataType.Maof)
             {
-                _maofSink.maofDataToString.Init(((FMRShell.MarketDataMaof)data).k300MaofType);
+                _maofSink.maofDataToString.Init(((FMRShell.MarketDataMaof)data).Data);
 
             }
             else if (_dt == FMRShell.DataType.Rezef)
             {
-                _rezefSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).k300RezefType);
+                _rezefSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).Data);
             }
             else if (_dt == FMRShell.DataType.Madad)
             {
-                _madadSink.madadDataToString.Init(((FMRShell.MarketDataMadad)data).k300MadadType);
+                _madadSink.madadDataToString.Init(((FMRShell.MarketDataMadad)data).Data);
             }
 
             // write the string to the file
