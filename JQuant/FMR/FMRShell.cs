@@ -410,13 +410,19 @@ namespace FMRShell
             // copy a couple of fields more
             mdh.Ticks = this.Ticks;
             mdh.TimeStamp = this.TimeStamp;
-            mdh.Legend = this.Legend;
-            mdh.Values = this.Values;
+            mdh.legend = this.legend;
+            mdh.values = this.values;
 
             return mdh;
         }
 
-        public void Init(DataType data)
+        /// <summary>
+        /// Sets property Values - string containig all values, for the future logging
+        /// </summary>
+        /// <param name="data">
+        /// A <see cref="DataType"/>
+        /// </param>
+        protected void Init(DataType data)
         {
             this.Data = data;
             
@@ -436,7 +442,7 @@ namespace FMRShell
             sbData.Append(",");
             sbData.Append(Ticks.ToString());
             
-            Values = sbData.ToString();
+            this.values = sbData.ToString();
 
             IsInitialized = true;
         }
@@ -455,16 +461,41 @@ namespace FMRShell
         /// </value>
         public override string Values
         {
-            get;
-            protected set;
+            get
+            {
+                if (!IsInitialized)
+                {
+                    Init(this.Data);
+                }
+                return this.values;
+            }
+            protected set
+            {
+                this.values = value;
+            }
         }
+        private string values;
         
         public override string Legend
         {
-            get;
-            protected set;
+            get
+            {
+                if (legend == null)
+                {
+                    InitLegend();
+                }
+                return legend;
+            }
+            protected set
+            {
+                this.legend = value;
+            }
         }
+        private string legend;
 
+        /// <summary>
+        /// Initialize field Legend - list of all fields in the data 
+        /// </summary>
         protected void InitLegend()
         {
             StringBuilder sbLegend = new StringBuilder(fields.Length*10);
@@ -477,14 +508,14 @@ namespace FMRShell
             }
             sbLegend.Append("TimeStamp,Ticks");
             
-            Legend = sbLegend.ToString();
+            legend = sbLegend.ToString();
         }
 
         public DataType Data
         {
             get;
             // use Init() to set the Data
-            protected set;
+            set;
         }
         
         protected FieldInfo[] fields;
@@ -597,7 +628,7 @@ namespace FMRShell
                 // no memory allocation here - I am using allready created object 
                 mktDta.TimeStamp = DateTime.Now;
                 mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.Init(data);
+                mktDta.Data = data;
                 countEvents++;
 
 
@@ -685,7 +716,7 @@ namespace FMRShell
                 // no memory allocation here - I am using allready created object 
                 mktDta.TimeStamp = DateTime.Now;
                 mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.Init(data);
+                mktDta.Data = data;
                 countEvents++;
 
                 // sink should not modify the data. sink has two options:
@@ -767,7 +798,7 @@ namespace FMRShell
             {
                 mktDta.TimeStamp = DateTime.Now;
                 mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.Init(data);
+                mktDta.Data = data;
 
                 countEvents++;
 
