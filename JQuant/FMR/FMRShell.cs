@@ -363,18 +363,28 @@ namespace FMRShell
         public long Ticks;
 
         public abstract object Clone();
+        public virtual string Values
+        {
+            get;
+            protected set;
+        }
+        
+        public virtual string Legend
+        {
+            get;
+            protected set;
+        }
     }
 
     public abstract class MarketDataHolder<DataType> : MarketData where DataType: new()
     {
-        public DataType Data;
-        public StructToString<DataType> S2S;
-
+        protected const string delimiter = ",";
+        
         protected MarketDataHolder()
         {
             Type t = typeof(DataType);
             fields = t.GetFields();
-            S2S = new StructToString<DataType>(",");
+            InitLegend();
         }
             
         public override object Clone()
@@ -400,6 +410,8 @@ namespace FMRShell
             // copy a couple of fields more
             mdh.Ticks = this.Ticks;
             mdh.TimeStamp = this.TimeStamp;
+            mdh.Legend = this.Legend;
+            mdh.Values = this.Values;
 
             return mdh;
         }
@@ -407,7 +419,72 @@ namespace FMRShell
         public void Init(DataType data)
         {
             this.Data = data;
-            S2S.Init(this.Data);
+            
+            StringBuilder sbData = new StringBuilder(fields.Length*10);
+
+            // i do boxing only once
+            object o = data;
+
+            foreach (FieldInfo field in fields)
+            {
+                object val = field.GetValue(o);
+                sbData.Append(val.ToString());
+                sbData.Append(delimiter);
+            }
+
+            sbData.Append(TimeStamp.ToString("hh:mm:ss.fff"));
+            sbData.Append(",");
+            sbData.Append(Ticks.ToString());
+            
+            Values = sbData.ToString();
+
+            IsInitialized = true;
+        }
+
+        /// <value>
+        /// This field is true if Init() was called
+        /// </value>
+        public bool IsInitialized
+        {
+            get;
+            protected set;
+        }
+        
+        /// <value>
+        /// keeps a string with values separated by the delimiter
+        /// </value>
+        public override string Values
+        {
+            get;
+            protected set;
+        }
+        
+        public override string Legend
+        {
+            get;
+            protected set;
+        }
+
+        protected void InitLegend()
+        {
+            StringBuilder sbLegend = new StringBuilder(fields.Length*10);
+
+            foreach (FieldInfo field in fields)
+            {
+                string name = field.Name;
+                sbLegend.Append(name);
+                sbLegend.Append(delimiter);
+            }
+            sbLegend.Append("TimeStamp,Ticks");
+            
+            Legend = sbLegend.ToString();
+        }
+
+        public DataType Data
+        {
+            get;
+            // use Init() to set the Data
+            protected set;
         }
         
         protected FieldInfo[] fields;
