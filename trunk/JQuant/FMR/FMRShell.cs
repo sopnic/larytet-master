@@ -352,7 +352,7 @@ namespace FMRShell
 
     public struct MarketDataMadad : ICloneable
     {
-        public K300MadadType k300MddType;
+        public K300MadadType k300MadadType;
 
         public DateTime timeStmp
         {
@@ -373,21 +373,21 @@ namespace FMRShell
             MarketDataMadad md = new MarketDataMadad();
 
             // copy data
-            md.k300MddType.SUG_RC = this.k300MddType.SUG_RC;
-            md.k300MddType.BNO_N = this.k300MddType.BNO_N;
-            md.k300MddType.FIL1_VK = this.k300MddType.FIL1_VK;
-            md.k300MddType.MDD_COD = this.k300MddType.MDD_COD;
-            md.k300MddType.MDD_SUG = this.k300MddType.MDD_SUG;
-            md.k300MddType.MDD_N = this.k300MddType.MDD_N;
-            md.k300MddType.FIL2_VK = this.k300MddType.FIL2_VK;
-            md.k300MddType.MDD_NAME = this.k300MddType.MDD_NAME;
-            md.k300MddType.Madad = this.k300MddType.Madad;
-            md.k300MddType.FIL3_VK = this.k300MddType.FIL3_VK;
-            md.k300MddType.MDD_DF = this.k300MddType.MDD_DF;
-            md.k300MddType.CALC_TIME = this.k300MddType.CALC_TIME;
-            md.k300MddType.FIL6_VK = this.k300MddType.FIL6_VK;
-            md.k300MddType.UPD_DAT = this.k300MddType.UPD_DAT;
-            md.k300MddType.UPD_TIME = this.k300MddType.UPD_TIME;
+            md.k300MadadType.SUG_RC = this.k300MadadType.SUG_RC;
+            md.k300MadadType.BNO_N = this.k300MadadType.BNO_N;
+            md.k300MadadType.FIL1_VK = this.k300MadadType.FIL1_VK;
+            md.k300MadadType.MDD_COD = this.k300MadadType.MDD_COD;
+            md.k300MadadType.MDD_SUG = this.k300MadadType.MDD_SUG;
+            md.k300MadadType.MDD_N = this.k300MadadType.MDD_N;
+            md.k300MadadType.FIL2_VK = this.k300MadadType.FIL2_VK;
+            md.k300MadadType.MDD_NAME = this.k300MadadType.MDD_NAME;
+            md.k300MadadType.Madad = this.k300MadadType.Madad;
+            md.k300MadadType.FIL3_VK = this.k300MadadType.FIL3_VK;
+            md.k300MadadType.MDD_DF = this.k300MadadType.MDD_DF;
+            md.k300MadadType.CALC_TIME = this.k300MadadType.CALC_TIME;
+            md.k300MadadType.FIL6_VK = this.k300MadadType.FIL6_VK;
+            md.k300MadadType.UPD_DAT = this.k300MadadType.UPD_DAT;
+            md.k300MadadType.UPD_TIME = this.k300MadadType.UPD_TIME;
 
             md.timeStmp = this.timeStmp;
             md.ts = this.ts;
@@ -406,7 +406,7 @@ namespace FMRShell
     /// </summary>
     public struct MarketDataRezef : ICloneable
     {
-        public K300RzfType k300RzfType;
+        public K300RzfType k300RezefType;
 
         public DateTime timeStmp
         {
@@ -426,66 +426,66 @@ namespace FMRShell
             MarketDataRezef md = new MarketDataRezef();
 
             // copy data
-            md.k300RzfType.SUG_REC = this.k300RzfType.SUG_REC;
-            md.k300RzfType.BNO_Num = this.k300RzfType.BNO_Num;
-            md.k300RzfType.BNO_NAME = this.k300RzfType.BNO_NAME;
-            md.k300RzfType.Symbol = this.k300RzfType.Symbol;
-            md.k300RzfType.TRADE_METH = this.k300RzfType.TRADE_METH;
-            md.k300RzfType.SIDURI_Num = this.k300RzfType.SIDURI_Num;
-            md.k300RzfType.RWR_VA = this.k300RzfType.RWR_VA;
-            md.k300RzfType.MIN_UNIT = this.k300RzfType.MIN_UNIT;
-            md.k300RzfType.HARIG_NV = this.k300RzfType.HARIG_NV;
-            md.k300RzfType.MIN_PR_OPN = this.k300RzfType.MIN_PR_OPN;
-            md.k300RzfType.MAX_PR_OPN = this.k300RzfType.MAX_PR_OPN;
-            md.k300RzfType.MIN_PR_CNT = this.k300RzfType.MIN_PR_CNT;
-            md.k300RzfType.MAX_PR_CNT = this.k300RzfType.MAX_PR_CNT;
-            md.k300RzfType.BASIS_PRC = this.k300RzfType.BASIS_PRC;
-            md.k300RzfType.STATUS = this.k300RzfType.STATUS;
-            md.k300RzfType.EX_COD = this.k300RzfType.EX_COD;
-            md.k300RzfType.EX_DETAIL = this.k300RzfType.EX_DETAIL;
-            md.k300RzfType.RWR_VB = this.k300RzfType.RWR_VB;
-            md.k300RzfType.shlav = this.k300RzfType.shlav;
-            md.k300RzfType.LAST_PRC = this.k300RzfType.LAST_PRC;
-            md.k300RzfType.TRD_STP_N = this.k300RzfType.TRD_STP_N;
-            md.k300RzfType.STP_OPN_TM = this.k300RzfType.STP_OPN_TM;
-            md.k300RzfType.RWR_VD = this.k300RzfType.RWR_VD;
-            md.k300RzfType.LMT_BY1 = this.k300RzfType.LMT_BY1;
-            md.k300RzfType.LMT_BY2 = this.k300RzfType.LMT_BY2;
-            md.k300RzfType.LMT_BY3 = this.k300RzfType.LMT_BY3;
-            md.k300RzfType.LMY_BY1_NV = this.k300RzfType.LMY_BY1_NV;
-            md.k300RzfType.LMY_BY2_NV = this.k300RzfType.LMY_BY2_NV;
-            md.k300RzfType.LMY_BY3_NV = this.k300RzfType.LMY_BY3_NV;
-            md.k300RzfType.MKT_NV_BY = this.k300RzfType.MKT_NV_BY;
-            md.k300RzfType.MKT_NV_BY_NUM = this.k300RzfType.MKT_NV_BY_NUM;
-            md.k300RzfType.RWR_VE = this.k300RzfType.RWR_VE;
-            md.k300RzfType.LMT_SL1 = this.k300RzfType.LMT_SL1;
-            md.k300RzfType.LMT_SL2 = this.k300RzfType.LMT_SL2;
-            md.k300RzfType.LMT_SL3 = this.k300RzfType.LMT_SL3;
-            md.k300RzfType.LMY_SL1_NV = this.k300RzfType.LMY_SL1_NV;
-            md.k300RzfType.LMY_SL2_NV = this.k300RzfType.LMY_SL2_NV;
-            md.k300RzfType.LMY_SL3_NV = this.k300RzfType.LMY_SL3_NV;
-            md.k300RzfType.MKT_NV_SL = this.k300RzfType.MKT_NV_SL;
-            md.k300RzfType.MKT_NV_SL_NUM = this.k300RzfType.MKT_NV_SL_NUM;
-            md.k300RzfType.RWR_VF = this.k300RzfType.RWR_VF;
-            md.k300RzfType.THEOR_PR = this.k300RzfType.THEOR_PR;
-            md.k300RzfType.THEOR_VL = this.k300RzfType.THEOR_VL;
-            md.k300RzfType.RWR_VG = this.k300RzfType.RWR_VG;
-            md.k300RzfType.LST_DL_PR = this.k300RzfType.LST_DL_PR;
-            md.k300RzfType.LST_DL_TM = this.k300RzfType.LST_DL_TM;
-            md.k300RzfType.LST_DF_BS = this.k300RzfType.LST_DF_BS;
-            md.k300RzfType.LST_DF_OPN = this.k300RzfType.LST_DF_OPN;
-            md.k300RzfType.LST_DL_VL = this.k300RzfType.LST_DL_VL;
-            md.k300RzfType.DAY_VL = this.k300RzfType.DAY_VL;
-            md.k300RzfType.DAY_VL_NIS = this.k300RzfType.DAY_VL_NIS;
-            md.k300RzfType.DAY_DIL_NO = this.k300RzfType.DAY_DIL_NO;
-            md.k300RzfType.DAY_MAX_PR = this.k300RzfType.DAY_MAX_PR;
-            md.k300RzfType.DAY_MIN_PR = this.k300RzfType.DAY_MIN_PR;
-            md.k300RzfType.BNO_NAME_E = this.k300RzfType.BNO_NAME_E;
-            md.k300RzfType.SYMBOL_E = this.k300RzfType.SYMBOL_E;
-            md.k300RzfType.STP_COD = this.k300RzfType.STP_COD;
-            md.k300RzfType.COD_SHAAR = this.k300RzfType.COD_SHAAR;
-            md.k300RzfType.UPD_DAT = this.k300RzfType.UPD_DAT;
-            md.k300RzfType.UPD_TIME = this.k300RzfType.UPD_TIME;
+            md.k300RezefType.SUG_REC = this.k300RezefType.SUG_REC;
+            md.k300RezefType.BNO_Num = this.k300RezefType.BNO_Num;
+            md.k300RezefType.BNO_NAME = this.k300RezefType.BNO_NAME;
+            md.k300RezefType.Symbol = this.k300RezefType.Symbol;
+            md.k300RezefType.TRADE_METH = this.k300RezefType.TRADE_METH;
+            md.k300RezefType.SIDURI_Num = this.k300RezefType.SIDURI_Num;
+            md.k300RezefType.RWR_VA = this.k300RezefType.RWR_VA;
+            md.k300RezefType.MIN_UNIT = this.k300RezefType.MIN_UNIT;
+            md.k300RezefType.HARIG_NV = this.k300RezefType.HARIG_NV;
+            md.k300RezefType.MIN_PR_OPN = this.k300RezefType.MIN_PR_OPN;
+            md.k300RezefType.MAX_PR_OPN = this.k300RezefType.MAX_PR_OPN;
+            md.k300RezefType.MIN_PR_CNT = this.k300RezefType.MIN_PR_CNT;
+            md.k300RezefType.MAX_PR_CNT = this.k300RezefType.MAX_PR_CNT;
+            md.k300RezefType.BASIS_PRC = this.k300RezefType.BASIS_PRC;
+            md.k300RezefType.STATUS = this.k300RezefType.STATUS;
+            md.k300RezefType.EX_COD = this.k300RezefType.EX_COD;
+            md.k300RezefType.EX_DETAIL = this.k300RezefType.EX_DETAIL;
+            md.k300RezefType.RWR_VB = this.k300RezefType.RWR_VB;
+            md.k300RezefType.shlav = this.k300RezefType.shlav;
+            md.k300RezefType.LAST_PRC = this.k300RezefType.LAST_PRC;
+            md.k300RezefType.TRD_STP_N = this.k300RezefType.TRD_STP_N;
+            md.k300RezefType.STP_OPN_TM = this.k300RezefType.STP_OPN_TM;
+            md.k300RezefType.RWR_VD = this.k300RezefType.RWR_VD;
+            md.k300RezefType.LMT_BY1 = this.k300RezefType.LMT_BY1;
+            md.k300RezefType.LMT_BY2 = this.k300RezefType.LMT_BY2;
+            md.k300RezefType.LMT_BY3 = this.k300RezefType.LMT_BY3;
+            md.k300RezefType.LMY_BY1_NV = this.k300RezefType.LMY_BY1_NV;
+            md.k300RezefType.LMY_BY2_NV = this.k300RezefType.LMY_BY2_NV;
+            md.k300RezefType.LMY_BY3_NV = this.k300RezefType.LMY_BY3_NV;
+            md.k300RezefType.MKT_NV_BY = this.k300RezefType.MKT_NV_BY;
+            md.k300RezefType.MKT_NV_BY_NUM = this.k300RezefType.MKT_NV_BY_NUM;
+            md.k300RezefType.RWR_VE = this.k300RezefType.RWR_VE;
+            md.k300RezefType.LMT_SL1 = this.k300RezefType.LMT_SL1;
+            md.k300RezefType.LMT_SL2 = this.k300RezefType.LMT_SL2;
+            md.k300RezefType.LMT_SL3 = this.k300RezefType.LMT_SL3;
+            md.k300RezefType.LMY_SL1_NV = this.k300RezefType.LMY_SL1_NV;
+            md.k300RezefType.LMY_SL2_NV = this.k300RezefType.LMY_SL2_NV;
+            md.k300RezefType.LMY_SL3_NV = this.k300RezefType.LMY_SL3_NV;
+            md.k300RezefType.MKT_NV_SL = this.k300RezefType.MKT_NV_SL;
+            md.k300RezefType.MKT_NV_SL_NUM = this.k300RezefType.MKT_NV_SL_NUM;
+            md.k300RezefType.RWR_VF = this.k300RezefType.RWR_VF;
+            md.k300RezefType.THEOR_PR = this.k300RezefType.THEOR_PR;
+            md.k300RezefType.THEOR_VL = this.k300RezefType.THEOR_VL;
+            md.k300RezefType.RWR_VG = this.k300RezefType.RWR_VG;
+            md.k300RezefType.LST_DL_PR = this.k300RezefType.LST_DL_PR;
+            md.k300RezefType.LST_DL_TM = this.k300RezefType.LST_DL_TM;
+            md.k300RezefType.LST_DF_BS = this.k300RezefType.LST_DF_BS;
+            md.k300RezefType.LST_DF_OPN = this.k300RezefType.LST_DF_OPN;
+            md.k300RezefType.LST_DL_VL = this.k300RezefType.LST_DL_VL;
+            md.k300RezefType.DAY_VL = this.k300RezefType.DAY_VL;
+            md.k300RezefType.DAY_VL_NIS = this.k300RezefType.DAY_VL_NIS;
+            md.k300RezefType.DAY_DIL_NO = this.k300RezefType.DAY_DIL_NO;
+            md.k300RezefType.DAY_MAX_PR = this.k300RezefType.DAY_MAX_PR;
+            md.k300RezefType.DAY_MIN_PR = this.k300RezefType.DAY_MIN_PR;
+            md.k300RezefType.BNO_NAME_E = this.k300RezefType.BNO_NAME_E;
+            md.k300RezefType.SYMBOL_E = this.k300RezefType.SYMBOL_E;
+            md.k300RezefType.STP_COD = this.k300RezefType.STP_COD;
+            md.k300RezefType.COD_SHAAR = this.k300RezefType.COD_SHAAR;
+            md.k300RezefType.UPD_DAT = this.k300RezefType.UPD_DAT;
+            md.k300RezefType.UPD_TIME = this.k300RezefType.UPD_TIME;
 
             md.timeStmp = this.timeStmp;
             md.ts = this.ts;
@@ -696,7 +696,7 @@ namespace FMRShell
                 // no memory allocation here - I am using allready created object 
                 mktDta.timeStmp = DateTime.Now;
                 mktDta.ts = Stopwatch.GetTimestamp();
-                mktDta.k300MddType = data;
+                mktDta.k300MadadType = data;
                 countEvents++;
 
 
@@ -866,7 +866,7 @@ namespace FMRShell
             {
                 mktDta.timeStmp = DateTime.Now;
                 mktDta.ts = Stopwatch.GetTimestamp();
-                mktDta.k300RzfType = data;
+                mktDta.k300RezefType = data;
 
                 countEvents++;
 
