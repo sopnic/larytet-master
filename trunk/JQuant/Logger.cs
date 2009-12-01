@@ -522,9 +522,9 @@ namespace JQuant
             // write the string to the file
             try
             {
-                if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Values + ((FMRShell.MarketDataMaof)data).timeStmp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataMaof)data).ts);
-                else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Values + ((FMRShell.MarketDataRezef)data).timeStmp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataRezef)data).ts);
-                else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Values + ((FMRShell.MarketDataMadad)data).timeStmp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataMadad)data).ts);
+                if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Values + ((FMRShell.MarketDataMaof)data).TimeStamp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataMaof)data).Ticks);
+                else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Values + ((FMRShell.MarketDataRezef)data).TimeStamp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataRezef)data).Ticks);
+                else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Values + ((FMRShell.MarketDataMadad)data).TimeStamp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataMadad)data).Ticks);
                 // i want to make Flush from time to time
                 // the question is when ? or let the OS to manage the things ?
                 // _streamWriter.Flush();
