@@ -512,11 +512,11 @@ namespace JQuant
             }
             else if (_dt == FMRShell.DataType.Rezef)
             {
-                _rezefSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).k300RzfType);
+                _rezefSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).k300RezefType);
             }
             else if (_dt == FMRShell.DataType.Madad)
             {
-                _madadSink.madadDataToString.Init(((FMRShell.MarketDataMadad)data).k300MddType);
+                _madadSink.madadDataToString.Init(((FMRShell.MarketDataMadad)data).k300MadadType);
             }
 
             // write the string to the file
