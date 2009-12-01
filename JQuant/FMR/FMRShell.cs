@@ -350,24 +350,36 @@ namespace FMRShell
         Last
     }
 
-    public struct MarketDataMadad : ICloneable
-    {
-        public K300MadadType k300MadadType;
 
-        public DateTime timeStmp
+    /// <summary>
+    /// generic class 
+    /// data container for the trading/market data - Maof options
+    /// can hold fields like time stamp, bid/ask, last price, etc.
+    /// this class is not going to be used directly but inherited
+    /// </summary>
+    public abstract class MarketData : ICloneable
+    {
+        public DateTime TimeStamp
         {
             get;
             set;
         }
         
-        public long ts
+        public long Ticks
         {
             get;
             set;
         }
 
+        public abstract object Clone();
+    }
+    
+    public class MarketDataMadad : MarketData
+    {
+        public K300MadadType k300MadadType;
 
-        public object Clone()
+
+        public override object Clone()
         {
             // create a new object
             MarketDataMadad md = new MarketDataMadad();
@@ -389,38 +401,20 @@ namespace FMRShell
             md.k300MadadType.UPD_DAT = this.k300MadadType.UPD_DAT;
             md.k300MadadType.UPD_TIME = this.k300MadadType.UPD_TIME;
 
-            md.timeStmp = this.timeStmp;
-            md.ts = this.ts;
+            md.TimeStamp = this.TimeStamp;
+            md.Ticks = this.Ticks;
 
             return md;
         }
 
-    }//struct MarketDataMadad
+    } // class MarketDataMadad
 
 
-    /// <summary>
-    /// generic class 
-    /// data container for the trading/market data - Maof options
-    /// can hold fields like time stamp, bid/ask, last price, etc.
-    /// this class is not going to be used directly but inherited
-    /// </summary>
-    public struct MarketDataRezef : ICloneable
+    public class MarketDataRezef : MarketData
     {
         public K300RzfType k300RezefType;
 
-        public DateTime timeStmp
-        {
-            get;
-            set;
-        }
-
-        public long ts
-        {
-            get;
-            set;
-        }
-
-        public object Clone()
+        public override object Clone()
         {
             // create a new object
             MarketDataRezef md = new MarketDataRezef();
@@ -487,45 +481,22 @@ namespace FMRShell
             md.k300RezefType.UPD_DAT = this.k300RezefType.UPD_DAT;
             md.k300RezefType.UPD_TIME = this.k300RezefType.UPD_TIME;
 
-            md.timeStmp = this.timeStmp;
-            md.ts = this.ts;
+            md.TimeStamp = this.TimeStamp;
+            md.Ticks = this.Ticks;
 
             return md;
         }
-    }//struct MarketDataRezef
+    } // class MarketDataRezef
 
 
-    /// <summary>
-    /// generic class 
-    /// data container for the trading/market data - Maof options
-    /// can hold fields like time stamp, bid/ask, last price, etc.
-    /// this class is not going to be used directly but inherited
-    /// </summary>
-    public struct MarketDataMaof : ICloneable
+    public class MarketDataMaof : MarketData
     {
         /// <summary>
         /// The data received from the stream
         /// </summary>
         public K300MaofType k300MaofType;
-        /// <summary>
-        /// Timestamp
-        /// </summary>
-        public DateTime timeStmp
-        {
-            get;
-            set;
-        }
 
-        /// <summary>
-        /// StopWatch precision measure
-        /// </summary>
-        public long ts
-        {
-            get;
-            set;
-        }
-
-        public object Clone()
+        public override object Clone()
         {
             // create a new object
             MarketDataMaof md = new MarketDataMaof();
@@ -596,12 +567,12 @@ namespace FMRShell
             md.k300MaofType.UPD_TIME = this.k300MaofType.UPD_TIME;
             md.k300MaofType.FILER = this.k300MaofType.FILER;
 
-            md.timeStmp = this.timeStmp;
-            md.ts = this.ts;
+            md.TimeStamp = this.TimeStamp;
+            md.Ticks = this.Ticks;
 
             return md;
         }
-    }//struct MarketDataMaof
+    } //  class MarketDataMaof
 
 
     public class K300MaofTypeToString : StructToString<K300MaofType>
@@ -694,8 +665,8 @@ namespace FMRShell
             {
                 //Console.Write(".");
                 // no memory allocation here - I am using allready created object 
-                mktDta.timeStmp = DateTime.Now;
-                mktDta.ts = Stopwatch.GetTimestamp();
+                mktDta.TimeStamp = DateTime.Now;
+                mktDta.Ticks = Stopwatch.GetTimestamp();
                 mktDta.k300MadadType = data;
                 countEvents++;
 
@@ -782,8 +753,8 @@ namespace FMRShell
             {
                 //Console.Write(".");
                 // no memory allocation here - I am using allready created object 
-                mktDta.timeStmp = DateTime.Now;
-                mktDta.ts = Stopwatch.GetTimestamp();
+                mktDta.TimeStamp = DateTime.Now;
+                mktDta.Ticks = Stopwatch.GetTimestamp();
                 mktDta.k300MaofType = data;
                 countEvents++;
 
@@ -864,8 +835,8 @@ namespace FMRShell
 
             protected void OnRezef(ref K300RzfType data)
             {
-                mktDta.timeStmp = DateTime.Now;
-                mktDta.ts = Stopwatch.GetTimestamp();
+                mktDta.TimeStamp = DateTime.Now;
+                mktDta.Ticks = Stopwatch.GetTimestamp();
                 mktDta.k300RezefType = data;
 
                 countEvents++;
