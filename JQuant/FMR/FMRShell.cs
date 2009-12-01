@@ -377,8 +377,12 @@ namespace FMRShell
             S2S = new StructToString<DataType>(",");
         }
             
-        protected object Clone(MarketDataHolder<DataType> mdh)
+        public override object Clone()
         {
+            // create object of the child class 
+            Type t = this.GetType();
+            MarketDataHolder<DataType> mdh = (MarketDataHolder<DataType>)System.Activator.CreateInstance(t);
+            
             DataType Data = new DataType();
 
             // boxing the struct
@@ -411,31 +415,16 @@ namespace FMRShell
     
     public class MarketDataMadad : MarketDataHolder<K300MadadType>
     {
-        public override object Clone()
-        {
-            object o = Clone(new MarketDataMadad());
-            return o;
-        }
     } // class MarketDataMadad
 
 
     public class MarketDataRezef : MarketDataHolder<K300RzfType>
     {
-        public override object Clone()
-        {
-            object o = Clone(new MarketDataRezef());
-            return o;
-        }
     } // class MarketDataRezef
 
 
     public class MarketDataMaof : MarketDataHolder<K300MaofType>
     {
-        public override object Clone()
-        {
-            object o = Clone(new MarketDataMaof());
-            return o;
-        }
     } //  class MarketDataMaof
 
 
