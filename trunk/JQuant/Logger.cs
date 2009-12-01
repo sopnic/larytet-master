@@ -506,27 +506,12 @@ namespace JQuant
             // write all fields of K300MaofType (data.k3Maof) in one line
             // followed by EOL
 
-            // convert the data to string - this is time consuming operation
-            if (_dt == FMRShell.DataType.Maof)
-            {
-                _maofSink.maofDataToString.Init(((FMRShell.MarketDataMaof)data).Data);
-
-            }
-            else if (_dt == FMRShell.DataType.Rezef)
-            {
-                _rezefSink.rezefDataToString.Init(((FMRShell.MarketDataRezef)data).Data);
-            }
-            else if (_dt == FMRShell.DataType.Madad)
-            {
-                _madadSink.madadDataToString.Init(((FMRShell.MarketDataMadad)data).Data);
-            }
+            FMRShell.MarketData marketData = (FMRShell.MarketData)data;
 
             // write the string to the file
             try
             {
-                if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Values + "," +((FMRShell.MarketDataMaof)data).TimeStamp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataMaof)data).Ticks);
-                else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Values + "," +((FMRShell.MarketDataRezef)data).TimeStamp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataRezef)data).Ticks);
-                else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Values + "," +((FMRShell.MarketDataMadad)data).TimeStamp.ToString("hh:mm:ss.fff") + "," + ((FMRShell.MarketDataMadad)data).Ticks);
+                _streamWriter.WriteLine(marketData.Values);
                 // i want to make Flush from time to time
                 // the question is when ? or let the OS to manage the things ?
                 // _streamWriter.Flush();
