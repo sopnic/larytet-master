@@ -146,7 +146,7 @@ namespace JQuant
 
         protected void InitLegend()
         {
-            StringBuilder sbLegend = new StringBuilder(150);
+            StringBuilder sbLegend = new StringBuilder(fields.Length*10);
 
             foreach (FieldInfo field in fields)
             {
@@ -154,13 +154,17 @@ namespace JQuant
                 sbLegend.Append(name);
                 sbLegend.Append(delimiter);
             }
+            
+            // remove last delimiter
+            sbLegend.Remove(sbLegend.Length-delimiter.Length, delimiter.Length);
+            
             Legend = sbLegend.ToString();
         }
 
         public void Init(StructType data)
         {
             this.data = data;
-            StringBuilder sbData = new StringBuilder(50);
+            StringBuilder sbData = new StringBuilder(fields.Length*10);
 
             // i do boxing only once
             object o = data;
@@ -171,6 +175,10 @@ namespace JQuant
                 sbData.Append(val.ToString());
                 sbData.Append(delimiter);
             }
+            
+            // remove last delimiter
+            sbData.Remove(sbData.Length-delimiter.Length, delimiter.Length);
+            
             Values = sbData.ToString();
 
             IsInitialized = true;
