@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Xml;
 using System.Threading;
 
@@ -363,6 +364,7 @@ namespace FMRShell
         public long Ticks;
 
         public abstract object Clone();
+        
         public virtual string Values
         {
             get;
@@ -382,9 +384,12 @@ namespace FMRShell
         
         protected MarketDataHolder()
         {
-            Type t = typeof(DataType);
-            fields = t.GetFields();
-            InitLegend();
+            if (fields == null)
+            {
+                Type t = typeof(DataType);
+                fields = t.GetFields();
+            }
+//            InitLegend();
         }
             
         public override object Clone()
@@ -410,7 +415,6 @@ namespace FMRShell
             // copy a couple of fields more
             mdh.Ticks = this.Ticks;
             mdh.TimeStamp = this.TimeStamp;
-            mdh.legend = this.legend;
             mdh.values = this.values;
 
             return mdh;
@@ -422,9 +426,9 @@ namespace FMRShell
         /// <param name="data">
         /// A <see cref="DataType"/>
         /// </param>
-        protected void Init(DataType data)
+        protected void InitValues(DataType data)
         {
-            this.Data = data;
+            this.data = data;
             
             StringBuilder sbData = new StringBuilder(fields.Length*10);
 
@@ -465,7 +469,7 @@ namespace FMRShell
             {
                 if (!IsInitialized)
                 {
-                    Init(this.Data);
+                    InitValues(this.Data);
                 }
                 return this.values;
             }
@@ -488,16 +492,21 @@ namespace FMRShell
             }
             protected set
             {
-                this.legend = value;
+                legend = value;
             }
         }
-        private string legend;
+        private static string legend;
 
         /// <summary>
         /// Initialize field Legend - list of all fields in the data 
         /// </summary>
         protected void InitLegend()
         {
+            if (legend != null)
+            {
+                return;
+            }
+            
             StringBuilder sbLegend = new StringBuilder(fields.Length*10);
 
             foreach (FieldInfo field in fields)
@@ -511,14 +520,21 @@ namespace FMRShell
             legend = sbLegend.ToString();
         }
 
+        private DataType data;
         public DataType Data
         {
-            get;
-            // use Init() to set the Data
-            set;
+            get
+            {
+                return this.data;
+            }
+            
+            set
+            {
+                InitValues(value);
+            }
         }
-        
-        protected FieldInfo[] fields;
+
+        protected static FieldInfo[] fields;
     }
     
     public class MarketDataMadad : MarketDataHolder<K300MadadType>
@@ -1007,6 +1023,251 @@ namespace FMRShell
     }   //class Collector
 
 
+#if TEMPORARY__
+    /// <summary>
+    /// this class will get the data from specified data producer and write the data to the 
+    /// specified file.
+    /// </summary>
+    public class TradingDataLogger : AsyncLogger
+    {
+        public class DataSink: ISink<MarketData>
+        {
+            public DataSink(TradingDataLogger dataLogger, IProducer<MarketData> producer)
+            {
+                this.dataLogger = dataLogger;
+                producer.AddSink(this);
+            }
+
+            public void Stop()
+            {
+                tdl._collector.madadProducer.RemoveSink(this);
+            }
+
+            public void Notify(int count, FMRShell.MarketDataMadad data)
+            {
+                tdl._stampLatest = System.DateTime.Now;
+                FMRShell.MarketDataMadad dataClone = (FMRShell.MarketDataMadad)(data.Clone());
+                tdl.AddEntry(dataClone);
+            }
+
+            // a pointer to the container class
+            protected TradingDataLogger dataLogger;    
+        }//MadadSink
+
+
+
+        /// <summary>
+        /// Create the ASCII logger
+        /// </summary>
+        /// <param name="name">
+        /// A <see cref="System.String"/>
+        /// Debuh info - name of the logger
+        /// </param>
+        /// <param name="filename">
+        /// A <see cref="System.String"/>
+        /// File to read the data
+        /// </param>
+        /// <param name="append">
+        /// A <see cref="System.Boolean"/>
+        /// If "append" is true and file exists logger will append the data to the end of the file
+        /// </param>
+        /// <param name="producer">
+        /// A <see cref="IProducer"/>
+        /// Object which provides data to log
+        /// </param>
+        public TradingDataLogger(string name, string filename, bool append, FMRShell.Collector collector, FMRShell.DataType dt)
+            : base(name)
+        {
+            FileName = filename;
+            _fileStream = default(FileStream);
+            _streamWriter = default(StreamWriter);
+            _collector = collector;
+            _append = append;
+            _timeStamped = false;
+            _stampLatest = default(System.DateTime);
+            _stampOldest = default(System.DateTime);
+            _dt = dt;
+            Type = LogType.CSV;
+            notStoped = false;
+
+
+
+            // I estimate size of FMRShell.MarketData struct 50 bytes
+            QueueSize = (500 * 1024) / 50;
+        }
+
+        /// <summary>
+        /// register notifier in the producer, start write file
+        /// returns True if Ok
+        /// application will check LastException if the method
+        /// returns False
+        /// </summary>
+        public override bool Start()
+        {
+            bool result = false;
+
+            // i want a loop here to break from  - i avoid multiple
+            // returns this way
+            do
+            {
+                // open file for writing
+                try
+                {
+                    if (_append) _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+                    else _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    _streamWriter = new StreamWriter(_fileStream);
+                }
+                catch (IOException e)
+                {
+                    // store the exception
+                    LastException = e;
+                    if (_fileStream != default(FileStream))
+                    {
+                        _fileStream.Close();
+                        // help Garbage collector
+                        _streamWriter = default(StreamWriter);
+                        _fileStream = default(FileStream);
+                    }
+                    // and get out
+                    break;
+                }
+
+                // register myself in the data producer
+                if (this._dt == FMRShell.DataType.Maof) this._maofSink = new MaofSink(this);
+                else if (this._dt == FMRShell.DataType.Rezef) this._rezefSink = new RezefSink(this);
+                else if (this._dt == FMRShell.DataType.Madad) this._madadSink = new MadadSink(this);
+
+                // write legend at the top of the file
+                try
+                {
+                    if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Legend+",TimeStamp,Ticks");
+                    else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Legend + ",TimeStamp,Ticks");
+                    else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Legend + ",TimeStamp,Ticks");
+                }
+                catch (IOException e)
+                {
+                    // store the exception
+                    LastException = e;
+                    // close the file
+                    _fileStream.Close();
+                    // help Garbage collector
+                    _streamWriter = default(StreamWriter);
+                    _fileStream = default(FileStream);
+                    Console.WriteLine(e.ToString());
+                    // and get out
+                    break;
+                }
+
+                //strat write file
+                base.Start();
+
+                result = true;
+            }
+            while (false);
+
+            return result;
+        }
+
+        /// <summary>
+        /// application will call this method for clean up
+        /// remove registration from the producer
+        /// close the file, remove registration of the data sync from the producer
+        /// </summary>
+        public override void Stop()
+        {
+            base.Stop();
+            if (_dt == FMRShell.DataType.Maof) _maofSink.Stop();
+            else if (_dt == FMRShell.DataType.Rezef) _rezefSink.Stop();
+            else if (_dt == FMRShell.DataType.Madad) _madadSink.Stop();
+
+            if (_fileStream != default(FileStream))
+            {
+                _streamWriter.Flush();
+                _fileStream.Flush();
+                // help Garbage collector
+                _streamWriter = default(StreamWriter);
+                _fileStream = default(FileStream);
+                Console.WriteLine("Logger " + GetName() + " file "+FileName+" closed");
+            }
+        }
+
+        public override void Dispose()
+        {
+            if (_fileStream != default(FileStream))
+            {
+                _fileStream.Close();
+            }
+            base.Dispose();
+        }
+
+        /// <summary>
+        /// write data to the file. this method is called from a separate
+        /// thread
+        /// </summary>
+        /// <param name="data">
+        /// A <see cref="System.Object"/>
+        /// </param>
+        protected override void WriteData(object data)
+        {
+            // I have to decide on format of the log - ASCII or binary 
+            // should I write any system info like version the data/software ?
+            // at this point only ASCII is supported, no system info
+            // write all fields of K300MaofType (data.k3Maof) in one line
+            // followed by EOL
+
+            FMRShell.MarketData marketData = (FMRShell.MarketData)data;
+
+            // write the string to the file
+            try
+            {
+                _streamWriter.WriteLine(marketData.Values);
+                // i want to make Flush from time to time
+                // the question is when ? or let the OS to manage the things ?
+                // _streamWriter.Flush();
+                lock (this)
+                {
+                    _countLog++;
+                }
+            }
+            catch (ObjectDisposedException e)
+            {
+                // store the exception
+                LastException = e;
+                Console.WriteLine(e.ToString());
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.ToString());
+                // store the exception
+                LastException = e;
+                // and get out
+                Stop();
+            }
+        }
+
+        public string FileName
+        {
+            get;
+            protected set;
+        }
+
+        public Exception LastException
+        {
+            get;
+            protected set;
+        }
+
+        protected FMRShell.Collector _collector;    //producer
+        protected MaofSink _maofSink;               //and 
+        protected RezefSink _rezefSink;             //three
+        protected MadadSink _madadSink;             //sinks
+
+        bool _append;
+        FileStream _fileStream;
+        FMRShell.DataType _dt;
+        StreamWriter _streamWriter;
+    }
+#endif    
 
     
     /// <summary>
