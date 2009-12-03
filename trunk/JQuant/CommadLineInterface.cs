@@ -248,6 +248,7 @@ namespace JQuant
             // CurrentMenu reference will be restored from copy
             // in the end of the function
             int firstBlankIdx = cmdName.IndexOf(" ");
+            if (firstBlankIdx < 0) firstBlankIdx = cmdName.Length;
             int slashIdx = cmdName.IndexOf("/");
             while ((slashIdx >= 0) && (slashIdx < firstBlankIdx))
             {
