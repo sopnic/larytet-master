@@ -1162,6 +1162,7 @@ namespace TaskBarLibSim
             // i want to mark first and last field
             data.SUG_REC = "SUG_REC";
             data.FILER = "FILER";
+            data.BNO_NAME = "Maof";
             
 
             count += 1;
@@ -1236,6 +1237,7 @@ namespace TaskBarLibSim
             }
             // unboxing of the structure
             data = (K300RzfType)o;
+            data.BNO_NAME = "Rezef";
 
 
             count += 1;
@@ -1309,6 +1311,7 @@ namespace TaskBarLibSim
             }
             // unboxing of the structure
             data = (K300MadadType)o;
+            data.BNO_N = "Madad";
 
             count += 1;
             

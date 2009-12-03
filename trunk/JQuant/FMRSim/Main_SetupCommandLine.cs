@@ -324,7 +324,24 @@ namespace JQuant
             }
 
             // create logger which will register itself (AddSink) in the collector
-            TradingDataLogger dataLogger = new TradingDataLogger(loggerName, filename, false, DataCollector, dt);
+            FMRShell.TradingDataLogger dataLogger =  default(FMRShell.TradingDataLogger);
+            if (dt == FMRShell.DataType.Maof)
+            {
+                    dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false, 
+                    DataCollector.maofProducer, new FMRShell.MarketDataMaof().Legend);
+            }
+            else if (dt == FMRShell.DataType.Rezef)
+            {
+                    dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false, 
+                    DataCollector.rezefProducer, new FMRShell.MarketDataRezef().Legend);
+            }
+            else if (dt == FMRShell.DataType.Madad)
+            {
+                    dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false, 
+                    DataCollector.madadProducer, new FMRShell.MarketDataMadad().Legend);
+            }
+            else System.Console.WriteLine("No handling for data type "+dt+"("+(int)dt+")");
+            
             DataLogger[(int)dt] = dataLogger;
 
             // start logger
@@ -602,7 +619,7 @@ namespace JQuant
         /// i can support multiple data collectors and loggers. Because this is CLI i am going to assume
         /// that there is exactly one logger for one data collector. 
         /// </summary>
-        protected TradingDataLogger[] DataLogger = new TradingDataLogger[(int)FMRShell.DataType.Last];
+        protected FMRShell.TradingDataLogger[] DataLogger = new FMRShell.TradingDataLogger[(int)FMRShell.DataType.Last];
 
 
         protected void debugOperatonsStopLogCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -613,7 +630,7 @@ namespace JQuant
 
         protected void CloseLog(IWrite iWrite, FMRShell.DataType dt, bool stopStream)
         {
-            TradingDataLogger dataLogger = DataLogger[(int)dt];
+            FMRShell.TradingDataLogger dataLogger = DataLogger[(int)dt];
             dataLogger.Stop();
             dataLogger.Dispose();
             dataLogger = null;

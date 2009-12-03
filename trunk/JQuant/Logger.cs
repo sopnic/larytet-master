@@ -22,10 +22,10 @@ namespace JQuant
     {
         public Logger(string name)
         {
-            _name = name;
-            _countTrigger = 0;
-            _countLog = 0;
-            _countDropped = 0;
+            this.name = name;
+            countTrigger = 0;
+            countLog = 0;
+            countDropped = 0;
 
             // add myself to the list of created loggers
             Resources.Loggers.Add(this);
@@ -49,22 +49,22 @@ namespace JQuant
 
         public string GetName()
         {
-            return _name;
+            return name;
         }
 
         public int GetCountLog()
         {
-            return _countLog;
+            return countLog;
         }
 
         public int GetCountTrigger()
         {
-            return _countTrigger;
+            return countTrigger;
         }
 
         public int GetCountDropped()
         {
-            return _countDropped;
+            return countDropped;
         }
 
         public LogType GetLogType()
@@ -74,17 +74,17 @@ namespace JQuant
 
         public bool TimeStamped()
         {
-            return _timeStamped;
+            return timeStamped;
         }
 
         public System.DateTime GetLatest()
         {
-            return _stampLatest;
+            return stampLatest;
         }
 
         public System.DateTime GetOldest()
         {
-            return _stampOldest;
+            return stampOldest;
         }
 
         public LogType Type
@@ -93,13 +93,13 @@ namespace JQuant
             set;
         }
 
-        protected string _name;
-        protected int _countTrigger;
-        protected int _countLog;
-        protected int _countDropped;
-        protected bool _timeStamped;
-        protected System.DateTime _stampLatest;
-        protected System.DateTime _stampOldest;
+        protected string name;
+        protected int countTrigger;
+        protected int countLog;
+        protected int countDropped;
+        protected bool timeStamped;
+        protected System.DateTime stampLatest;
+        protected System.DateTime stampOldest;
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ namespace JQuant
         {
             lock (this)  // protect access to FIFO
             {
-                _countTrigger++;
+                countTrigger++;
                 if (incomingData.Count < QueueSize)
                 {
                     // push the data to the FIFO
@@ -185,7 +185,7 @@ namespace JQuant
                 }
                 else
                 {
-                    _countDropped++;
+                    countDropped++;
                 }
                 Monitor.Pulse(this);
             }
@@ -263,300 +263,6 @@ namespace JQuant
         /// </summary>
         protected Queue incomingData;
         protected Thread writer;
-    }
-
-    /// <summary>
-    /// this class will get the data from specified data producer and write the data to the 
-    /// specified file.
-    /// </summary>
-    public class TradingDataLogger : AsyncLogger
-    {
-        public class MadadSink: ISink<FMRShell.MarketDataMadad>
-        {
-            public MadadSink (TradingDataLogger TrDtaLogger)
-            {
-                madadDataToString = new FMRShell.K300MadadTypeToString(",");
-                tdl = TrDtaLogger;
-                tdl._collector.madadProducer.AddSink(this);
-            }
-
-            public void Stop()
-            {
-                tdl._collector.madadProducer.RemoveSink(this);
-            }
-
-            public void Notify(int count, FMRShell.MarketDataMadad data)
-            {
-                tdl._stampLatest = System.DateTime.Now;
-                FMRShell.MarketDataMadad dataClone = (FMRShell.MarketDataMadad)(data.Clone());
-                tdl.AddEntry(dataClone);
-            }
-
-            public FMRShell.K300MadadTypeToString madadDataToString;
-            protected TradingDataLogger tdl;    //a pointer to the container class
-        }//MadadSink
-
-
-        public class MaofSink : ISink<FMRShell.MarketDataMaof>
-        {
-            public MaofSink(TradingDataLogger TrDtaLogger)
-            {
-                maofDataToString = new FMRShell.K300MaofTypeToString(",");
-                tdl = TrDtaLogger;
-                tdl._collector.maofProducer.AddSink(this);
-            }
-
-            public void Stop()
-            {
-                tdl._collector.maofProducer.RemoveSink(this);
-            }
-
-            public void Notify(int count, FMRShell.MarketDataMaof data)
-            {
-                tdl._stampLatest = System.DateTime.Now;
-                FMRShell.MarketDataMaof dataClone = (FMRShell.MarketDataMaof)(data.Clone());
-                tdl.AddEntry(dataClone);
-            }
-
-            public FMRShell.K300MaofTypeToString maofDataToString;
-            protected TradingDataLogger tdl;    //a pointer to the container class
-        }//Maofsink
-
-        public class RezefSink : ISink<FMRShell.MarketDataRezef>
-        {
-            public RezefSink(TradingDataLogger TrDtaLogger)
-            {
-                rezefDataToString = new FMRShell.K300RzfTypeToString(",");
-                tdl = TrDtaLogger;
-                tdl._collector.rezefProducer.AddSink(this);
-            }
-
-            public void Stop()
-            {
-                tdl._collector.rezefProducer.RemoveSink(this);
-            }
-
-            public void Notify(int count, FMRShell.MarketDataRezef data)
-            {
-                tdl._stampLatest = System.DateTime.Now;
-                FMRShell.MarketDataRezef dataClone = (FMRShell.MarketDataRezef)(data.Clone());
-                tdl.AddEntry(dataClone);
-            }
-
-            public FMRShell.K300RzfTypeToString rezefDataToString;
-            protected TradingDataLogger tdl;    //a pointer to the container class
-        }//RezefSink
-
-        /// <summary>
-        /// Create the ASCII logger
-        /// </summary>
-        /// <param name="name">
-        /// A <see cref="System.String"/>
-        /// Debuh info - name of the logger
-        /// </param>
-        /// <param name="filename">
-        /// A <see cref="System.String"/>
-        /// File to read the data
-        /// </param>
-        /// <param name="append">
-        /// A <see cref="System.Boolean"/>
-        /// If "append" is true and file exists logger will append the data to the end of the file
-        /// </param>
-        /// <param name="producer">
-        /// A <see cref="IProducer"/>
-        /// Object which provides data to log
-        /// </param>
-        public TradingDataLogger(string name, string filename, bool append, FMRShell.Collector collector, FMRShell.DataType dt)
-            : base(name)
-        {
-            FileName = filename;
-            _fileStream = default(FileStream);
-            _streamWriter = default(StreamWriter);
-            _collector = collector;
-            _append = append;
-            _timeStamped = false;
-            _stampLatest = default(System.DateTime);
-            _stampOldest = default(System.DateTime);
-            _dt = dt;
-            Type = LogType.CSV;
-            notStoped = false;
-
-
-
-            // I estimate size of FMRShell.MarketData struct 50 bytes
-            QueueSize = (500 * 1024) / 50;
-        }
-
-        /// <summary>
-        /// register notifier in the producer, start write file
-        /// returns True if Ok
-        /// application will check LastException if the method
-        /// returns False
-        /// </summary>
-        public override bool Start()
-        {
-            bool result = false;
-
-            // i want a loop here to break from  - i avoid multiple
-            // returns this way
-            do
-            {
-                // open file for writing
-                try
-                {
-                    if (_append) _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
-                    else _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
-                    _streamWriter = new StreamWriter(_fileStream);
-                }
-                catch (IOException e)
-                {
-                    // store the exception
-                    LastException = e;
-                    if (_fileStream != default(FileStream))
-                    {
-                        _fileStream.Close();
-                        // help Garbage collector
-                        _streamWriter = default(StreamWriter);
-                        _fileStream = default(FileStream);
-                    }
-                    // and get out
-                    break;
-                }
-
-                // register myself in the data producer
-                if (this._dt == FMRShell.DataType.Maof) this._maofSink = new MaofSink(this);
-                else if (this._dt == FMRShell.DataType.Rezef) this._rezefSink = new RezefSink(this);
-                else if (this._dt == FMRShell.DataType.Madad) this._madadSink = new MadadSink(this);
-
-                // write legend at the top of the file
-                try
-                {
-                    if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Legend+",TimeStamp,Ticks");
-                    else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Legend + ",TimeStamp,Ticks");
-                    else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Legend + ",TimeStamp,Ticks");
-                }
-                catch (IOException e)
-                {
-                    // store the exception
-                    LastException = e;
-                    // close the file
-                    _fileStream.Close();
-                    // help Garbage collector
-                    _streamWriter = default(StreamWriter);
-                    _fileStream = default(FileStream);
-                    Console.WriteLine(e.ToString());
-                    // and get out
-                    break;
-                }
-
-                //strat write file
-                base.Start();
-
-                result = true;
-            }
-            while (false);
-
-            return result;
-        }
-
-        /// <summary>
-        /// application will call this method for clean up
-        /// remove registration from the producer
-        /// close the file, remove registration of the data sync from the producer
-        /// </summary>
-        public override void Stop()
-        {
-            base.Stop();
-            if (_dt == FMRShell.DataType.Maof) _maofSink.Stop();
-            else if (_dt == FMRShell.DataType.Rezef) _rezefSink.Stop();
-            else if (_dt == FMRShell.DataType.Madad) _madadSink.Stop();
-
-            if (_fileStream != default(FileStream))
-            {
-                _streamWriter.Flush();
-                _fileStream.Flush();
-                // help Garbage collector
-                _streamWriter = default(StreamWriter);
-                _fileStream = default(FileStream);
-                Console.WriteLine("Logger " + GetName() + " file "+FileName+" closed");
-            }
-        }
-
-        public override void Dispose()
-        {
-            if (_fileStream != default(FileStream))
-            {
-                _fileStream.Close();
-            }
-            base.Dispose();
-        }
-
-        /// <summary>
-        /// write data to the file. this method is called from a separate
-        /// thread
-        /// </summary>
-        /// <param name="data">
-        /// A <see cref="System.Object"/>
-        /// </param>
-        protected override void WriteData(object data)
-        {
-            // I have to decide on format of the log - ASCII or binary 
-            // should I write any system info like version the data/software ?
-            // at this point only ASCII is supported, no system info
-            // write all fields of K300MaofType (data.k3Maof) in one line
-            // followed by EOL
-
-            FMRShell.MarketData marketData = (FMRShell.MarketData)data;
-
-            // write the string to the file
-            try
-            {
-                _streamWriter.WriteLine(marketData.Values);
-                // i want to make Flush from time to time
-                // the question is when ? or let the OS to manage the things ?
-                // _streamWriter.Flush();
-                lock (this)
-                {
-                    _countLog++;
-                }
-            }
-            catch (ObjectDisposedException e)
-            {
-                // store the exception
-                LastException = e;
-                Console.WriteLine(e.ToString());
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine(e.ToString());
-                // store the exception
-                LastException = e;
-                // and get out
-                Stop();
-            }
-        }
-
-        public string FileName
-        {
-            get;
-            protected set;
-        }
-
-        public Exception LastException
-        {
-            get;
-            protected set;
-        }
-
-        protected FMRShell.Collector _collector;    //producer
-        protected MaofSink _maofSink;               //and 
-        protected RezefSink _rezefSink;             //three
-        protected MadadSink _madadSink;             //sinks
-
-        bool _append;
-        FileStream _fileStream;
-        FMRShell.DataType _dt;
-        StreamWriter _streamWriter;
     }
 
     /// <summary>

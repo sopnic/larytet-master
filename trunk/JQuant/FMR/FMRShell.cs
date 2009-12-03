@@ -378,30 +378,33 @@ namespace FMRShell
         }
     }
 
-    public abstract class MarketDataHolder<DataType> : MarketData where DataType: new()
+    /// <summary>
+    /// Keeps an object of type K300RzfType, K300MaofType, K300MadadType
+    /// </summary>
+    public abstract class MarketDataHolder : MarketData
     {
         protected const string delimiter = ",";
-        
-        protected MarketDataHolder()
+
+        /// <summary>
+        /// Setup the data holder
+        /// </summary>
+        /// <param name="t">
+        /// A <see cref="Type"/>
+        /// K300RzfType, K300MaofType, K300MadadType
+        /// </param>
+        protected MarketDataHolder(Type t)
         {
-            if (fields == null)
-            {
-                Type t = typeof(DataType);
-                fields = t.GetFields();
-            }
-//            InitLegend();
+            fields = t.GetFields();
         }
             
         public override object Clone()
         {
             // create object of the child class 
             Type t = this.GetType();
-            MarketDataHolder<DataType> mdh = (MarketDataHolder<DataType>)System.Activator.CreateInstance(t);
-            
-            DataType Data = new DataType();
+            MarketDataHolder mdh = (MarketDataHolder)System.Activator.CreateInstance(t);
 
-            // boxing the struct
-            object o = (object)Data;
+            t = this.data.GetType();
+            object o = System.Activator.CreateInstance(t);
             
             // set all fields in the new object
             foreach (FieldInfo fi in fields)
@@ -410,7 +413,7 @@ namespace FMRShell
             }
 
             // unboxing
-            mdh.Data = (DataType)o;
+            mdh.Data = o;
 
             // copy a couple of fields more
             mdh.Ticks = this.Ticks;
@@ -426,15 +429,13 @@ namespace FMRShell
         /// <param name="data">
         /// A <see cref="DataType"/>
         /// </param>
-        protected void InitValues(DataType data)
+        protected void InitValues(object data)
         {
-            this.data = data;
-            
             StringBuilder sbData = new StringBuilder(fields.Length*10);
 
-            // i do boxing only once
-            object o = data;
-
+            object o = (object)data;
+            this.data = o;
+            
             foreach (FieldInfo field in fields)
             {
                 object val = field.GetValue(o);
@@ -442,6 +443,7 @@ namespace FMRShell
                 sbData.Append(delimiter);
             }
 
+            
             sbData.Append(TimeStamp.ToString("hh:mm:ss.fff"));
             sbData.Append(",");
             sbData.Append(Ticks.ToString());
@@ -520,8 +522,8 @@ namespace FMRShell
             legend = sbLegend.ToString();
         }
 
-        private DataType data;
-        public DataType Data
+        private object data;
+        public object Data
         {
             get
             {
@@ -534,47 +536,36 @@ namespace FMRShell
             }
         }
 
-        protected static FieldInfo[] fields;
+        protected FieldInfo[] fields;
     }
     
-    public class MarketDataMadad : MarketDataHolder<K300MadadType>
+    public class MarketDataMadad : MarketDataHolder
     {
+        public MarketDataMadad()
+            : base(typeof(K300MadadType))
+        {
+        }
     } // class MarketDataMadad
 
 
-    public class MarketDataRezef : MarketDataHolder<K300RzfType>
+    public class MarketDataRezef : MarketDataHolder
     {
+        public MarketDataRezef()
+            : base(typeof(K300RzfType))
+        {
+        }
     } // class MarketDataRezef
 
 
-    public class MarketDataMaof : MarketDataHolder<K300MaofType>
+    public class MarketDataMaof : MarketDataHolder
     {
+        public MarketDataMaof()
+            : base(typeof(K300MaofType))
+        {
+        }
     } //  class MarketDataMaof
 
 
-    public class K300MaofTypeToString : StructToString<K300MaofType>
-    {
-        public K300MaofTypeToString(string delimiter)
-            : base(delimiter)
-        {
-        }
-    }
-
-    public class K300RzfTypeToString : StructToString<K300RzfType>
-    {
-        public K300RzfTypeToString(string delimiter)
-            : base(delimiter)
-        {
-        }
-    }
-
-    public class K300MadadTypeToString : StructToString<K300MadadType>
-    {
-        public K300MadadTypeToString(string delimiter)
-            : base(delimiter)
-        {
-        }
-    }
 
     public class SH161TypeToString : StructToString<SH161Type>
     {
@@ -618,63 +609,31 @@ namespace FMRShell
     /// </summary>
     public class Collector
     {
-        public class MadadProducer : ProducerBase<MarketDataMadad>
+        public class DataProducer : ProducerBase<MarketData>
         {
-            public MadadProducer(K300EventsClass k3)
+            public DataProducer(string name, Type dataType)
             {
-                MadadListeners = new List<JQuant.ISink<MarketDataMadad>>(5);
-                mktDta = new MarketDataMadad();
-                k3.OnMadad += new _IK300EventsEvents_OnMadadEventHandler(OnMadad);
-                countOnMadad = 0;
-                Name = "Madad";
+                Listeners = new List<JQuant.ISink<MarketData>>(5);
+                countEvents = 0;
+                Name = name;
+                marketData = (MarketDataHolder)System.Activator.CreateInstance(dataType);
             }
 
-            /// <summary>
-            /// Called by TaskBarLib. This method calls registered listeners and gets out 
-            /// The idea behind it to be as fast as possible
-            /// this is the point where some basic processing can be done like filter obvious
-            /// errors
-            /// </summary>
-            /// <param name="data">
-            /// A <see cref="K300MaofType"/>
-            /// </param>
-            protected void OnMadad(ref K300MadadType data)
+            public override bool AddSink(JQuant.ISink<MarketData> sink)
             {
-                //Console.Write(".");
-                // no memory allocation here - I am using allready created object 
-                mktDta.TimeStamp = DateTime.Now;
-                mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.Data = data;
-                countEvents++;
-
-
-                // sink should not modify the data. sink has two options:
-                // 1) handle the data in the context of the Collector thead
-                // 2) clone the data and and postopone the procesing (delegate to another thread)
-                lock (MadadListeners)
+                // Console.WriteLine("MadadListeners.Add(sink)");
+                lock (Listeners)
                 {
-                    foreach (JQuant.ISink<MarketDataMadad> sink in MadadListeners)
-                    {
-                        sink.Notify(countOnMadad, mktDta);
-                    }
-                }
-            }
-
-            public override bool AddSink(JQuant.ISink<MarketDataMadad> sink)
-            {
-                //Console.WriteLine("MadadListeners.Add(sink)");
-                lock (MadadListeners)
-                {
-                    MadadListeners.Add(sink);
+                    Listeners.Add(sink);
                 }
                 return true;
             }
 
-            public override bool RemoveSink(JQuant.ISink<MarketDataMadad> sink)
+            public override bool RemoveSink(JQuant.ISink<MarketData> sink)
             {
-                lock (MadadListeners)
+                lock (Listeners)
                 {
-                    MadadListeners.Remove(sink);
+                    Listeners.Remove(sink);
                 }
                 return true;
             }
@@ -689,34 +648,7 @@ namespace FMRShell
                 names.Add("Sinks"); values.Add(GetSinks());
             }
 
-            protected int GetSinks()
-            {
-                return MadadListeners.Count;
-            }
-
-
-            protected int GetEvents()
-            {
-                return countEvents;
-            }
-
-            protected static List<JQuant.ISink<MarketDataMadad>> MadadListeners;
-            MarketDataMadad mktDta;
-            int countOnMadad;
-            int countEvents;
-        }//class MadadProducer
-
-        public class MaofProducer : JQuant.IProducer<MarketDataMaof>
-        {
-            public MaofProducer(K300EventsClass k3)
-            {
-                MaofListeners = new List<JQuant.ISink<MarketDataMaof>>(5);
-                mktDta = new MarketDataMaof();
-                k3.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
-                countOnMaof = 0;
-                Name = "Maof";
-            }
-
+            
             /// <summary>
             /// Called by TaskBarLib. This method calls registered listeners and gets out 
             /// The idea behind it to be as fast as possible
@@ -726,151 +658,86 @@ namespace FMRShell
             /// <param name="data">
             /// A <see cref="K300MaofType"/>
             /// </param>
-            protected void OnMaof(ref K300MaofType data)
+            protected void OnEvent(object data)
             {
                 //Console.Write(".");
                 // no memory allocation here - I am using allready created object 
-                mktDta.TimeStamp = DateTime.Now;
-                mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.Data = data;
+                marketData.TimeStamp = DateTime.Now;
+                marketData.Ticks = Stopwatch.GetTimestamp();
+                marketData.Data = data;
                 countEvents++;
+
 
                 // sink should not modify the data. sink has two options:
-                // 1) handle the data in the context of the Collector thread
+                // 1) handle the data in the context of the Collector thead
                 // 2) clone the data and and postopone the procesing (delegate to another thread)
-                lock (MaofListeners)
+                lock (Listeners)
                 {
-                    foreach (JQuant.ISink<MarketDataMaof> sink in MaofListeners)
+                    foreach (JQuant.ISink<MarketData> sink in Listeners)
                     {
-                        sink.Notify(countOnMaof, mktDta);
+                        sink.Notify(countEvents, marketData);
                     }
                 }
             }
 
-            public bool AddSink(JQuant.ISink<MarketDataMaof> sink)
-            {
-                //Console.WriteLine("MaofListeners.Add(sink)");
 
-                lock (MaofListeners)
-                {
-                    MaofListeners.Add(sink);
-                }
-                return true;
+            protected void OnMadad(ref K300MadadType data)
+            {
+                OnEvent(data);
             }
 
-            public bool RemoveSink(JQuant.ISink<MarketDataMaof> sink)
+            protected void OnMaof(ref K300MaofType data)
             {
-                lock (MaofListeners)
-                {
-                    MaofListeners.Remove(sink);
-                }
-                return true;
+                OnEvent(data);
             }
-
-
-            public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
-            {
-                names = new System.Collections.ArrayList(4);
-                values = new System.Collections.ArrayList(4);
-
-                names.Add("Events"); values.Add(GetEvents());
-                names.Add("Sinks"); values.Add(GetSinks());
-            }
-
-            protected int GetSinks()
-            {
-                return MaofListeners.Count;
-            }
-
-            protected int GetEvents()
-            {
-                return countEvents;
-            }
-
-            public string Name
-            {
-                get;
-                set;
-            }
-
-            protected static List<JQuant.ISink<MarketDataMaof>> MaofListeners;
-            MarketDataMaof mktDta;
-            int countOnMaof;
-            int countEvents;
-        }//class MaofProducer
-
-        public class RezefProducer : ProducerBase<MarketDataRezef>
-        {
-            public RezefProducer(K300EventsClass k3)
-            {
-                RezefListeners = new List<JQuant.ISink<MarketDataRezef>>(5);
-                mktDta = new MarketDataRezef();
-                k3.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
-                Name = "Rezef";
-                countOnRezef = 0;
-            }
-
+            
             protected void OnRezef(ref K300RzfType data)
             {
-                mktDta.TimeStamp = DateTime.Now;
-                mktDta.Ticks = Stopwatch.GetTimestamp();
-                mktDta.Data = data;
-
-                countEvents++;
-
-                lock (RezefListeners)
-                {
-                    foreach (JQuant.ISink<MarketDataRezef> sink in RezefListeners)
-                    {
-                        sink.Notify(countOnRezef, mktDta);
-                    }
-                }
-            }
-
-            public override bool AddSink(JQuant.ISink<MarketDataRezef> sink)
-            {
-                //Console.WriteLine("RezefListeners.Add(sink)");
-                lock (RezefListeners)
-                {
-                    RezefListeners.Add(sink);
-                }
-                return true;
-            }
-
-            public override bool RemoveSink(JQuant.ISink<MarketDataRezef> sink)
-            {
-                lock (RezefListeners)
-                {
-                    RezefListeners.Remove(sink);
-                }
-                return true;
-            }
-
-            public override void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
-            {
-                names = new System.Collections.ArrayList(4);
-                values = new System.Collections.ArrayList(4);
-
-                names.Add("Events"); values.Add(GetEvents());
-                names.Add("Sinks"); values.Add(GetSinks());
+                OnEvent(data);
             }
 
             protected int GetSinks()
             {
-                return RezefListeners.Count;
+                return Listeners.Count;
             }
+
 
             protected int GetEvents()
             {
                 return countEvents;
             }
+            
+            protected int countEvents;
+            protected MarketDataHolder marketData;
+            protected List<JQuant.ISink<MarketData>> Listeners;
+        }
+        
+        public class MadadProducer : DataProducer
+        {
+            public MadadProducer(K300EventsClass k3)
+                : base("Madad", typeof(MarketDataMadad))
+            {
+                k3.OnMadad += new _IK300EventsEvents_OnMadadEventHandler(OnMadad);
+            }
+        } // class MadadProducer
 
+        public class MaofProducer : DataProducer
+        {
+            public MaofProducer(K300EventsClass k3)
+                : base("Maof", typeof(MarketDataMaof))
+            {
+                k3.OnMaof += new _IK300EventsEvents_OnMaofEventHandler(OnMaof);
+            }
+        } // class MaofProducer
 
-            protected static List<JQuant.ISink<MarketDataRezef>> RezefListeners;
-            MarketDataRezef mktDta;
-            int countOnRezef;
-            int countEvents;
-        }//class RezefProducer
+        public class RezefProducer : DataProducer
+        {
+            public RezefProducer(K300EventsClass k3)
+                : base("Rezef", typeof(MarketDataRezef))
+            {
+                k3.OnRezef += new _IK300EventsEvents_OnRezefEventHandler(OnRezef);
+            }
+        } // class RezefProducer
 
         public Collector(int sessionId)
         {
@@ -1023,7 +890,6 @@ namespace FMRShell
     }   //class Collector
 
 
-#if TEMPORARY__
     /// <summary>
     /// this class will get the data from specified data producer and write the data to the 
     /// specified file.
@@ -1035,24 +901,26 @@ namespace FMRShell
             public DataSink(TradingDataLogger dataLogger, IProducer<MarketData> producer)
             {
                 this.dataLogger = dataLogger;
+                this.producer = producer;
                 producer.AddSink(this);
             }
 
             public void Stop()
             {
-                tdl._collector.madadProducer.RemoveSink(this);
+                producer.RemoveSink(this);
             }
 
-            public void Notify(int count, FMRShell.MarketDataMadad data)
+            public void Notify(int count, MarketData data)
             {
-                tdl._stampLatest = System.DateTime.Now;
-                FMRShell.MarketDataMadad dataClone = (FMRShell.MarketDataMadad)(data.Clone());
-                tdl.AddEntry(dataClone);
+                dataLogger.stampLatest = System.DateTime.Now;
+                MarketData dataClone = (MarketData)(data.Clone());
+                dataLogger.AddEntry(dataClone);
             }
 
             // a pointer to the container class
-            protected TradingDataLogger dataLogger;    
-        }//MadadSink
+            protected TradingDataLogger dataLogger;
+            protected IProducer<MarketData> producer;
+        }  // DataSink
 
 
 
@@ -1061,7 +929,7 @@ namespace FMRShell
         /// </summary>
         /// <param name="name">
         /// A <see cref="System.String"/>
-        /// Debuh info - name of the logger
+        /// Debug info - name of the logger
         /// </param>
         /// <param name="filename">
         /// A <see cref="System.String"/>
@@ -1071,28 +939,31 @@ namespace FMRShell
         /// A <see cref="System.Boolean"/>
         /// If "append" is true and file exists logger will append the data to the end of the file
         /// </param>
-        /// <param name="producer">
-        /// A <see cref="IProducer"/>
-        /// Object which provides data to log
+        /// <param name="collector">
+        /// A <see cref="FMRShell.Collector"/>
+        /// Where to take data from - register sink
         /// </param>
-        public TradingDataLogger(string name, string filename, bool append, FMRShell.Collector collector, FMRShell.DataType dt)
+        /// <param name="legend">
+        /// A <see cref="System.String"/>
+        /// what to write at start of the file (can be null). If append is true the argument will be ignored
+        /// </param>
+        public TradingDataLogger(string name, string filename, bool append, IProducer<MarketData> producer, string legend)
             : base(name)
         {
             FileName = filename;
-            _fileStream = default(FileStream);
-            _streamWriter = default(StreamWriter);
-            _collector = collector;
-            _append = append;
-            _timeStamped = false;
-            _stampLatest = default(System.DateTime);
-            _stampOldest = default(System.DateTime);
-            _dt = dt;
+            fileStream = default(FileStream);
+            streamWriter = default(StreamWriter);
+            this.producer = producer;
+            this.append = append;
+            timeStamped = false;
+            stampLatest = default(System.DateTime);
+            stampOldest = default(System.DateTime);
+            this.legend = legend;
             Type = LogType.CSV;
             notStoped = false;
 
-
-
             // I estimate size of FMRShell.MarketData struct 50 bytes
+            // AsyncLogger will drop the events after approx 500K of data in the queue
             QueueSize = (500 * 1024) / 50;
         }
 
@@ -1113,46 +984,45 @@ namespace FMRShell
                 // open file for writing
                 try
                 {
-                    if (_append) _fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
-                    else _fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
-                    _streamWriter = new StreamWriter(_fileStream);
+                    if (append) fileStream = new FileStream(FileName, FileMode.Append, FileAccess.Write, FileShare.Read);
+                    else fileStream = new FileStream(FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    streamWriter = new StreamWriter(fileStream);
                 }
                 catch (IOException e)
                 {
                     // store the exception
                     LastException = e;
-                    if (_fileStream != default(FileStream))
+                    if (fileStream != default(FileStream))
                     {
-                        _fileStream.Close();
-                        // help Garbage collector
-                        _streamWriter = default(StreamWriter);
-                        _fileStream = default(FileStream);
+                        fileStream.Close();
+                        // help Garbage collector to clean up the system resources 
+                        streamWriter = default(StreamWriter);
+                        fileStream = default(FileStream);
                     }
                     // and get out
                     break;
                 }
 
                 // register myself in the data producer
-                if (this._dt == FMRShell.DataType.Maof) this._maofSink = new MaofSink(this);
-                else if (this._dt == FMRShell.DataType.Rezef) this._rezefSink = new RezefSink(this);
-                else if (this._dt == FMRShell.DataType.Madad) this._madadSink = new MadadSink(this);
+                this.dataSink = new DataSink(this, producer);
 
                 // write legend at the top of the file
                 try
                 {
-                    if (_dt == FMRShell.DataType.Maof) _streamWriter.WriteLine(_maofSink.maofDataToString.Legend+",TimeStamp,Ticks");
-                    else if (_dt == FMRShell.DataType.Rezef) _streamWriter.WriteLine(_rezefSink.rezefDataToString.Legend + ",TimeStamp,Ticks");
-                    else if (_dt == FMRShell.DataType.Madad) _streamWriter.WriteLine(_madadSink.madadDataToString.Legend + ",TimeStamp,Ticks");
+                    if (legend != null)
+                    {
+                        streamWriter.WriteLine(legend);
+                    }
                 }
                 catch (IOException e)
                 {
                     // store the exception
                     LastException = e;
                     // close the file
-                    _fileStream.Close();
+                    fileStream.Close();
                     // help Garbage collector
-                    _streamWriter = default(StreamWriter);
-                    _fileStream = default(FileStream);
+                    streamWriter = default(StreamWriter);
+                    fileStream = default(FileStream);
                     Console.WriteLine(e.ToString());
                     // and get out
                     break;
@@ -1176,31 +1046,33 @@ namespace FMRShell
         public override void Stop()
         {
             base.Stop();
-            if (_dt == FMRShell.DataType.Maof) _maofSink.Stop();
-            else if (_dt == FMRShell.DataType.Rezef) _rezefSink.Stop();
-            else if (_dt == FMRShell.DataType.Madad) _madadSink.Stop();
+            
+            dataSink.Stop();
 
-            if (_fileStream != default(FileStream))
+            if (fileStream != default(FileStream))
             {
-                _streamWriter.Flush();
-                _fileStream.Flush();
+                streamWriter.Flush();
+                fileStream.Flush();
                 // help Garbage collector
-                _streamWriter = default(StreamWriter);
-                _fileStream = default(FileStream);
+                streamWriter = default(StreamWriter);
+                fileStream = default(FileStream);
                 Console.WriteLine("Logger " + GetName() + " file "+FileName+" closed");
             }
         }
 
         public override void Dispose()
         {
-            if (_fileStream != default(FileStream))
+            if (fileStream != default(FileStream))
             {
-                _fileStream.Close();
+                streamWriter.Flush();
+                fileStream.Flush();
+                fileStream.Close();
             }
             base.Dispose();
         }
 
         /// <summary>
+        /// this method is abstract in the parent class
         /// write data to the file. this method is called from a separate
         /// thread
         /// </summary>
@@ -1215,18 +1087,18 @@ namespace FMRShell
             // write all fields of K300MaofType (data.k3Maof) in one line
             // followed by EOL
 
-            FMRShell.MarketData marketData = (FMRShell.MarketData)data;
+            MarketData marketData = (MarketData)data;
 
             // write the string to the file
             try
             {
-                _streamWriter.WriteLine(marketData.Values);
+                streamWriter.WriteLine(marketData.Values);
                 // i want to make Flush from time to time
                 // the question is when ? or let the OS to manage the things ?
                 // _streamWriter.Flush();
                 lock (this)
                 {
-                    _countLog++;
+                    countLog++;
                 }
             }
             catch (ObjectDisposedException e)
@@ -1257,17 +1129,14 @@ namespace FMRShell
             protected set;
         }
 
-        protected FMRShell.Collector _collector;    //producer
-        protected MaofSink _maofSink;               //and 
-        protected RezefSink _rezefSink;             //three
-        protected MadadSink _madadSink;             //sinks
+        protected IProducer<MarketData> producer;    // data producer
+        protected DataSink dataSink;                 // where producer will put data 
 
-        bool _append;
-        FileStream _fileStream;
-        FMRShell.DataType _dt;
-        StreamWriter _streamWriter;
+        bool append;
+        FileStream fileStream;
+        string legend;
+        StreamWriter streamWriter;
     }
-#endif    
 
     
     /// <summary>
