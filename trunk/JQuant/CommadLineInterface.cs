@@ -243,14 +243,12 @@ namespace JQuant
             cmdName = OutputUtils.RemoveLeadingBlanks(cmdName);
 
             // is there a slash ? fectch the command before the slash 
-            // and execute the command
-            // after that remove the prefix from the string
-            // CurrentMenu reference will be restored from copy
-            // in the end of the function
-            int firstBlankIdx = cmdName.IndexOf(" ");
-            if (firstBlankIdx < 0) firstBlankIdx = cmdName.Length;
+            // and execute the command after that remove the prefix from the string
+            // CurrentMenu reference will be restored from copy in the end of the function
+            int argIdx = cmdName.IndexOf(" ");       // ignore slashes in the arguments
+            if (argIdx < 0) argIdx = cmdName.Length; // if there is no arguments look until end of line
             int slashIdx = cmdName.IndexOf("/");
-            while ((slashIdx >= 0) && (slashIdx < firstBlankIdx))
+            while ((slashIdx >= 0) && (slashIdx < argIdx))
             {
                 string subcommand = cmdName.Substring(0, slashIdx);
                 ProcessCommand(iWrite, subcommand);
