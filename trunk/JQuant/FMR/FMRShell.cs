@@ -889,7 +889,7 @@ namespace FMRShell
             //k300EventsClass.EventsFilterBno=??? //here we set a single security, if specified
             k300EventsClass.EventsFilterMadad = 1; //I want to receive also madad changes - no way to filter specific madad here, get them all
             k300EventsClass.EventsFilterMaof = 1;
-            k300EventsClass.EventsFilterMonth = MonthType.October;
+            k300EventsClass.EventsFilterMonth = MonthType.December;
             k300EventsClass.EventsFilterRezef = 1;
             k300EventsClass.EventsFilterStockKind = StockKind.StockKindMenaya;
             k300EventsClass.EventsFilterStockMadad = MadadTypes.TLV25;
