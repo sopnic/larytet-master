@@ -928,60 +928,6 @@ namespace FMRShell
             protected IProducer<MarketData> producer;
         }  // DataSink
 
-        /// <summary>
-        /// handle very first event in different manner:
-        /// 1. set dataLogger.stampOldest
-        /// 2. stop this special one shoot only data sink
-        /// I pay CPU cycles when I start logger but I do not waste CPU per event
-        /// </summary>
-        public class DataSinkFirst: ISink<MarketData>
-        {
-            public DataSinkFirst(TradingDataLogger dataLogger, IProducer<MarketData> producer)
-            {
-                this.dataLogger = dataLogger;
-                this.producer = producer;
-                producer.AddSink(this);
-                first = true;
-                // i can't remove sink in the context of the Notify
-                // i will need a thread to do the trick
-                threadPool = new JQuant.ThreadPool("DataSinkFirst", 1, 1, System.Threading.ThreadPriority.Lowest);
-            }
-
-            /// <summary>
-            /// remove data sink (this) - i do not want to get events anymore
-            /// </summary>
-            protected void RemoveSink(ref object o)
-            {
-                producer.RemoveSink(this);
-            }
-
-            /// <summary>
-            /// final cleanup
-            /// </summary>
-            protected void DeleteThreadPool(object o)
-            {
-                threadPool.Dispose();
-            }
-
-            public void Notify(int count, MarketData data)
-            {
-                // i want to do something only once
-                if (first)
-                {
-                    dataLogger.stampOldest = System.DateTime.Now;
-                    // i can't remove sink in the context of the Notify
-                    // spawn another thread which will remove me later
-                    threadPool.PlaceJob(RemoveSink, DeleteThreadPool, null);
-                }
-                first = false;
-            }
-
-            // a pointer to the container class
-            protected TradingDataLogger dataLogger;
-            protected IProducer<MarketData> producer;
-            protected bool first;
-            JQuant.ThreadPool threadPool;
-        }  // DataSinkFirst
         
         /// <summary>
         /// Create the ASCII logger
@@ -1062,9 +1008,6 @@ namespace FMRShell
                     break;
                 }
 
-                // this data sink will destroy itself after the first event
-                new DataSinkFirst(this, producer);
-                
                 // register myself in the data producer
                 this.dataSink = new DataSink(this, producer);
 
@@ -1094,6 +1037,7 @@ namespace FMRShell
                 //strat write file
                 base.Start();
 
+                first = true;
                 result = true;
             }
             while (false);
@@ -1144,6 +1088,13 @@ namespace FMRShell
         /// </param>
         protected override void WriteData(object data)
         {
+            // set Logger::stampOldest
+            if (first)
+            {
+                first = false;
+                stampOldest = DateTime.Now;
+            }
+            
             // I have to decide on format of the log - ASCII or binary 
             // should I write any system info like version the data/software ?
             // at this point only ASCII is supported, no system info
@@ -1199,6 +1150,7 @@ namespace FMRShell
         FileStream fileStream;
         string legend;
         StreamWriter streamWriter;
+        bool first;
     }
 
     
