@@ -661,8 +661,8 @@ namespace FMRShell
             /// </param>
             protected void OnEvent(object data)
             {
-                //Console.Write(".");
-                // no memory allocation here - I am using allready created object 
+                // no memory allocation here - I am using allready created object marketData
+                // DateTime.Now suggestes memory allocation, but probably .NET handles this efficiently
                 marketData.TimeStamp = DateTime.Now;
                 marketData.Ticks = Stopwatch.GetTimestamp();
                 marketData.Data = data;
@@ -672,6 +672,8 @@ namespace FMRShell
                 // sink should not modify the data. sink has two options:
                 // 1) handle the data in the context of the Collector thead
                 // 2) clone the data and and postopone the procesing (delegate to another thread)
+                // sink can not remove itself from the list in the context of Notify and will 
+                // spawn a separate thread to do the trick if required 
                 lock (Listeners)
                 {
                     foreach (JQuant.ISink<MarketData> sink in Listeners)
@@ -684,16 +686,19 @@ namespace FMRShell
 
             protected void OnMadad(ref K300MadadType data)
             {
+                // boxing from struct to object - memcpy
                 OnEvent(data);
             }
 
             protected void OnMaof(ref K300MaofType data)
             {
+                // boxing from struct to object - memcpy
                 OnEvent(data);
             }
             
             protected void OnRezef(ref K300RzfType data)
             {
+                // boxing from struct to object - memcpy
                 OnEvent(data);
             }
 
@@ -923,8 +928,61 @@ namespace FMRShell
             protected IProducer<MarketData> producer;
         }  // DataSink
 
+        /// <summary>
+        /// handle very first event in different manner:
+        /// 1. set dataLogger.stampOldest
+        /// 2. stop this special one shoot only data sink
+        /// I pay CPU cycles when I start logger but I do not waste CPU per event
+        /// </summary>
+        public class DataSinkFirst: ISink<MarketData>
+        {
+            public DataSinkFirst(TradingDataLogger dataLogger, IProducer<MarketData> producer)
+            {
+                this.dataLogger = dataLogger;
+                this.producer = producer;
+                producer.AddSink(this);
+                first = true;
+                // i can't remove sink in the context of the Notify
+                // i will need a thread to do the trick
+                threadPool = new JQuant.ThreadPool("DataSinkFirst", 1, 1, System.Threading.ThreadPriority.Lowest);
+            }
 
+            /// <summary>
+            /// remove data sink (this) - i do not want to get events anymore
+            /// </summary>
+            protected void RemoveSink(ref object o)
+            {
+                producer.RemoveSink(this);
+            }
 
+            /// <summary>
+            /// final cleanup
+            /// </summary>
+            protected void DeleteThreadPool(object o)
+            {
+                threadPool.Dispose();
+            }
+
+            public void Notify(int count, MarketData data)
+            {
+                // i want to do something only once
+                if (first)
+                {
+                    dataLogger.stampOldest = System.DateTime.Now;
+                    // i can't remove sink in the context of the Notify
+                    // spawn another thread which will remove me later
+                    threadPool.PlaceJob(RemoveSink, DeleteThreadPool, null);
+                }
+                first = false;
+            }
+
+            // a pointer to the container class
+            protected TradingDataLogger dataLogger;
+            protected IProducer<MarketData> producer;
+            protected bool first;
+            JQuant.ThreadPool threadPool;
+        }  // DataSinkFirst
+        
         /// <summary>
         /// Create the ASCII logger
         /// </summary>
@@ -1004,8 +1062,12 @@ namespace FMRShell
                     break;
                 }
 
+                // this data sink will destroy itself after the first event
+                new DataSinkFirst(this, producer);
+                
                 // register myself in the data producer
                 this.dataSink = new DataSink(this, producer);
+
 
                 // write legend at the top of the file
                 try
