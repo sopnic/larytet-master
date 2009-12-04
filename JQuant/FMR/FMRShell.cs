@@ -532,7 +532,8 @@ namespace FMRShell
             
             set
             {
-                InitValues(value);
+                IsInitialized = false;
+                this.data = value;
             }
         }
 
@@ -1139,54 +1140,6 @@ namespace FMRShell
     }
 
     
-    /// <summary>
-    /// The class also is a sink registered with the Collector. When Collector sends 
-    /// a new notification validator pushes the data to FIFO 
-    /// 
-    /// this is also a thread which polls API and gets market data synchronously. 
-    /// looks for the data in the FIFO and if found removes 
-    /// the entry from the FIFO. Validator expects that order of the events is the same 
-    /// and if there is no match (miss) notifies all registered listeners (sinks) about
-    /// data mismatch
-    /// </summary>
-    public abstract class RxDataValidator : JQuant.IProducer<DataValidatorEvent>, JQuant.ISink<MarketDataMaof>
-    {
-        // child will implment public constructor and set Name
-        protected RxDataValidator()
-        {
-        }
-
-        public bool AddSink(JQuant.ISink<DataValidatorEvent> sink)
-        {
-            return true;
-        }
-
-        public bool RemoveSink(JQuant.ISink<DataValidatorEvent> sink)
-        {
-            return true;
-        }
-
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        public abstract void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values);
-
-        /// <summary>
-        /// called by Collector to notify about incoming event. Add the event to the FIFO
-        /// </summary>
-        /// <param name="count">
-        /// A <see cref="System.Int32"/>
-        /// </param>
-        /// <param name="data">
-        /// A <see cref="MarketData"/>
-        /// </param>
-        public void Notify(int count, MarketDataMaof data)
-        {
-        }
-    }
 
     #endregion
 
