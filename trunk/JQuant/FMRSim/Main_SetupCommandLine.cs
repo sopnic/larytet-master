@@ -1103,7 +1103,7 @@ namespace JQuant
         protected void debugRTClockCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             Random random = new Random();
-            PreciseTime pt = PreciseTime.Get();
+            DateTimePrecise pt = DateTimePrecise.GetInstance();
             DateTime dtRT0 = pt.Now();
             int tests = 0;
             
@@ -1163,7 +1163,7 @@ namespace JQuant
 
         protected void debugRTClock1Callback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            PreciseTime pt = PreciseTime.Get();
+            DateTimePrecise pt = DateTimePrecise.GetInstance();
             DateTime dtRT0 = pt.Now();
             int tests = 0;
             long maxDelta = 0;
@@ -1178,7 +1178,7 @@ namespace JQuant
                     iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
                                       " dtRT0="+dtRT0+"."+dtRT0.Millisecond);
                     iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
-                                     " dtA="+dtRT0.Ticks+
+                                     " dtRT0="+dtRT0.Ticks+
                                      " delta="+(dtRT0.Ticks-dtRT1.Ticks));
                 }
                 tests++;
@@ -1199,7 +1199,7 @@ namespace JQuant
 
         protected void debugRTClock2Callback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            PreciseTime pt = PreciseTime.Get();
+            DateTimePrecise pt = DateTimePrecise.GetInstance();
             Random random = new Random();
 
             do

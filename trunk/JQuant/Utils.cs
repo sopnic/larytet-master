@@ -302,110 +302,117 @@ namespace JQuant
     /// I substract from DateTime.Now the milliseconds part and add ticks 
     /// as returned by Stopwatch over last 1s
     /// </summary>
-    public class PreciseTime : IDisposable
+    public sealed class DateTimePrecise : IDisposable
     {
-        protected PreciseTime()
+        /// <summary>
+        /// use GetInstance() to get reference to the object 
+        /// </summary>
+        protected DateTimePrecise()
         {
             timer1s = new System.Timers.Timer();
             timer1s.AutoReset = true;
             timer1s.Interval = 1000;
-            timer1s.Elapsed += new ElapsedEventHandler(ResetTick);
-
-            // i want to be reasonably close to the start of a second
-            WaitNextSec();
+            timer1s.Elapsed += new ElapsedEventHandler(FixStopwatchFrequency);
 
             // Start 1s time which will set delta to the current system tick
             timer1s.Start();
-            // read current system tick
-            delta = Stopwatch.GetTimestamp();
-            StartTime = DateTime.Now;
+            
+            // start stopwatch
+            stopwatch = Stopwatch.StartNew();
+            stopwatch.Start();
+            
+            dtBase = dtObserved = DateTime.UtcNow;
+            swObserved = stopwatch.ElapsedTicks;            
         }
 
-        /// <summary>
-        /// wait for the current time to change a second 
-        /// </summary>
-        protected void WaitNextSec()
-        {
-            DateTime dt1;
-            DateTime dt0 = DateTime.Now;
-            do
-            {
-                dt1 = DateTime.Now;
-            }
-            while (dt1.Second == dt0.Second);
-        }
 
         public void Dispose()
         {
             timer1s.Stop();
-            preciseTime = null;
+            dateTimePrecise = null;
         }
 
-        public static PreciseTime Get()
+        public static DateTimePrecise GetInstance()
         {
-            return preciseTime;
+            return dateTimePrecise;
         }
 
-        /// <summary>
-        /// Can block the calling thread by 3s 
-        /// </summary>
         public static void Init()
         {
-            if (preciseTime == null)
-            {
-                preciseTime = new PreciseTime();
-            }            
+            dateTimePrecise = new DateTimePrecise();
         }
-
+        
         /// <summary>
-        /// Timer calls this method every second. Read the system tick
+        /// Timer calls this method every second. Recalculate stopwatch frequency
         /// </summary>
-        protected void ResetTick( object source, ElapsedEventArgs e)
+        protected void FixStopwatchFrequency( object source, ElapsedEventArgs e)
         {
-            lock (this)
-            {
-                delta = Stopwatch.GetTimestamp();
-            }
+            DateTime dt = DateTime.UtcNow;
+            long swTicks = this.stopwatch.ElapsedTicks;
+            
+            // move base to the new time
+            // swFrequency/swFrequencyFixed is about 1 (more or less)
+            this.dtBase = dtBase.AddTicks(  ((swTicks - swObserved) * swFrequency) / swFrequencyFixed  );
+
+            long elapsed = dt.Ticks - dtObserved.Ticks;
+            
+            // this is tricky. i want to make sure that both parts of the equation are positive
+            // swTicks - swObserved > 0
+            // elapsed + elapsed + dt.Ticks - dtBase.Ticks > 0
+            swFrequencyFixed = 
+            (
+                               (2 * (swTicks - swObserved) * swFrequency)
+                                                 /
+                               (elapsed + elapsed + dt.Ticks - dtBase.Ticks)
+            );
+
+            // update observation
+            swObserved = swTicks;
+            dtObserved = dt;
         }
 
         public DateTime Now()
         {
-            long tick;
-            DateTime dt;
+            return this.UtcNow().ToLocalTime();
+        }
 
-            lock (this)
-            {
-                // read the system tick
-                tick = Stopwatch.GetTimestamp();
-                
-                // calculate number of ticks went from the last timer
-                // timer resets delta to the system tick every second  
-                tick = tick - delta;
-                
-                // get current DateTime
-                dt = DateTime.Now;
-            }
+        /// <summary>
+        /// Precise time is BaseTime + number of elapsed from last observation Ticks 
+        /// as measured by stopwatch
+        /// </summary>
+        public DateTime UtcNow()
+        {
+            long swTicks = this.stopwatch.ElapsedTicks;
 
-            // Fix the millisceconds part of the current DateTime
-            // assuming 100 nanos per tick or 10*1000 ticks per 1ms
-            dt.AddMilliseconds(-dt.Millisecond+tick/(10*1000));
-            
+            // swFrequency/swFrequencyFixed is about 1 (more or less)
+            // AddTicks does not modify dtBase, but creates a clone with new number of ticks
+            // dtBase remains the same
+            DateTime dt = dtBase.AddTicks(  ((swTicks - swObserved) * swFrequency) / swFrequencyFixed  );
+
             return dt;
         }
-
-        public DateTime StartTime
-        {
-            get;
-            protected set;
-        }
         
         
-        protected static PreciseTime preciseTime;
-        
-        protected long delta;
         protected System.Timers.Timer timer1s;
+        protected System.Diagnostics.Stopwatch stopwatch;
+        protected static DateTimePrecise dateTimePrecise;
+        
+        protected long swObserved;
+        protected DateTime dtObserved;
+
+        /// <summary>
+        /// base for calculation of current date&time (now)
+        /// time is dtBase + elapsedTicks
+        /// </summary>
+        protected DateTime dtBase;
+
+        // ticks in second (0.1 micro in tick)
+        protected const long swFrequency = 10000000;
+        protected long swFrequencyFixed = 10000000;
     }
 
+
+    
     #region StatUtils;
     /// <summary>
     /// Making different statistical computations. 
