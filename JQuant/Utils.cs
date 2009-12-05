@@ -302,13 +302,23 @@ namespace JQuant
     /// I substract from DateTime.Now the milliseconds part and add ticks 
     /// as returned by Stopwatch over last 1s
     /// </summary>
-    public sealed class DateTimePrecise : IDisposable
+    public class DateTimePrecise
     {
-        /// <summary>
-        /// use GetInstance() to get reference to the object 
-        /// </summary>
-        protected DateTimePrecise()
+        protected DateTimePrecise(long synchronizePeriodSeconds)
         {
+            Stopwatch = Stopwatch.StartNew();
+            this.Stopwatch.Start();
+            
+            DateTime t = DateTime.UtcNow;
+            _immutable = new DateTimePreciseSafeImmutable(t, t, Stopwatch.ElapsedTicks,
+              Stopwatch.Frequency);
+            
+            _synchronizePeriodSeconds = synchronizePeriodSeconds;
+            _synchronizePeriodStopwatchTicks = synchronizePeriodSeconds *
+              Stopwatch.Frequency;
+            _synchronizePeriodClockTicks = synchronizePeriodSeconds *
+              _clockTickFrequency;
+            
             timer1s = new System.Timers.Timer();
             timer1s.AutoReset = true;
             timer1s.Interval = 1000;
@@ -316,20 +326,11 @@ namespace JQuant
 
             // Start 1s time which will set delta to the current system tick
             timer1s.Start();
-            
-            // start stopwatch
-            stopwatch = Stopwatch.StartNew();
-            stopwatch.Start();
-            
-            dtBase = DateTime.UtcNow;
-            swBase = stopwatch.ElapsedTicks;            
         }
 
-
-        public void Dispose()
+        public static void Init()
         {
-            timer1s.Stop();
-            dateTimePrecise = null;
+            dateTimePrecise = new DateTimePrecise(2);
         }
 
         public static DateTimePrecise GetInstance()
@@ -337,82 +338,79 @@ namespace JQuant
             return dateTimePrecise;
         }
 
-        public static void Init()
-        {
-            dateTimePrecise = new DateTimePrecise();
-        }
-        
-        /// <summary>
-        /// Timer calls this method every second. Recalculate stopwatch frequency
-        /// </summary>
         protected void FixStopwatchFrequency( object source, ElapsedEventArgs e)
         {
-            DateTime dt = DateTime.UtcNow;
-            long swTicks = this.stopwatch.ElapsedTicks;
-            
-            // move base to the new time
-            // swFrequency/swFrequencyFixed is about 1 (more or less)
-            DateTime dtActual = dtBase.AddTicks((swTicks - swBase + shift)  * TICKS_IN_SEC/(TICKS_IN_SEC + drift));
+            UtcNow();
+        }
 
-            long ticksActual = dtActual.Ticks;
-            long ticksExpected = dt.Ticks;
-
-            long error = ticksActual - ticksExpected;
-            long absError = Math.Abs(error);
-
-            if (absError > 500)
+        /// Returns the current date and time, just like DateTime.UtcNow.
+        public DateTime UtcNow()
+        {
+            long s = this.Stopwatch.ElapsedTicks;
+            DateTimePreciseSafeImmutable immutable = _immutable;
+        
+            if (s < immutable._s_observed + _synchronizePeriodStopwatchTicks)
             {
-                shift = shift - error/4;
-            }
-            else if (Math.Abs(error) > 20)
-            {
-                drift = drift + Math.Sign(error);
+                return immutable._t_base.AddTicks(((
+                s - immutable._s_observed) * _clockTickFrequency) / (
+                immutable._stopWatchFrequency));
             }
             else
             {
+                DateTime t = DateTime.UtcNow;
+                
+                DateTime t_base_new = immutable._t_base.AddTicks(((
+                  s - immutable._s_observed) * _clockTickFrequency) / (
+                  immutable._stopWatchFrequency));
+                
+                _immutable = new DateTimePreciseSafeImmutable(
+                  t,
+                  t_base_new,
+                  s,
+                  ((s - immutable._s_observed) * _clockTickFrequency * 2)
+                  /
+                  (t.Ticks - immutable._t_observed.Ticks + t.Ticks +
+                      t.Ticks - t_base_new.Ticks - immutable._t_observed.Ticks)
+                );
+                
+                return t_base_new;
             }
-            
-            System.Console.WriteLine("ta="+ticksActual+" te"+ticksExpected+
-                                     " error="+error+
-                                     " drift="+drift+
-                                     " shift="+shift
-                                     );
         }
-
+    
+        /// Returns the current date and time, just like DateTime.Now.
         public DateTime Now()
         {
             return this.UtcNow().ToLocalTime();
         }
-
-        /// <summary>
-        /// Precise time is BaseTime + number of elapsed from last observation Ticks 
-        /// as measured by stopwatch
-        /// </summary>
-        public DateTime UtcNow()
-        {
-            long swTicks = this.stopwatch.ElapsedTicks;
-
-            // swFrequency/swFrequencyFixed is about 1 (more or less)
-            // AddTicks does not modify dtBase, but creates a clone with new number of ticks
-            // dtBase remains the same
-            DateTime dt = dtBase.AddTicks(  (swTicks - swBase + shift) * TICKS_IN_SEC/(TICKS_IN_SEC + drift));
-
-            return dt;
-        }
+    
+        /// The internal System.Diagnostics.Stopwatch used by this instance.
+        public Stopwatch Stopwatch;
         
-        
-        protected System.Timers.Timer timer1s;
-        protected System.Diagnostics.Stopwatch stopwatch;
+        private long _synchronizePeriodStopwatchTicks;
+        private long _synchronizePeriodSeconds;
+        private long _synchronizePeriodClockTicks;
+        private const long _clockTickFrequency = 10000000;
+        private DateTimePreciseSafeImmutable _immutable;
+
         protected static DateTimePrecise dateTimePrecise;
-        
-        protected long swBase;
-        protected DateTime dtBase;
-
-        protected  const long TICKS_IN_SEC = 10000000;
-        protected long drift = 0;
-        protected long shift = 0;
+        protected System.Timers.Timer timer1s;
     }
-
+    
+    internal sealed class DateTimePreciseSafeImmutable
+    {
+        internal DateTimePreciseSafeImmutable(DateTime t_observed, DateTime t_base,
+             long s_observed, long stopWatchFrequency)
+        {
+            _t_observed = t_observed;
+            _t_base = t_base;
+            _s_observed = s_observed;
+            _stopWatchFrequency = stopWatchFrequency;
+        }
+        internal readonly DateTime _t_observed;
+        internal readonly DateTime _t_base;
+        internal readonly long _s_observed;
+        internal readonly long _stopWatchFrequency;
+    }
 
     
     #region StatUtils;
