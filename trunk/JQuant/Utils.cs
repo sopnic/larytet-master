@@ -321,8 +321,8 @@ namespace JQuant
             stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
             
-            dtBase = dtObserved = DateTime.UtcNow;
-            swObserved = stopwatch.ElapsedTicks;            
+            dtBase = DateTime.UtcNow;
+            swBase = stopwatch.ElapsedTicks;            
         }
 
 
@@ -352,23 +352,31 @@ namespace JQuant
             
             // move base to the new time
             // swFrequency/swFrequencyFixed is about 1 (more or less)
-            this.dtBase = dtBase.AddTicks(  ((swTicks - swObserved) * swFrequency) / swFrequencyFixed  );
+            DateTime dtActual = dtBase.AddTicks((swTicks - swBase + shift)  * TICKS_IN_SEC/(TICKS_IN_SEC + drift));
 
-            long elapsed = dt.Ticks - dtObserved.Ticks;
+            long ticksActual = dtActual.Ticks;
+            long ticksExpected = dt.Ticks;
+
+            long error = ticksActual - ticksExpected;
+            long absError = Math.Abs(error);
+
+            if (absError > 500)
+            {
+                shift = shift - error/4;
+            }
+            else if (Math.Abs(error) > 20)
+            {
+                drift = drift + Math.Sign(error);
+            }
+            else
+            {
+            }
             
-            // this is tricky. i want to make sure that both parts of the equation are positive
-            // swTicks - swObserved > 0
-            // elapsed + elapsed + dt.Ticks - dtBase.Ticks > 0
-            swFrequencyFixed = 
-            (
-                               (2 * (swTicks - swObserved) * swFrequency)
-                                                 /
-                               (elapsed + elapsed + dt.Ticks - dtBase.Ticks)
-            );
-
-            // update observation
-            swObserved = swTicks;
-            dtObserved = dt;
+            System.Console.WriteLine("ta="+ticksActual+" te"+ticksExpected+
+                                     " error="+error+
+                                     " drift="+drift+
+                                     " shift="+shift
+                                     );
         }
 
         public DateTime Now()
@@ -387,7 +395,7 @@ namespace JQuant
             // swFrequency/swFrequencyFixed is about 1 (more or less)
             // AddTicks does not modify dtBase, but creates a clone with new number of ticks
             // dtBase remains the same
-            DateTime dt = dtBase.AddTicks(  ((swTicks - swObserved) * swFrequency) / swFrequencyFixed  );
+            DateTime dt = dtBase.AddTicks(  (swTicks - swBase + shift) * TICKS_IN_SEC/(TICKS_IN_SEC + drift));
 
             return dt;
         }
@@ -397,18 +405,12 @@ namespace JQuant
         protected System.Diagnostics.Stopwatch stopwatch;
         protected static DateTimePrecise dateTimePrecise;
         
-        protected long swObserved;
-        protected DateTime dtObserved;
-
-        /// <summary>
-        /// base for calculation of current date&time (now)
-        /// time is dtBase + elapsedTicks
-        /// </summary>
+        protected long swBase;
         protected DateTime dtBase;
 
-        // ticks in second (0.1 micro in tick)
-        protected const long swFrequency = 10000000;
-        protected long swFrequencyFixed = 10000000;
+        protected  const long TICKS_IN_SEC = 10000000;
+        protected long drift = 0;
+        protected long shift = 0;
     }
 
 

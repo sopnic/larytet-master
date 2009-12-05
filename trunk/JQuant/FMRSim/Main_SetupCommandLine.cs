@@ -1126,26 +1126,17 @@ namespace JQuant
                 if (dtRT1 < dtRT0)
                 {
                     iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
-                                      " dtRT0="+dtRT0+"."+dtRT0.Millisecond);
-                    iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
-                                     " dtA="+dtRT0.Ticks+
-                                     " delta="+(dtRT0.Ticks-dtRT1.Ticks));
+                                      " dtRT0="+dtRT0+"."+dtRT0.Millisecond+" delta="+(dtRT0.Ticks-dtRT1.Ticks)+"ticks");
                 }
                 if (dtRT1 < dtB)
                 {
                     iWrite.WriteLine("Timer slower dtRT1="+dtRT1+"."+dtRT1.Millisecond+
-                                      " dtB="+dtB+"."+dtB.Millisecond);
-                    iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
-                                     " dtA="+dtB.Ticks+
-                                     " delta="+(dtB.Ticks-dtRT1.Ticks));
+                                      " dtB="+dtB+"."+dtB.Millisecond+" delta="+(dtB.Ticks-dtRT1.Ticks)+"ticks");
                 }
                 if (dtRT1 > dtA)
                 {
                     iWrite.WriteLine("Timer faster dtRT1="+dtRT1+"."+dtRT1.Millisecond+
-                                     " dtA="+dtA+"."+dtA.Millisecond);
-                    iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
-                                     " dtA="+dtA.Ticks+
-                                     " delta="+(dtRT1.Ticks-dtB.Ticks));
+                                     " dtA="+dtA+"."+dtA.Millisecond+" delta="+(dtRT1.Ticks-dtB.Ticks)+"ticks");
                 }
                 
                 dtRT0 = dtRT1;
