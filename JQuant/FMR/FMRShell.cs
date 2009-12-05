@@ -381,7 +381,7 @@ namespace FMRShell
     /// <summary>
     /// Keeps an object of type K300RzfType, K300MaofType, K300MadadType
     /// </summary>
-    public abstract class MarketDataHolder : MarketData
+    public class MarketDataHolder : MarketData
     {
         protected const string delimiter = ",";
 
@@ -394,31 +394,39 @@ namespace FMRShell
         /// </param>
         protected MarketDataHolder(Type t)
         {
-            fields = t.GetFields();
+            this.fields = t.GetFields();
         }
             
         public override object Clone()
         {
-            // create object of the child class 
-            Type t = this.GetType();
-            MarketDataHolder mdh = (MarketDataHolder)System.Activator.CreateInstance(t);
+            Type t;
 
+            // clone the data first
             t = this.data.GetType();
             object o = System.Activator.CreateInstance(t);
-            
-            // set all fields in the new object
-            foreach (FieldInfo fi in fields)
+
             {
-                fi.SetValue(o, fi.GetValue(this.Data));
+                // help the code optimizser - local variables
+                FieldInfo[] fields = this.fields;
+                object data = this.data;
+                
+                // set all fields in the new data object
+                foreach (FieldInfo fi in fields)
+                {
+                    fi.SetValue(o, fi.GetValue(data));
+                }
             }
 
-            // unboxing
-            mdh.Data = o;
+            // create object of the same type as myself
+            t = this.GetType();
+            MarketDataHolder mdh = (MarketDataHolder)System.Activator.CreateInstance(t);
 
-            // copy a couple of fields more
+            // setup fields in the new object
+            mdh.Data = o;
             mdh.Ticks = this.Ticks;
             mdh.TimeStamp = this.TimeStamp;
             mdh.values = this.values;
+            mdh.isInitialized = this.isInitialized;
 
             return mdh;
         }
@@ -450,18 +458,9 @@ namespace FMRShell
             
             this.values = sbData.ToString();
 
-            IsInitialized = true;
+            isInitialized = true;
         }
 
-        /// <value>
-        /// This field is true if Init() was called
-        /// </value>
-        public bool IsInitialized
-        {
-            get;
-            protected set;
-        }
-        
         /// <value>
         /// keeps a string with values separated by the delimiter
         /// </value>
@@ -469,7 +468,7 @@ namespace FMRShell
         {
             get
             {
-                if (!IsInitialized)
+                if (!isInitialized)
                 {
                     InitValues(this.Data);
                 }
@@ -480,7 +479,6 @@ namespace FMRShell
                 this.values = value;
             }
         }
-        private string values;
         
         public override string Legend
         {
@@ -497,7 +495,6 @@ namespace FMRShell
                 legend = value;
             }
         }
-        private static string legend;
 
         /// <summary>
         /// Initialize field Legend - list of all fields in the data 
@@ -522,7 +519,6 @@ namespace FMRShell
             legend = sbLegend.ToString();
         }
 
-        private object data;
         public object Data
         {
             get
@@ -532,15 +528,26 @@ namespace FMRShell
             
             set
             {
-                IsInitialized = false;
+                isInitialized = false;
                 this.data = value;
             }
         }
 
+        /// <summary>
+        /// This field is true if field Values is set and up to date
+        /// </summary>
+        protected bool isInitialized;
+        private string values;
+        private static string legend;
+        private object data;
         protected FieldInfo[] fields;
     }
-    
-    public class MarketDataMadad : MarketDataHolder
+
+
+    /// <summary>
+    /// sealed can potentially improve performamce 
+    /// </summary>
+    public sealed class MarketDataMadad : MarketDataHolder
     {
         public MarketDataMadad()
             : base(typeof(K300MadadType))
@@ -549,7 +556,7 @@ namespace FMRShell
     } // class MarketDataMadad
 
 
-    public class MarketDataRezef : MarketDataHolder
+    public sealed class MarketDataRezef : MarketDataHolder
     {
         public MarketDataRezef()
             : base(typeof(K300RzfType))
@@ -558,7 +565,7 @@ namespace FMRShell
     } // class MarketDataRezef
 
 
-    public class MarketDataMaof : MarketDataHolder
+    public sealed class MarketDataMaof : MarketDataHolder
     {
         public MarketDataMaof()
             : base(typeof(K300MaofType))
