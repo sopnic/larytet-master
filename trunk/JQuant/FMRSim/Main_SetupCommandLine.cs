@@ -1104,22 +1104,35 @@ namespace JQuant
         {
             Random random = new Random();
             DateTimePrecise pt = DateTimePrecise.GetInstance();
-            DateTime dtRT0 = pt.Now();
+            DateTime dtRT0;
             int tests = 0;
-            
+
+
+            dtRT0 = pt.Now();
+            iWrite.WriteLine("tick="+dtRT0.Ticks+" "+dtRT0+" "+DateTime.Now);
+            Thread.Sleep(30);
+
+            dtRT0 = pt.Now();
+            iWrite.WriteLine("tick=" + dtRT0.Ticks + " " + dtRT0 + " " + DateTime.Now);
+            Thread.Sleep(70);
+
+            dtRT0 = pt.Now();
+            iWrite.WriteLine("tick=" + dtRT0.Ticks + " " + dtRT0 + " " + DateTime.Now);
+            Thread.Sleep(100);
+
             do
             {
                 // read time stamps - system and PreciseTime
                 DateTime dt, dtNow;
-                
+                long maxDrift = 16 * 10000;
                 dt = DateTime.Now;
                 dtNow = dt;
-                DateTime dtB = dt.Subtract(new TimeSpan(100));
+                DateTime dtB = dt.Subtract(new TimeSpan(maxDrift));
                 
                 DateTime dtRT1 = pt.Now();
                 
                 dt = DateTime.Now;
-                DateTime dtA = dt.Add(new TimeSpan(100));
+                DateTime dtA = dt.Add(new TimeSpan(maxDrift));
 
 
                 // run checks

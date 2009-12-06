@@ -305,7 +305,7 @@ namespace JQuant
     /// </summary>
     public sealed class DateTimePrecise
     {
-        protected DateTimePrecise()
+        private DateTimePrecise()
         {
             drift = 0;
             STOPWATCH_FREQ = Stopwatch.Frequency;
@@ -316,17 +316,26 @@ namespace JQuant
             
             this.stopwatch = Stopwatch.StartNew();
             this.stopwatch.Start();
-            
 
+            // 1s timer makes sure that UtcNow is called from time to time
+            // and UtcNow is the metod which slowly fixes the drift if such occurs
             timer1s = new System.Timers.Timer();
             timer1s.AutoReset = true;
             timer1s.Interval = 1000;
-            timer1s.Elapsed += new ElapsedEventHandler(FixStopwatchFrequency);
+            timer1s.Elapsed += new ElapsedEventHandler(PollUtc);
 
-            // Start 1s time which will set delta to the current system tick
-            timer1s.Start();
+            // recalculate the drift - compare this.UtcNow with real-time DateTime.UtcNow
+            timer10s = new System.Timers.Timer();
+            timer10s.AutoReset = true;
+            timer10s.Interval = 10000;
+            timer10s.Elapsed += new ElapsedEventHandler(FixStopwatchFrequency);
+
             swBase = swLastObserved = this.stopwatch.ElapsedTicks;
             dtBase = DateTime.UtcNow;
+
+            // Start timers
+            timer1s.Start();
+            timer10s.Start();
         }
 
         public static void Init()
@@ -339,7 +348,11 @@ namespace JQuant
             return dateTimePrecise;
         }
 
-        protected void FixStopwatchFrequency( object source, ElapsedEventArgs e)
+        private void PollUtc(object source, ElapsedEventArgs e)
+        {
+        }
+
+        private void FixStopwatchFrequency(object source, ElapsedEventArgs e)
         {
             DateTime dtActual = this.UtcNow();            
             DateTime dtExpected = DateTime.UtcNow;
@@ -347,67 +360,79 @@ namespace JQuant
             {
                 this.drift = dtExpected.Ticks - dtActual.Ticks;
             }
-            System.Console.WriteLine("drift "+drift);
+//            System.Console.WriteLine("drift "+drift/10 +"micros");
         }
 
         /// Returns the current date and time, just like DateTime.UtcNow.
         public DateTime UtcNow()
         {
             // get current value from the stopwatch
-            long swObserved = stopwatch.ElapsedTicks - swBase;
-            swObserved = swObserved * (TICKS_FREQ/STOPWATCH_FREQ);
+            long swObserved = this.stopwatch.ElapsedTicks - swBase;
 
             lock (this)
             {
-                // now I have to "fix" it using shift
-                if (drift == 0) // do nothing
+                // now I have to "fix" bae time
+
+                // drift less than 15ms - nothing to fix
+                if (Math.Abs(drift) < 15 * TICKS_IN_MS)
                 {
                 }
                 // i can increase time - there is no problem here
-                // expected > actual
                 else if (drift > 0)
                 {
-                    long delta = Math.Min(drift, 500);
+                    long delta = Math.Min(drift, MAX_SHIFT);
                     dtBase = dtBase.AddTicks(delta);
                     drift -= delta;
                 }
                 // i can decrease time by no more than (swObserved - swLastObserved)
-                // expected < actual
                 else if (drift < 0)
                 {
-                    long delta = swObserved - swLastObserved + 1;
+                    long delta = StopwatchToTick(swObserved - swLastObserved);
                     delta = Math.Min(delta, Math.Abs(drift));
+                    delta = Math.Min(delta, MAX_SHIFT);
                     dtBase = dtBase.AddTicks(-delta);
                     drift += delta;
                 }
                 swLastObserved = swObserved;
             }
-            
-            DateTime dt = dtBase.AddTicks(swObserved);
+
+            DateTime dt = dtBase.AddTicks(StopwatchToTick(swObserved));
 
             
             return dt;
         }
-    
+
+
+        private static long StopwatchToTick(long value)
+        {
+            value = (value * TICKS_FREQ) / STOPWATCH_FREQ;
+            return value;
+        }
+
         /// Returns the current date and time, just like DateTime.Now.
         public DateTime Now()
         {
             return this.UtcNow().ToLocalTime();
         }
-    
-        protected Stopwatch stopwatch;
 
-        protected long swBase;
-        protected long swLastObserved;
-        protected DateTime dtBase;
-        protected long drift;
-        
-        
+        private Stopwatch stopwatch;
+
+        private long swBase;
+        private long swLastObserved;
+        private DateTime dtBase;
+        private long drift;
+
+
         private const long TICKS_FREQ = 10000000;
+        private const long TICKS_IN_MS = TICKS_FREQ/1000;
+
+        // i am not going to jump too fast - 5ms shift is max
+        private const long MAX_SHIFT = (TICKS_FREQ / 200);
         private static long STOPWATCH_FREQ;
 
-        protected static DateTimePrecise dateTimePrecise;
-        protected System.Timers.Timer timer1s;
+        private static DateTimePrecise dateTimePrecise;
+        private System.Timers.Timer timer1s;
+        private System.Timers.Timer timer10s;
     }
     
     
