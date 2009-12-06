@@ -345,6 +345,7 @@ namespace JQuant
             {
                 this.drift = dtExpected.Ticks - dtActual.Ticks;
             }
+//            System.Console.WriteLine("drift "+drift);
         }
 
         /// Returns the current date and time, just like DateTime.UtcNow.
