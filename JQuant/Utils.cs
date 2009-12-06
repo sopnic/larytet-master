@@ -304,21 +304,18 @@ namespace JQuant
     /// </summary>
     public class DateTimePrecise
     {
-        protected DateTimePrecise(long synchronizePeriodSeconds)
+        protected DateTimePrecise()
         {
-            Stopwatch = Stopwatch.StartNew();
-            this.Stopwatch.Start();
+            drift = 0;
+
+            // for some reason very first call to DateTime.UtcNow takes lot of time
+            // do it now
+            DateTime dt = DateTime.UtcNow;
             
-            DateTime t = DateTime.UtcNow;
-            _immutable = new DateTimePreciseSafeImmutable(t, t, Stopwatch.ElapsedTicks,
-              Stopwatch.Frequency);
+            this.stopwatch = Stopwatch.StartNew();
+            this.stopwatch.Start();
             
-            _synchronizePeriodSeconds = synchronizePeriodSeconds;
-            _synchronizePeriodStopwatchTicks = synchronizePeriodSeconds *
-              Stopwatch.Frequency;
-            _synchronizePeriodClockTicks = synchronizePeriodSeconds *
-              _clockTickFrequency;
-            
+
             timer1s = new System.Timers.Timer();
             timer1s.AutoReset = true;
             timer1s.Interval = 1000;
@@ -326,11 +323,13 @@ namespace JQuant
 
             // Start 1s time which will set delta to the current system tick
             timer1s.Start();
+            swBase = swLastObserved = this.stopwatch.ElapsedTicks;
+            dtBase = DateTime.UtcNow;
         }
 
         public static void Init()
         {
-            dateTimePrecise = new DateTimePrecise(2);
+            dateTimePrecise = new DateTimePrecise();
         }
 
         public static DateTimePrecise GetInstance()
@@ -340,41 +339,51 @@ namespace JQuant
 
         protected void FixStopwatchFrequency( object source, ElapsedEventArgs e)
         {
-            UtcNow();
+            DateTime dtActual = this.UtcNow();            
+            DateTime dtExpected = DateTime.UtcNow;
+            lock (this)
+            {
+                this.drift = dtExpected.Ticks - dtActual.Ticks;
+            }
+            System.Console.WriteLine("Drift = "+drift);
         }
 
         /// Returns the current date and time, just like DateTime.UtcNow.
         public DateTime UtcNow()
         {
-            long s = this.Stopwatch.ElapsedTicks;
-            DateTimePreciseSafeImmutable immutable = _immutable;
-        
-            if (s < immutable._s_observed + _synchronizePeriodStopwatchTicks)
+            // get current value from the stopwatch
+            long swObserved = stopwatch.ElapsedTicks - swBase;
+
+            lock (this)
             {
-                return immutable._t_base.AddTicks(((
-                s - immutable._s_observed) * _clockTickFrequency) / (
-                immutable._stopWatchFrequency));
+                // now I have to "fix" it using shift
+                if (drift == 0) // do nothing
+                {
+                }
+                // i can increase time - there is no problem here
+                // expected > actual
+                else if (drift > 0)
+                {
+                    long delta = Math.Min(drift, 500);
+                    dtBase = dtBase.AddTicks(delta);
+                    drift -= delta;
+                }
+                // i can decrease time by no more than (swObserved - swLastObserved)
+                // expected < actual
+                else if (drift < 0)
+                {
+                    long delta = swObserved - swLastObserved + 1;
+                    delta = Math.Min(delta, Math.Abs(drift));
+                    dtBase = dtBase.AddTicks(-delta);
+                    drift += delta;
+                }
+                swLastObserved = swObserved;
             }
-            else
-            {
-                DateTime t = DateTime.UtcNow;
-                
-                DateTime t_base_new = immutable._t_base.AddTicks(((
-                  s - immutable._s_observed) * _clockTickFrequency) / (
-                  immutable._stopWatchFrequency));
-                
-                _immutable = new DateTimePreciseSafeImmutable(
-                  t,
-                  t_base_new,
-                  s,
-                  ((s - immutable._s_observed) * _clockTickFrequency * 2)
-                  /
-                  (t.Ticks - immutable._t_observed.Ticks + t.Ticks +
-                      t.Ticks - t_base_new.Ticks - immutable._t_observed.Ticks)
-                );
-                
-                return t_base_new;
-            }
+            
+            DateTime dt = dtBase.AddTicks(swObserved);
+
+            
+            return dt;
         }
     
         /// Returns the current date and time, just like DateTime.Now.
@@ -383,35 +392,20 @@ namespace JQuant
             return this.UtcNow().ToLocalTime();
         }
     
-        /// The internal System.Diagnostics.Stopwatch used by this instance.
-        public Stopwatch Stopwatch;
+        protected Stopwatch stopwatch;
+
+        protected long swBase;
+        protected long swLastObserved;
+        protected DateTime dtBase;
+        protected long drift;
         
-        private long _synchronizePeriodStopwatchTicks;
-        private long _synchronizePeriodSeconds;
-        private long _synchronizePeriodClockTicks;
-        private const long _clockTickFrequency = 10000000;
-        private DateTimePreciseSafeImmutable _immutable;
+        
+        private const long TICKS_FREQ = 10000000;
 
         protected static DateTimePrecise dateTimePrecise;
         protected System.Timers.Timer timer1s;
     }
     
-    internal sealed class DateTimePreciseSafeImmutable
-    {
-        internal DateTimePreciseSafeImmutable(DateTime t_observed, DateTime t_base,
-             long s_observed, long stopWatchFrequency)
-        {
-            _t_observed = t_observed;
-            _t_base = t_base;
-            _s_observed = s_observed;
-            _stopWatchFrequency = stopWatchFrequency;
-        }
-        internal readonly DateTime _t_observed;
-        internal readonly DateTime _t_base;
-        internal readonly long _s_observed;
-        internal readonly long _stopWatchFrequency;
-    }
-
     
     #region StatUtils;
     /// <summary>
