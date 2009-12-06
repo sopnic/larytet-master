@@ -300,13 +300,15 @@ namespace JQuant
     /// System tick is not real time and drifts by approximately 20s in a day
     /// Method Now() returns fixed value of DateTime.Now
     /// I substract from DateTime.Now the milliseconds part and add ticks 
-    /// as returned by Stopwatch over last 1s
+    /// as returned by Stopwatch
+    /// Sealed class to help code optimization
     /// </summary>
-    public class DateTimePrecise
+    public sealed class DateTimePrecise
     {
         protected DateTimePrecise()
         {
             drift = 0;
+            STOPWATCH_FREQ = Stopwatch.Frequency;
 
             // for some reason very first call to DateTime.UtcNow takes lot of time
             // do it now
@@ -345,7 +347,7 @@ namespace JQuant
             {
                 this.drift = dtExpected.Ticks - dtActual.Ticks;
             }
-//            System.Console.WriteLine("drift "+drift);
+            System.Console.WriteLine("drift "+drift);
         }
 
         /// Returns the current date and time, just like DateTime.UtcNow.
@@ -353,6 +355,7 @@ namespace JQuant
         {
             // get current value from the stopwatch
             long swObserved = stopwatch.ElapsedTicks - swBase;
+            swObserved = swObserved * (TICKS_FREQ/STOPWATCH_FREQ);
 
             lock (this)
             {
@@ -401,6 +404,7 @@ namespace JQuant
         
         
         private const long TICKS_FREQ = 10000000;
+        private static long STOPWATCH_FREQ;
 
         protected static DateTimePrecise dateTimePrecise;
         protected System.Timers.Timer timer1s;
