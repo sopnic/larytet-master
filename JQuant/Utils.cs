@@ -301,7 +301,28 @@ namespace JQuant
     /// Method Now() returns fixed value of DateTime.Now
     /// I substract from DateTime.Now the milliseconds part and add ticks 
     /// as returned by Stopwatch
-    /// Sealed class to help code optimization
+    /// This is a sealed class to help code optimization
+    /// 
+    /// There are two timers - 1s and 10s timer. In the shorter timer this.UtcNow() 
+    /// is called. In the longer timer drift between stopwatch and "real-time" returned
+    /// by DateTime.Now is calculated.
+    /// In the  UtcNow the current date is calculated as Base + StopwatchElapsedTicks
+    /// Every time UtcNow is called it will shift Base by small amount of ticks until
+    /// drift is not less than 15ms. At this point the stopwatch is assumed precise.
+    /// If drift growth above 15ms UtcNow will start to fix the Base again
+    ///
+    /// There is a trick. If stopwatch is slower than the real time clock I can 
+    /// always add ticks ass neccessary. But if the stopwatch is faster I have to
+    /// avoid situation where the time returned by UtcNow runs backward. I decrease
+    /// the number of ticks by no more than number of elapsed ticks from the most
+    /// recent fix. In other words if the stopwatch is faster than real time clock
+    /// i will stop it (return the same value) for some short period until drift
+    /// does not drop back to under 15ms
+    ///
+    /// Most of the time the drift remains under 15ms and no computation is neccessary.
+    /// The whole business of drift can be moved to the context of 1s timer. The timer
+    /// can be made shorter. This approach can potentially save some CPU cycles.
+    /// 
     /// </summary>
     public sealed class DateTimePrecise
     {
@@ -352,6 +373,7 @@ namespace JQuant
 
         private void PollUtc(object source, ElapsedEventArgs e)
         {
+            UtcNow();
         }
 
         private void FixStopwatchFrequency(object source, ElapsedEventArgs e)
@@ -362,7 +384,7 @@ namespace JQuant
             {
                 drift = dtExpected.Ticks - dtActual.Ticks;
             }
-//            System.Console.WriteLine("drift "+drift/10 +"micros");
+//            System.Console.Write("drift "+drift/10 +"micros");
         }
 
         /// Returns the current date and time, just like DateTime.UtcNow.
