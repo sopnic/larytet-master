@@ -1103,20 +1103,19 @@ namespace JQuant
         protected void debugRTClockCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             Random random = new Random();
-            DateTimePrecise pt = DateTimePrecise.GetInstance();
             DateTime dtRT0;
             int tests = 0;
 
 
-            dtRT0 = pt.Now();
+            dtRT0 = DateTimePrecise.Now;
             iWrite.WriteLine("tick="+dtRT0.Ticks+" "+dtRT0+" "+DateTime.Now);
             Thread.Sleep(30);
 
-            dtRT0 = pt.Now();
+            dtRT0 = DateTimePrecise.Now;
             iWrite.WriteLine("tick=" + dtRT0.Ticks + " " + dtRT0 + " " + DateTime.Now);
             Thread.Sleep(70);
 
-            dtRT0 = pt.Now();
+            dtRT0 = DateTimePrecise.Now;
             iWrite.WriteLine("tick=" + dtRT0.Ticks + " " + dtRT0 + " " + DateTime.Now);
             Thread.Sleep(100);
 
@@ -1129,7 +1128,7 @@ namespace JQuant
                 dtNow = dt;
                 DateTime dtB = dt.Subtract(new TimeSpan(maxDrift));
                 
-                DateTime dtRT1 = pt.Now();
+                DateTime dtRT1 = DateTimePrecise.Now;
                 
                 dt = DateTime.Now;
                 DateTime dtA = dt.Add(new TimeSpan(maxDrift));
@@ -1167,14 +1166,13 @@ namespace JQuant
 
         protected void debugRTClock1Callback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            DateTimePrecise pt = DateTimePrecise.GetInstance();
-            DateTime dtRT0 = pt.Now();
+            DateTime dtRT0 = DateTimePrecise.Now;
             int tests = 0;
             long maxDelta = 0;
             
             do
             {
-                DateTime dtRT1 = pt.Now();
+                DateTime dtRT1 = DateTimePrecise.Now;
 
                 // run checks
                 if (dtRT1 < dtRT0)
@@ -1203,15 +1201,14 @@ namespace JQuant
 
         protected void debugRTClock2Callback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            DateTimePrecise pt = DateTimePrecise.GetInstance();
             Random random = new Random();
 
             do
             {
-                DateTime dtRT0 = pt.Now();
+                DateTime dtRT0 = DateTimePrecise.Now;
                 int delay = random.Next(0,50);
                 Thread.Sleep(delay);
-                DateTime dtRT1 = pt.Now();
+                DateTime dtRT1 = DateTimePrecise.Now;
 
                 iWrite.WriteLine("delay="+delay+"ms ticks="+(dtRT1.Ticks-dtRT0.Ticks));
             }

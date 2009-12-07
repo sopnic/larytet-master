@@ -371,16 +371,16 @@ namespace JQuant
             return dateTimePrecise;
         }
 
-        private void PollUtc(object source, ElapsedEventArgs e)
+        private static void PollUtc(object source, ElapsedEventArgs e)
         {
-            UtcNow();
+            DateTime dt = DateTimePrecise.UtcNow;
         }
 
-        private void FixStopwatchFrequency(object source, ElapsedEventArgs e)
+        private static void FixStopwatchFrequency(object source, ElapsedEventArgs e)
         {
-            DateTime dtActual = this.UtcNow();            
+            DateTime dtActual = DateTimePrecise.UtcNow;
             DateTime dtExpected = DateTime.UtcNow;
-            lock (this)
+            lock (dateTimePrecise)
             {
                 drift = dtExpected.Ticks - dtActual.Ticks;
             }
@@ -388,42 +388,45 @@ namespace JQuant
         }
 
         /// Returns the current date and time, just like DateTime.UtcNow.
-        public DateTime UtcNow()
+        public static DateTime UtcNow
         {
-            // get current value from the stopwatch
-            long swObserved = stopwatch.ElapsedTicks - swBase;
-
-            lock (this)
+            get
             {
-                // now I have to "fix" bae time
-
-                // drift less than 15ms - nothing to fix
-                if (Math.Abs(drift) < 15 * TICKS_IN_MS)
+                // get current value from the stopwatch
+                long swObserved = stopwatch.ElapsedTicks - swBase;
+    
+                lock (dateTimePrecise)
                 {
+                    // now I have to "fix" bae time
+    
+                    // drift less than 15ms - nothing to fix
+                    if (Math.Abs(drift) < 15 * TICKS_IN_MS)
+                    {
+                    }
+                    // i can increase time - there is no problem here
+                    else if (drift > 0)
+                    {
+                        long delta = Math.Min(drift, MAX_SHIFT);
+                        dtBase = dtBase.AddTicks(delta);
+                        drift -= delta;
+                    }
+                    // i can decrease time by no more than (swObserved - swLastObserved)
+                    else if (drift < 0)
+                    {
+                        long delta = StopwatchToTick(swObserved - swLastObserved);
+                        delta = Math.Min(delta, Math.Abs(drift));
+                        delta = Math.Min(delta, MAX_SHIFT);
+                        dtBase = dtBase.AddTicks(-delta);
+                        drift += delta;
+                    }
+                    swLastObserved = swObserved;
                 }
-                // i can increase time - there is no problem here
-                else if (drift > 0)
-                {
-                    long delta = Math.Min(drift, MAX_SHIFT);
-                    dtBase = dtBase.AddTicks(delta);
-                    drift -= delta;
-                }
-                // i can decrease time by no more than (swObserved - swLastObserved)
-                else if (drift < 0)
-                {
-                    long delta = StopwatchToTick(swObserved - swLastObserved);
-                    delta = Math.Min(delta, Math.Abs(drift));
-                    delta = Math.Min(delta, MAX_SHIFT);
-                    dtBase = dtBase.AddTicks(-delta);
-                    drift += delta;
-                }
-                swLastObserved = swObserved;
+    
+                DateTime dt = dtBase.AddTicks(StopwatchToTick(swObserved));
+    
+                
+                return dt;
             }
-
-            DateTime dt = dtBase.AddTicks(StopwatchToTick(swObserved));
-
-            
-            return dt;
         }
 
 
@@ -434,9 +437,12 @@ namespace JQuant
         }
 
         /// Returns the current date and time, just like DateTime.Now.
-        public DateTime Now()
+        public static DateTime Now
         {
-            return this.UtcNow().ToLocalTime();
+            get
+            {
+                return UtcNow.ToLocalTime();
+            }
         }
 
         private static Stopwatch stopwatch;
