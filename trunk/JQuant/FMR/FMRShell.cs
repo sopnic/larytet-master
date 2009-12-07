@@ -669,8 +669,8 @@ namespace FMRShell
             protected void OnEvent(object data)
             {
                 // no memory allocation here - I am using allready created object marketData
-                // DateTime.Now suggestes memory allocation, but probably .NET handles this efficiently
-                marketData.TimeStamp = DateTime.Now;
+                // DateTimePrecise.Now suggests memory allocation, but probably .NET handles this efficiently
+                marketData.TimeStamp = DateTimePrecise.Now;
                 marketData.Ticks = Stopwatch.GetTimestamp();
                 marketData.Data = data;
                 countEvents++;
@@ -925,7 +925,7 @@ namespace FMRShell
 
             public void Notify(int count, MarketData data)
             {
-                dataLogger.stampLatest = System.DateTime.Now;
+                dataLogger.stampLatest = DateTimePrecise.Now;
                 MarketData dataClone = (MarketData)(data.Clone());
                 dataLogger.AddEntry(dataClone);
             }
