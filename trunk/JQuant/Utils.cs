@@ -406,7 +406,11 @@ namespace JQuant
                     // i can increase time - there is no problem here
                     else if (drift > 0)
                     {
-                        long delta = Math.Min(drift, MAX_SHIFT);
+                        long delta = StopwatchToTick(swObserved - swLastObserved);
+                        delta = MaxShift(delta);
+                           
+                        delta = Math.Min(delta, drift);
+                        delta = Math.Min(delta, MAX_SHIFT);
                         dtBase = dtBase.AddTicks(delta);
                         drift -= delta;
                     }
@@ -414,6 +418,8 @@ namespace JQuant
                     else if (drift < 0)
                     {
                         long delta = StopwatchToTick(swObserved - swLastObserved);
+                        delta = MaxShift(delta);
+                        
                         delta = Math.Min(delta, Math.Abs(drift));
                         delta = Math.Min(delta, MAX_SHIFT);
                         dtBase = dtBase.AddTicks(-delta);
@@ -427,6 +433,27 @@ namespace JQuant
                 
                 return dt;
             }
+        }
+
+        /// <summary>
+        /// Depending on the number of elapsed ticks returns 0.5%-10% of the value
+        /// </summary>
+        private static long MaxShift(long ticks)
+        {
+            if (ticks > 5000)  // caluclate 0.5% of the delta
+            {                  // 5000 ticks is 0.5ms from the last call to UtcNow
+                ticks = (ticks*5)/1000;
+            }
+            else if (ticks > 50)
+            {
+                ticks = ticks/10; // 10% of the delta
+            }
+            else  // very unlikely - less than 5micro between two calls
+            {     // use the lowest between delta and 5ticks
+                ticks = Math.Min(ticks, 5);
+            }
+
+            return ticks;
         }
 
 
