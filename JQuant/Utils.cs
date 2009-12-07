@@ -307,15 +307,17 @@ namespace JQuant
     {
         private DateTimePrecise()
         {
+            // for some reason very first call to DateTime.UtcNow takes lot of time
+            // do dummy call first 
+            DateTime dt = DateTime.UtcNow;
+
+            
             drift = 0;
             STOPWATCH_FREQ = Stopwatch.Frequency;
 
-            // for some reason very first call to DateTime.UtcNow takes lot of time
-            // do it now
-            DateTime dt = DateTime.UtcNow;
             
-            this.stopwatch = Stopwatch.StartNew();
-            this.stopwatch.Start();
+            stopwatch = Stopwatch.StartNew();
+            stopwatch.Start();
 
             // 1s timer makes sure that UtcNow is called from time to time
             // and UtcNow is the metod which slowly fixes the drift if such occurs
@@ -330,7 +332,7 @@ namespace JQuant
             timer10s.Interval = 10000;
             timer10s.Elapsed += new ElapsedEventHandler(FixStopwatchFrequency);
 
-            swBase = swLastObserved = this.stopwatch.ElapsedTicks;
+            swBase = swLastObserved = stopwatch.ElapsedTicks;
             dtBase = DateTime.UtcNow;
 
             // Start timers
@@ -358,7 +360,7 @@ namespace JQuant
             DateTime dtExpected = DateTime.UtcNow;
             lock (this)
             {
-                this.drift = dtExpected.Ticks - dtActual.Ticks;
+                drift = dtExpected.Ticks - dtActual.Ticks;
             }
 //            System.Console.WriteLine("drift "+drift/10 +"micros");
         }
@@ -367,7 +369,7 @@ namespace JQuant
         public DateTime UtcNow()
         {
             // get current value from the stopwatch
-            long swObserved = this.stopwatch.ElapsedTicks - swBase;
+            long swObserved = stopwatch.ElapsedTicks - swBase;
 
             lock (this)
             {
@@ -415,12 +417,12 @@ namespace JQuant
             return this.UtcNow().ToLocalTime();
         }
 
-        private Stopwatch stopwatch;
+        private static Stopwatch stopwatch;
 
-        private long swBase;
-        private long swLastObserved;
-        private DateTime dtBase;
-        private long drift;
+        private static long swBase;
+        private static long swLastObserved;
+        private static DateTime dtBase;
+        private static long drift;
 
 
         private const long TICKS_FREQ = 10000000;
