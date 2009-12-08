@@ -400,7 +400,7 @@ namespace JQuant
                     // now I have to "fix" bae time
     
                     // drift less than 10ms - nothing to fix
-                    if (Math.Abs(drift) < 10 * TICKS_IN_MS)
+                    if (Math.Abs(drift) < 5 * TICKS_IN_MS)
                     {
                     }
                     // i can increase time - there is no problem here
