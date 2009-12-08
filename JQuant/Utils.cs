@@ -342,23 +342,21 @@ namespace JQuant
 
             // 1s timer makes sure that UtcNow is called from time to time
             // and UtcNow is the metod which slowly fixes the drift if such occurs
+            // recalculate the drift - compare this.UtcNow with real-time DateTime.UtcNow
             timer1s = new System.Timers.Timer();
             timer1s.AutoReset = true;
             timer1s.Interval = 1000;
             timer1s.Elapsed += new ElapsedEventHandler(PollUtc);
+            pollUtcCount = 0;
+            deltas = new List<long>(STAT_SIZE);
 
-            // recalculate the drift - compare this.UtcNow with real-time DateTime.UtcNow
-            timer10s = new System.Timers.Timer();
-            timer10s.AutoReset = true;
-            timer10s.Interval = 10000;
-            timer10s.Elapsed += new ElapsedEventHandler(FixStopwatchFrequency);
 
             swBase = swLastObserved = stopwatch.ElapsedTicks;
             dtBase = DateTime.UtcNow;
 
             // Start timers
             timer1s.Start();
-            timer10s.Start();
+            // timer10s.Start();
         }
 
         public static void Init()
@@ -373,18 +371,24 @@ namespace JQuant
 
         private static void PollUtc(object source, ElapsedEventArgs e)
         {
-            DateTime dt = DateTimePrecise.UtcNow;
-        }
+            long delta = DateTime.UtcNow.Ticks - DateTimePrecise.UtcNow.Ticks;
 
-        private static void FixStopwatchFrequency(object source, ElapsedEventArgs e)
-        {
-            DateTime dtActual = DateTimePrecise.UtcNow;
-            DateTime dtExpected = DateTime.UtcNow;
-            lock (dateTimePrecise)
+            deltas.Add(delta);
+
+
+            if (deltas.Count >= STAT_SIZE)
             {
-                drift = dtExpected.Ticks - dtActual.Ticks;
+                deltas.RemoveAt(0);
             }
-//            System.Console.Write("drift "+drift/10 +"micros");
+
+            // every 8 calls calculate average drift
+            if ((pollUtcCount & STAT_SIZE_MASK) == STAT_SIZE_MASK)
+            {
+                drift = (long)Math.Round(deltas.Average());
+//                System.Console.Write("."+drift/10 +".");              
+            }
+
+            pollUtcCount++;
         }
 
         /// Returns the current date and time, just like DateTime.UtcNow.
@@ -488,8 +492,16 @@ namespace JQuant
         private static long STOPWATCH_FREQ;
 
         private static DateTimePrecise dateTimePrecise;
+
+        private static int pollUtcCount;
+        // i collect samples of drifts
+        private static List<long> deltas;
+
+        // user power of two
+        private static int STAT_SIZE = 8;
+        private static int STAT_SIZE_MASK = STAT_SIZE-1;
+            
         private System.Timers.Timer timer1s;
-        private System.Timers.Timer timer10s;
     }
     
     
