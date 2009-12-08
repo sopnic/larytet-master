@@ -317,9 +317,9 @@ namespace JQuant
     /// the number of ticks by no more than number of elapsed ticks from the most
     /// recent fix. In other words if the stopwatch is faster than real time clock
     /// i will stop it (return the same value) for some short period until drift
-    /// does not drop back to under 15ms
+    /// does not drop back to under 10ms
     ///
-    /// Most of the time the drift remains under 15ms and no computation is neccessary.
+    /// Most of the time the drift remains under 10ms and no computation is neccessary.
     /// The whole business of drift can be moved to the context of 1s timer. The timer
     /// can be made shorter. This approach can potentially save some CPU cycles.
     /// 
@@ -330,8 +330,7 @@ namespace JQuant
         {
             // for some reason very first call to DateTime.UtcNow takes lot of time
             // do dummy call first 
-            DateTime dt = DateTime.UtcNow;
-
+            DummyCall();
             
             drift = 0;
             STOPWATCH_FREQ = Stopwatch.Frequency;
@@ -359,6 +358,15 @@ namespace JQuant
             // timer10s.Start();
         }
 
+        /// <summary>
+        /// for some reason very first call to DateTime.UtcNow takes lot of time
+        /// i call this method in the constructor
+        /// </summary>
+        private DateTime DummyCall()
+        {
+            return DateTime.UtcNow;
+        }
+
         public static void Init()
         {
             dateTimePrecise = new DateTimePrecise();
@@ -369,8 +377,13 @@ namespace JQuant
             return dateTimePrecise;
         }
 
+        /// <summary>
+        /// Make sure that UtcNow is called at least once every second
+        /// Calculate the clock drift - average of 8 samples
+        /// </summary>
         private static void PollUtc(object source, ElapsedEventArgs e)
         {
+            // UtcNow property is faster than Now property
             long delta = DateTime.UtcNow.Ticks - DateTimePrecise.UtcNow.Ticks;
 
             deltas.Add(delta);
@@ -381,10 +394,18 @@ namespace JQuant
                 deltas.RemoveAt(0);
             }
 
-            // every 8 calls calculate average drift
+            // every 8 calls calculate average drift of 8 samples
+            // and set drift
+            // In the context of UtcNow the base time will be modified
+            // to fix the drift
             if ((pollUtcCount & STAT_SIZE_MASK) == STAT_SIZE_MASK)
             {
-                drift = (long)Math.Round(deltas.Average());
+                long drift = (long)Math.Round(deltas.Average());
+
+                lock (dateTimePrecise)
+                {
+                    DateTimePrecise.drift = drift;
+                }
 //                System.Console.Write("."+drift/10 +".");              
             }
 
