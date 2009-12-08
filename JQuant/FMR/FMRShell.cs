@@ -670,8 +670,8 @@ namespace FMRShell
             {
                 // no memory allocation here - I am using allready created object marketData
                 // DateTimePrecise.Now suggests memory allocation, but probably .NET handles this efficiently
-                marketData.TimeStamp = DateTimePrecise.Now;
-                marketData.Ticks = Stopwatch.GetTimestamp();
+                marketData.TimeStamp = JQuant.DateTimePrecise.Now;
+                marketData.Ticks = DateTime.UtcNow.Ticks;
                 marketData.Data = data;
                 countEvents++;
 
