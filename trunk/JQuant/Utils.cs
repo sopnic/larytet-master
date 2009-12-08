@@ -297,29 +297,28 @@ namespace JQuant
 
     /// <summary>
     /// Returns fixed time. In Windows DateTime.Now returns tikcs rounded to 15ms
-    /// System tick is not real time and drifts by approximately 20s in a day
-    /// Method Now() returns fixed value of DateTime.Now
-    /// I substract from DateTime.Now the milliseconds part and add ticks 
-    /// as returned by Stopwatch
+    /// System tick (Stopwatch) is not real time and drifts by approximately 20s in a day
+    /// Property DateTimePrecise.Now returns fixed value of DateTime.Now
+    /// I add elapsed ticks as returned by Stopwatch to the base time. Base time is the time
+    /// constructor is called.
     /// This is a sealed class to help code optimization
     /// 
-    /// There are two timers - 1s and 10s timer. In the shorter timer this.UtcNow() 
-    /// is called. In the longer timer drift between stopwatch and "real-time" returned
-    /// by DateTime.Now is calculated.
+    /// In the 1s timer this.UtcNow is called and rift between stopwatch and "real-time" 
+    /// returned by DateTime.Now is calculated.
     /// In the  UtcNow the current date is calculated as Base + StopwatchElapsedTicks
     /// Every time UtcNow is called it will shift Base by small amount of ticks until
-    /// drift is not less than 15ms. At this point the stopwatch is assumed precise.
-    /// If drift growth above 15ms UtcNow will start to fix the Base again
+    /// drift is not less than 5ms. At this point the stopwatch is assumed precise.
+    /// If drift growth above 5ms UtcNow will start to fix the Base again
     ///
     /// There is a trick. If stopwatch is slower than the real time clock I can 
-    /// always add ticks ass neccessary. But if the stopwatch is faster I have to
-    /// avoid situation where the time returned by UtcNow runs backward. I decrease
+    /// always add ticks as neccessary. But if the stopwatch is faster I have to
+    /// take care of situation where the time returned by UtcNow runs backward. I decrease
     /// the number of ticks by no more than number of elapsed ticks from the most
     /// recent fix. In other words if the stopwatch is faster than real time clock
     /// i will stop it (return the same value) for some short period until drift
-    /// does not drop back to under 10ms
+    /// does not drop back to under 5ms
     ///
-    /// Most of the time the drift remains under 10ms and no computation is neccessary.
+    /// Most of the time the drift remains under 5ms and no computation is neccessary.
     /// The whole business of drift can be moved to the context of 1s timer. The timer
     /// can be made shorter. This approach can potentially save some CPU cycles.
     /// 
@@ -389,6 +388,7 @@ namespace JQuant
             deltas.Add(delta);
 
 
+            // keep only STAT_SIZE latest reads in the list
             if (deltas.Count >= STAT_SIZE)
             {
                 deltas.RemoveAt(0);
