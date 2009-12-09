@@ -357,15 +357,6 @@ namespace JQuant
             // timer10s.Start();
         }
 
-        /// <summary>
-        /// for some reason very first call to DateTime.UtcNow takes lot of time
-        /// i call this method in the constructor
-        /// </summary>
-        private DateTime DummyCall()
-        {
-            return DateTime.UtcNow;
-        }
-
         public static void Init()
         {
             dateTimePrecise = new DateTimePrecise();
@@ -389,7 +380,7 @@ namespace JQuant
 
 
             // keep only STAT_SIZE latest reads in the list
-            if (deltas.Count >= STAT_SIZE)
+            if (deltas.Count > STAT_SIZE)
             {
                 deltas.RemoveAt(0);
             }
@@ -422,9 +413,10 @@ namespace JQuant
     
                 lock (dateTimePrecise)
                 {
-                    // now I have to "fix" bae time
+                    // now I have to "fix" base time
     
-                    // drift less than 10ms - nothing to fix
+                    // drift less than 10ms - nothing to fix. this outcome is most likely
+                    // and lock time is going to be very short
                     if (Math.Abs(drift) < 5 * TICKS_IN_MS)
                     {
                     }
@@ -432,10 +424,7 @@ namespace JQuant
                     else if (drift > 0)
                     {
                         long delta = StopwatchToTick(swObserved - swLastObserved);
-                        delta = MaxShift(delta);
-                           
-                        delta = Math.Min(delta, drift);
-                        delta = Math.Min(delta, MAX_SHIFT);
+                        delta = MaxShift(delta);delta = Math.Min(delta, drift);delta = Math.Min(delta, MAX_SHIFT);
                         dtBase = dtBase.AddTicks(delta);
                         drift -= delta;
                     }
@@ -443,15 +432,12 @@ namespace JQuant
                     else if (drift < 0)
                     {
                         long delta = StopwatchToTick(swObserved - swLastObserved);
-                        delta = MaxShift(delta);
-                        
-                        delta = Math.Min(delta, Math.Abs(drift));
-                        delta = Math.Min(delta, MAX_SHIFT);
+                        delta = MaxShift(delta);delta = Math.Min(delta, Math.Abs(drift));delta = Math.Min(delta, MAX_SHIFT);
                         dtBase = dtBase.AddTicks(-delta);
                         drift += delta;
                     }
                     swLastObserved = swObserved;
-                }
+                }  // lock
     
                 DateTime dt = dtBase.AddTicks(StopwatchToTick(swObserved));
     
@@ -495,6 +481,15 @@ namespace JQuant
             {
                 return UtcNow.ToLocalTime();
             }
+        }
+
+        /// <summary>
+        /// for some reason very first call to DateTime.UtcNow takes lot of time
+        /// i call this method in the constructor
+        /// </summary>
+        private DateTime DummyCall()
+        {
+            return DateTime.UtcNow;
         }
 
         private static Stopwatch stopwatch;
