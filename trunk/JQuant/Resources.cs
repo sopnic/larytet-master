@@ -170,6 +170,11 @@ namespace JQuant
     public interface IResourceThreadPool :IResourceStatistics, INamedResource
     {
     }
+
+    public interface IResourceDataVerifier :IResourceStatistics, INamedResource
+    {
+    }
+
     
     /// <summary>
     /// a storage of all created objects

@@ -181,7 +181,7 @@ namespace JQuant
     {
         public MaofOrderProducer(Algorithm Alg)
         {
-            OrderListeners = new List<ISink<LimitOrderParameters>>(5);
+            OrderListeners = new List<IConsumer<LimitOrderParameters>>(5);
             Alg.SendMaofOrder += new SendOrder(onSendMaofOrder);
             countOrders = 0;
             Name = "MaofOrder";
@@ -196,9 +196,9 @@ namespace JQuant
             //order processing. Need to think more about it. In any case, we need here a 
             //mechanism that will assure that that the same order won't be sent twice (or more)
             //through two (or more) separate FSMs, registered by mistake at the same Algo.
-            foreach (ISink<LimitOrderParameters> sink in OrderListeners)
+            foreach (IConsumer<LimitOrderParameters> consumer in OrderListeners)
             {
-                sink.Notify(countOrders, args.GetOrderParams());
+                consumer.Notify(countOrders, args.GetOrderParams());
             }
         }
 
@@ -215,19 +215,19 @@ namespace JQuant
             set;
         }
         
-        public bool AddSink(ISink<LimitOrderParameters> sink)
+        public bool AddConsumer(IConsumer<LimitOrderParameters> consumer)
         {
-            OrderListeners.Add(sink);
+            OrderListeners.Add(consumer);
             return true;
         }
 
-        public bool RemoveSink(JQuant.ISink<LimitOrderParameters> sink)
+        public bool RemoveConsumer(JQuant.IConsumer<LimitOrderParameters> consumer)
         {
-            OrderListeners.Remove(sink);
+            OrderListeners.Remove(consumer);
             return true;
         }
 
         int countOrders;
-        protected static List<ISink<LimitOrderParameters>> OrderListeners;
+        protected static List<IConsumer<LimitOrderParameters>> OrderListeners;
     }//class MaofOrderProducer
 }
