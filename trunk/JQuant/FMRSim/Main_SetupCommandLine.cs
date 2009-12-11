@@ -710,6 +710,40 @@ namespace JQuant
 
         }
 
+        protected void debugVerifierShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            System.Collections.ArrayList names;
+            System.Collections.ArrayList values;
+            int entry = 0;
+            int columnSize = 12;
+
+            bool isEmpty = true;
+
+            iWrite.WriteLine();
+
+            foreach (IResourceDataVerifier verifier in Resources.Verifiers)
+            {
+                verifier.GetEventCounters(out names, out values);
+                isEmpty = false;
+
+                if (entry == 0)
+                {
+                    names.Insert(0, "Name");
+                    CommandLineInterface.printTableHeader((JQuant.IWrite)this, names, columnSize);
+                }
+                values.Insert(0, OutputUtils.FormatField(verifier.Name, columnSize));
+                CommandLineInterface.printValues((JQuant.IWrite)this, values, columnSize);
+
+                entry++;
+
+            }
+            if (isEmpty)
+            {
+                iWrite.WriteLine("No verifiers");
+            }
+
+        }
+        
         protected void Timer5sHandler(ITimer timer)
         {
             Console.WriteLine("5s timer expired " + DateTime.Now);
@@ -1345,6 +1379,9 @@ namespace JQuant
             menuDebug.AddCommand("prodShow", "Show producers",
                                   " List of created producers", debugProducerShowCallback);
 
+            menuDebug.AddCommand("veriShow", "Show data verifiers",
+                                  " List of created data verifiers", debugVerifierShowCallback);
+            
             Menu menuTests = cli.RootMenu.AddMenu("tst", "Short tests",
                                    " Infrastructure/API tests");
 
