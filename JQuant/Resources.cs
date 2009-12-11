@@ -20,6 +20,8 @@ namespace JQuant
     {
         /// <summary>
         /// returns name of the resource
+        /// interface does not allow to define protected set operator
+        /// in the future i will replace this by method GetName() returning string. 
         /// </summary>
         string Name
         {
@@ -196,6 +198,7 @@ namespace JQuant
             TimerLists = new  List<IResourceTimerList>(5);
             ThreadPools = new System.Collections.ArrayList(2);
             Producers = new List<IResourceProducer>(5);
+            Verifiers = new List<IResourceDataVerifier>(10);
         }
 
         static public void Init()
@@ -236,6 +239,8 @@ namespace JQuant
 
         public static System.Collections.ArrayList ThreadPools;
 
+        public static List<IResourceDataVerifier> Verifiers;
+        
         static protected Resources r;
 
 
