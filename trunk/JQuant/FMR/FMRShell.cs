@@ -2323,4 +2323,27 @@ namespace FMRShell
         JQuant.JobQueue jobQueue;
     }// Class FmrPing
     #endregion
+
+    public class MarketDataVerifierMaof : SyncVerifierBool<MarketDataMaof>
+    {
+        public MarketDataVerifierMaof()
+            : base("MaofDataVerifier")
+        {
+        }
+        
+        public override bool Verify(MarketDataMaof data)
+        {
+            return true;
+        }
+        
+        public override void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
+        {
+            // call base class to get the basics
+            base.GetEventCounters(out names, out values);
+
+            // add Maof data specific fields
+        }
+        
+    }
+
 }//namespace
