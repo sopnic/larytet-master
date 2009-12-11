@@ -604,7 +604,7 @@ namespace FMRShell
     /// <summary>
     /// This is a producer (see IProducer) 
     /// Given Connection object will open data stream and notify registered 
-    /// data sinks (ISink)
+    /// data consumers (IConsumer)
     /// The class operates simultaneously in asynchronous and synchronous fashion. 
     /// The class installs an event listener by calling K300Class.K300StartStream
     /// Additonally class spawns a thread which does polling of the remote server 
@@ -612,7 +612,7 @@ namespace FMRShell
     /// consistent. 
     /// There is a tricky part. I want to make sure that the data which we get by 
     /// polling and via asynchronous API is the same. Collector uses for this purpose
-    /// a dedicated sink - thread which polls the servers and compares the received 
+    /// a dedicated consumer - thread which polls the servers and compares the received 
     /// data with the one sent to it by the collector
     /// </summary>
     public class Collector
@@ -621,27 +621,27 @@ namespace FMRShell
         {
             public DataProducer(string name, Type dataType)
             {
-                Listeners = new List<JQuant.ISink<MarketData>>(5);
+                Listeners = new List<JQuant.IConsumer<MarketData>>(5);
                 countEvents = 0;
                 Name = name;
                 marketData = (MarketDataHolder)System.Activator.CreateInstance(dataType);
             }
 
-            public override bool AddSink(JQuant.ISink<MarketData> sink)
+            public override bool AddConsumer(JQuant.IConsumer<MarketData> consumer)
             {
-                // Console.WriteLine("MadadListeners.Add(sink)");
+                // Console.WriteLine("MadadListeners.Add(consumer)");
                 lock (Listeners)
                 {
-                    Listeners.Add(sink);
+                    Listeners.Add(consumer);
                 }
                 return true;
             }
 
-            public override bool RemoveSink(JQuant.ISink<MarketData> sink)
+            public override bool RemoveConsumer(JQuant.IConsumer<MarketData> consumer)
             {
                 lock (Listeners)
                 {
-                    Listeners.Remove(sink);
+                    Listeners.Remove(consumer);
                 }
                 return true;
             }
@@ -676,16 +676,16 @@ namespace FMRShell
                 countEvents++;
 
 
-                // sink should not modify the data. sink has two options:
+                // consumer should not modify the data. consumer has two options:
                 // 1) handle the data in the context of the Collector thead
                 // 2) clone the data and and postopone the procesing (delegate to another thread)
-                // sink can not remove itself from the list in the context of Notify and will 
+                // consumer can not remove itself from the list in the context of Notify and will 
                 // spawn a separate thread to do the trick if required 
                 lock (Listeners)
                 {
-                    foreach (JQuant.ISink<MarketData> sink in Listeners)
+                    foreach (JQuant.IConsumer<MarketData> consumer in Listeners)
                     {
-                        sink.Notify(countEvents, marketData);
+                        consumer.Notify(countEvents, marketData);
                     }
                 }
             }
@@ -722,7 +722,7 @@ namespace FMRShell
             
             protected int countEvents;
             protected MarketDataHolder marketData;
-            protected List<JQuant.ISink<MarketData>> Listeners;
+            protected List<JQuant.IConsumer<MarketData>> Listeners;
         }
         
         public class MadadProducer : DataProducer
@@ -909,18 +909,18 @@ namespace FMRShell
     /// </summary>
     public class TradingDataLogger : AsyncLogger
     {
-        public class DataSink: ISink<MarketData>
+        public class DataConsumer: IConsumer<MarketData>
         {
-            public DataSink(TradingDataLogger dataLogger, IProducer<MarketData> producer)
+            public DataConsumer(TradingDataLogger dataLogger, IProducer<MarketData> producer)
             {
                 this.dataLogger = dataLogger;
                 this.producer = producer;
-                producer.AddSink(this);
+                producer.AddConsumer(this);
             }
 
             public void Stop()
             {
-                producer.RemoveSink(this);
+                producer.RemoveConsumer(this);
             }
 
             public void Notify(int count, MarketData data)
@@ -953,7 +953,7 @@ namespace FMRShell
         /// </param>
         /// <param name="collector">
         /// A <see cref="FMRShell.Collector"/>
-        /// Where to take data from - register sink
+        /// Where to take data from - register consumer
         /// </param>
         /// <param name="legend">
         /// A <see cref="System.String"/>
@@ -1016,7 +1016,7 @@ namespace FMRShell
                 }
 
                 // register myself in the data producer
-                this.dataSink = new DataSink(this, producer);
+                this.dataConsumer = new DataConsumer(this, producer);
 
 
                 // write legend at the top of the file
@@ -1061,7 +1061,7 @@ namespace FMRShell
         {
             base.Stop();
             
-            dataSink.Stop();
+            dataConsumer.Stop();
 
             if (fileStream != default(FileStream))
             {
@@ -1151,7 +1151,7 @@ namespace FMRShell
         }
 
         protected IProducer<MarketData> producer;    // data producer
-        protected DataSink dataSink;                 // where producer will put data 
+        protected DataConsumer dataConsumer;         // where producer will put data 
 
         bool append;
         FileStream fileStream;
@@ -1704,7 +1704,7 @@ namespace FMRShell
     /// </summary>
     public class MaofOrderFSM : MailboxThread<object>, IOrderProcessor
     {
-        public class OrderSink : ISink<LimitOrderParameters>
+        public class OrderSink : IConsumer<LimitOrderParameters>
         {
             /// <summary>
             /// Points to the <see cref="JQuant.Algorithm"/> class
@@ -1721,7 +1721,7 @@ namespace FMRShell
                 protected set;
             }
 
-            //implement ISink.Notify:
+            //implement IConsumer.Notify:
             public void Notify(int count, LimitOrderParameters LmtParms)
             {
                 OrderParams = LmtParms;
