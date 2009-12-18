@@ -1428,6 +1428,18 @@ namespace TaskBarLibSim
     }
 
 
+    /// <summary>
+    /// This is a simulation of the options Maof market. The class collects incoming events - events taken
+    /// from the historical data, keeps track of all strikes.
+    /// MarketSimulation compares pending orders with the market state and figures out if fill was possible
+    /// To make the whole exercise practical for the current phase I assume that incoming orders do not influence
+    /// the market. I assume that if buy order's bid is equal to the best Ask the probability of the fill is 1
+    /// </summary>
+    public class MarketSimulationMaof
+    {
+        
+    }
+
 
     /// <summary>
     /// I need some class where all apparently disconnected classes are connected
