@@ -809,12 +809,16 @@ namespace TaskBarLibSim
             this.filename = filename;
             ReadyToGo = false;
 
+            // create something like 02/03/2010 00:00:00.000
+            this.today = DateTime.Now;
+            today = today.AddHours(-today.Hour);
+            today = today.AddMinutes(-today.Minute);
+            today = today.AddSeconds(-today.Second);
+            today = today.AddMilliseconds(-today.Millisecond);
+            System.Console.WriteLine("today="+today.ToString());
+            
             System.Console.WriteLine("Simulation playback data from "+filename);
 
-            // initial delay is specified by the application
-            // all events are going to be shifted by this amount
-            this.delay = delay;
-            
             fileStream = default(FileStream);
             this.filename = filename;
             streamReader = default(StreamReader);
@@ -947,14 +951,9 @@ namespace TaskBarLibSim
             bool res;
             string str;
             data = default(DataType);
+            DateTime timeStamp = today;
 
             if (!ReadyToGo) return false;
-
-            // delay - usually delay will be in the GetData
-            // GetData reads log, pulls the time stamps and simulates
-            // timing of the real data stream
-            // delay is in microseconds
-            Thread.Sleep((int)(delay/1000));
 
             bool parseRes = false;
             
@@ -984,18 +983,19 @@ namespace TaskBarLibSim
                 // parse the string
                 // if i failed to parse read next line until eof or read error
                 // i just skip the bad line
-                parseRes = ParseLogString(str, out data);
+                parseRes = ParseLogString(str, out data, out timeStamp);
 
                 res = true;
             }
             while (!parseRes);
 
-
+            // i calculate the delay and wait
             if (res)
             {
-                // besides parsing I need delay to wait before next log entry 
-                delay = GetDelay(data);
+                DoDelay(timeStamp);
             }
+
+
 
             count += 1;
 
@@ -1003,7 +1003,28 @@ namespace TaskBarLibSim
 
         }
 
-        protected void SetDelay(long delay)
+        /// <summary>
+        /// Look the two consecutive time stamps. Calculate time span. 
+        /// If time spane is larger than MIN_DELAY call Thread.Sleep()
+        /// else accumulate the difference in the field delay
+        /// </summary>
+        private void DoDelay(DateTime timeStamp)
+        {
+            // update the delay
+
+
+            // calculate next sleep takig into account that the shortest possible
+            // sleep is MIN_DELAY
+            int ticks = delay/MIN_DELAY;
+            if (ticks > 0)
+            {
+                int sleep = ticks * MIN_DELAY;
+                Thread.Sleep(sleep);
+                delay -= sleep;
+            }
+        }
+
+        protected void SetDelay(int delay)
         {
             this.delay = delay;
         }
@@ -1013,14 +1034,7 @@ namespace TaskBarLibSim
             return count;
         }
 
-        protected abstract bool ParseLogString(string str, out DataType data);
-
-        /// <summary>
-        /// Important side kick - base class asks child class what is the delay before next
-        /// call to ParseLogString should be
-        /// </summary>
-        protected abstract long GetDelay(DataType data);
-        
+        protected abstract bool ParseLogString(string str, out DataType data, out DateTime timeStamp);
         protected abstract bool CheckFile(FileStream fileStream);
 
         /// <summary>
@@ -1032,17 +1046,26 @@ namespace TaskBarLibSim
         protected FieldInfo[] fields;
 
         /// <summary>
-        /// Delay in microseconds
+        /// Delay in milliseconds
         /// Called in GetData() to slow the things down
         /// Child class will call SetDelay() depending on the time stamps in the log
         /// </summary>
-        protected long delay;
+        protected int delay;
+
+        /// <summary>
+        /// There is difference between Linux and Windows regarding the minimum possible
+        /// delay in the call to Thread.Sleep()
+        /// This is not relevant at this point. I use the maximum between two - 15ms
+        /// </summary>
+        private const int MIN_DELAY = 15; // ms
         
         protected int count;
         protected FileStream fileStream;
         protected StreamReader streamReader;
         protected string filename;
 
+
+        protected DateTime today;
         protected bool ReadyToGo;
     }
 
@@ -1063,9 +1086,9 @@ namespace TaskBarLibSim
         /// </param>
         /// <param name="delay">
         /// A <see cref="System.Int32"/>
-        /// Initial delay before I start to send events in microseconds
+        /// Initial delay before I start to send events in milliseconds
         /// </param>
-        public MaofDataGeneratorLogFile(string filename, double speedup, long delay)
+        public MaofDataGeneratorLogFile(string filename, double speedup, int delay)
             : base(",", filename)
         {
             // set initial delay
@@ -1115,15 +1138,11 @@ namespace TaskBarLibSim
             return res;
         }
 
-        protected override long GetDelay(K300MaofType data)
-        {
-            return 0;
-        }
-        
-        protected override bool ParseLogString(string str, out K300MaofType data)
+        protected override bool ParseLogString(string str, out K300MaofType data, out DateTime timeStamp)
         {
             bool res = false;
             int commaIndex = 0;
+            timeStamp = today;
 
             // create a new object
             data = new K300MaofType();
@@ -1158,12 +1177,13 @@ namespace TaskBarLibSim
 
                 // the tricky part
                 // last two fields in the record - TimeStamp and Ticks were not parsed
-                // parse them now and calculate delay
-
-//                string timeStamp = getNextField(str, ref commaIndex);commaIndex++;
-//                string ticks = getNextField(str, ref commaIndex);commaIndex++;
-//                System.Console.WriteLine("timeStamp="+timeStamp);
-//                System.Console.WriteLine("ticks="+ticks);
+                // parse them now and convert to variable of type DateTime 
+                string timeStampStr;
+                res = getNextField(str, ref commaIndex, out timeStampStr);commaIndex++;
+                if (!res) {System.Console.WriteLine("Failed to fectch time stamp from "+str);System.Console.WriteLine("Expected at "+commaIndex);}
+                // string ticks = getNextField(str, ref commaIndex);commaIndex++;
+                // time stamp looks like 09:36:39.406
+                timeStamp = ParseTimeStamp(timeStampStr);
                 
                 res = true;
             }
@@ -1172,6 +1192,43 @@ namespace TaskBarLibSim
             return res;
         }
 
+
+        /// <summary>
+        /// Handle line like "09:36:39.406"
+        /// </summary>
+        private DateTime ParseTimeStamp(string s)
+        {
+            int idxColumn = 0, idxColumnPrev = 0;
+            
+            idxColumn = s.IndexOf(":", idxColumn);
+            if (idxColumn <= 0) System.Console.WriteLine("Failed to parse hours in the line "+s);
+            int hours = Int32.Parse(s.Substring(idxColumnPrev, idxColumn-idxColumnPrev));
+            idxColumnPrev = idxColumn;
+
+            idxColumn = s.IndexOf(":", idxColumn);
+            if (idxColumn <= 0) System.Console.WriteLine("Failed to parse minutes in the line "+s);
+            int minutes = Int32.Parse(s.Substring(idxColumnPrev, idxColumn-idxColumnPrev));
+            idxColumnPrev = idxColumn;
+
+            idxColumn = s.IndexOf(".", idxColumn);
+            if (idxColumn <= 0) System.Console.WriteLine("Failed to parse seconds in the line "+s);
+            int seconds = Int32.Parse(s.Substring(idxColumnPrev, idxColumn-idxColumnPrev));
+            idxColumnPrev = idxColumn;
+
+            // the rest is milliseconds
+            int milliseconds = Int32.Parse(s.Substring(idxColumnPrev, s.Length-idxColumnPrev-1));
+
+            // "today" looks like 02/03/2010 00:00:00.000
+            // in the future replace by call base.GetBaseTime() or something like this
+            DateTime dt = base.today;
+            dt = dt.AddHours(hours);
+            dt = dt.AddMinutes(minutes);
+            dt = dt.AddSeconds(seconds);
+            dt = dt.AddMilliseconds(milliseconds);
+
+            return dt;
+        }
+        
         protected override void SendEvents(ref K300MaofType data)
         {
             SimulationTop.k300EventsClass.SendEventMaof(ref data);
