@@ -1180,8 +1180,6 @@ namespace TaskBarLibSim
                 res = getNextField(str, ref commaIndex, out timeStampStr);commaIndex++;
                 if (!res) {System.Console.WriteLine("Failed to fectch time stamp from "+str);System.Console.WriteLine("Expected at "+commaIndex);}
                 // string ticks = getNextField(str, ref commaIndex);commaIndex++;
-                // time stamp looks like 09:36:39.406
-                // timeStamp = ParseTimeStamp(timeStampStr);
                 timeSpan = TimeSpan.Parse(timeStampStr);
 
                 res = true;
@@ -1191,39 +1189,6 @@ namespace TaskBarLibSim
             return res;
         }
 
-
-        /// <summary>
-        /// Handle line like "09:36:39.406"
-        /// </summary>
-        private TimeSpan ParseTimeStamp(string s)
-        {
-            int idxColumn = 0, idxColumnPrev = 0;
-            
-            idxColumn = s.IndexOf(":", idxColumn);
-            if (idxColumn <= 0) System.Console.WriteLine("Failed to parse hours in the line "+s);
-            int hours = Int32.Parse(s.Substring(idxColumnPrev, idxColumn-idxColumnPrev));
-            idxColumnPrev = idxColumn;
-
-            idxColumn = s.IndexOf(":", idxColumn);
-            if (idxColumn <= 0) System.Console.WriteLine("Failed to parse minutes in the line "+s);
-            int minutes = Int32.Parse(s.Substring(idxColumnPrev, idxColumn-idxColumnPrev));
-            idxColumnPrev = idxColumn;
-
-            idxColumn = s.IndexOf(".", idxColumn);
-            if (idxColumn <= 0) System.Console.WriteLine("Failed to parse seconds in the line "+s);
-            int seconds = Int32.Parse(s.Substring(idxColumnPrev, idxColumn-idxColumnPrev));
-            idxColumnPrev = idxColumn;
-
-            // the rest is milliseconds
-            int milliseconds = Int32.Parse(s.Substring(idxColumnPrev, s.Length-idxColumnPrev-1));
-
-            // "today" looks like 02/03/2010 00:00:00.000
-            // in the future replace by call base.GetBaseTime() or something like this
-            TimeSpan ts = TimeSpan.Parse(s);
-
-            return ts;
-        }
-        
         protected override void SendEvents(ref K300MaofType data)
         {
             SimulationTop.k300EventsClass.SendEventMaof(ref data);
