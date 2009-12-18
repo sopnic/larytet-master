@@ -809,13 +809,7 @@ namespace TaskBarLibSim
             this.filename = filename;
             ReadyToGo = false;
 
-            // create something like 02/03/2010 00:00:00.000
-            this.today = DateTime.Now;
-            today = today.AddHours(-today.Hour);
-            today = today.AddMinutes(-today.Minute);
-            today = today.AddSeconds(-today.Second);
-            today = today.AddMilliseconds(-today.Millisecond);
-            System.Console.WriteLine("today="+today.ToString());
+            lastTimeSpan = default(TimeSpan);
             
             System.Console.WriteLine("Simulation playback data from "+filename);
 
@@ -951,7 +945,7 @@ namespace TaskBarLibSim
             bool res;
             string str;
             data = default(DataType);
-            DateTime timeStamp = today;
+            TimeSpan timeSpan = lastTimeSpan;
 
             if (!ReadyToGo) return false;
 
@@ -983,7 +977,7 @@ namespace TaskBarLibSim
                 // parse the string
                 // if i failed to parse read next line until eof or read error
                 // i just skip the bad line
-                parseRes = ParseLogString(str, out data, out timeStamp);
+                parseRes = ParseLogString(str, out data, out timeSpan);
 
                 res = true;
             }
@@ -992,7 +986,7 @@ namespace TaskBarLibSim
             // i calculate the delay and wait
             if (res)
             {
-                DoDelay(timeStamp);
+                DoDelay(timeSpan);
             }
 
 
@@ -1008,12 +1002,17 @@ namespace TaskBarLibSim
         /// If time spane is larger than MIN_DELAY call Thread.Sleep()
         /// else accumulate the difference in the field delay
         /// </summary>
-        private void DoDelay(DateTime timeStamp)
+        private void DoDelay(TimeSpan timeSpan)
         {
-            // update the delay
+            // accumulate ellapsed time in the delay variable
+            if (lastTimeSpan != default(TimeSpan))
+            {
+                delay += (timeSpan - lastTimeSpan).Milliseconds;
+            }
+            lastTimeSpan = timeSpan;
 
 
-            // calculate next sleep takig into account that the shortest possible
+            // calculate next sleep taking into account that the shortest possible
             // sleep is MIN_DELAY
             int ticks = delay/MIN_DELAY;
             if (ticks > 0)
@@ -1034,7 +1033,7 @@ namespace TaskBarLibSim
             return count;
         }
 
-        protected abstract bool ParseLogString(string str, out DataType data, out DateTime timeStamp);
+        protected abstract bool ParseLogString(string str, out DataType data, out TimeSpan timeSpan);
         protected abstract bool CheckFile(FileStream fileStream);
 
         /// <summary>
@@ -1063,9 +1062,8 @@ namespace TaskBarLibSim
         protected FileStream fileStream;
         protected StreamReader streamReader;
         protected string filename;
+        private TimeSpan lastTimeSpan;
 
-
-        protected DateTime today;
         protected bool ReadyToGo;
     }
 
@@ -1138,11 +1136,11 @@ namespace TaskBarLibSim
             return res;
         }
 
-        protected override bool ParseLogString(string str, out K300MaofType data, out DateTime timeStamp)
+        protected override bool ParseLogString(string str, out K300MaofType data, out TimeSpan timeSpan)
         {
             bool res = false;
             int commaIndex = 0;
-            timeStamp = today;
+            timeSpan = TimeSpan.FromTicks(0);
 
             // create a new object
             data = new K300MaofType();
@@ -1183,8 +1181,9 @@ namespace TaskBarLibSim
                 if (!res) {System.Console.WriteLine("Failed to fectch time stamp from "+str);System.Console.WriteLine("Expected at "+commaIndex);}
                 // string ticks = getNextField(str, ref commaIndex);commaIndex++;
                 // time stamp looks like 09:36:39.406
-                timeStamp = ParseTimeStamp(timeStampStr);
-                
+                // timeStamp = ParseTimeStamp(timeStampStr);
+                timeSpan = TimeSpan.Parse(timeStampStr);
+
                 res = true;
             }
             while (false);
@@ -1196,7 +1195,7 @@ namespace TaskBarLibSim
         /// <summary>
         /// Handle line like "09:36:39.406"
         /// </summary>
-        private DateTime ParseTimeStamp(string s)
+        private TimeSpan ParseTimeStamp(string s)
         {
             int idxColumn = 0, idxColumnPrev = 0;
             
@@ -1220,13 +1219,9 @@ namespace TaskBarLibSim
 
             // "today" looks like 02/03/2010 00:00:00.000
             // in the future replace by call base.GetBaseTime() or something like this
-            DateTime dt = base.today;
-            dt = dt.AddHours(hours);
-            dt = dt.AddMinutes(minutes);
-            dt = dt.AddSeconds(seconds);
-            dt = dt.AddMilliseconds(milliseconds);
+            TimeSpan ts = TimeSpan.Parse(s);
 
-            return dt;
+            return ts;
         }
         
         protected override void SendEvents(ref K300MaofType data)
