@@ -797,6 +797,10 @@ namespace TaskBarLibSim
         private bool notStopped;
     }
 
+    /// <summary>
+    /// Use childs of this class, like MaofDataGeneratorLogFile
+    /// This class provides OpenFile-ReadLinesFromFile-CallAbstractParser-SendData services
+    /// </summary>
     public abstract class EventGeneratorPlayback<DataType> : EventGenerator<DataType>
     {
         protected EventGeneratorPlayback(string delimiter, string filename)
@@ -806,9 +810,10 @@ namespace TaskBarLibSim
             ReadyToGo = false;
 
             System.Console.WriteLine("Simulation playback data from "+filename);
-            // initial delay is 0 - start immediately
-            // fololowing delays will be taken from the log file
-            delay = 0;
+
+            // initial delay is specified by the application
+            // all events are going to be shifted by this amount
+            this.delay = delay;
             
             fileStream = default(FileStream);
             this.filename = filename;
@@ -816,7 +821,6 @@ namespace TaskBarLibSim
 
             Type t = typeof(DataType);
             fields = t.GetFields();
-            
             
             do
             {
@@ -839,7 +843,7 @@ namespace TaskBarLibSim
                     System.Console.WriteLine(e.ToString());
                 }
     
-                bool res = checkFile(fileStream);
+                bool res = CheckFile(fileStream);
                 if (!res) break;
                 
                 ReadyToGo = true;
@@ -858,7 +862,26 @@ namespace TaskBarLibSim
                 fileStream = default(FileStream);
             }
         }
-        
+
+        /// <summary>
+        /// Generic part of the log file parser - find next field in the line 
+        /// </summary>
+        /// <param name="src">
+        /// A <see cref="System.String"/>
+        /// Where to look for the field
+        /// </param>
+        /// <param name="from">
+        /// A <see cref="System.Int32"/>
+        /// Character to start to look from
+        /// </param>
+        /// <param name="field">
+        /// A <see cref="System.String"/>
+        /// Found field
+        /// </param>
+        /// <returns>
+        /// A <see cref="System.Boolean"/>
+        /// True if a field was found
+        /// </returns>
         protected bool getNextField(string src, ref int from, out string field)
         {
             
@@ -930,7 +953,8 @@ namespace TaskBarLibSim
             // delay - usually delay will be in the GetData
             // GetData reads log, pulls the time stamps and simulates
             // timing of the real data stream
-            Thread.Sleep(delay);
+            // delay is in microseconds
+            Thread.Sleep((int)(delay/1000));
 
             bool parseRes = false;
             
@@ -960,11 +984,18 @@ namespace TaskBarLibSim
                 // parse the string
                 // if i failed to parse read next line until eof or read error
                 // i just skip the bad line
-                parseRes = parseLogString(str, out data);
+                parseRes = ParseLogString(str, out data);
 
                 res = true;
             }
             while (!parseRes);
+
+
+            if (res)
+            {
+                // besides parsing I need delay to wait before next log entry 
+                delay = GetDelay(data);
+            }
 
             count += 1;
 
@@ -972,18 +1003,41 @@ namespace TaskBarLibSim
 
         }
 
+        protected void SetDelay(long delay)
+        {
+            this.delay = delay;
+        }
+
         public int GetCount()
         {
             return count;
         }
 
-        protected abstract bool parseLogString(string str, out DataType data);
-        protected abstract bool checkFile(FileStream fileStream);
+        protected abstract bool ParseLogString(string str, out DataType data);
 
+        /// <summary>
+        /// Important side kick - base class asks child class what is the delay before next
+        /// call to ParseLogString should be
+        /// </summary>
+        protected abstract long GetDelay(DataType data);
+        
+        protected abstract bool CheckFile(FileStream fileStream);
+
+        /// <summary>
+        /// for example a comma
+        /// used in the getNextField() 
+        /// </summary>
         private string delimiter;
         
         protected FieldInfo[] fields;
-        protected int delay;
+
+        /// <summary>
+        /// Delay in microseconds
+        /// Called in GetData() to slow the things down
+        /// Child class will call SetDelay() depending on the time stamps in the log
+        /// </summary>
+        protected long delay;
+        
         protected int count;
         protected FileStream fileStream;
         protected StreamReader streamReader;
@@ -997,7 +1051,6 @@ namespace TaskBarLibSim
     /// </summary>
     public class MaofDataGeneratorLogFile : EventGeneratorPlayback<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
     {
-        
         /// Log file to read the data from
         /// <param name="filename">
         /// A <see cref="System.String"/>
@@ -1008,16 +1061,23 @@ namespace TaskBarLibSim
         /// if speedup is 0.1 the play back will be slower by 10 times 
         /// A <see cref="System.Double"/>
         /// </param>
-        public MaofDataGeneratorLogFile(string filename, double speedup)
+        /// <param name="delay">
+        /// A <see cref="System.Int32"/>
+        /// Initial delay before I start to send events in microseconds
+        /// </param>
+        public MaofDataGeneratorLogFile(string filename, double speedup, long delay)
             : base(",", filename)
         {
+            // set initial delay
+            // first event will be sent only after the delay expires
+            base.SetDelay(delay);
         }
 
         ~MaofDataGeneratorLogFile()
         {
         }
 
-        protected override bool checkFile(FileStream fileStream)
+        protected override bool CheckFile(FileStream fileStream)
         {
             const string HEADER = "SUG_REC,TRADE_METH,BNO_Num,LAST_REC,SIDURI_Num,SYMBOL_E,Symbol,BNO_NAME_E,BNO_NAME,BRANCH_NO,BRANCH_U,SUG_BNO,MIN_UNIT,HARIG_NV,MIN_PR,MAX_PR,BASIS_PRC,BASIS_COD,STATUS_COD,EX_DATE,EX_PRC,VL_MULT,VL_COD,ZERO_COD,shlav,STATUS,TRD_STP_CD,TRD_STP_N,STP_OPN_TM,LMT_BY1,LMT_BY2,LMT_BY3,LMY_BY1_NV,LMY_BY2_NV,LMY_BY3_NV,RWR_FE,LMT_SL1,LMT_SL2,LMT_SL3,LMY_SL1_NV,LMY_SL2_NV,LMY_SL3_NV,RWR_FF,PRC,COD_PRC,SUG_PRC,LST_DF_BS,RWR_FG,LST_DL_PR,LST_DL_TM,LST_DL_VL,DAY_VL,DAY_VL_NIS,DAY_DIL_NO,RWR_FH,DAY_MAX_PR,DAY_MIN_PR,POS_OPN,POS_OPN_DF,STS_NXT_DY,UPD_DAT,UPD_TIME,FILER,TimeStamp,Ticks";
             
@@ -1055,7 +1115,12 @@ namespace TaskBarLibSim
             return res;
         }
 
-        protected override bool parseLogString(string str, out K300MaofType data)
+        protected override long GetDelay(K300MaofType data)
+        {
+            return 0;
+        }
+        
+        protected override bool ParseLogString(string str, out K300MaofType data)
         {
             bool res = false;
             int commaIndex = 0;
@@ -1072,6 +1137,10 @@ namespace TaskBarLibSim
                 foreach (FieldInfo fi in fields)
                 {
                     string fieldValue;
+
+                    // getNextField() is in the parent class
+                    // the method fetches next field in the line
+                    // this is where delimiter (in our case a comma) is important
                     res = getNextField(str, ref commaIndex, out fieldValue);
 
                     if (!res) break;

@@ -291,7 +291,7 @@ namespace JQuant
                 else
                 {
                     // create Maof data generator
-                    dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorLogFile(backlogfile, 1);
+                    dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorLogFile(backlogfile, 1, 0);
                 }
                 // setup the data generator(s) in the K300Class
                 TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
