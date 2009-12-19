@@ -110,8 +110,9 @@ namespace JQuant
         /// is better than mine
         /// (for sell - it's higher than my limit, 
         /// and for buy it's lower than mine)
+        /// Price is integer even (presented by cents, for example)
         /// </summary>
-        public double Price
+        public int Price
         {
             get;
             protected set;
@@ -159,7 +160,7 @@ namespace JQuant
     {
         DateTime Created
         {
-            get;        //note there is no public set here - it's determinid internally
+            get;        //note there is no public set here - it's determined internally
         }
 
         /// <summary>
