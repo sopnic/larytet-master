@@ -1429,15 +1429,225 @@ namespace TaskBarLibSim
 
 
     /// <summary>
+    /// Describes an asset, for example, TASE option
+    /// this class is used in the MarketSimulation
+    /// all prices are integers. If required in cents/agorots
+    /// </summary>
+    public class MarketData
+    {
+        public int BNO_Num;
+
+        // three best asks and bids - price and size
+        public int LMT_BY1;
+        public int LMT_BY2;
+        public int LMT_BY3;
+        public int LMY_BY1_NV;
+        public int LMY_BY2_NV;
+        public int LMY_BY3_NV;
+        public int LMT_SL1;
+        public int LMT_SL2;
+        public int LMT_SL3;
+        public int LMY_SL1_NV;
+        public int LMY_SL2_NV;
+        public int LMY_SL3_NV;
+
+        // last deal price and size
+        public int LST_DL_PR;
+        public int LST_DL_VL;
+    }
+    
+    /// <summary>
+    /// I work only with data containig BNO_Num field
+    /// </summary>
+    public class MarketSimulation<DataType> : JQuant.IConsumer<DataType>
+    {
+        protected class FSMState
+        {
+            DataType entry;
+            
+        }
+        
+        protected MarketSimulation(Type dataType, JQuant.IProducer<DataType> producer)
+        {
+            CheckDataType(dataType);
+            producer.AddConsumer(this);
+
+            field_BNO_Num = dataType.GetField("BNO_Num");
+            field_LMT_BY1 = dataType.GetField("LMT_BY1");
+            field_LMT_BY2 = dataType.GetField("LMT_BY2");
+            field_LMT_BY3 = dataType.GetField("LMT_BY3");
+            field_LMY_BY1_NV = dataType.GetField("LMY_BY1_NV");
+            field_LMY_BY2_NV = dataType.GetField("LMY_BY3_NV");
+            field_LMY_BY3_NV = dataType.GetField("LMY_BY3_NV");
+            field_LMT_SL1 = dataType.GetField("LMT_SL1");
+            field_LMT_SL2 = dataType.GetField("LMT_SL2");
+            field_LMT_SL3 = dataType.GetField("LMT_SL3");
+            field_LMY_SL1_NV = dataType.GetField("LMY_SL1_NV");
+            field_LMY_SL2_NV = dataType.GetField("LMY_SL2_NV");
+            field_LMY_SL3_NV = dataType.GetField("LMY_SL3_NV");
+            field_LST_DL_PR = dataType.GetField("LST_DL_PR");
+            field_LST_DL_VL = dataType.GetField("LST_DL_VL");
+
+
+            entries = new System.Collections.Hashtable(200);
+        }
+
+        private bool CheckDataType(Type dataType)
+        {
+            FieldInfo[] fields = dataType.GetFields();
+                
+            System.Collections.Hashtable hashtable = new System.Collections.Hashtable(30);
+            foreach (FieldInfo fi in fields)
+            {
+                string fieldName = fi.Name;
+                hashtable.Add(fieldName, fieldName);
+            }
+
+            string[] MANDATORY_FIELDS = {"BNO_Num","LMT_BY1","LMT_BY2","LMT_BY3","LMY_BY1_NV",
+                                        "LMY_BY2_NV","LMY_BY3_NV","LMT_SL1","LMT_SL2","LMT_SL3",
+                                        "LMY_SL1_NV","LMY_SL2_NV","MY_SL3_NV","LST_DL_PR","LST_DL_VL"};
+
+            bool res = true;
+            foreach (string s in MANDATORY_FIELDS)
+            {
+                if (!hashtable.Contains(s))
+                {
+                    System.Console.WriteLine("No mandatory field "+s+" in the type "+dataType.Name);
+                    res = false;
+                    break;
+                }
+            }
+            
+            return res;
+        }
+
+        /// <summary>
+        /// The method is being called by Event Generator
+        /// </summary>
+        public void Notify(int count, DataType data)
+        {
+            // do boxing - i want to be sure that this happens only once
+            object o = (object)data;
+
+            // create something better than a structure with strings
+            // i need integers to work with
+            MarketData marketData = RawDataToMarketData(o);
+            
+            // GetKey() will return (in the simplest case) BNO_number (boxed integer)
+            object key = GetKey(o);
+
+            // hopefully Item() will return null if there is no key in the hashtable
+            object entry = entries[key];
+            if (entry != null) // entry is in the table. this is most likely outcome 
+            {
+                UpdateEntry((MarketData)entry, marketData);
+            }
+            else // I see this entry (this BNO_number) very first time - add new entry to the hashtable
+            {
+                entries[key] = marketData;
+            }
+        }
+
+
+        /// <summary>
+        /// DataType is something like K300MaofType - lot of strings. The method will  convert
+        /// this into something convenient to work with.
+        /// </summary>
+        /// <param name="dt">
+        /// A <see cref="System.Object"/>
+        /// Object of type DataType
+        /// </param>
+        /// <returns>
+        /// A <see cref="MarketData"/>
+        /// New object containing integers like Price, best bid/ask, etc.
+        /// </returns>
+        protected MarketData RawDataToMarketData(object dt)
+        {
+            MarketData md = new MarketData();
+            
+            md.BNO_Num       = Int32.Parse((string)field_BNO_Num   .GetValue(dt));
+            md.LMT_BY1       = Int32.Parse((string)field_LMT_BY1   .GetValue(dt));
+            md.LMT_BY2       = Int32.Parse((string)field_LMT_BY2   .GetValue(dt));
+            md.LMT_BY3       = Int32.Parse((string)field_LMT_BY3   .GetValue(dt));
+            md.LMY_BY1_NV    = Int32.Parse((string)field_LMY_BY1_NV.GetValue(dt));
+            md.LMY_BY2_NV    = Int32.Parse((string)field_LMY_BY2_NV.GetValue(dt));
+            md.LMY_BY3_NV    = Int32.Parse((string)field_LMY_BY3_NV.GetValue(dt));
+            md.LMT_SL1       = Int32.Parse((string)field_LMT_SL1   .GetValue(dt));
+            md.LMT_SL2       = Int32.Parse((string)field_LMT_SL2   .GetValue(dt));
+            md.LMT_SL3       = Int32.Parse((string)field_LMT_SL3   .GetValue(dt));
+            md.LMY_SL1_NV    = Int32.Parse((string)field_LMY_SL1_NV.GetValue(dt));
+            md.LMY_SL2_NV    = Int32.Parse((string)field_LMY_SL2_NV.GetValue(dt));
+            md.LMY_SL3_NV    = Int32.Parse((string)field_LMY_SL3_NV.GetValue(dt));
+            md.LST_DL_PR     = Int32.Parse((string)field_LST_DL_PR .GetValue(dt));
+            md.LST_DL_VL     = Int32.Parse((string)field_LST_DL_VL .GetValue(dt));
+
+            return md;
+        }
+
+        /// <summary>
+        /// Returns key for the hashtable
+        /// The implemenation is trivial - return BNO_Num
+        /// </summary>
+        protected virtual object GetKey(object o)
+        {
+            // i know that data contains field "BNO_num" - no exceptions here
+            object BNO_Num = Int32.Parse((string)field_BNO_Num.GetValue(o));
+            return BNO_Num;
+        }
+
+
+        /// <summary>
+        /// If there is any pending (waiting execution) orders check if I can execute any,
+        /// shift the orders position in the queue, etc.
+        /// In all cases replace the current value with new one.
+        /// </summary>
+        /// <param name="md0">
+        /// A <see cref="MarketData"/>
+        /// Currently stored data
+        /// </param>
+        /// <param name="md1">
+        /// A <see cref="MarketData"/>
+        /// New data
+        /// </param>
+        protected void UpdateEntry(MarketData md0, MarketData md1)
+        {
+        }
+
+
+        /// <summary>
+        /// Collection of all traded symbols (different BNO_num for TASE) 
+        /// </summary>
+        protected System.Collections.Hashtable entries;
+        protected FieldInfo field_BNO_Num;
+        protected FieldInfo field_LMT_BY1;
+        protected FieldInfo field_LMT_BY2;
+        protected FieldInfo field_LMT_BY3;
+        protected FieldInfo field_LMY_BY1_NV;
+        protected FieldInfo field_LMY_BY2_NV;
+        protected FieldInfo field_LMY_BY3_NV;
+        protected FieldInfo field_LMT_SL1;
+        protected FieldInfo field_LMT_SL2;
+        protected FieldInfo field_LMT_SL3;
+        protected FieldInfo field_LMY_SL1_NV;
+        protected FieldInfo field_LMY_SL2_NV;
+        protected FieldInfo field_LMY_SL3_NV;
+        protected FieldInfo field_LST_DL_PR;
+        protected FieldInfo field_LST_DL_VL;
+    }
+
+    /// <summary>
     /// This is a simulation of the options Maof market. The class collects incoming events - events taken
     /// from the historical data, keeps track of all strikes.
     /// MarketSimulation compares pending orders with the market state and figures out if fill was possible
     /// To make the whole exercise practical for the current phase I assume that incoming orders do not influence
     /// the market. I assume that if buy order's bid is equal to the best Ask the probability of the fill is 1
     /// </summary>
-    public class MarketSimulationMaof
+    public class MarketSimulationMaof : MarketSimulation<K300MaofType>
     {
-        
+        public MarketSimulationMaof(JQuant.IProducer<K300MaofType> producer)
+            : base(typeof(K300MaofType), producer)
+        {
+        }
     }
 
 
