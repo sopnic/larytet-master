@@ -1,3 +1,4 @@
+
 using System;
 using System.Reflection;
 using System.Threading;
@@ -453,7 +454,7 @@ namespace TaskBarLibSim
                         madadStreamStarted = true;
                         break;
                     }
-                
+
                 default:
                     break;
             }
@@ -648,7 +649,7 @@ namespace TaskBarLibSim
         /// In the event of success 0 is returned from the function.</returns>
         public int Logout(int SessionId)
         {
-            bool success=true;
+            bool success = true;
             if (success) return 0;
             else return -1;
         }
@@ -657,16 +658,16 @@ namespace TaskBarLibSim
         /// <summary>
         /// Relays the customer number for the current taskbar configuration.
         /// </summary>
-        public virtual string Cust { get {return this._cust;}  }
-        
+        public virtual string Cust { get { return this._cust; } }
+
         /// <summary>
         /// 
         /// </summary>
         public virtual ConnectionState State { get { return this._cs; } }
 
-        public virtual string System { get {return this._system; }}
+        public virtual string System { get { return this._system; } }
 
-        public virtual string SystemName { get { return this._sysName;} }
+        public virtual string SystemName { get { return this._sysName; } }
 
 
         protected int _loginProgress;
@@ -677,8 +678,8 @@ namespace TaskBarLibSim
 
         protected string _cust = "aryeh";
         protected ConnectionState _cs;
-        protected string _system="TBSim";
-        protected string _sysName="TaskBarLibSim";
+        protected string _system = "TBSim";
+        protected string _sysName = "TaskBarLibSim";
 
     }
 
@@ -707,12 +708,12 @@ namespace TaskBarLibSim
             dt.ms = now.Millisecond;
 
             //An arbitrary value for latency
-            latency = random.Next(15, 2*1000);
+            latency = random.Next(15, 2 * 1000);
 
             countGetAS400DateTime++;
-            
+
             // produce failure from time to time
-            bool success = (random.Next(0,2) == 0);
+            bool success = (random.Next(0, 2) == 0);
             if (success) return 0;
             else return -1;
         }
@@ -720,7 +721,6 @@ namespace TaskBarLibSim
         protected static int countGetAS400DateTime;
         protected static Random random = new Random();
     }
-
 
 
     // From this line down - simulation relates classes which are part of the TaskBarLib API
@@ -809,9 +809,9 @@ namespace TaskBarLibSim
             this.filename = filename;
             ReadyToGo = false;
 
-            lastTimeSpan = default(TimeSpan);
-            
-            System.Console.WriteLine("Simulation playback data from "+filename);
+            baseTimeSpan = default(TimeSpan);
+
+            System.Console.WriteLine("Simulation playback data from " + filename);
 
             fileStream = default(FileStream);
             this.filename = filename;
@@ -819,7 +819,7 @@ namespace TaskBarLibSim
 
             Type t = typeof(DataType);
             fields = t.GetFields();
-            
+
             do
             {
                 try
@@ -829,7 +829,7 @@ namespace TaskBarLibSim
                 }
                 catch (IOException e)
                 {
-                    System.Console.WriteLine("Failed to open file "+filename);
+                    System.Console.WriteLine("Failed to open file " + filename);
                     if (fileStream != default(FileStream))
                     {
                         fileStream.Close();
@@ -840,15 +840,15 @@ namespace TaskBarLibSim
                     }
                     System.Console.WriteLine(e.ToString());
                 }
-    
+
                 bool res = CheckFile(fileStream);
                 if (!res) break;
-                
+
                 ReadyToGo = true;
             }
-            while (false);            
+            while (false);
         }
-        
+
         ~EventGeneratorPlayback()
         {
             // close the file I read from 
@@ -882,7 +882,7 @@ namespace TaskBarLibSim
         /// </returns>
         protected bool getNextField(string src, ref int from, out string field)
         {
-            
+
             bool res = false;
             field = "";
 
@@ -890,52 +890,52 @@ namespace TaskBarLibSim
             {
                 if (from < 0)
                 {
-                    System.Console.WriteLine("EventGeneratorPlayback::getNextField from="+from);
-                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position "+from + " line "+count);
-                    System.Console.WriteLine("Line="+src);
+                    System.Console.WriteLine("EventGeneratorPlayback::getNextField from=" + from);
+                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position " + from + " line " + count);
+                    System.Console.WriteLine("Line=" + src);
                     break;
                 }
 
-                
+
                 if (from > src.Length)
                 {
-                    System.Console.WriteLine("EventGeneratorPlayback::getNextField from="+from+" src.Length="+src.Length);
-                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position "+from + " line "+count);
-                    System.Console.WriteLine("Line="+src);
-                    break;                    
+                    System.Console.WriteLine("EventGeneratorPlayback::getNextField from=" + from + " src.Length=" + src.Length);
+                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position " + from + " line " + count);
+                    System.Console.WriteLine("Line=" + src);
+                    break;
                 }
-                
+
                 if (from == src.Length)
                 {
                     break;
                 }
-                
+
                 int to = src.IndexOf(delimiter, from);
-                
+
                 if (to < 0) // may be end of line ?
                 {
                     // fix the value - reference the char after end of line
                     to = src.Length;
                 }
-                
-                if (((to-1) >= from) && (from >= 0))
+
+                if (((to - 1) >= from) && (from >= 0))
                 {
-                    field = src.Substring(from, (to-from));
+                    field = src.Substring(from, (to - from));
                 }
                 else
                 {
-                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position "+from + " line "+count);
-                    System.Console.WriteLine("Line="+src);
+                    System.Console.WriteLine("Failed to find delimiter " + delimiter + " position " + from + " line " + count);
+                    System.Console.WriteLine("Line=" + src);
                     break;
                 }
-                
+
                 from = to;
                 if (from >= src.Length) from = src.Length;
 
-                res= true;
+                res = true;
             }
             while (false);
-                
+
 
             return res;
         }
@@ -945,22 +945,22 @@ namespace TaskBarLibSim
             bool res;
             string str;
             data = default(DataType);
-            TimeSpan timeSpan = lastTimeSpan;
+            TimeSpan timeSpan = baseTimeSpan;
 
             if (!ReadyToGo) return false;
 
             bool parseRes = false;
-            
+
             do
             {
                 res = false;
-                
+
                 if (streamReader.EndOfStream)
                 {
                     res = false;
                     break;
                 }
-                
+
                 // let's try to read
                 try
                 {
@@ -972,7 +972,7 @@ namespace TaskBarLibSim
                     System.Console.WriteLine(e.ToString());
                     res = false;
                     break;
-                }                
+                }
 
                 // parse the string
                 // if i failed to parse read next line until eof or read error
@@ -1004,22 +1004,26 @@ namespace TaskBarLibSim
         /// </summary>
         private void DoDelay(TimeSpan timeSpan)
         {
-            // accumulate ellapsed time in the delay variable
-            if (lastTimeSpan != default(TimeSpan))
+            // accumulate elapsed time in the delay variable
+            if (baseTimeSpan != default(TimeSpan))
             {
-                delay += (timeSpan - lastTimeSpan).Milliseconds;
+                delay = (int) (timeSpan - baseTimeSpan).TotalMilliseconds;
             }
-            lastTimeSpan = timeSpan;
-
+            else //baseTimeSpan = null
+            {
+                //set baseTimeSpan only once 
+                baseTimeSpan = timeSpan;
+            }
 
             // calculate next sleep taking into account that the shortest possible
             // sleep is MIN_DELAY
-            int ticks = delay/MIN_DELAY;
+            int ticks = delay / MIN_DELAY;
             if (ticks > 0)
             {
                 int sleep = ticks * MIN_DELAY;
                 Thread.Sleep(sleep);
-                delay -= sleep;
+                // move baseTimeSpan
+                baseTimeSpan.Add(TimeSpan.FromMilliseconds(delay));
             }
         }
 
@@ -1041,7 +1045,7 @@ namespace TaskBarLibSim
         /// used in the getNextField() 
         /// </summary>
         private string delimiter;
-        
+
         protected FieldInfo[] fields;
 
         /// <summary>
@@ -1057,12 +1061,12 @@ namespace TaskBarLibSim
         /// This is not relevant at this point. I use the maximum between two - 15ms
         /// </summary>
         private const int MIN_DELAY = 15; // ms
-        
+
         protected int count;
         protected FileStream fileStream;
         protected StreamReader streamReader;
         protected string filename;
-        private TimeSpan lastTimeSpan;
+        private TimeSpan baseTimeSpan;
 
         protected bool ReadyToGo;
     }
@@ -1100,13 +1104,14 @@ namespace TaskBarLibSim
 
         protected override bool CheckFile(FileStream fileStream)
         {
+            //Usual header (legend) for maof log:
             const string HEADER = "SUG_REC,TRADE_METH,BNO_Num,LAST_REC,SIDURI_Num,SYMBOL_E,Symbol,BNO_NAME_E,BNO_NAME,BRANCH_NO,BRANCH_U,SUG_BNO,MIN_UNIT,HARIG_NV,MIN_PR,MAX_PR,BASIS_PRC,BASIS_COD,STATUS_COD,EX_DATE,EX_PRC,VL_MULT,VL_COD,ZERO_COD,shlav,STATUS,TRD_STP_CD,TRD_STP_N,STP_OPN_TM,LMT_BY1,LMT_BY2,LMT_BY3,LMY_BY1_NV,LMY_BY2_NV,LMY_BY3_NV,RWR_FE,LMT_SL1,LMT_SL2,LMT_SL3,LMY_SL1_NV,LMY_SL2_NV,LMY_SL3_NV,RWR_FF,PRC,COD_PRC,SUG_PRC,LST_DF_BS,RWR_FG,LST_DL_PR,LST_DL_TM,LST_DL_VL,DAY_VL,DAY_VL_NIS,DAY_DIL_NO,RWR_FH,DAY_MAX_PR,DAY_MIN_PR,POS_OPN,POS_OPN_DF,STS_NXT_DY,UPD_DAT,UPD_TIME,FILER,TimeStamp,Ticks";
-            
+
             bool res = false;
             string str;
             do
             {
-                
+
                 // let's try to read
                 try
                 {
@@ -1114,7 +1119,7 @@ namespace TaskBarLibSim
                 }
                 catch (IOException e)
                 {
-                    System.Console.WriteLine("Failed to read file "+filename);
+                    System.Console.WriteLine("Failed to read file " + filename);
                     System.Console.WriteLine(e.ToString());
                     break;
                 }
@@ -1122,9 +1127,9 @@ namespace TaskBarLibSim
                 // first line is legend
                 if (str.IndexOf(HEADER) != 0)
                 {
-                    System.Console.WriteLine("First line match failed in the file "+filename);
-                    System.Console.WriteLine("Expected "+HEADER);
-                    System.Console.WriteLine("Read "+str);
+                    System.Console.WriteLine("First line match failed in the file " + filename);
+                    System.Console.WriteLine("Expected " + HEADER);
+                    System.Console.WriteLine("Read " + str);
                     break;
                 }
 
@@ -1147,7 +1152,7 @@ namespace TaskBarLibSim
 
             // boxing of the structure
             object o = (object)data;
-            
+
             do
             {
                 // set all fields in the object
@@ -1161,10 +1166,10 @@ namespace TaskBarLibSim
                     res = getNextField(str, ref commaIndex, out fieldValue);
 
                     if (!res) break;
-                    
+
                     // commaIndex_1 points to comma
                     commaIndex++;
-                    
+
                     fi.SetValue(o, fieldValue);
                 }
 
@@ -1177,8 +1182,13 @@ namespace TaskBarLibSim
                 // last two fields in the record - TimeStamp and Ticks were not parsed
                 // parse them now and convert to variable of type DateTime 
                 string timeStampStr;
-                res = getNextField(str, ref commaIndex, out timeStampStr);commaIndex++;
-                if (!res) {System.Console.WriteLine("Failed to fectch time stamp from "+str);System.Console.WriteLine("Expected at "+commaIndex);}
+                res = getNextField(str, ref commaIndex, out timeStampStr);
+                commaIndex++;
+                if (!res)
+                {
+                    System.Console.WriteLine("Failed to fectch time stamp from " + str);
+                    System.Console.WriteLine("Expected at " + commaIndex);
+                }
                 // string ticks = getNextField(str, ref commaIndex);commaIndex++;
                 timeSpan = TimeSpan.Parse(timeStampStr);
 
@@ -1192,7 +1202,7 @@ namespace TaskBarLibSim
         protected override void SendEvents(ref K300MaofType data)
         {
             SimulationTop.k300EventsClass.SendEventMaof(ref data);
-            
+
             // avoid tight loops in the system
             Thread.Sleep(0);
         }
@@ -1203,7 +1213,7 @@ namespace TaskBarLibSim
         }
     }
 
-    
+
     /// <summary>
     /// this is a thread generating 
     /// very simple all fields are random Maof data generator
@@ -1249,7 +1259,7 @@ namespace TaskBarLibSim
             data.SUG_REC = "SUG_REC";
             data.FILER = "FILER";
             data.BNO_NAME = "Maof";
-            
+
 
             count += 1;
 
@@ -1400,7 +1410,7 @@ namespace TaskBarLibSim
             data.BNO_N = "Madad";
 
             count += 1;
-            
+
             return true;
         }
 
@@ -1454,8 +1464,12 @@ namespace TaskBarLibSim
         // last deal price and size
         public int LST_DL_PR;
         public int LST_DL_VL;
+
+        //Aggregate trading data
+        public int DAY_VL;
+        public int DAY_DIL_NO;
     }
-    
+
     /// <summary>
     /// I work only with data containig BNO_Num field
     /// </summary>
@@ -1463,10 +1477,10 @@ namespace TaskBarLibSim
     {
         protected class FSMState
         {
-            DataType entry;
-            
+            DataType security;
+
         }
-        
+
         protected MarketSimulation(Type dataType, JQuant.IProducer<DataType> producer)
         {
             CheckDataType(dataType);
@@ -1487,15 +1501,16 @@ namespace TaskBarLibSim
             field_LMY_SL3_NV = dataType.GetField("LMY_SL3_NV");
             field_LST_DL_PR = dataType.GetField("LST_DL_PR");
             field_LST_DL_VL = dataType.GetField("LST_DL_VL");
+            field_DAY_VL = dataType.GetField("DAY_VL");
+            field_DAY_DIL_NO = dataType.GetField("DAY_DIL_NO");
 
-
-            entries = new System.Collections.Hashtable(200);
+            securities = new System.Collections.Hashtable(200);
         }
 
         private bool CheckDataType(Type dataType)
         {
             FieldInfo[] fields = dataType.GetFields();
-                
+
             System.Collections.Hashtable hashtable = new System.Collections.Hashtable(30);
             foreach (FieldInfo fi in fields)
             {
@@ -1503,21 +1518,21 @@ namespace TaskBarLibSim
                 hashtable.Add(fieldName, fieldName);
             }
 
-            string[] MANDATORY_FIELDS = {"BNO_Num","LMT_BY1","LMT_BY2","LMT_BY3","LMY_BY1_NV",
-                                        "LMY_BY2_NV","LMY_BY3_NV","LMT_SL1","LMT_SL2","LMT_SL3",
-                                        "LMY_SL1_NV","LMY_SL2_NV","MY_SL3_NV","LST_DL_PR","LST_DL_VL"};
+            string[] MANDATORY_FIELDS = {"BNO_Num","LMT_BY1","LMT_BY2","LMT_BY3","LMY_BY1_NV","LMY_BY2_NV","LMY_BY3_NV",
+                                        "LMT_SL1","LMT_SL2","LMT_SL3","LMY_SL1_NV","LMY_SL2_NV","LMY_SL3_NV",
+                                        "LST_DL_PR","LST_DL_VL","DAY_VL","DAY_DIL_NO"};
 
             bool res = true;
             foreach (string s in MANDATORY_FIELDS)
             {
                 if (!hashtable.Contains(s))
                 {
-                    System.Console.WriteLine("No mandatory field "+s+" in the type "+dataType.Name);
+                    System.Console.WriteLine("No mandatory field " + s + " in the type " + dataType.Name);
                     res = false;
                     break;
                 }
             }
-            
+
             return res;
         }
 
@@ -1532,19 +1547,19 @@ namespace TaskBarLibSim
             // create something better than a structure with strings
             // i need integers to work with
             MarketData marketData = RawDataToMarketData(o);
-            
+
             // GetKey() will return (in the simplest case) BNO_number (boxed integer)
             object key = GetKey(o);
 
             // hopefully Item() will return null if there is no key in the hashtable
-            object entry = entries[key];
-            if (entry != null) // entry is in the table. this is most likely outcome 
+            object security = securities[key];
+            if (security != null) // security is in the table. this is most likely outcome 
             {
-                UpdateEntry((MarketData)entry, marketData);
+                UpdateSecurity((MarketData)security, marketData);
             }
-            else // I see this entry (this BNO_number) very first time - add new entry to the hashtable
+            else // I see this security (this BNO_number) very first time - add new entry to the hashtable
             {
-                entries[key] = marketData;
+                securities[key] = marketData;
             }
         }
 
@@ -1564,22 +1579,24 @@ namespace TaskBarLibSim
         protected MarketData RawDataToMarketData(object dt)
         {
             MarketData md = new MarketData();
-            
-            md.BNO_Num       = Int32.Parse((string)field_BNO_Num   .GetValue(dt));
-            md.LMT_BY1       = Int32.Parse((string)field_LMT_BY1   .GetValue(dt));
-            md.LMT_BY2       = Int32.Parse((string)field_LMT_BY2   .GetValue(dt));
-            md.LMT_BY3       = Int32.Parse((string)field_LMT_BY3   .GetValue(dt));
-            md.LMY_BY1_NV    = Int32.Parse((string)field_LMY_BY1_NV.GetValue(dt));
-            md.LMY_BY2_NV    = Int32.Parse((string)field_LMY_BY2_NV.GetValue(dt));
-            md.LMY_BY3_NV    = Int32.Parse((string)field_LMY_BY3_NV.GetValue(dt));
-            md.LMT_SL1       = Int32.Parse((string)field_LMT_SL1   .GetValue(dt));
-            md.LMT_SL2       = Int32.Parse((string)field_LMT_SL2   .GetValue(dt));
-            md.LMT_SL3       = Int32.Parse((string)field_LMT_SL3   .GetValue(dt));
-            md.LMY_SL1_NV    = Int32.Parse((string)field_LMY_SL1_NV.GetValue(dt));
-            md.LMY_SL2_NV    = Int32.Parse((string)field_LMY_SL2_NV.GetValue(dt));
-            md.LMY_SL3_NV    = Int32.Parse((string)field_LMY_SL3_NV.GetValue(dt));
-            md.LST_DL_PR     = Int32.Parse((string)field_LST_DL_PR .GetValue(dt));
-            md.LST_DL_VL     = Int32.Parse((string)field_LST_DL_VL .GetValue(dt));
+
+            md.BNO_Num = Int32.Parse((string)field_BNO_Num.GetValue(dt));
+            md.LMT_BY1 = Int32.Parse((string)field_LMT_BY1.GetValue(dt));
+            md.LMT_BY2 = Int32.Parse((string)field_LMT_BY2.GetValue(dt));
+            md.LMT_BY3 = Int32.Parse((string)field_LMT_BY3.GetValue(dt));
+            md.LMY_BY1_NV = Int32.Parse((string)field_LMY_BY1_NV.GetValue(dt));
+            md.LMY_BY2_NV = Int32.Parse((string)field_LMY_BY2_NV.GetValue(dt));
+            md.LMY_BY3_NV = Int32.Parse((string)field_LMY_BY3_NV.GetValue(dt));
+            md.LMT_SL1 = Int32.Parse((string)field_LMT_SL1.GetValue(dt));
+            md.LMT_SL2 = Int32.Parse((string)field_LMT_SL2.GetValue(dt));
+            md.LMT_SL3 = Int32.Parse((string)field_LMT_SL3.GetValue(dt));
+            md.LMY_SL1_NV = Int32.Parse((string)field_LMY_SL1_NV.GetValue(dt));
+            md.LMY_SL2_NV = Int32.Parse((string)field_LMY_SL2_NV.GetValue(dt));
+            md.LMY_SL3_NV = Int32.Parse((string)field_LMY_SL3_NV.GetValue(dt));
+            md.LST_DL_PR = Int32.Parse((string)field_LST_DL_PR.GetValue(dt));
+            md.LST_DL_VL = Int32.Parse((string)field_LST_DL_VL.GetValue(dt));
+            md.DAY_VL = Int32.Parse((string)field_DAY_VL.GetValue(dt));
+            md.DAY_DIL_NO = Int32.Parse((string)field_DAY_DIL_NO.GetValue(dt));
 
             return md;
         }
@@ -1590,7 +1607,7 @@ namespace TaskBarLibSim
         /// </summary>
         protected virtual object GetKey(object o)
         {
-            // i know that data contains field "BNO_num" - no exceptions here
+            // i know that data contains field "BNO_Num" - no exceptions here
             object BNO_Num = Int32.Parse((string)field_BNO_Num.GetValue(o));
             return BNO_Num;
         }
@@ -1609,7 +1626,7 @@ namespace TaskBarLibSim
         /// A <see cref="MarketData"/>
         /// New data
         /// </param>
-        protected void UpdateEntry(MarketData md0, MarketData md1)
+        protected void UpdateSecurity(MarketData md0, MarketData md1)
         {
         }
 
@@ -1617,7 +1634,7 @@ namespace TaskBarLibSim
         /// <summary>
         /// Collection of all traded symbols (different BNO_num for TASE) 
         /// </summary>
-        protected System.Collections.Hashtable entries;
+        protected System.Collections.Hashtable securities;
         protected FieldInfo field_BNO_Num;
         protected FieldInfo field_LMT_BY1;
         protected FieldInfo field_LMT_BY2;
@@ -1633,6 +1650,8 @@ namespace TaskBarLibSim
         protected FieldInfo field_LMY_SL3_NV;
         protected FieldInfo field_LST_DL_PR;
         protected FieldInfo field_LST_DL_VL;
+        protected FieldInfo field_DAY_VL;
+        protected FieldInfo field_DAY_DIL_NO;
     }
 
     /// <summary>
@@ -1663,4 +1682,4 @@ namespace TaskBarLibSim
         public static K300Class k300Class;
     }
 
-}
+}//namespace TaskBarLibSim

@@ -185,8 +185,4 @@ namespace JQuant
     #endregion
 
 
-}//namespace
-
-
-
-
+}//namespace JQuant

@@ -16,7 +16,7 @@ namespace JQuant
     /// thread exists
     /// </summary>
     public delegate void JobDone(object argument);
-    
+
     /// <summary>
     /// Similar to the System.Threading.ThreadPool
     /// Every subsystem can create it's own pool of threads with specified number of
@@ -88,10 +88,10 @@ namespace JQuant
             countDone = 0;
             countMaxJobs = 0;
             countRunningThreads = 0;
-            
+
             jobThreads = new Stack<JobThread>(threads);
             runningThreads = new List<JobThread>(threads);
-            for (int i = 0;i < threads;i++)
+            for (int i = 0; i < threads; i++)
             {
                 JobThread jobThread = new JobThread(this, priority);
                 jobThreads.Push(jobThread);
@@ -99,16 +99,16 @@ namespace JQuant
 
             pendingJobs = new Queue<JobParams>(this.Jobs);
             freeJobs = new Stack<JobParams>(this.Jobs);
-            for (int i = 0;i < this.Jobs;i++)
+            for (int i = 0; i < this.Jobs; i++)
             {
                 JobParams jobParams = new JobParams();
                 freeJobs.Push(jobParams);
             }
-            
+
             // add myself to the list of created thread pools
             Resources.ThreadPools.Add(this);
         }
-        
+
         /// <summary>
         /// Call this method to destroy the object
         /// </summary>
@@ -124,7 +124,7 @@ namespace JQuant
                 {
                     jobThread.Dispose();
                 }
-                
+
                 // clean the list of running threads
                 foreach (JobThread jobThread in runningThreads)
                 {
@@ -132,12 +132,12 @@ namespace JQuant
                 }
             }
         }
-        
+
         ~ThreadPool()
         {
             Console.WriteLine("ThreadPool " + Name + " destroyed");
         }
-        
+
         /// <summary>
         /// Executes job in a thread, calls jobDone after the job done
         /// </summary>
@@ -160,7 +160,7 @@ namespace JQuant
             bool result = false;
             JobParams jobParams = default(JobParams);
             bool shouldSpawnJob;
-            
+
             do
             {
                 // allocate job params blocks
@@ -171,7 +171,7 @@ namespace JQuant
                         jobParams = freeJobs.Pop();
                         jobParams.Init(job, jobDone, jobArgument);
                         pendingJobs.Enqueue(jobParams);
-                        
+
                         // just to be sure that there is a thread to serve the new 
                         // job allocate a free thread (if there is any)
                         shouldSpawnJob = (countRunningThreads == 0);
@@ -184,18 +184,18 @@ namespace JQuant
                     {
                         System.Console.WriteLine("Failed to place a job");
                         break;
-                    }                        
+                    }
                 }
-                
+
                 if (shouldSpawnJob)
                 {
                     RefreshQueue();
                 }
-                    
+
                 result = true;
             }
             while (false);
-            
+
             return result;
         }
 
@@ -210,7 +210,7 @@ namespace JQuant
             do
             {
                 shouldSpawnJob = (countRunningThreads == 0);
- 
+
                 // there are some running threads
                 // I can get out - one of the running threads will serve
                 // queue of pending jobs
@@ -218,7 +218,7 @@ namespace JQuant
                 {
                     break;
                 }
-            
+
                 lock (jobThreads)
                 {
                     if (jobThreads.Count > 0)
@@ -242,7 +242,7 @@ namespace JQuant
                 {
                     countFailedRefreshQueue++;
                 }
-                
+
                 // i have to wait. there are no available threads and no thread is
                 // running. should not be too long before a thread finishes
                 Thread.Sleep(1);
@@ -300,33 +300,33 @@ namespace JQuant
                 countRunningThreads--;
             }
         }
-        
+
         public string Name
         {
             get;
             set;
         }
-        
+
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
             names = new System.Collections.ArrayList(12);
             values = new System.Collections.ArrayList(12);
 
 
-            names.Add("Threads");values.Add(Threads);
-            names.Add("Jobs");values.Add(Jobs);
-            names.Add("MinThreadsFree");values.Add(MinThreadsFree);
-            names.Add("MaxJobs");values.Add(countMaxJobs);
-            names.Add("Start");values.Add(countStart);
-            names.Add("Done");values.Add(countDone);
-            names.Add("RunningThreads");values.Add(countRunningThreads);
-            names.Add("PlacedJobs");values.Add(countPlacedJobs);
-            names.Add("PendingJobs");values.Add(countPendingJobs);
-            names.Add("RunningJobs");values.Add(countRunningJobs);
-            names.Add("FailedPlaceJob");values.Add(countFailedPlaceJob);
-            names.Add("FailedRefreshQueue");values.Add(countFailedRefreshQueue);
+            names.Add("Threads"); values.Add(Threads);
+            names.Add("Jobs"); values.Add(Jobs);
+            names.Add("MinThreadsFree"); values.Add(MinThreadsFree);
+            names.Add("MaxJobs"); values.Add(countMaxJobs);
+            names.Add("Start"); values.Add(countStart);
+            names.Add("Done"); values.Add(countDone);
+            names.Add("RunningThreads"); values.Add(countRunningThreads);
+            names.Add("PlacedJobs"); values.Add(countPlacedJobs);
+            names.Add("PendingJobs"); values.Add(countPendingJobs);
+            names.Add("RunningJobs"); values.Add(countRunningJobs);
+            names.Add("FailedPlaceJob"); values.Add(countFailedPlaceJob);
+            names.Add("FailedRefreshQueue"); values.Add(countFailedRefreshQueue);
         }
-        
+
         protected int Threads;
         protected int Jobs;
         protected int MinThreadsFree;
@@ -351,27 +351,27 @@ namespace JQuant
             {
                 Init();
             }
-            
+
             public void Init(Job job, JobDone jobDone, object jobArgument)
             {
                 this.job = job;
                 this.jobDone = jobDone;
                 this.jobArgument = jobArgument;
             }
-            
+
             public void Init()
             {
                 this.job = null;
                 this.jobDone = null;
                 this.jobArgument = null;
             }
-            
+
             public Job job;
             public JobDone jobDone;
             public object jobArgument;
         }
-        
-        protected class JobThread: IDisposable
+
+        protected class JobThread : IDisposable
         {
             public JobThread(ThreadPool threadPool, System.Threading.ThreadPriority priority)
             {
@@ -391,7 +391,7 @@ namespace JQuant
             {
                 semaphore.Release();
             }
-            
+
             /// <summary>
             /// Call this method to destroy the object
             /// </summary>
@@ -419,7 +419,7 @@ namespace JQuant
                     do
                     {
                         JobParams jobParams = default(JobParams);
-                        
+
                         lock (threadPool.pendingJobs)
                         {
                             if (threadPool.pendingJobs.Count > 0)
@@ -427,19 +427,19 @@ namespace JQuant
                                 jobParams = threadPool.pendingJobs.Dequeue();
                             }
                         }
-    
+
                         if (jobParams != default(JobParams))
                         {
                             threadPool.JobEnter();
 
                             // execute the job
                             ServeJob(jobParams);
-                            
+
                             // inform ThreadPool that the job is done
                             threadPool.JobDone(jobParams);
-                            
+
                             // let the tread pool know that i probably done checking the queue
-                            threadPool.JobExit();                            
+                            threadPool.JobExit();
                         }
                         else // no more pending jobs in the queue
                         {
@@ -448,11 +448,11 @@ namespace JQuant
                         }
                     }
                     while (true);
-                    
+
                     // inform ThreadPool that there is nothing to do
-                    threadPool.JobThreadDone(this);                
+                    threadPool.JobThreadDone(this);
                 }
-                
+
                 semaphore.Close();
             }
 
@@ -461,7 +461,7 @@ namespace JQuant
                 IsRunning = true;
 
                 object jobArgument = jobParams.jobArgument;
-                
+
                 // execute the job and notify the application
                 // on execution
                 jobParams.job(ref jobArgument);
@@ -499,7 +499,7 @@ namespace JQuant
     /// 
     /// </summary>
     public class JobQueue : MailboxThread<JobQueueParams>, IResourceJobQueue
-    {        
+    {
         public JobQueue(string name, int size)
             : this(name, size, System.Threading.ThreadPriority.Lowest)
         {
@@ -554,7 +554,7 @@ namespace JQuant
             JobQueueParams jobParams = new JobQueueParams(job, jobDone, jobArgument);
 
             bool result = Send(jobParams);
-            
+
             return result;
         }
 
@@ -563,10 +563,10 @@ namespace JQuant
             JobQueueParams jobParams = new JobQueueParams(job, null, jobArgument);
 
             bool result = Send(jobParams);
-            
+
             return result;
         }
-        
+
         protected override void HandleMessage(JobQueueParams jobParams)
         {
             jobParams.job(ref jobParams.jobArgument);
@@ -584,30 +584,29 @@ namespace JQuant
         {
             Init();
         }
-        
+
         public JobQueueParams(Job job, JobDone jobDone, object jobArgument)
         {
             Init(job, jobDone, jobArgument);
         }
-        
+
         public void Init(Job job, JobDone jobDone, object jobArgument)
         {
             this.job = job;
             this.jobDone = jobDone;
             this.jobArgument = jobArgument;
         }
-        
+
         public void Init()
         {
             this.job = null;
             this.jobDone = null;
             this.jobArgument = null;
         }
-        
+
         public Job job;
         public JobDone jobDone;
         public object jobArgument;
     }
-    
-    
-}
+
+}//namespace JQuant

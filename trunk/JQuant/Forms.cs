@@ -166,4 +166,4 @@ namespace JQuantForms
         protected const int HISTORY_SIZE = 100;
     }
 
-}
+}//namespace JQuantForms

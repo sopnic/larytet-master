@@ -48,7 +48,7 @@ namespace JQuant
             _orderParams.TransType = _trType;
         }
 
-        LimitOrderParameters _orderParams; 
+        LimitOrderParameters _orderParams;
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ namespace JQuant
             {
                 //do the work - implement the algorithm's logic
                 trade = TrAlgo.SomeDoTheJob();
-                
+
                 // once the algorithm has reached the decision to trade,
                 // initialize all the OrderEvemntArgs data:
 
@@ -169,7 +169,7 @@ namespace JQuant
         }
     }
 
-    
+
 
 
     /// <summary>
@@ -214,7 +214,7 @@ namespace JQuant
             get;
             set;
         }
-        
+
         public bool AddConsumer(IConsumer<LimitOrderParameters> consumer)
         {
             OrderListeners.Add(consumer);

@@ -6,7 +6,7 @@ namespace JQuant
     public interface ICriticalSection
     {
         void Enter();
-        void Exit();   
+        void Exit();
     }
 
     /// <summary>
@@ -18,10 +18,10 @@ namespace JQuant
         public void Enter()
         {
         }
-        
+
         public void Exit()
         {
-        }       
+        }
     }
 
     /// <summary>
@@ -36,37 +36,37 @@ namespace JQuant
             Name = name;
             count = 0;
         }
-        
+
         public void Enter()
         {
             if (count > 0)
             {
-                Console.WriteLine("Lock "+Name+" is taken more than once count="+count);
+                Console.WriteLine("Lock " + Name + " is taken more than once count=" + count);
                 count = 0;
             }
             count++;
         }
-        
+
         public void Exit()
         {
             if (count < 1)
             {
-                Console.WriteLine("Lock "+Name+" is freed more than once count="+count);
+                Console.WriteLine("Lock " + Name + " is freed more than once count=" + count);
                 count = 1;
             }
             count--;
         }
-        
+
         public string Name
         {
             get;
             protected set;
         }
 
-        
+
         protected int count;
     }
-    
+
 
     /// <summary>
     /// use System.Threading.Monitor API (similar to lock)
@@ -78,13 +78,13 @@ namespace JQuant
         {
             this.lockObject = lockObject;
         }
-        
+
         public new void Enter()
         {
             System.Threading.Monitor.Enter(lockObject);
             base.Enter();
         }
-        
+
         public new void Exit()
         {
             base.Exit();
@@ -104,19 +104,19 @@ namespace JQuant
             : base(name)
         {
         }
-            
+
 
         public new void Enter()
         {
             System.Threading.Monitor.Enter(this);
             base.Enter();
         }
-        
+
         public new void Exit()
         {
             base.Exit();
             System.Threading.Monitor.Exit(this);
         }
     }
-    
-}
+
+}//namespace JQuant

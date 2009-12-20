@@ -118,7 +118,7 @@ namespace JQuant
                 LogRezef(iWrite);
                 LogMadad(iWrite);
             }
-            else  if (cmdArguments.Length == 2)   // start one specified log
+            else if (cmdArguments.Length == 2)   // start one specified log
             {
                 switch (cmdArguments[1].ToString().ToLower())
                 {
@@ -139,7 +139,7 @@ namespace JQuant
                         break;
                 }
             }
-            else  if (cmdArguments.Length == 3)   // start a specified log
+            else if (cmdArguments.Length == 3)   // start a specified log
             {                                     // using playback data generator in simulation mode
                 switch (cmdArguments[1].ToString().ToLower())
                 {
@@ -155,7 +155,7 @@ namespace JQuant
                 }
             }
         }
-        
+
         protected void LogMaof(IWrite iWrite)
         {
             LogMaof(iWrite, null);
@@ -316,7 +316,7 @@ namespace JQuant
 #endif
 
             // Check that there is no data collector created already
-            Console.WriteLine("DT= " + dt.ToString() + " ("+(int)dt+")");
+            Console.WriteLine("DT= " + dt.ToString() + " (" + (int)dt + ")");
             if (DataCollector == null)
             {
                 // create Collector (producer) - will do it only once
@@ -324,24 +324,24 @@ namespace JQuant
             }
 
             // create logger which will register itself (AddSink) in the collector
-            FMRShell.TradingDataLogger dataLogger =  default(FMRShell.TradingDataLogger);
+            FMRShell.TradingDataLogger dataLogger = default(FMRShell.TradingDataLogger);
             if (dt == FMRShell.DataType.Maof)
             {
-                    dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false, 
-                    DataCollector.maofProducer, new FMRShell.MarketDataMaof().Legend);
+                dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false,
+                DataCollector.maofProducer, new FMRShell.MarketDataMaof().Legend);
             }
             else if (dt == FMRShell.DataType.Rezef)
             {
-                    dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false, 
-                    DataCollector.rezefProducer, new FMRShell.MarketDataRezef().Legend);
+                dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false,
+                DataCollector.rezefProducer, new FMRShell.MarketDataRezef().Legend);
             }
             else if (dt == FMRShell.DataType.Madad)
             {
-                    dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false, 
-                    DataCollector.madadProducer, new FMRShell.MarketDataMadad().Legend);
+                dataLogger = new FMRShell.TradingDataLogger(loggerName, filename, false,
+                DataCollector.madadProducer, new FMRShell.MarketDataMadad().Legend);
             }
-            else System.Console.WriteLine("No handling for data type "+dt+"("+(int)dt+")");
-            
+            else System.Console.WriteLine("No handling for data type " + dt + "(" + (int)dt + ")");
+
             DataLogger[(int)dt] = dataLogger;
 
             // start logger
@@ -743,7 +743,7 @@ namespace JQuant
             }
 
         }
-        
+
         protected void Timer5sHandler(ITimer timer)
         {
             Console.WriteLine("5s timer expired " + DateTime.Now);
@@ -891,14 +891,14 @@ namespace JQuant
         {
             feedGetSeriesCallback(iWrite, cmdName, cmdArguments, false);
         }
-        
+
         protected void printIntStatisticsHeader(IWrite iWrite)
         {
             iWrite.WriteLine(OutputUtils.FormatField("Name", 8) +
                          OutputUtils.FormatField("Mean", 8) +
                          OutputUtils.FormatField("Ready", 8) +
                          OutputUtils.FormatField("Size", 8) +
-                         OutputUtils.FormatField("Count", 8) 
+                         OutputUtils.FormatField("Count", 8)
                         );
             iWrite.WriteLine("----------------------------------------------------------------");
         }
@@ -920,7 +920,7 @@ namespace JQuant
                          OutputUtils.FormatField("Min", 8) +
                          OutputUtils.FormatField("Ready", 8) +
                          OutputUtils.FormatField("Size", 8) +
-                         OutputUtils.FormatField("Count", 8) 
+                         OutputUtils.FormatField("Count", 8)
                         );
             iWrite.WriteLine("----------------------------------------------------------------");
         }
@@ -935,7 +935,7 @@ namespace JQuant
                          OutputUtils.FormatField(maxMin.Count, 8)
                         );
         }
-        
+
         protected void debugFMRPingCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int argsNum = cmdArguments.Length;
@@ -950,35 +950,35 @@ namespace JQuant
                     break;
 
                 default:
-                string arg = args[1];
-                if (arg.Equals("login"))
-                {
-                    fmrPing.SendLogin();
-                    iWrite.WriteLine("FMRPing Login");
-                }
-                if (arg.Equals("logout"))
-                {
-                    fmrPing.SendLogout();
-                    iWrite.WriteLine("FMRPing Logout");
-                }
-                if (arg.Equals("stat"))
-                {
-                    iWrite.WriteLine("Failed "+fmrPing.CountPingFailed+" from "+(fmrPing.CountPingOk+fmrPing.CountPingFailed));
-                    printIntStatisticsHeader(iWrite);
-                    printIntStatistics(iWrite, fmrPing.Statistics2min);
-                    printIntStatistics(iWrite, fmrPing.Statistics10min);
-                    printIntStatistics(iWrite, fmrPing.Statistics1hour);
-                    iWrite.WriteLine();
-                    printIntMaxMinHeader(iWrite);
-                    printIntMaxMin(iWrite, fmrPing.MaxMin2min);
-                    printIntMaxMin(iWrite, fmrPing.MaxMin10min);
-                    printIntMaxMin(iWrite, fmrPing.MaxMin1hour);
-                }
-                if (arg.Equals("kill"))
-                {
-                    fmrPing.Dispose();
-                }
-                break;
+                    string arg = args[1];
+                    if (arg.Equals("login"))
+                    {
+                        fmrPing.SendLogin();
+                        iWrite.WriteLine("FMRPing Login");
+                    }
+                    if (arg.Equals("logout"))
+                    {
+                        fmrPing.SendLogout();
+                        iWrite.WriteLine("FMRPing Logout");
+                    }
+                    if (arg.Equals("stat"))
+                    {
+                        iWrite.WriteLine("Failed " + fmrPing.CountPingFailed + " from " + (fmrPing.CountPingOk + fmrPing.CountPingFailed));
+                        printIntStatisticsHeader(iWrite);
+                        printIntStatistics(iWrite, fmrPing.Statistics2min);
+                        printIntStatistics(iWrite, fmrPing.Statistics10min);
+                        printIntStatistics(iWrite, fmrPing.Statistics1hour);
+                        iWrite.WriteLine();
+                        printIntMaxMinHeader(iWrite);
+                        printIntMaxMin(iWrite, fmrPing.MaxMin2min);
+                        printIntMaxMin(iWrite, fmrPing.MaxMin10min);
+                        printIntMaxMin(iWrite, fmrPing.MaxMin1hour);
+                    }
+                    if (arg.Equals("kill"))
+                    {
+                        fmrPing.Dispose();
+                    }
+                    break;
             }
         }
 
@@ -1127,10 +1127,10 @@ namespace JQuant
         protected int debugRTClockSleep(Random random)
         {
             int res = 0;
-            int ms = random.Next(0, 2*100);
+            int ms = random.Next(0, 2 * 100);
 
             Thread.Sleep(ms);
-            
+
             return res;
         }
 
@@ -1142,7 +1142,7 @@ namespace JQuant
 
 
             dtRT0 = DateTimePrecise.Now;
-            iWrite.WriteLine("tick="+dtRT0.Ticks+" "+dtRT0+" "+DateTime.Now);
+            iWrite.WriteLine("tick=" + dtRT0.Ticks + " " + dtRT0 + " " + DateTime.Now);
             Thread.Sleep(30);
 
             dtRT0 = DateTimePrecise.Now;
@@ -1161,9 +1161,9 @@ namespace JQuant
                 dt = DateTime.Now;
                 dtNow = dt;
                 DateTime dtB = dt.Subtract(new TimeSpan(maxDrift));
-                
+
                 DateTime dtRT1 = DateTimePrecise.Now;
-                
+
                 dt = DateTime.Now;
                 DateTime dtA = dt.Add(new TimeSpan(maxDrift));
 
@@ -1171,28 +1171,28 @@ namespace JQuant
                 // run checks
                 if (dtRT1 < dtRT0)
                 {
-                    iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
-                                      " dtRT0="+dtRT0+"."+dtRT0.Millisecond+" delta="+(dtRT0.Ticks-dtRT1.Ticks)+"ticks");
+                    iWrite.WriteLine("Time moves backward dtRT1=" + dtRT1 + "." + dtRT1.Millisecond +
+                                      " dtRT0=" + dtRT0 + "." + dtRT0.Millisecond + " delta=" + (dtRT0.Ticks - dtRT1.Ticks) + "ticks");
                 }
                 if (dtRT1 < dtB)
                 {
-                    iWrite.WriteLine("Timer slower dtRT1="+dtRT1+"."+dtRT1.Millisecond+
-                                      " dtB="+dtB+"."+dtB.Millisecond+" delta="+(dtB.Ticks-dtRT1.Ticks)+"ticks");
+                    iWrite.WriteLine("Timer slower dtRT1=" + dtRT1 + "." + dtRT1.Millisecond +
+                                      " dtB=" + dtB + "." + dtB.Millisecond + " delta=" + (dtB.Ticks - dtRT1.Ticks) + "ticks");
                 }
                 if (dtRT1 > dtA)
                 {
-                    iWrite.WriteLine("Timer faster dtRT1="+dtRT1+"."+dtRT1.Millisecond+
-                                     " dtA="+dtA+"."+dtA.Millisecond+" delta="+(dtRT1.Ticks-dtB.Ticks)+"ticks");
+                    iWrite.WriteLine("Timer faster dtRT1=" + dtRT1 + "." + dtRT1.Millisecond +
+                                     " dtA=" + dtA + "." + dtA.Millisecond + " delta=" + (dtRT1.Ticks - dtB.Ticks) + "ticks");
                 }
-                
+
                 dtRT0 = dtRT1;
-                
+
                 // sleep little bit
                 debugRTClockSleep(random);
                 tests++;
                 if ((tests & 0xFF) == 0xFF)
                 {
-                    iWrite.Write("."+(dtRT0.Ticks-dtNow.Ticks));
+                    iWrite.Write("." + (dtRT0.Ticks - dtNow.Ticks));
                 }
             }
             while (true);
@@ -1203,7 +1203,7 @@ namespace JQuant
             DateTime dtRT0 = DateTimePrecise.Now;
             int tests = 0;
             long maxDelta = 0;
-            
+
             do
             {
                 DateTime dtRT1 = DateTimePrecise.Now;
@@ -1211,11 +1211,11 @@ namespace JQuant
                 // run checks
                 if (dtRT1 < dtRT0)
                 {
-                    iWrite.WriteLine("Time moves backward dtRT1="+dtRT1+"."+dtRT1.Millisecond+
-                                      " dtRT0="+dtRT0+"."+dtRT0.Millisecond);
-                    iWrite.WriteLine("dtRT1="+dtRT1.Ticks+
-                                     " dtRT0="+dtRT0.Ticks+
-                                     " delta="+(dtRT0.Ticks-dtRT1.Ticks));
+                    iWrite.WriteLine("Time moves backward dtRT1=" + dtRT1 + "." + dtRT1.Millisecond +
+                                      " dtRT0=" + dtRT0 + "." + dtRT0.Millisecond);
+                    iWrite.WriteLine("dtRT1=" + dtRT1.Ticks +
+                                     " dtRT0=" + dtRT0.Ticks +
+                                     " delta=" + (dtRT0.Ticks - dtRT1.Ticks));
                 }
                 tests++;
                 if ((tests & 0x7FFFF) == 0x7FFFF)
@@ -1225,7 +1225,7 @@ namespace JQuant
                     if (delta > maxDelta)
                     {
                         maxDelta = delta;
-                        iWrite.Write(""+delta);
+                        iWrite.Write("" + delta);
                     }
                 }
                 dtRT0 = dtRT1;
@@ -1240,15 +1240,15 @@ namespace JQuant
             do
             {
                 DateTime dtRT0 = DateTimePrecise.Now;
-                int delay = random.Next(0,50);
+                int delay = random.Next(0, 50);
                 Thread.Sleep(delay);
                 DateTime dtRT1 = DateTimePrecise.Now;
 
-                iWrite.WriteLine("delay="+delay+"ms ticks="+(dtRT1.Ticks-dtRT0.Ticks));
+                iWrite.WriteLine("delay=" + delay + "ms ticks=" + (dtRT1.Ticks - dtRT0.Ticks));
             }
             while (true);
         }
-            
+
 
         protected void debugCyclicBufferTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -1257,16 +1257,16 @@ namespace JQuant
             iWrite.WriteLine();
             foreach (int i in cb)
             {
-                iWrite.WriteLine("No elements "+i);
+                iWrite.WriteLine("No elements " + i);
             }
 
             iWrite.WriteLine();
             cb.Add(0);
             foreach (int i in cb)
             {
-                iWrite.WriteLine("One element "+i);
+                iWrite.WriteLine("One element " + i);
             }
-            
+
             iWrite.WriteLine();
             cb.Add(1);
             cb.Add(2);
@@ -1274,10 +1274,10 @@ namespace JQuant
             cb.Add(4);
             foreach (int i in cb)
             {
-                iWrite.WriteLine("Three elements "+i);
+                iWrite.WriteLine("Three elements " + i);
             }
         }
-        
+
 
 
         protected void debugThreadPoolShowCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -1291,7 +1291,7 @@ namespace JQuant
             OrderType orderType = (OrderType.LMT | OrderType.FOK | OrderType.IOC);
         }
 
-        
+
 
         #endregion;
 
@@ -1381,7 +1381,7 @@ namespace JQuant
 
             menuDebug.AddCommand("veriShow", "Show data verifiers",
                                   " List of created data verifiers", debugVerifierShowCallback);
-            
+
             Menu menuTests = cli.RootMenu.AddMenu("tst", "Short tests",
                                    " Infrastructure/API tests");
 
@@ -1399,7 +1399,7 @@ namespace JQuant
                                   " Create a pool, add object, allocate object, free object", debugPoolTestCallback);
             menuTests.AddCommand("poolShow", "Show pools",
                                   " List of created pools with the current status and statistics", debugPoolShowCallback);
-            
+
             menuTests.AddCommand("timerTest", "Run simple timer tests",
                                   " Create a timer task, two timer lists, start two timers, clean up", debugTimerTestCallback);
             menuTests.AddCommand("timerShow", "Show timers",
@@ -1412,7 +1412,7 @@ namespace JQuant
 
             menuTests.AddCommand("cbtest", "Cyclic buffer class test",
                                   " Create a cyclic buffer, check functionality", debugCyclicBufferTestCallback);
-            
+
             menuTests.AddCommand("rtclock", "RT clock test",
                                   " Calls PreciseTime periodically and checks that the returned time is reasonable", debugRTClockCallback);
             menuTests.AddCommand("rtclock_1", "RT clock test",
@@ -1423,4 +1423,4 @@ namespace JQuant
 
         #endregion
     }
-}//namespace
+}//namespace JQuant

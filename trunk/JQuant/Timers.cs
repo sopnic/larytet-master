@@ -106,28 +106,28 @@ namespace JQuant
         {
             [Description("None")]
             NONE,
-            
+
             [Description("Already stoped")]
             ALREADY_STOPED,
-            
+
             [Description("Wrong timer ID")]
             WRONG_TIMER_ID,
-    
-    
+
+
             [Description("No free timers")]
             NO_FREE_TIMERS,
-            
+
             [Description("Unknown in Stop")]
             STOP_UNKNOWN,
-    
+
             [Description("Unknown in Start")]
             START_UNKNOWN
         };
-    
-    
+
+
     }
 
-           
+
     /// <summary>
     /// This class used for all interactions between application
     /// and TimerList. For example, TimerList.Start() returns objects of this
@@ -147,10 +147,10 @@ namespace JQuant
         object ApplicationHookGet();
         void ApplicationHookSet(object hook);
     }
-    
+
 
     public delegate void TimerExpiredCallback(ITimer timer);
-    
+
     /// <summary>
     /// lits of timers - keep all timers with the same timeout
     /// </summary>
@@ -198,16 +198,16 @@ namespace JQuant
 
             // register with the TimerTask
             timerTask.AddList(this);
-            
+
             // add myself to the list of created timer lists
             Resources.TimerLists.Add(this);
         }
 
         public void Dispose()
-        {            
+        {
             // rmeove myself from the TimerTask
             timerTask.RemoveList(this);
-            
+
             // remove myself from the list of created timer lists
             Resources.TimerLists.Remove(this);
         }
@@ -247,18 +247,18 @@ namespace JQuant
         /// </returns>
         public bool Start(out ITimer iTimer, out long timerId, object applicationHook, bool autoRestart)
         {
-            
+
             // timestamp the call as soon as possible
             DateTime startTime = DateTime.Now;
             long startTick = (startTime.Ticks) / TICKS_IN_MILLISECOND;
 
-                
+
             Timer timer = null;
             iTimer = null;
             timerId = 0;
             Timers.Error error = Timers.Error.START_UNKNOWN;
 
-            
+
             do
             {
                 // get new timer Id
@@ -277,13 +277,13 @@ namespace JQuant
                     {
                         error = Timers.Error.NO_FREE_TIMERS;
                         break;
-                    }                    
+                    }
                 }
 
                 // initialize the timer
                 timer.ApplicationHook = applicationHook;
                 timer.StartTick = startTick;
-                timer.ExpirationTime = startTick+Timeout;
+                timer.ExpirationTime = startTick + Timeout;
                 timer.Running = true;
                 timer.TimerId = timerId;
                 timer.AutoRestart = autoRestart;
@@ -300,7 +300,7 @@ namespace JQuant
 
                 // send wakeup call to the task handling the timers
                 timerTask.WakeupCall();
-                
+
                 error = Timers.Error.NONE;
             }
             while (false);
@@ -309,7 +309,7 @@ namespace JQuant
             {
                 PrintError("Start failed ", error);
             }
-            
+
 
             return (error == Timers.Error.NONE);
         }
@@ -321,9 +321,9 @@ namespace JQuant
         {
             ITimer timer;
             long timerId;
-            
+
             bool result = Start(out timer, out timerId, applicationHook, false);
-            
+
             return result;
         }
 
@@ -336,9 +336,9 @@ namespace JQuant
         {
             ITimer timer;
             long timerId;
-            
+
             bool result = Start(out timer, out timerId, null, false);
-            
+
             return result;
         }
 
@@ -366,11 +366,11 @@ namespace JQuant
             Timers.Error error = Timers.Error.NONE;
 
             Timer timer = (Timer)iTimer;
-            
+
             lock (this)
             {
                 countStopAttempt++;
-                
+
                 if ((timer.Running) && (timer.TimerId == timerId))
                 {
                     countStop++;
@@ -390,10 +390,10 @@ namespace JQuant
             {
                 PrintError("Stop failed ", error);
             }
-            
+
             return (error == Timers.Error.NONE);
         }
-        
+
         /// <summary>
         /// returns the timeout before the nearest timer expires
         /// </summary>
@@ -404,7 +404,7 @@ namespace JQuant
         public bool GetDelay(long currentTick, out long delay)
         {
             bool result = false;
-            
+
             lock (this)
             {
                 if (pendingTimers.Count > 0)
@@ -482,7 +482,7 @@ namespace JQuant
                             timer.Running = false;
                         }
                     }
-                    
+
                     timerCallback(timer);
                 }
 
@@ -511,12 +511,12 @@ namespace JQuant
                     }
                 }
             }
-            
+
         }
 
         protected void PrintError(string prefix, Timers.Error error)
         {
-            System.Console.WriteLine(prefix+EnumUtils.GetDescription(error));
+            System.Console.WriteLine(prefix + EnumUtils.GetDescription(error));
         }
 
         /// <summary>
@@ -542,40 +542,40 @@ namespace JQuant
         {
             Console.WriteLine("TimerList " + Name + " from set " + timerTask.Name + " destroyed");
         }
-        
+
         protected int GetSize()
         {
             int size;
-            
+
             lock (this)
             {
-                size = (pendingTimers.Count+freeTimers.Count);
+                size = (pendingTimers.Count + freeTimers.Count);
             }
-            
+
             return size;
         }
-          
+
         public string GetTaskName()
         {
             return timerTask.Name;
         }
-        
+
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
             names = new System.Collections.ArrayList(12);
             values = new System.Collections.ArrayList(12);
 
 
-            names.Add("Size");values.Add(GetSize());
-            names.Add("Start");values.Add(countStart);
-            names.Add("Expired");values.Add(countExpired);
-            names.Add("Stop");values.Add(countStop);
-            names.Add("PendingTimers");values.Add(pendingTimers.Count);
-            names.Add("StartAttempt");values.Add(countStartAttempt);
-            names.Add("StopAttempt");values.Add(countStopAttempt);
+            names.Add("Size"); values.Add(GetSize());
+            names.Add("Start"); values.Add(countStart);
+            names.Add("Expired"); values.Add(countExpired);
+            names.Add("Stop"); values.Add(countStop);
+            names.Add("PendingTimers"); values.Add(pendingTimers.Count);
+            names.Add("StartAttempt"); values.Add(countStartAttempt);
+            names.Add("StopAttempt"); values.Add(countStopAttempt);
         }
 
-        
+
         /// <summary>
         /// stack of free timers
         /// </summary>
@@ -593,7 +593,7 @@ namespace JQuant
         /// The oldest is going to be in the tail of the list
         /// </summary>
         protected List<Timer> pendingTimers;
-        
+
         public string Name
         {
             get;
@@ -631,37 +631,37 @@ namespace JQuant
             {
                 return ApplicationHook;
             }
-            
+
             public void ApplicationHookSet(object hook)
             {
                 ApplicationHook = hook;
             }
-    
-    
+
+
             // private section - application is not expected to use the fields
             // below this line
-            
+
             /// <summary>
             /// this is expiration tick (milliseconds)
             /// </summary>
             public long ExpirationTime;
-    
+
             /// <summary>
             /// system tick when the timer was started  (milliseconds)
             /// </summary>
             public long StartTick;
-    
+
             /// <summary>
             /// true if not stopped
             /// </summary>
             public bool Running;
-    
+
             public long TimerId;
-    
+
             public bool AutoRestart;
-    
+
             public int Restarts;
-    
+
             public object ApplicationHook
             {
                 get;
@@ -673,7 +673,7 @@ namespace JQuant
         {
             TimerId.Init();
         }
-        
+
         /// <summary>
         /// generates a unique timer identifier - simple 64 bits counter
         /// </summary>
@@ -683,7 +683,7 @@ namespace JQuant
             {
                 timerId = initialValue;
             }
-    
+
             public static void Init()
             {
                 if (instance == default(TimerId))
@@ -691,7 +691,7 @@ namespace JQuant
                     instance = new TimerId(0xB5);
                 }
             }
-    
+
             /// <summary>
             /// Locks access to the timerId
             /// should not be called from inside locked section
@@ -703,27 +703,27 @@ namespace JQuant
             static public long GetNext()
             {
                 long id;
-                
+
                 lock (instance)
                 {
                     timerId++;
                     id = timerId;
                 }
-                
+
                 return id;
             }
-            
+
             static TimerId instance;
             static long timerId;
         }
     }
-    
+
     /// <summary>
     /// Timer task (timer set) implementation
     /// </summary>
-    public class TimerTask: IDisposable
+    public class TimerTask : IDisposable
     {
-        
+
         public TimerTask(string name)
         {
             this.Name = name;
@@ -769,7 +769,7 @@ namespace JQuant
                 timerLists.Add(timerList);
             }
         }
-        
+
         public void RemoveList(TimerList timerList)
         {
             lock (this)
@@ -777,7 +777,7 @@ namespace JQuant
                 timerLists.Remove(timerList);
             }
         }
-        
+
         ~TimerTask()
         {
             Console.WriteLine("TimerTask " + Name + " destroyed");
@@ -808,10 +808,10 @@ namespace JQuant
 
             // i want to save CPU cycles. calculate current tick only once
             long currentTick = DateTime.Now.Ticks / TimerList.TICKS_IN_MILLISECOND;
-            
+
             int idx = 0;
             TimerList timerList = default(TimerList);
-            
+
             while (true)
             {
                 lock (this)
@@ -853,5 +853,4 @@ namespace JQuant
 
     }
 
-
-}
+}//namespace JQuant

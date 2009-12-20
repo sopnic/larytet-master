@@ -51,15 +51,15 @@ namespace JQuant
             buffer = new T[size];
             Reset();
         }
-        
+
         public void Reset()
         {
             sectionlock.Enter();
-            
+
             tail = 0;
             head = 0;
             Count = 0;
-            
+
             sectionlock.Exit();
         }
 
@@ -71,16 +71,16 @@ namespace JQuant
         public void Add(T o)
         {
             sectionlock.Enter();
-            
+
             buffer[head] = o;
-            
+
             head = IncIndex(head, Size);
-            
+
             if (Count < Size)
             {
                 Count++;
             }
-            
+
             sectionlock.Exit();
         }
 
@@ -90,7 +90,7 @@ namespace JQuant
         public T Remove()
         {
             sectionlock.Enter();
-            
+
             T o = default(T);
             if (Count > 0)
             {
@@ -98,10 +98,10 @@ namespace JQuant
                 o = buffer[tail];
                 tail = IncIndex(tail, Size);
             }
-            
+
             sectionlock.Exit();
-            
-            
+
+
             return o;
         }
 
@@ -112,7 +112,7 @@ namespace JQuant
         {
             return (Count == 0);
         }
-        
+
         /// <summary>
         /// returns true if CyclicBuffer is full - number of stored elements
         /// is equal to size
@@ -121,7 +121,7 @@ namespace JQuant
         {
             return (Count == Size);
         }
-        
+
         /// <summary>
         /// returns true if CyclicBuffer contains at least one element
         /// </summary>
@@ -129,7 +129,7 @@ namespace JQuant
         {
             return (Count != 0);
         }
-        
+
         /// <summary>
         /// size of the cyclic buffer
         /// </summary>
@@ -147,7 +147,7 @@ namespace JQuant
             get;
             protected set;
         }
-        
+
         /// <summary>
         /// increment index and take care of wrap around
         /// </summary>
@@ -160,7 +160,7 @@ namespace JQuant
             }
             return index;
         }
-                
+
         /// <summary>
         /// decrement index and take care of wrap around
         /// </summary>
@@ -169,7 +169,7 @@ namespace JQuant
             index--;
             if (index < 0)
             {
-                index = size-1;
+                index = size - 1;
             }
             return index;
         }
@@ -203,7 +203,7 @@ namespace JQuant
                 // MoveNext will return false if there is nothing more
                 // in the buffer to return - all elements handled
                 bool result = (count < cb.Count);
-                
+
                 if (result)
                 {
                     index = IncIndex(index, cb.Size);
@@ -218,10 +218,10 @@ namespace JQuant
             public void Reset()
             {
                 count = 0;
-                
+
                 // in the full cyclic buffer next element after head is oldest
                 // if not full - oldest element is at zero
-                if (cb.Full()) 
+                if (cb.Full())
                 {
                     index = cb.head;
 
@@ -240,7 +240,7 @@ namespace JQuant
                 get
                 {
                     return cb.buffer[index];
-                }                    
+                }
             }
 
             /// <value>
@@ -252,7 +252,7 @@ namespace JQuant
                 get
                 {
                     return Current;
-                }                    
+                }
             }
 
             /// <summary>
@@ -279,7 +279,7 @@ namespace JQuant
         {
             return new Enumerator(this);
         }
-        
+
         /// <value>
         /// this method is required by System.Collections.IEnumerable
         /// will not be called 
@@ -288,7 +288,7 @@ namespace JQuant
         {
             return new Enumerator(this);
         }
-        
+
         protected T[] buffer;
         protected int tail;
         protected int head;
@@ -304,7 +304,7 @@ namespace JQuant
         {
             sectionlock = new LockCriticalSection(name, this);
         }
-        
+
     }
 
 }

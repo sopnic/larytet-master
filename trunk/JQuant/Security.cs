@@ -35,7 +35,7 @@ namespace JQuant
             get;
             protected set;
         }
-        
+
         /// <summary>
         /// security's name
         /// </summary>
@@ -57,7 +57,7 @@ namespace JQuant
         /// <summary>
         /// whether it's a stock, bond or derivative
         /// </summary>
-        public SecurityType SecType 
+        public SecurityType SecType
         {
             get;
             protected set;
@@ -87,7 +87,7 @@ namespace JQuant
         /// <returns><see cref="System.String"/></returns>
         public static string OptionTypeToShortString(OptionType OT)
         {
-            return EnumUtils.GetDescription(OT).Substring(0,1);
+            return EnumUtils.GetDescription(OT).Substring(0, 1);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace JQuant
         /// <returns><see cref="System.Double"/> Implied Volatility</returns>
         public double IV(double Premium, double Rf, double S)
         {
-            return StatUtils.CalcIV(Type, Premium/Multiplier, Rf, Strike, S, T);
+            return StatUtils.CalcIV(Type, Premium / Multiplier, Rf, Strike, S, T);
         }
 
         /// <summary>
@@ -179,10 +179,10 @@ namespace JQuant
             Multiplier = 100;
 
             SecType = SecurityType.Derivative;
-            
-            Name = OptionTypeToShortString(ot) + " " + X.ToString() + " " 
+
+            Name = OptionTypeToShortString(ot) + " " + X.ToString() + " "
                 + ExDate.Date.ToLongDateString().Split(',', ' ')[2].Substring(0, 3).ToUpper();  //3-letter month
-            
+
             Description = EnumUtils.GetDescription(ot) + " " + X.ToString() + " " + ExDate.Date.ToString();
 
         }
@@ -203,8 +203,8 @@ namespace JQuant
         /// <returns>Delta, options sensitivity to the underlying price changes</returns>
         public double Delta(double vol, double rate, double S, double T, bool Numerical)
         {
-            if (Numerical) return StatUtils.CalcNDelta(Type, vol, rate, Strike, S, T, S+1.0)*Multiplier;
-            else return StatUtils.CalcDelta(Type, vol, rate, Strike, S, T)*Multiplier;
+            if (Numerical) return StatUtils.CalcNDelta(Type, vol, rate, Strike, S, T, S + 1.0) * Multiplier;
+            else return StatUtils.CalcDelta(Type, vol, rate, Strike, S, T) * Multiplier;
         }
 
         /// <summary>
@@ -219,8 +219,8 @@ namespace JQuant
         /// to the underlying price changes</returns>
         public double Gamma(double vol, double rate, double S, double T, bool Numerical)
         {
-            if (Numerical) return StatUtils.CalcNGamma(Type, vol, rate, Strike, S, T, 1.0)*Multiplier;
-            else return StatUtils.CalcGamma(vol, rate, Strike, S, T)*Multiplier;
+            if (Numerical) return StatUtils.CalcNGamma(Type, vol, rate, Strike, S, T, 1.0) * Multiplier;
+            else return StatUtils.CalcGamma(vol, rate, Strike, S, T) * Multiplier;
         }
 
         /// <summary>
@@ -235,8 +235,8 @@ namespace JQuant
         /// to the volatility changes</returns>
         public double Vega(double vol, double rate, double S, double T, bool Numerical)
         {
-            if (Numerical) return StatUtils.CalcNVega(Type, vol, rate, Strike, S, T, vol / 100)*Multiplier;
-            return StatUtils.CalcVega(vol, rate, Strike, S, T)*Multiplier;
+            if (Numerical) return StatUtils.CalcNVega(Type, vol, rate, Strike, S, T, vol / 100) * Multiplier;
+            return StatUtils.CalcVega(vol, rate, Strike, S, T) * Multiplier;
         }
         /// <summary>
         /// Computes option's Theta, given the market conditions:
@@ -260,4 +260,4 @@ namespace JQuant
     }//class Option
 
     #endregion;
-}   //namespace
+}   //namespace JQuant

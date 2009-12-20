@@ -42,7 +42,7 @@ namespace JQuant
         /// </summary>
         static public string FormatField(long val, int fieldSize)
         {
-            string s = FormatField(""+val, fieldSize);
+            string s = FormatField("" + val, fieldSize);
 
             return s;
         }
@@ -68,11 +68,11 @@ namespace JQuant
         /// </summary>
         static public string FormatField(double val, int fieldSize)
         {
-            string s = FormatField(""+val, fieldSize);
+            string s = FormatField("" + val, fieldSize);
 
             return s;
         }
-        
+
         static public string RemoveLeadingBlanks(string s)
         {
             int blank_idx = s.IndexOf(' ');
@@ -146,7 +146,7 @@ namespace JQuant
 
         protected void InitLegend()
         {
-            StringBuilder sbLegend = new StringBuilder(fields.Length*10);
+            StringBuilder sbLegend = new StringBuilder(fields.Length * 10);
 
             foreach (FieldInfo field in fields)
             {
@@ -154,17 +154,17 @@ namespace JQuant
                 sbLegend.Append(name);
                 sbLegend.Append(delimiter);
             }
-            
+
             // remove last delimiter
-            sbLegend.Remove(sbLegend.Length-delimiter.Length, delimiter.Length);
-            
+            sbLegend.Remove(sbLegend.Length - delimiter.Length, delimiter.Length);
+
             Legend = sbLegend.ToString();
         }
 
         public void Init(StructType data)
         {
             this.data = data;
-            StringBuilder sbData = new StringBuilder(fields.Length*10);
+            StringBuilder sbData = new StringBuilder(fields.Length * 10);
 
             // i do boxing only once
             object o = data;
@@ -175,10 +175,10 @@ namespace JQuant
                 sbData.Append(val.ToString());
                 sbData.Append(delimiter);
             }
-            
+
             // remove last delimiter
-            sbData.Remove(sbData.Length-delimiter.Length, delimiter.Length);
-            
+            sbData.Remove(sbData.Length - delimiter.Length, delimiter.Length);
+
             Values = sbData.ToString();
 
             IsInitialized = true;
@@ -277,7 +277,7 @@ namespace JQuant
         {
             get;
             set;
-        }        
+        }
     }
 
     class TimeUtils
@@ -292,7 +292,7 @@ namespace JQuant
             o.Ticks = (long)((double)DateTime.Now.Ticks / (double)(10 * 1));
 #endif
         }
-        
+
     }
 
     /// <summary>
@@ -330,11 +330,11 @@ namespace JQuant
             // for some reason very first call to DateTime.UtcNow takes lot of time
             // do dummy call first 
             DummyCall();
-            
+
             drift = 0;
             STOPWATCH_FREQ = Stopwatch.Frequency;
 
-            
+
             stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
 
@@ -397,7 +397,7 @@ namespace JQuant
                 {
                     DateTimePrecise.drift = drift;
                 }
-//                System.Console.Write("."+drift/10 +".");              
+                //                System.Console.Write("."+drift/10 +".");              
             }
 
             pollUtcCount++;
@@ -410,11 +410,11 @@ namespace JQuant
             {
                 // get current value from the stopwatch
                 long swObserved = stopwatch.ElapsedTicks - swBase;
-    
+
                 lock (dateTimePrecise)
                 {
                     // now I have to "fix" base time
-    
+
                     // drift less than 10ms - nothing to fix. this outcome is most likely
                     // and lock time is going to be very short
                     if (Math.Abs(drift) < 5 * TICKS_IN_MS)
@@ -424,7 +424,7 @@ namespace JQuant
                     else if (drift > 0)
                     {
                         long delta = StopwatchToTick(swObserved - swLastObserved);
-                        delta = MaxShift(delta);delta = Math.Min(delta, drift);delta = Math.Min(delta, MAX_SHIFT);
+                        delta = MaxShift(delta); delta = Math.Min(delta, drift); delta = Math.Min(delta, MAX_SHIFT);
                         dtBase = dtBase.AddTicks(delta);
                         drift -= delta;
                     }
@@ -432,16 +432,16 @@ namespace JQuant
                     else if (drift < 0)
                     {
                         long delta = StopwatchToTick(swObserved - swLastObserved);
-                        delta = MaxShift(delta);delta = Math.Min(delta, Math.Abs(drift));delta = Math.Min(delta, MAX_SHIFT);
+                        delta = MaxShift(delta); delta = Math.Min(delta, Math.Abs(drift)); delta = Math.Min(delta, MAX_SHIFT);
                         dtBase = dtBase.AddTicks(-delta);
                         drift += delta;
                     }
                     swLastObserved = swObserved;
                 }  // lock
-    
+
                 DateTime dt = dtBase.AddTicks(StopwatchToTick(swObserved));
-    
-                
+
+
                 return dt;
             }
         }
@@ -453,11 +453,11 @@ namespace JQuant
         {
             if (ticks > 5000)  // caluclate 0.5% of the delta
             {                  // 5000 ticks is 0.5ms from the last call to UtcNow
-                ticks = (ticks*5)/1000;
+                ticks = (ticks * 5) / 1000;
             }
             else if (ticks > 50)
             {
-                ticks = ticks/10; // 10% of the delta
+                ticks = ticks / 10; // 10% of the delta
             }
             else  // very unlikely - less than 5micro between two calls
             {     // use the lowest between delta and 5ticks
@@ -501,7 +501,7 @@ namespace JQuant
 
 
         private const long TICKS_FREQ = 10000000;
-        private const long TICKS_IN_MS = TICKS_FREQ/1000;
+        private const long TICKS_IN_MS = TICKS_FREQ / 1000;
 
         // i am not going to jump too fast - 5ms shift is max
         private const long MAX_SHIFT = (TICKS_FREQ / 200);
@@ -515,12 +515,12 @@ namespace JQuant
 
         // user power of two
         private static int STAT_SIZE = 8;
-        private static int STAT_SIZE_MASK = STAT_SIZE-1;
-            
+        private static int STAT_SIZE_MASK = STAT_SIZE - 1;
+
         private System.Timers.Timer timer1s;
     }
-    
-    
+
+
     #region StatUtils;
     /// <summary>
     /// Making different statistical computations. 
@@ -649,21 +649,21 @@ namespace JQuant
         /// <param name="T"><see cref="System.Double"/> Time to expiration (in years)</param>
         /// <returns>Options' BSM price, in case of error returns -1</returns>
         public static double CalcBSPrice(
-            OptionType type, 
-            double vol, 
-            double rf, 
-            double strike, 
-            double uPrice, 
+            OptionType type,
+            double vol,
+            double rf,
+            double strike,
+            double uPrice,
             double T
             )
         {
             double d1 = (Math.Log(uPrice / strike) + (rf + vol * vol / 2) * T) / (vol * Math.Sqrt(T));
             double d2 = d1 - vol * Math.Sqrt(T);
 
-                if(type== OptionType.CALL)
-                    return (uPrice * NormalCalc(d1) - strike * Math.Exp(-rf * T) * NormalCalc(d2));
-                else 
-                    return (strike * Math.Exp(-rf * T) * NormalCalc(-d2) - uPrice * NormalCalc(-d1));
+            if (type == OptionType.CALL)
+                return (uPrice * NormalCalc(d1) - strike * Math.Exp(-rf * T) * NormalCalc(d2));
+            else
+                return (strike * Math.Exp(-rf * T) * NormalCalc(-d2) - uPrice * NormalCalc(-d1));
 
         }//CalcBSPrice
 
@@ -743,13 +743,13 @@ namespace JQuant
         {
             double d1 = (Math.Log(uPrice / strike) + (rf + vol * vol / 2.0) * T) / (vol * Math.Sqrt(T));
             double d2 = d1 - vol * Math.Sqrt(T);
-            
-            if (type==OptionType.CALL)
-                    return (-uPrice * NormalCalcPrime(d1) * vol) / (2.0 * Math.Sqrt(T)) - 
-                        rf * strike * Math.Exp(-rf * T) * NormalCalc(d2);
+
+            if (type == OptionType.CALL)
+                return (-uPrice * NormalCalcPrime(d1) * vol) / (2.0 * Math.Sqrt(T)) -
+                    rf * strike * Math.Exp(-rf * T) * NormalCalc(d2);
             else
-                    return (-uPrice * NormalCalcPrime(d1) * vol) / (2.0 * Math.Sqrt(T)) + 
-                        rf * strike * Math.Exp(-rf * T) * NormalCalc(-d2);
+                return (-uPrice * NormalCalcPrime(d1) * vol) / (2.0 * Math.Sqrt(T)) +
+                    rf * strike * Math.Exp(-rf * T) * NormalCalc(-d2);
 
         }//CalcTheta
 
@@ -1033,13 +1033,13 @@ namespace JQuant
 
     }
     #endregion;
-    
+
     #region Cyclic Buffers
     /// <summary>
     /// Cyclic buffers of integers
     /// Can be used to calculate average over last X minutes
     /// </summary>
-    public class IntStatistics: JQuant.CyclicBuffer<int>
+    public class IntStatistics : JQuant.CyclicBuffer<int>
     {
         public IntStatistics(string name, int size)
             : base(size)
@@ -1058,13 +1058,13 @@ namespace JQuant
             {
                 // moving summ
                 summ -= (buffer[head]);
-                
+
             }
-            summ += val;                    
+            summ += val;
             buffer[head] = val;
-            
+
             head = IncIndex(head, Size);
-            
+
         }
 
         protected new int Remove()
@@ -1078,11 +1078,11 @@ namespace JQuant
             get
             {
                 double mean = 0;
-                
+
                 // moving average
                 if (Count != 0)
                 {
-                    mean = summ/Count;
+                    mean = summ / Count;
                 }
                 return mean;
             }
@@ -1099,13 +1099,13 @@ namespace JQuant
 
         int summ;
     }
-    
+
     /// <summary>
     /// Cyclic buffers of integers
     /// Can be used to calculate maximum and minimum value over last X
     /// entries
     /// </summary>
-    public class IntMaxMin: JQuant.CyclicBuffer<int>
+    public class IntMaxMin : JQuant.CyclicBuffer<int>
     {
         public IntMaxMin(string name, int size)
             : base(size)
@@ -1133,7 +1133,7 @@ namespace JQuant
             {
                 sortedList.Add(val, val);
             }
-            
+
             head = IncIndex(head, Size);
         }
 
@@ -1150,11 +1150,11 @@ namespace JQuant
                 int val = 0;
                 if (sortedList.Count > 0)
                 {
-                    val = (int)sortedList.GetByIndex(sortedList.Count-1);
+                    val = (int)sortedList.GetByIndex(sortedList.Count - 1);
                 }
                 return val;
             }
-            
+
             protected set
             {
             }
@@ -1171,7 +1171,7 @@ namespace JQuant
                 }
                 return val;
             }
-            
+
             protected set
             {
             }
@@ -1186,4 +1186,4 @@ namespace JQuant
         System.Collections.SortedList sortedList;
     }
     #endregion
-}
+}//namespace JQuant

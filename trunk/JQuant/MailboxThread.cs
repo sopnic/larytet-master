@@ -96,7 +96,7 @@ namespace JQuant
             {
                 return threadPriority;
             }
-            
+
             set
             {
                 threadPriority = value;
@@ -135,9 +135,9 @@ namespace JQuant
         /// </summary>
         public long GetLongestJob()
         {
-            return longestJobTime/10;
+            return longestJobTime / 10;
         }
-        
+
         public void WaitForTermination()
         {
             _thread.Join();
@@ -158,4 +158,4 @@ namespace JQuant
         protected long longestJobTime;
         protected ThreadPriority threadPriority;
     }
-}
+}//namespace JQuant

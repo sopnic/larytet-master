@@ -100,24 +100,24 @@ namespace TaskBarLibSim
     /// <summary>
     /// Numerical definition of the error type returned by SendRezefOrder and SendMaofOrder processes.
     /// </summary>
-    public enum OrdersErrorTypes 
+    public enum OrdersErrorTypes
     {
         Fatal,
         Confirmation,
         ReEnter,
         PasswordReq,
         Alert,
-        NoError 
+        NoError
     }
 
     /// <summary>
     /// Numerical definition of the Trading type for which Holdings will be retrieved.
     /// </summary>
-    public enum TradeType 
-    { 
+    public enum TradeType
+    {
         ALLTradeType = -1,
         MF = 0,
-        RF = 1 
+        RF = 1
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ namespace TaskBarLibSim
     /// <summary>
     /// Basic Rezef Order Structure
     /// </summary>
-    public struct RezefBasicOrder 
+    public struct RezefBasicOrder
     {
         public string operation;
         public string asmachta_fmr;
@@ -162,23 +162,23 @@ namespace TaskBarLibSim
         public string OP;
         public string Branch;
         public string Account;
-        public string order_type; 
+        public string order_type;
         public string asmachta_rezef;
         public string price_percent;
-        public string shlav; 
+        public string shlav;
         public string Nv_Del;
         public string ORDR_TYPE;
         public string Mana;
         public string Zira;
         public string Nv_Min;
-        public string Strat_Date; 
+        public string Strat_Date;
         public string end_date;
     }
 
     /// <summary>
     /// מבנה רשומת הוראה חדשה
     /// </summary>
-    public struct RezefSimpleOrder 
+    public struct RezefSimpleOrder
     {
         public int BNO;     //מספר נייר ערך
         public int Amount;  //כמות
@@ -353,5 +353,5 @@ namespace TaskBarLibSim
         }
 
     }
-    
-}
+
+}//namespace TaskBarLibSim

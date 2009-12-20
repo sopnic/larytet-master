@@ -15,7 +15,7 @@ namespace JQuant
         /// </summary>
         void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values);
     }
-    
+
     public interface INamedResource
     {
         /// <summary>
@@ -29,12 +29,12 @@ namespace JQuant
             set;
         }
     }
-    
-    
+
+
     /// <summary>
     /// objects implementing Mailbox
     /// </summary>
-    public interface IResourceMailbox: INamedResource, IResourceStatistics
+    public interface IResourceMailbox : INamedResource, IResourceStatistics
     {
     }
 
@@ -55,7 +55,7 @@ namespace JQuant
     /// <summary>
     /// objects implementing MailboxThread
     /// </summary>
-    public interface IThread :INamedResource
+    public interface IThread : INamedResource
     {
         ThreadState GetState();
         long GetLongestJob();
@@ -64,15 +64,15 @@ namespace JQuant
     /// <summary>
     /// objects implementing Pool interface
     /// </summary>
-    public interface IResourcePool: INamedResource, IResourceStatistics
-    {
-    }
-    
-    public interface IResourceProducer: INamedResource, IResourceStatistics
+    public interface IResourcePool : INamedResource, IResourceStatistics
     {
     }
 
-    public interface IResourceJobQueue: INamedResource
+    public interface IResourceProducer : INamedResource, IResourceStatistics
+    {
+    }
+
+    public interface IResourceJobQueue : INamedResource
     {
     }
 
@@ -81,25 +81,25 @@ namespace JQuant
     {
         [Description("Dynamic memory")]
         RAM,
-        
+
         [Description("Serialization")]
         BinarySerialization,
-        
+
         [Description("Binary")]
         Binary,
-        
+
         [Description("ASCII")]
         Ascii,
-        
+
         [Description("CSV")]
         CSV,
-        
+
         [Description("HTML")]
         HTML,
-        
+
         [Description("XML")]
         XML,
-        
+
         [Description("SQL")]
         SQL
     };
@@ -164,20 +164,20 @@ namespace JQuant
         string GetName();
     }
 
-    public interface IResourceTimerList :INamedResource, IResourceStatistics
+    public interface IResourceTimerList : INamedResource, IResourceStatistics
     {
         string GetTaskName();
     }
 
-    public interface IResourceThreadPool :IResourceStatistics, INamedResource
+    public interface IResourceThreadPool : IResourceStatistics, INamedResource
     {
     }
 
-    public interface IResourceDataVerifier :IResourceStatistics, INamedResource
+    public interface IResourceDataVerifier : IResourceStatistics, INamedResource
     {
     }
 
-    
+
     /// <summary>
     /// a storage of all created objects
     /// an object central
@@ -192,10 +192,10 @@ namespace JQuant
         {
             Mailboxes = new System.Collections.ArrayList(10);
             Threads = new List<IThread>(10);
-            Pools = new System.Collections.ArrayList (10);
+            Pools = new System.Collections.ArrayList(10);
             Loggers = new List<ILogger>(10);
             DataGenerators = new List<IDataGenerator>(10);
-            TimerLists = new  List<IResourceTimerList>(5);
+            TimerLists = new List<IResourceTimerList>(5);
             ThreadPools = new System.Collections.ArrayList(2);
             Producers = new List<IResourceProducer>(5);
             Verifiers = new List<IResourceDataVerifier>(10);
@@ -234,13 +234,13 @@ namespace JQuant
         public static List<IDataGenerator> DataGenerators;
 
         public static List<IResourceTimerList> TimerLists;
-        
+
         public static List<IResourceProducer> Producers;
 
         public static System.Collections.ArrayList ThreadPools;
 
         public static List<IResourceDataVerifier> Verifiers;
-        
+
         static protected Resources r;
 
 
@@ -284,15 +284,15 @@ namespace JQuant
             if (RootDirectoryDefined())
             {
                 string path = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "DataLogs" + Path.DirectorySeparatorChar;
-                if (Directory.Exists(path)) 
+                if (Directory.Exists(path))
                     return path;
                 else
                 {
-                    Console.WriteLine(Environment.NewLine 
+                    Console.WriteLine(Environment.NewLine
                         + "WARNING! Directory {0} doesn't exist. Define it first."
                         + Environment.NewLine, path);
                     return null;
-                } 
+                }
             }
             else
             {
@@ -324,4 +324,4 @@ namespace JQuant
         }
 
     }
-}
+}//namespace JQuant

@@ -364,13 +364,13 @@ namespace FMRShell
         public long Ticks;
 
         public abstract object Clone();
-        
+
         public virtual string Values
         {
             get;
             protected set;
         }
-        
+
         public virtual string Legend
         {
             get;
@@ -396,7 +396,7 @@ namespace FMRShell
         {
             this.fields = t.GetFields();
         }
-            
+
         public override object Clone()
         {
             Type t;
@@ -409,7 +409,7 @@ namespace FMRShell
                 // help the code optimizser - local variables
                 FieldInfo[] fields = this.fields;
                 object data = this.data;
-                
+
                 // set all fields in the new data object
                 foreach (FieldInfo fi in fields)
                 {
@@ -439,11 +439,11 @@ namespace FMRShell
         /// </param>
         protected void InitValues(object data)
         {
-            StringBuilder sbData = new StringBuilder(fields.Length*10);
+            StringBuilder sbData = new StringBuilder(fields.Length * 10);
 
             object o = (object)data;
             this.data = o;
-            
+
             foreach (FieldInfo field in fields)
             {
                 object val = field.GetValue(o);
@@ -451,11 +451,11 @@ namespace FMRShell
                 sbData.Append(delimiter);
             }
 
-            
+
             sbData.Append(TimeStamp.ToString("hh:mm:ss.fff"));
             sbData.Append(",");
             sbData.Append(Ticks.ToString());
-            
+
             this.values = sbData.ToString();
 
             isInitialized = true;
@@ -479,7 +479,7 @@ namespace FMRShell
                 this.values = value;
             }
         }
-        
+
         public override string Legend
         {
             get
@@ -505,8 +505,8 @@ namespace FMRShell
             {
                 return;
             }
-            
-            StringBuilder sbLegend = new StringBuilder(fields.Length*10);
+
+            StringBuilder sbLegend = new StringBuilder(fields.Length * 10);
 
             foreach (FieldInfo field in fields)
             {
@@ -515,7 +515,7 @@ namespace FMRShell
                 sbLegend.Append(delimiter);
             }
             sbLegend.Append("TimeStamp,Ticks");
-            
+
             legend = sbLegend.ToString();
         }
 
@@ -525,7 +525,7 @@ namespace FMRShell
             {
                 return this.data;
             }
-            
+
             set
             {
                 isInitialized = false;
@@ -656,7 +656,7 @@ namespace FMRShell
                 names.Add("Sinks"); values.Add(GetSinks());
             }
 
-            
+
             /// <summary>
             /// Called by TaskBarLib. This method calls registered listeners and gets out 
             /// The idea behind it to be as fast as possible
@@ -702,7 +702,7 @@ namespace FMRShell
                 // boxing from struct to object - memcpy
                 OnEvent(data);
             }
-            
+
             protected void OnRezef(ref K300RzfType data)
             {
                 // boxing from struct to object - memcpy
@@ -719,12 +719,12 @@ namespace FMRShell
             {
                 return countEvents;
             }
-            
+
             protected int countEvents;
             protected MarketDataHolder marketData;
             protected List<JQuant.IConsumer<MarketData>> Listeners;
         }
-        
+
         public class MadadProducer : DataProducer
         {
             public MadadProducer(K300EventsClass k3)
@@ -909,7 +909,7 @@ namespace FMRShell
     /// </summary>
     public class TradingDataLogger : AsyncLogger
     {
-        public class DataConsumer: IConsumer<MarketData>
+        public class DataConsumer : IConsumer<MarketData>
         {
             public DataConsumer(TradingDataLogger dataLogger, IProducer<MarketData> producer)
             {
@@ -935,7 +935,7 @@ namespace FMRShell
             protected IProducer<MarketData> producer;
         }  // DataSink
 
-        
+
         /// <summary>
         /// Create the ASCII logger
         /// </summary>
@@ -1060,7 +1060,7 @@ namespace FMRShell
         public override void Stop()
         {
             base.Stop();
-            
+
             dataConsumer.Stop();
 
             if (fileStream != default(FileStream))
@@ -1070,7 +1070,7 @@ namespace FMRShell
                 // help Garbage collector
                 streamWriter = default(StreamWriter);
                 fileStream = default(FileStream);
-                Console.WriteLine("Logger " + GetName() + " file "+FileName+" closed");
+                Console.WriteLine("Logger " + GetName() + " file " + FileName + " closed");
             }
         }
 
@@ -1101,7 +1101,7 @@ namespace FMRShell
                 first = false;
                 stampOldest = DateTime.Now;
             }
-            
+
             // I have to decide on format of the log - ASCII or binary 
             // should I write any system info like version the data/software ?
             // at this point only ASCII is supported, no system info
@@ -1160,7 +1160,7 @@ namespace FMRShell
         bool first;
     }
 
-    
+
 
     #endregion
 
@@ -2330,12 +2330,12 @@ namespace FMRShell
             : base("MaofDataVerifier")
         {
         }
-        
+
         public override bool Verify(MarketDataMaof data)
         {
             return true;
         }
-        
+
         public override void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
             // call base class to get the basics
@@ -2343,7 +2343,7 @@ namespace FMRShell
 
             // add Maof data specific fields
         }
-        
-    }
 
-}//namespace
+    }//class MarketDataVerifierMaof
+
+}//namespace FMRShell
