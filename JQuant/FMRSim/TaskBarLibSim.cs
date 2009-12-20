@@ -809,7 +809,7 @@ namespace TaskBarLibSim
             this.filename = filename;
             ReadyToGo = false;
 
-            baseTimeSpan = default(TimeSpan);
+            lastTimeSpan = default(TimeSpan);
 
             System.Console.WriteLine("Simulation playback data from " + filename);
 
@@ -945,7 +945,7 @@ namespace TaskBarLibSim
             bool res;
             string str;
             data = default(DataType);
-            TimeSpan timeSpan = baseTimeSpan;
+            TimeSpan timeSpan = lastTimeSpan;
 
             if (!ReadyToGo) return false;
 
@@ -1005,15 +1005,14 @@ namespace TaskBarLibSim
         private void DoDelay(TimeSpan timeSpan)
         {
             // accumulate elapsed time in the delay variable
-            if (baseTimeSpan != default(TimeSpan))
+            if (lastTimeSpan != default(TimeSpan))
             {
-                delay = (int) (timeSpan - baseTimeSpan).TotalMilliseconds;
+                // ->>>>>> I am loosing time precision here <<<<<<-
+                // milliseconds instead of micro
+                delay += (timeSpan - lastTimeSpan).Milliseconds;
             }
-            else //baseTimeSpan = null
-            {
-                //set baseTimeSpan only once 
-                baseTimeSpan = timeSpan;
-            }
+            lastTimeSpan = timeSpan;
+
 
             // calculate next sleep taking into account that the shortest possible
             // sleep is MIN_DELAY
@@ -1022,8 +1021,7 @@ namespace TaskBarLibSim
             {
                 int sleep = ticks * MIN_DELAY;
                 Thread.Sleep(sleep);
-                // move baseTimeSpan
-                baseTimeSpan.Add(TimeSpan.FromMilliseconds(delay));
+                delay -= sleep;
             }
         }
 
@@ -1066,7 +1064,7 @@ namespace TaskBarLibSim
         protected FileStream fileStream;
         protected StreamReader streamReader;
         protected string filename;
-        private TimeSpan baseTimeSpan;
+        private TimeSpan lastTimeSpan;
 
         protected bool ReadyToGo;
     }
