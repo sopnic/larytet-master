@@ -999,21 +999,22 @@ namespace TaskBarLibSim
         }
 
         /// <summary>
-        /// Look the two consecutive time stamps. Calculate time span. 
-        /// If time spane is larger than MIN_DELAY call Thread.Sleep()
-        /// else accumulate the difference in the field delay
+        /// Look the two consecutive time stamps. Calculate time span - time elapsed from the previous
+        /// log entry. Sleep for some time if i am playing the log too fast
         /// </summary>
         private void DoDelay(TimeSpan timeSpan)
         {
             int delayLog = 0, delayPb = 0;
             
-            // accumulate elapsed time in the delay variable
+            // this not the first thime the method is called
+            // calculate how much time went locally and according to the log
             if (baseTimeSpanLog != default(TimeSpan))
             {
                 DateTime dtPb = DateTime.Now;
 
                 // how much time elapsed from the base time - time when I started playback
                 delayPb = (int)((dtPb - baseTimePb).TotalMilliseconds);
+                
                 // how much time elapsed according to the log file
                 delayLog = (int)((timeSpan - baseTimeSpanLog).TotalMilliseconds);
             }
@@ -1023,22 +1024,16 @@ namespace TaskBarLibSim
                 baseTimePb = DateTime.Now;
             }
 
-
-            int delay = 0;
+            // if i am running faster than log i'll do delay. if i am slower there is nothing to do.
+            // calculate next sleep. the shortest possible sleep can be limited
+            // In Windows i can't sleep for shorter period than 15ms, but i am not woory about that
+            // i always try to run not faster than the log i am playing
             if (delayLog > delayPb)
             {
-                delay = delayLog - delayPb;
+                int delay = delayLog - delayPb;
+                Thread.Sleep(delay);
             }
             
-            // calculate next sleep taking into account that the shortest possible
-            // sleep is MIN_DELAY
-            int ticks = delay / MIN_DELAY;
-            if (ticks > 0)
-            {
-                int sleep = ticks * MIN_DELAY;
-                Thread.Sleep(sleep);
-                System.Console.WriteLine("Sleep="+sleep+",delayPb="+delayPb+",delayLog="+delayLog+",Delay= "+delay+",timeSpan="+timeSpan.TotalMilliseconds+",baseTimeSpanLog="+baseTimeSpanLog.TotalMilliseconds);
-            }
         }
 
         protected void SetDelay(int delay)
@@ -1068,13 +1063,6 @@ namespace TaskBarLibSim
         /// Child class will call SetDelay() depending on the time stamps in the log
         /// </summary>
         protected int delay;
-
-        /// <summary>
-        /// There is difference between Linux and Windows regarding the minimum possible
-        /// delay in the call to Thread.Sleep()
-        /// This is not relevant at this point. I use the maximum between two - 15ms
-        /// </summary>
-        private const int MIN_DELAY = 15; // ms
 
         protected int count;
         protected FileStream fileStream;
