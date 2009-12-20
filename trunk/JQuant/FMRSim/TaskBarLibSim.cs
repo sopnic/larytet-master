@@ -809,7 +809,8 @@ namespace TaskBarLibSim
             this.filename = filename;
             ReadyToGo = false;
 
-            lastTimeSpan = default(TimeSpan);
+            baseTimeSpanLog = default(TimeSpan);
+            baseTimePb = default(DateTime);
 
             System.Console.WriteLine("Simulation playback data from " + filename);
 
@@ -945,7 +946,7 @@ namespace TaskBarLibSim
             bool res;
             string str;
             data = default(DataType);
-            TimeSpan timeSpan = lastTimeSpan;
+            TimeSpan timeSpan = default(TimeSpan);
 
             if (!ReadyToGo) return false;
 
@@ -1004,16 +1005,31 @@ namespace TaskBarLibSim
         /// </summary>
         private void DoDelay(TimeSpan timeSpan)
         {
+            int delayLog = 0, delayPb = 0;
+            
             // accumulate elapsed time in the delay variable
-            if (lastTimeSpan != default(TimeSpan))
+            if (baseTimeSpanLog != default(TimeSpan))
             {
-                // ->>>>>> I am loosing time precision here <<<<<<-
-                // milliseconds instead of micro
-                delay += (timeSpan - lastTimeSpan).Milliseconds;
+                DateTime dtPb = DateTime.Now;
+
+                // how much time elapsed from the base time - time when I started playback
+                delayPb = (int)((dtPb - baseTimePb).TotalMilliseconds);
+                // how much time elapsed according to the log file
+                delayLog = (int)((timeSpan - baseTimeSpanLog).TotalMilliseconds);
             }
-            lastTimeSpan = timeSpan;
+            else
+            {
+                baseTimeSpanLog = timeSpan;
+                baseTimePb = DateTime.Now;
+            }
 
 
+            int delay = 0;
+            if (delayLog > delayPb)
+            {
+                delay = delayLog - delayPb;
+            }
+            
             // calculate next sleep taking into account that the shortest possible
             // sleep is MIN_DELAY
             int ticks = delay / MIN_DELAY;
@@ -1021,7 +1037,7 @@ namespace TaskBarLibSim
             {
                 int sleep = ticks * MIN_DELAY;
                 Thread.Sleep(sleep);
-                delay -= sleep;
+                System.Console.WriteLine("Sleep="+sleep+",delayPb="+delayPb+",delayLog="+delayLog+",Delay= "+delay+",timeSpan="+timeSpan.TotalMilliseconds+",baseTimeSpanLog="+baseTimeSpanLog.TotalMilliseconds);
             }
         }
 
@@ -1064,7 +1080,12 @@ namespace TaskBarLibSim
         protected FileStream fileStream;
         protected StreamReader streamReader;
         protected string filename;
-        private TimeSpan lastTimeSpan;
+
+        // time span in the log file - very first entry
+        private TimeSpan baseTimeSpanLog;
+
+        // local system (playback) very first call
+        private DateTime baseTimePb;
 
         protected bool ReadyToGo;
     }
@@ -1269,7 +1290,7 @@ namespace TaskBarLibSim
         {
             SimulationTop.k300EventsClass.SendEventMaof(ref data);
             // avoid tight loops in the system
-            // Thread.Sleep(50);
+            // Thread.Sleep(10);
         }
 
         public int GetCount()
