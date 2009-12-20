@@ -1213,8 +1213,8 @@ namespace TaskBarLibSim
 
 
     /// <summary>
-    /// this is a thread generating 
-    /// very simple all fields are random Maof data generator
+    /// this is a thread generating Maof data
+    /// very simple all fields are random 
     /// objects of this type used as an argument to the InitStreamSimulation
     /// </summary>
     /// <param name="maofGenerator">
@@ -1463,9 +1463,9 @@ namespace TaskBarLibSim
         public int LST_DL_PR;
         public int LST_DL_VL;
 
-        //Aggregate trading data
-        public int DAY_VL;
-        public int DAY_DIL_NO;
+        //Daily aggregated trading data
+        public int DAY_VL;      //volume
+        public int DAY_DIL_NO;  //number of transactions
     }
 
     /// <summary>
@@ -1630,7 +1630,7 @@ namespace TaskBarLibSim
 
 
         /// <summary>
-        /// Collection of all traded symbols (different BNO_num for TASE) 
+        /// Collection of all traded symbols (different BNO_Num for TASE) 
         /// </summary>
         protected System.Collections.Hashtable securities;
         protected FieldInfo field_BNO_Num;
