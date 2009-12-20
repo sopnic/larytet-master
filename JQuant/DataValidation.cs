@@ -1,3 +1,4 @@
+
 using System;
 using System.IO;
 using System.Threading;
@@ -33,10 +34,10 @@ namespace JQuant
             // remove myself from the list of created verifiers
             Resources.Verifiers.Remove(this);
         }
-        
+
         public abstract ErrorType Verify(DataType data);
         public abstract void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values);
-            
+
         public string Name
         {
             get;
@@ -59,19 +60,16 @@ namespace JQuant
             names = new System.Collections.ArrayList(8);
             values = new System.Collections.ArrayList(8);
 
-            names.Add("Calls");values.Add(invocations);
-            names.Add("True");values.Add(returnedTrue);
-            names.Add("False");values.Add(returnedFalse);
+            names.Add("Calls"); values.Add(invocations);
+            names.Add("True"); values.Add(returnedTrue);
+            names.Add("False"); values.Add(returnedFalse);
         }
 
         public override abstract bool Verify(DataType data);
-        
+
         protected int invocations;
         protected int returnedTrue;
         protected int returnedFalse;
-        
+
     } // class SyncVerificationBool
-
-
-    
 } // namespace FMRShell

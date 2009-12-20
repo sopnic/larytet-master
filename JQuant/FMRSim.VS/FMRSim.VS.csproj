@@ -36,7 +36,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>WITHGUI_ USEFMRSIM_</DefineConstants>
+    <DefineConstants>WITHGUI_ USEFMRSIM</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
@@ -46,7 +46,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DefineConstants>WITHGUI_ USEFMRSIM_</DefineConstants>
+    <DefineConstants>WITHGUI_ USEFMRSIM</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -108,6 +108,12 @@
     </Compile>
     <Compile Include="..\Locks.cs">
       <Link>Locks.cs</Link>
+    </Compile>
+    <Compile Include="..\PerformanceMonitor.cs">
+      <Link>PerformanceMonitor.cs</Link>
+    </Compile>
+    <Compile Include="..\DataValidation.cs">
+      <Link>DataValidation.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

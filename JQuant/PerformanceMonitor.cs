@@ -14,7 +14,7 @@ namespace JQuant
             void Tick();
             void Notify(Event e);
         }
-        
+
         /// <summary>
         /// basic PM. Keeps a cyclic buffer of errors. Every time Notify is called an entry in the
         /// buffer increase by one (if event is Nok)
@@ -25,8 +25,8 @@ namespace JQuant
         /// For example, 24 hours statistics can look like cyclic buffer containing 24 counters - a counter
         /// of errors for every hour.
         /// </summary>
-        public class Errors : JQuant.CyclicBuffer<int>, 
-                            Interface<Errors.Event>, 
+        public class Errors : JQuant.CyclicBuffer<int>,
+                            Interface<Errors.Event>,
                             System.Collections.Generic.IEnumerable<int>
         {
             public enum Event
@@ -34,7 +34,7 @@ namespace JQuant
                 OK,
                 NOK
             }
-            
+
             public Errors(string name, int size)
                 : base(size)
             {
@@ -49,7 +49,7 @@ namespace JQuant
                 {
                     head = IncIndex(head, Size);
                     buffer[head] = 0;
-                    
+
                     if (Count < Size)
                     {
                         Count++;
@@ -77,15 +77,15 @@ namespace JQuant
             protected new void Add(int o)
             {
             }
-    
+
             protected new int Remove()
             {
                 return 0;
             }
-    
+
         }
 
 
-        
+
     } // namespace PM
-}
+}//namespace JQuant

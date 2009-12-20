@@ -348,31 +348,31 @@ namespace JQuant
         public static void printSeparator(IWrite iWrite, int length)
         {
             string s = "";
-            
-            for (int i = 0;i < length;i++)
+
+            for (int i = 0; i < length; i++)
             {
                 s = s + "-";
             }
             iWrite.WriteLine(s);
         }
-        
+
         public static void printTableHeader(IWrite iWrite, System.Collections.ArrayList names, int columnSize)
         {
             int line = 0;
             bool printed = true;
             int charsInColumn = columnSize - 1;
             int maxOutputSLength = 0;
-            
+
             while (printed)
             {
                 printed = false;
                 string outputS = "";
-                
-                for (int i = 0;i < names.Count;i++)
+
+                for (int i = 0; i < names.Count; i++)
                 {
                     string s = "";
                     string name = names[i].ToString();
-                    
+
                     // get (columnSize-1) chars from the name[i]
                     if (name.Length > line * charsInColumn)
                     {
@@ -400,11 +400,11 @@ namespace JQuant
 
             printSeparator(iWrite, maxOutputSLength);
         }
-        
+
         public static void printValues(IWrite iWrite, System.Collections.ArrayList values, int columnSize)
         {
             string outputS = "";
-            for (int i = 0;i < values.Count;i++)
+            for (int i = 0; i < values.Count; i++)
             {
                 string s = "";
 
@@ -420,6 +420,6 @@ namespace JQuant
             string[] args = command.Split(' ');
             return args;
         }
-        
+
     }
 }

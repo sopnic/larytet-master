@@ -119,7 +119,7 @@ namespace JQuant
                 }
             }
 
-                
+
             return result;
         }
 
@@ -142,7 +142,7 @@ namespace JQuant
             bool result = false;
 
             result = semaphore.WaitOne(timeout, true);
-            
+
             lock (this)
             {
                 if ((result) && (Count > 0))
@@ -171,13 +171,13 @@ namespace JQuant
             names = new System.Collections.ArrayList(8);
             values = new System.Collections.ArrayList(8);
 
-            names.Add("Size");values.Add(_capacity);
-            names.Add("MaxCount");values.Add(_maxCount);
-            names.Add("Pending");values.Add(Count);
-            names.Add("Timeout");values.Add(_timeouts);
-            names.Add("Received");values.Add(_received);
-            names.Add("Sent");values.Add(_sent);
-            names.Add("Dropped");values.Add(_dropped);
+            names.Add("Size"); values.Add(_capacity);
+            names.Add("MaxCount"); values.Add(_maxCount);
+            names.Add("Pending"); values.Add(Count);
+            names.Add("Timeout"); values.Add(_timeouts);
+            names.Add("Received"); values.Add(_received);
+            names.Add("Sent"); values.Add(_sent);
+            names.Add("Dropped"); values.Add(_dropped);
         }
 
 
@@ -191,4 +191,4 @@ namespace JQuant
         protected Semaphore semaphore;
 
     }
-}
+}//namespace JQuant

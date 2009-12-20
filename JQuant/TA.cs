@@ -16,20 +16,20 @@ namespace TA
             this.price = price;
             this.volume = volume;
         }
-        
+
         public double price
         {
             get;
             protected set;
         }
-        
+
         public double volume
         {
             get;
             protected set;
         }
     }
-    
+
     public class Candle
     {
         public Candle(double open, double close, double high, double low, int volume)
@@ -40,7 +40,7 @@ namespace TA
             this.low = low;
             this.volume = volume;
         }
-        
+
         public double open
         {
             get;
@@ -70,7 +70,7 @@ namespace TA
             get;
             protected set;
         }
-        
+
 
     }
 
@@ -88,7 +88,7 @@ namespace TA
             protected set;
         }
     }
-    
+
 
     /// <summary>
     /// stores price+volume series in list
@@ -106,13 +106,13 @@ namespace TA
         {
             Add(new Candle(open, close, min, max, volume));
         }
-        
+
         protected void Add(Candle candle)
         {
             paramsCalculated = false;
             Data.Add(candle);
         }
-        
+
         public System.Collections.ArrayList Data
         {
             get;
@@ -137,47 +137,47 @@ namespace TA
         {
             return ToString(Format.Table);
         }
-        
+
         public string ToString(Format format)
         {
             string result = null;
-            
+
             // preallocate some memory
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(Data.Count*80);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(Data.Count * 80);
             switch (format)
             {
-            case Format.Table:
-                foreach (Candle candle in Data)
-                {
-                    sb.Append(JQuant.OutputUtils.FormatField(candle.open, 8)+
-                              JQuant.OutputUtils.FormatField(candle.high, 8)+
-                              JQuant.OutputUtils.FormatField(candle.low, 8)+
-                              JQuant.OutputUtils.FormatField(candle.close, 8)+
-                              JQuant.OutputUtils.FormatField(candle.volume, 10)+
-                              "\n");
-                }
-                break;
-            case Format.CSV:
-                foreach (Candle candle in Data)
-                {
-                    sb.Append(""+candle.open+","+candle.high+","+candle.low+","+candle.close+","+candle.volume+"\n");
-                }
-                break;
-            case Format.XML:
-            default:
-                foreach (Candle candle in Data)
-                {
-                    sb.Append("<Candle o="+candle.open+",h="+candle.high+
-                              ",l="+candle.low+",c="+candle.close+
-                              ",v="+candle.volume+"></Candle>\n");
-                }
-                break;
+                case Format.Table:
+                    foreach (Candle candle in Data)
+                    {
+                        sb.Append(JQuant.OutputUtils.FormatField(candle.open, 8) +
+                                  JQuant.OutputUtils.FormatField(candle.high, 8) +
+                                  JQuant.OutputUtils.FormatField(candle.low, 8) +
+                                  JQuant.OutputUtils.FormatField(candle.close, 8) +
+                                  JQuant.OutputUtils.FormatField(candle.volume, 10) +
+                                  "\n");
+                    }
+                    break;
+                case Format.CSV:
+                    foreach (Candle candle in Data)
+                    {
+                        sb.Append("" + candle.open + "," + candle.high + "," + candle.low + "," + candle.close + "," + candle.volume + "\n");
+                    }
+                    break;
+                case Format.XML:
+                default:
+                    foreach (Candle candle in Data)
+                    {
+                        sb.Append("<Candle o=" + candle.open + ",h=" + candle.high +
+                                  ",l=" + candle.low + ",c=" + candle.close +
+                                  ",v=" + candle.volume + "></Candle>\n");
+                    }
+                    break;
             }
 
             result = sb.ToString();
             return result;
         }
-        
+
         /// <summary>
         /// the method does not calculate series std deviation, but a measurement of the single 
         /// candle variance or a single candle volatility
@@ -202,47 +202,47 @@ namespace TA
         {
             Candle candle;
             double close;
-            average= 0;
+            average = 0;
             max = 0;
             min = Int32.MaxValue;
             stdDeviation = 0;
 
             double candleSize = 0;
-            
-            int end = start+count-1;
-            for (int i=start;i <= end;i++)
+
+            int end = start + count - 1;
+            for (int i = start; i <= end; i++)
             {
-                candle= (Candle)series.Data[i]; 
+                candle = (Candle)series.Data[i];
                 close = candle.close;
-                
+
                 average += close;
                 max = Math.Max(max, close);
                 min = Math.Min(min, close);
 
-                double d = Math.Abs(candle.open-close);
+                double d = Math.Abs(candle.open - close);
                 // calculate "variance"
                 candleSize += d;
             }
 
-            average = average/count;
-            double candleSizeAverage = candleSize/count;
-            
-            for (int i=start;i <= end;i++)
+            average = average / count;
+            double candleSizeAverage = candleSize / count;
+
+            for (int i = start; i <= end; i++)
             {
-                candle= (Candle)series.Data[i]; 
+                candle = (Candle)series.Data[i];
                 close = candle.close;
-                
+
                 average += close;
                 max = Math.Max(max, close);
                 min = Math.Min(min, close);
 
-                candleSize = Math.Abs(candle.open-close);
+                candleSize = Math.Abs(candle.open - close);
                 double d = candleSize - candleSizeAverage;
                 // calculate "candle variance"
                 stdDeviation += d * d;
             }
 
-            stdDeviation = Math.Sqrt(stdDeviation/(count-1));
+            stdDeviation = Math.Sqrt(stdDeviation / (count - 1));
         }
 
         public static void CalculateAverage
@@ -256,10 +256,10 @@ namespace TA
             min = max;
             minIdx = 0;
 
-            int end = start+count-1;
-            for (int i=start+1;i <= end;i++)
+            int end = start + count - 1;
+            for (int i = start + 1; i <= end; i++)
             {
-                candle= (Candle)series.Data[i]; 
+                candle = (Candle)series.Data[i];
                 close = candle.close;
                 if (max < close)
                 {
@@ -274,22 +274,22 @@ namespace TA
                 average += close;
             }
 
-            average = average/count;
+            average = average / count;
         }
-        
+
         public void CalculateParams()
         {
             if (!paramsCalculated)
             {
-                double average;double max;double min;double stdDeviation;
-                
+                double average; double max; double min; double stdDeviation;
+
                 CalculateAverageStdDeviation(this, out average, out max, out min, out stdDeviation);
-                
+
                 Average = average;
                 Min = min;
                 Max = max;
                 StdDeviation = stdDeviation;
-    
+
                 paramsCalculated = true;
             }
         }
@@ -299,46 +299,46 @@ namespace TA
             get
             {
                 CalculateParams();
-                return Average; 
+                return Average;
             }
             protected set
             {
                 Average = value;
             }
         }
-        
+
         public double Max
         {
             get
             {
                 CalculateParams();
-                return Max; 
+                return Max;
             }
             protected set
             {
                 Max = value;
             }
         }
-        
+
         public double Min
         {
             get
             {
                 CalculateParams();
-                return Min; 
+                return Min;
             }
             protected set
             {
                 Min = value;
             }
         }
-        
+
         public double StdDeviation
         {
             get
             {
                 CalculateParams();
-                return StdDeviation; 
+                return StdDeviation;
             }
             protected set
             {
@@ -364,13 +364,13 @@ namespace TA
         {
             base.Add(open, close, min, max, volume);
         }
-        
+
         public void Add(System.DateTime date, double open, double close, double min, double max, int volume)
         {
             Add(new CandleDaily(date, open, close, min, max, volume));
         }
     }
-    
+
     /// <summary>
     /// describes triangle as a start and end index of the given series
     /// </summary>
@@ -384,13 +384,13 @@ namespace TA
 
             this.series = series;
         }
-        
+
         public int start
         {
             get;
             protected set;
         }
-        
+
         public int end
         {
             get;
@@ -412,10 +412,10 @@ namespace TA
     {
         public static bool Read(string filename, out PriceVolumeSeries series)
         {
-            series = null; 
+            series = null;
             return false;
         }
-            
+
         public static bool Write(string filename, PriceVolumeSeries series)
         {
             System.IO.FileStream fileStream = null;
@@ -445,7 +445,7 @@ namespace TA
         }
     }
 
-    
+
 
 
     /// <summary>
@@ -478,7 +478,7 @@ namespace TA
         /// The data to analyse
         /// </param>
         public AscendingTriangle(PriceVolumeSeries series)
-            : this (series, 0.2)
+            : this(series, 0.2)
         {
         }
 
@@ -508,73 +508,73 @@ namespace TA
         public bool isTriangle(int start, int end, PriceVolumeSeries series)
         {
             bool result = false;
-            
+
             do
             {
                 // no enough points for triangle
                 if ((end - start) < 6) break;
-                
-                int halfPoint = (end - start)/2;
+
+                int halfPoint = (end - start) / 2;
                 double average, min1, max1, min2, max2;
                 int min1Idx, max1Idx, min2Idx, max2Idx;
 
-                double stdDeviation = StdDeviations*series.StdDeviation;
+                double stdDeviation = StdDeviations * series.StdDeviation;
 
-                if ((series.Max - series.Min) < 2*stdDeviation)
+                if ((series.Max - series.Min) < 2 * stdDeviation)
                 {
                     break;
                 }
-                
-                PriceVolumeSeries.CalculateAverage(series, start, halfPoint-start+1, out average, out min1, out min1Idx, out max1, out max1Idx);
-                PriceVolumeSeries.CalculateAverage(series, halfPoint, end-halfPoint+1, out average, out min2, out min2Idx, out max2, out max2Idx);
+
+                PriceVolumeSeries.CalculateAverage(series, start, halfPoint - start + 1, out average, out min1, out min1Idx, out max1, out max1Idx);
+                PriceVolumeSeries.CalculateAverage(series, halfPoint, end - halfPoint + 1, out average, out min2, out min2Idx, out max2, out max2Idx);
 
                 //   max2-stdDeviation < max1 < max2+stdDeviation
-                if ( (max1 <= (max2-stdDeviation)) || (max1 >= (max2+stdDeviation)) )
+                if ((max1 <= (max2 - stdDeviation)) || (max1 >= (max2 + stdDeviation)))
                 {
                     break;
                 }
 
-                if (min2 < min1+stdDeviation)
+                if (min2 < min1 + stdDeviation)
                 {
                     break;
                 }
 
                 // i have two conditions - maxs are "close" and second low is higher than the first
                 // do i have two highs and three lows ? two highs (two maxs) are in place. now lows
-                double tangent = (min2 - min1)/(min2Idx - min1Idx);
-                double target = min1-tangent*(min1Idx-start);
+                double tangent = (min2 - min1) / (min2Idx - min1Idx);
+                double target = min1 - tangent * (min1Idx - start);
                 bool thirdPoint = false;
                 bool closeUnder = false;
 
                 // look for 3rd close on line described by the tangent
                 // on the way I make sure that all closes are above the ascending line
-                for (int i=start;i <= end;i++)
+                for (int i = start; i <= end; i++)
                 {
-                    Candle candle= (Candle)series.Data[i]; 
+                    Candle candle = (Candle)series.Data[i];
                     double close = candle.close;
 
-                    if ( (i != min1Idx) && (i != min2Idx) && (close < target-stdDeviation)  )
+                    if ((i != min1Idx) && (i != min2Idx) && (close < target - stdDeviation))
                     {
                         closeUnder = true;
                         break;
                     }
 
-                    thirdPoint = thirdPoint | ( (i != min1Idx) && (i != min2Idx) && (close > target-stdDeviation) && (close < target+stdDeviation)  );
-                    
+                    thirdPoint = thirdPoint | ((i != min1Idx) && (i != min2Idx) && (close > target - stdDeviation) && (close < target + stdDeviation));
+
                     target = target + tangent;
                 }
 
                 result = !closeUnder && thirdPoint;
-                
+
             }
             while (false);
 
-            
+
             return result;
         }
 
 
-        public  PriceVolumeSeries series
+        public PriceVolumeSeries series
         {
             get;
             protected set;
@@ -585,7 +585,7 @@ namespace TA
             get;
             protected set;
         }
-        
+
         public System.Collections.Generic.List<Shape> shapes;
     }
-}
+}//namespace TA

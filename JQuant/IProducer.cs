@@ -31,13 +31,13 @@ namespace JQuant
         void Notify(int count, DataType data);
     }
 
-    public interface IProducer<DataType>: IResourceProducer
+    public interface IProducer<DataType> : IResourceProducer
     {
         bool AddConsumer(IConsumer<DataType> consumer);
         bool RemoveConsumer(IConsumer<DataType> consumer);
     }
 
-    public abstract class ProducerBase<DataType>: IDisposable, IProducer<DataType>
+    public abstract class ProducerBase<DataType> : IDisposable, IProducer<DataType>
     {
         protected ProducerBase()
         {
@@ -57,8 +57,8 @@ namespace JQuant
 
         public abstract bool AddConsumer(IConsumer<DataType> consumer);
         public abstract bool RemoveConsumer(IConsumer<DataType> consumer);
-        
-        public abstract void GetEventCounters(out System.Collections.ArrayList names, 
+
+        public abstract void GetEventCounters(out System.Collections.ArrayList names,
                                          out System.Collections.ArrayList values);
     }
-}
+}//namespace JQuant

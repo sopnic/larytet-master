@@ -7,7 +7,6 @@ using System.Collections.Specialized;
 namespace JQuant
 {
 
-
     /// <summary>
     /// Generic pool
     /// Pool is a stack of objects.
@@ -158,12 +157,12 @@ namespace JQuant
             values = new System.Collections.ArrayList(7);
 
 
-            names.Add("Capacity");values.Add(_capacity);
-            names.Add("Count");values.Add(Count);
-            names.Add("MinCount");values.Add(_minCount);
-            names.Add("AllocOk");values.Add(_allocOk);
-            names.Add("AllocFailed");values.Add(_allocFailed);
-            names.Add("FreeOk");values.Add(_freeOk);
+            names.Add("Capacity"); values.Add(_capacity);
+            names.Add("Count"); values.Add(Count);
+            names.Add("MinCount"); values.Add(_minCount);
+            names.Add("AllocOk"); values.Add(_allocOk);
+            names.Add("AllocFailed"); values.Add(_allocFailed);
+            names.Add("FreeOk"); values.Add(_freeOk);
         }
 
 
@@ -174,4 +173,4 @@ namespace JQuant
         protected int _allocFailed;
         protected int _freeOk;
     }
-}
+}//namespace JQuant

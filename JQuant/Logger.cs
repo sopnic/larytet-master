@@ -294,7 +294,7 @@ namespace JQuant
                     _sh161DataToString.Init((SH161Type)x.GetValue(i));
                     _streamWriter.WriteLine(_sh161DataToString.Values);
                 }
-                Console.WriteLine(rc + " SH161 records collected");    
+                Console.WriteLine(rc + " SH161 records collected");
             }
 
             _streamWriter.Close();
@@ -308,5 +308,5 @@ namespace JQuant
         FMRShell.SH161TypeToString _sh161DataToString;
     }//SH161DataLogger
 
-    
-}//namespace
+
+}//namespace JQuant

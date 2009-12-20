@@ -22,13 +22,13 @@ namespace JQuant
             protected set;
         }
     }
-    
+
     public interface IDataFeed
-    {        
+    {
         bool GetSeries(DateTime start, DateTime end, Equity equity, DataFeed.DataType dataType, out TA.PriceVolumeSeries series);
-        
+
         bool GetSeries(string fileName, out TA.PriceVolumeSeries series);
-        
+
         DataFeed.DataType GetDataType();
     }
 
@@ -37,12 +37,12 @@ namespace JQuant
         [Flags]
         public enum DataType
         {
-            Daily                       = 0x0001,
-            Weekly                      = 0x0002,
-            Monthly                     = 0x0004,
-            Dividends                   = 0x0008,
-            PriceToBook                 = 0x0010,
-            PriceToEarnings             = 0x0020
+            Daily = 0x0001,
+            Weekly = 0x0002,
+            Monthly = 0x0004,
+            Dividends = 0x0008,
+            PriceToBook = 0x0010,
+            PriceToEarnings = 0x0020
         }
     }
 
@@ -63,7 +63,7 @@ namespace JQuant
     /// http://ichart.finance.yahoo.com/table.csv?s=MMM&a=03&b=5&c=1970&d=01&e=27&f=2009&g=d&ignore=.csv
     /// </summary>
     public class FeedYahoo : DataFeed, IDataFeed
-    {        
+    {
         public FeedYahoo()
         {
         }
@@ -84,18 +84,18 @@ namespace JQuant
             equities = null;
 
             string url = "http://download.finance.yahoo.com/d/quotes.csv?s=@%5EGSPC&f=sl1d1t1c1ohgv&e=.csv&h=0";
-            
-            Console.WriteLine("Get data from URL "+url);
+
+            Console.WriteLine("Get data from URL " + url);
 
             HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
             Stream readStream = httpResponse.GetResponseStream();
 
-                        
-            
+
+
             return false;
         }
-        
+
         public bool GetSeries(string fileName, out TA.PriceVolumeSeries series)
         {
             bool result = false;
@@ -109,7 +109,7 @@ namespace JQuant
                 }
                 catch (IOException e)
                 {
-                    System.Console.WriteLine("Failed to open file "+fileName+" for reading");
+                    System.Console.WriteLine("Failed to open file " + fileName + " for reading");
                     System.Console.WriteLine(e.ToString());
                     break;
                 }
@@ -119,19 +119,19 @@ namespace JQuant
                 result = fillDataArray(fileStream, series);
                 if (!result)
                 {
-                    System.Console.WriteLine("Failed to parse file "+fileName);
+                    System.Console.WriteLine("Failed to parse file " + fileName);
                 }
             }
             while (false);
-            
+
             if (fileStream != null)
             {
                 fileStream.Close();
             }
-                
+
             return result;
         }
-        
+
         public bool GetSeries(DateTime start, DateTime end, Equity equity, DataFeed.DataType dataType, out TA.PriceVolumeSeries series)
         {
             string symbol = equity.Symbol;
@@ -156,27 +156,27 @@ namespace JQuant
                     break;
                 }
 
-                
-                Console.WriteLine("Get data from URL "+url);
-    
+
+                Console.WriteLine("Get data from URL " + url);
+
                 HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(url);
-    
+
                 HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-    
+
                 Stream readStream = httpResponse.GetResponseStream();
-    
+
                 result = fillDataArray(readStream, series);
             }
             while (false);
-            
-   
+
+
             return result;
-            
+
         }
 
         public DataFeed.DataType GetDataType()
         {
-            return DataFeed.DataType.Daily | 
+            return DataFeed.DataType.Daily |
                     DataFeed.DataType.Weekly |
                     DataFeed.DataType.Monthly |
                     DataFeed.DataType.Dividends;
@@ -186,7 +186,7 @@ namespace JQuant
         {
             bool result = false;
             byte[] buf = new byte[8192];
-            StringBuilder sb  = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
 
             // read all data from the stream
@@ -198,7 +198,7 @@ namespace JQuant
                 {
                     break;
                 }
-                
+
                 // translate from bytes to ASCII text
                 string tempString = Encoding.ASCII.GetString(buf, 0, count);
 
@@ -207,13 +207,13 @@ namespace JQuant
             }
 
             string str = sb.ToString();
-            
+
             // buffer sb contains lines separated by 0x0A (line feed)
             // skip first line
             int indexEnd;
             int indexStart = str.IndexOf((char)0x0A, 0);
             result = false;
-            
+
             do
             {
                 indexStart += 1;
@@ -221,23 +221,23 @@ namespace JQuant
 
                 if (indexEnd <= 0)
                 {
-                    System.Console.WriteLine("195:Failed to parse price data "+str);
-                    break;
-                }
-                
-                result = ((indexEnd - indexStart) > 1);
-                if (!result)
-                {
-                    System.Console.WriteLine("202:Failed to parse price data "+str);
+                    System.Console.WriteLine("195:Failed to parse price data " + str);
                     break;
                 }
 
-                string data = str.Substring(indexStart, indexEnd-indexStart);
+                result = ((indexEnd - indexStart) > 1);
+                if (!result)
+                {
+                    System.Console.WriteLine("202:Failed to parse price data " + str);
+                    break;
+                }
+
+                string data = str.Substring(indexStart, indexEnd - indexStart);
                 TA.Candle candle;
                 result = strToCandle(data, out candle);
                 if (!result)
                 {
-                    System.Console.WriteLine("211:Failed to parse candle data "+data+" indexStart="+indexStart+" indexEnd="+indexEnd);
+                    System.Console.WriteLine("211:Failed to parse candle data " + data + " indexStart=" + indexStart + " indexEnd=" + indexEnd);
                     break;
                 }
 
@@ -245,20 +245,20 @@ namespace JQuant
                 indexStart = indexEnd;
 
                 // end of data ?
-                if (indexEnd >= (str.Length-1))
+                if (indexEnd >= (str.Length - 1))
                 {
                     result = true;
                     break;
                 }
             }
             while (true);
-            
+
             if (!result)
             {
             }
-            
+
             return result;
-            
+
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace JQuant
             end = str.IndexOf(',', start);
             if (end <= 1) // no date ?
             {
-                System.Console.WriteLine("242:Failed to parse candle data "+str);
+                System.Console.WriteLine("242:Failed to parse candle data " + str);
                 return false;
             }
             start = end + 1;
@@ -285,19 +285,19 @@ namespace JQuant
             double open, close, max, min;
             int volume;
             string strVal;
-            
+
             // open
             end = str.IndexOf(',', start);
             if ((end <= 1) || (end <= start)) // no open ?
             {
-                System.Console.WriteLine("255:Failed to parse candle data "+str);
+                System.Console.WriteLine("255:Failed to parse candle data " + str);
                 return false;
             }
-            strVal = str.Substring(start, end-start);
+            strVal = str.Substring(start, end - start);
             result = Double.TryParse(strVal, out open);
             if (!result)
             {
-                System.Console.WriteLine("262:Failed to parse candle data "+str+"!"+strVal);
+                System.Console.WriteLine("262:Failed to parse candle data " + str + "!" + strVal);
                 return false;
             }
             start = end + 1;
@@ -306,14 +306,14 @@ namespace JQuant
             end = str.IndexOf(',', start);
             if ((end <= 1) || (end <= start)) // no max ?
             {
-                System.Console.WriteLine("271:Failed to parse candle data "+str);
+                System.Console.WriteLine("271:Failed to parse candle data " + str);
                 return false;
             }
-            strVal = str.Substring(start, end-start);
+            strVal = str.Substring(start, end - start);
             result = Double.TryParse(strVal, out max);
             if (!result)
             {
-                System.Console.WriteLine("278:Failed to parse candle data "+str+"!"+strVal);
+                System.Console.WriteLine("278:Failed to parse candle data " + str + "!" + strVal);
                 return false;
             }
             start = end + 1;
@@ -322,31 +322,31 @@ namespace JQuant
             end = str.IndexOf(',', start);
             if ((end <= 1) || (end <= start)) // no min ?
             {
-                System.Console.WriteLine("287:Failed to parse candle data "+str);
+                System.Console.WriteLine("287:Failed to parse candle data " + str);
                 return false;
             }
-            strVal = str.Substring(start, end-start);
+            strVal = str.Substring(start, end - start);
             result = Double.TryParse(strVal, out min);
             if (!result)
             {
-                System.Console.WriteLine("294:Failed to parse candle data "+str+"!"+strVal);
+                System.Console.WriteLine("294:Failed to parse candle data " + str + "!" + strVal);
                 return false;
             }
             start = end + 1;
 
-            
+
             // close
             end = str.IndexOf(',', start);
             if ((end <= 1) || (end <= start)) // no close ?
             {
-                System.Console.WriteLine("304:Failed to parse candle data "+str);
+                System.Console.WriteLine("304:Failed to parse candle data " + str);
                 return false;
             }
-            strVal = str.Substring(start, end-start);
+            strVal = str.Substring(start, end - start);
             result = Double.TryParse(strVal, out close);
             if (!result)
             {
-                System.Console.WriteLine("311:Failed to parse candle data "+str+"!"+strVal);
+                System.Console.WriteLine("311:Failed to parse candle data " + str + "!" + strVal);
                 return false;
             }
             start = end + 1;
@@ -355,14 +355,14 @@ namespace JQuant
             end = str.IndexOf(',', start);
             if ((end <= 1) || (end <= start)) // no open ?
             {
-                System.Console.WriteLine("320:Failed to parse candle data "+str);
+                System.Console.WriteLine("320:Failed to parse candle data " + str);
                 return false;
             }
-            strVal = str.Substring(start, end-start);
+            strVal = str.Substring(start, end - start);
             result = Int32.TryParse(strVal, out volume);
             if (!result)
             {
-                System.Console.WriteLine("327:Failed to parse candle data "+str+"!"+strVal);
+                System.Console.WriteLine("327:Failed to parse candle data " + str + "!" + strVal);
                 return false;
             }
             start = end + 1;
@@ -371,7 +371,7 @@ namespace JQuant
 
             return true;
         }
-        
+
 
         /// <summary>
         /// Example
@@ -387,16 +387,16 @@ namespace JQuant
             {
                 return false;
             }
-            
+
             symbol = symbol.ToUpper();
-            url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+
-                "&a="+Month2Str(start.Month)+
-                "&b="+start.Day+
-                "&c="+start.Year+
-                "&d="+end.Month+
-                "&e="+end.Day+
-                "&e="+end.Year+
-                "&g="+dataTypeURL+
+            url = "http://ichart.finance.yahoo.com/table.csv?s=" + symbol +
+                "&a=" + Month2Str(start.Month) +
+                "&b=" + start.Day +
+                "&c=" + start.Year +
+                "&d=" + end.Month +
+                "&e=" + end.Day +
+                "&e=" + end.Year +
+                "&g=" + dataTypeURL +
                 "&ignore=.csv";
 
             return true;
@@ -407,10 +407,10 @@ namespace JQuant
             string result;
             month = month - 1;
             if (month < 10)
-                result = "0"+month;
+                result = "0" + month;
             else
-                result = ""+month;
-            
+                result = "" + month;
+
             return result;
         }
 
@@ -418,18 +418,17 @@ namespace JQuant
         {
             switch (dataType)
             {
-            case DataType.Daily:
-                return "d";
-            case DataType.Monthly:
-                return "m";
-            case DataType.Weekly:
-                return "w";
-            case DataType.Dividends:
-                return "v";
-            default:
-                return "";
+                case DataType.Daily:
+                    return "d";
+                case DataType.Monthly:
+                    return "m";
+                case DataType.Weekly:
+                    return "w";
+                case DataType.Dividends:
+                    return "v";
+                default:
+                    return "";
             }
         }
-    }
-
-}
+    }//class FeedYahoo
+}//namespace JQuant

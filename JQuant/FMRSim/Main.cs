@@ -1,6 +1,5 @@
-// This is FMR Simulation project
-// Partial implementation of FMRLab API as in the defined in the fmrlib.idl
 
+//Main loop - runs the application (CLI and / or GUI)
 using System;
 using System.Threading;
 using System.Windows.Forms;
@@ -207,8 +206,8 @@ namespace JQuant
         static void Main(string[] args)
         {
             //check whether JQUANT_ROOT environment variable is set on the system
-            if (!Resources.RootDirectoryDefined()) 
-                Console.WriteLine(Environment.NewLine 
+            if (!Resources.RootDirectoryDefined())
+                Console.WriteLine(Environment.NewLine
                     + "Warning! Environment variable JQUANT_ROOT is not set" + Environment.NewLine);
 
             // init precision clock 
@@ -241,4 +240,4 @@ namespace JQuant
         }
 
     }
-}
+}//namespace JQuant
