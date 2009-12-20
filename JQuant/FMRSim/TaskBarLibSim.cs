@@ -948,7 +948,23 @@ namespace TaskBarLibSim
             data = default(DataType);
             TimeSpan timeSpan = default(TimeSpan);
 
+            // sanity check - i opened the file and everything is Ok
+            // i can try to read the data
             if (!ReadyToGo) return false;
+
+
+            // in the very first call to the GetData i am going to sleep
+            // for initialDelay - first data arrives to the data collector with delay
+            // simulation of the network delay
+            // there are going to be two playbacks of the same log file running concurently
+            // one (with zero initial delay) for the market simulation and another for the
+            // trading algorithm
+            if (initialDelay > 0)
+            {
+                Thread.Sleep(initialDelay);
+                initialDelay = 0;
+            }
+            
 
             bool parseRes = false;
 
@@ -1024,10 +1040,17 @@ namespace TaskBarLibSim
                 baseTimePb = DateTime.Now;
             }
 
+            // i have to take care of speedup
+            // because of speedup my delays are going to be shorter - i am running
+            // through the log faster
+            // local (playback) time runs faster
+            // delayPb is time elapsed from the last call to the method
+            delayPb = (int)(delayPb * this.speedup);
+            
             // if i am running faster than log i'll do delay. if i am slower there is nothing to do.
             // calculate next sleep. the shortest possible sleep can be limited
             // In Windows i can't sleep for shorter period than 15ms, but i am not woory about that
-            // i always try to run not faster than the log i am playing
+            // i always try to run not faster than the log i am playing            
             if (delayLog > delayPb)
             {
                 int delay = delayLog - delayPb;
@@ -1038,7 +1061,12 @@ namespace TaskBarLibSim
 
         protected void SetDelay(int delay)
         {
-            this.delay = delay;
+            this.initialDelay = delay;
+        }
+        
+        protected void SetSpeedup(double speedup)
+        {
+            this.speedup = speedup;
         }
 
         public int GetCount()
@@ -1058,16 +1086,19 @@ namespace TaskBarLibSim
         protected FieldInfo[] fields;
 
         /// <summary>
-        /// Delay in milliseconds
-        /// Called in GetData() to slow the things down
-        /// Child class will call SetDelay() depending on the time stamps in the log
+        /// Delay in milliseconds. This is for simulation of the roundtrip delay
+        /// in the real network connection
         /// </summary>
-        protected int delay;
+        protected int initialDelay;
 
         protected int count;
         protected FileStream fileStream;
         protected StreamReader streamReader;
         protected string filename;
+
+        // if 2.0 then 1s of the log will be 500ms of real time
+        // i will run the log at double speed
+        double speedup;
 
         // time span in the log file - very first entry
         private TimeSpan baseTimeSpanLog;
@@ -1095,7 +1126,11 @@ namespace TaskBarLibSim
         /// </param>
         /// <param name="delay">
         /// A <see cref="System.Int32"/>
-        /// Initial delay before I start to send events in milliseconds
+        /// Initial delay (milliseconds) before I start to send events 
+        /// Thi is simulation of the network delay
+        /// There are going to be two playbacks of the same log file running concurently -
+        /// one (with zero initial delay) for the market simulation and another (delayed) for the
+        /// trading algorithm
         /// </param>
         public MaofDataGeneratorLogFile(string filename, double speedup, int delay)
             : base(",", filename)
@@ -1103,6 +1138,7 @@ namespace TaskBarLibSim
             // set initial delay
             // first event will be sent only after the delay expires
             base.SetDelay(delay);
+            base.SetSpeedup(speedup);
         }
 
         ~MaofDataGeneratorLogFile()
