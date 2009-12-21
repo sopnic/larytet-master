@@ -1022,7 +1022,7 @@ namespace TaskBarLibSim
         {
             int delayLog = 0, delayPb = 0;
             
-            // this not the first thime the method is called
+            // this not the first time the method is called
             // calculate how much time went locally and according to the log
             if (baseTimeSpanLog != default(TimeSpan))
             {
@@ -1049,7 +1049,7 @@ namespace TaskBarLibSim
             
             // if i am running faster than log i'll do delay. if i am slower there is nothing to do.
             // calculate next sleep. the shortest possible sleep can be limited
-            // In Windows i can't sleep for shorter period than 15ms, but i am not woory about that
+            // In Windows i can't sleep for shorter period than 15ms, but i am not worry about that
             // i always try to run not faster than the log i am playing            
             if (delayLog > delayPb)
             {
@@ -1482,9 +1482,8 @@ namespace TaskBarLibSim
 
 
     /// <summary>
-    /// Describes an asset, for example, TASE option
-    /// this class is used in the MarketSimulation
-    /// all prices are integers. If required in cents/agorots
+    /// Describes an asset, for example, TASE option this class is used in the MarketSimulation
+    /// all data (prices / quantities) are integers. If required in cents/agorots
     /// </summary>
     public class MarketData
     {
