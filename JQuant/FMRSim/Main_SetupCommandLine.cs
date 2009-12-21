@@ -291,7 +291,7 @@ namespace JQuant
                 else
                 {
                     // create Maof data generator
-                    dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorLogFile(backlogfile, 3, 0);
+                    dataMaofGenerator = new TaskBarLibSim.MaofDataGeneratorLogFile(backlogfile, 1, 0);
                 }
                 // setup the data generator(s) in the K300Class
                 TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
@@ -362,6 +362,13 @@ namespace JQuant
         #endregion;
 
         #region Debug Callbacks
+
+
+
+        protected void debugMarketSimulationCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+
+        }
 
         protected void debugPrintResourcesNameAndStats(IWrite iWrite, System.Collections.ArrayList list)
         {
@@ -1299,34 +1306,10 @@ namespace JQuant
 
         protected void LoadCommandLineInterface()
         {
+            #region Main CLI menu
 
             cli.SystemMenu.AddCommand("exit", "Exit from the program",
                 "Cleanup and exit", this.CleanupAndExit);
-
-
-            Menu menuOperations = cli.RootMenu.AddMenu("Oper", "Operations",
-                                   " Login, start stream&log");
-
-            menuOperations.AddCommand("Login", "Login to the remote server",
-                                  " The call will block until login succeeds", operLoginCallback);
-            menuOperations.AddCommand("Logout", "Perform the logout process",
-                                  " The call will block until logout succeeds", operLogoutCallback);
-
-            menuOperations.AddCommand("StartLog", "Log data stream - choose MF|RZ|MDD.",
-                                  " Start trading data stream and run logger. In simulation mode playback file can be specified", operLogCallback);
-
-            menuOperations.AddCommand("StopLog", "Stop previosly started Maof Log - MF | MDD | RZ, to stop stream type Y",
-                                  " Stop logger - Maof(MF) | Madad (MDD) | Rezef (RZ) and stream (Y/N). ", operStopLogCallback);
-            menuOperations.AddCommand("StopStream", "Stop previosly started data stream - MF | MDD | RZ",
-                                  " Stop data stream - Maof(MF) | Madad (MDD) | Rezef (RZ) ", StopStreamCallBack);
-
-
-            menuOperations.AddCommand("ShowLog", "Show existing loggers",
-                                  " List of created loggers with the statistics", debugLoggerShowCallback);
-            menuOperations.AddCommand("AS400TimeTest", "ping the server",
-                                  "ping AS400 server in order to get latency and synchronize local amachine time with server's",
-                                  debugGetAS400DTCallback);
-
             // Menu menuFMRLib = 
             cli.RootMenu.AddMenu("FMRLib", "Access to  FMRLib API",
                           " Allows to access the FMRLib API directly");
@@ -1334,6 +1317,50 @@ namespace JQuant
             cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation",
                            " Condiguration and debug of the FMR simulatoion");
 
+            #endregion;
+
+            #region operate commands;
+
+            Menu menuOperations = cli.RootMenu.AddMenu("Oper", "Operations",
+                                   " Login, start stream&log");
+
+            menuOperations.AddCommand(  "Login", 
+                                        "Login to the remote server",
+                                        " The call will block until login succeeds", 
+                                        operLoginCallback
+                                        );
+            menuOperations.AddCommand(  "Logout", 
+                                        "Perform the logout process",
+                                        " The call will block until logout succeeds", 
+                                        operLogoutCallback
+                                        );
+            menuOperations.AddCommand(  "StartLog", 
+                                        "Log data stream - choose MF|RZ|MDD.",
+                                        " Start trading data stream and run logger. In simulation mode playback file can be specified", 
+                                        operLogCallback
+                                        );
+            menuOperations.AddCommand(  "StopLog", 
+                                        "Stop previosly started Maof Log - MF | MDD | RZ, to stop stream type Y",
+                                        " Stop logger - Maof(MF) | Madad (MDD) | Rezef (RZ) and stream (Y/N). ", 
+                                        operStopLogCallback);
+            menuOperations.AddCommand(  "StopStream",
+                                        "Stop previosly started data stream - MF | MDD | RZ",
+                                        " Stop data stream - Maof(MF) | Madad (MDD) | Rezef (RZ) ", 
+                                        StopStreamCallBack
+                                        );
+            menuOperations.AddCommand(  "ShowLog", 
+                                        "Show existing loggers",
+                                        " List of created loggers with the statistics", 
+                                        debugLoggerShowCallback
+                                        );
+            menuOperations.AddCommand(  "AS400TimeTest", 
+                                        "ping the server",
+                                        "ping AS400 server in order to get latency and synchronize local amachine time with server's",
+                                        debugGetAS400DTCallback);
+
+            #endregion;
+
+            #region Feed commands;
 
             Menu menuFeed = cli.RootMenu.AddMenu("Feed", "Trading data feeds",
                                    " Get data from the data feeds, TA screens");
@@ -1345,42 +1372,85 @@ namespace JQuant
             menuFeed.AddCommand("readfile", "Get price/volume series from file",
                                   " Get price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
 
+            #endregion;
+
+            #region Debug commands;
+
             Menu menuDebug = cli.RootMenu.AddMenu("Dbg", "System debug info",
                                    " Created objetcs, access to the system statistics");
 
-            menuDebug.AddCommand("loginTest", "Run simple test of the login",
-                                  " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
+            menuDebug.AddCommand(   "loginTest", 
+                                    "Run simple test of the login",
+                                    " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
 
-            menuDebug.AddCommand("sh161", "Get TA25 Index weights",
-                                  "Get TA25 Index weights", debugLogSH161DataCallback);
-            menuDebug.AddCommand("AS400TimeTest", "ping the server",
-                                  "ping AS400 server in order to get latency and synchronize local amachine time with server's",
-                                  debugGetAS400DTCallback);
-            menuDebug.AddCommand("fmrPing", "Start FMR ping thread",
-                                  " Ping AS400 server continuosly [login|logout|stat|kill]", debugFMRPingCallback);
+            menuDebug.AddCommand(   "sh161", 
+                                    "Get TA25 Index weights",
+                                    "Get TA25 Index weights", 
+                                    debugLogSH161DataCallback
+                                    );
+            menuDebug.AddCommand(   "AS400TimeTest", 
+                                    "ping the server",
+                                    "ping AS400 server in order to get latency and synchronize local amachine time with server's",
+                                    debugGetAS400DTCallback);
+            menuDebug.AddCommand(   "fmrPing", 
+                                    "Start FMR ping thread",
+                                    " Ping AS400 server continuosly [login|logout|stat|kill]",
+                                    debugFMRPingCallback);
 
-            menuDebug.AddCommand("threadPoolShow", "Show thread pools",
-                                  " List of created thread pools", debugThreadPoolShowCallback);
-            menuDebug.AddCommand("timerShow", "Show timers",
-                                  " List of created timers and timer tasks", debugTimerShowCallback);
-            menuDebug.AddCommand("threadShow", "Show threads",
-                                  " List of created threads and thread states", debugThreadShowCallback);
-            menuDebug.AddCommand("mbxShow", "Show mailboxes",
-                                  " List of created mailboxes with the current status and statistics", debugMbxShowCallback);
-            menuDebug.AddCommand("poolShow", "Show pools",
-                                  " List of created pools with the current status and statistics", debugPoolShowCallback);
+            menuDebug.AddCommand(   "threadPoolShow",
+                                    "Show thread pools",
+                                    " List of created thread pools", 
+                                    debugThreadPoolShowCallback
+                                    );
+            menuDebug.AddCommand(   "timerShow", 
+                                    "Show timers",
+                                    " List of created timers and timer tasks", 
+                                    debugTimerShowCallback
+                                    );
+            menuDebug.AddCommand(   "threadShow", 
+                                    "Show threads",
+                                    " List of created threads and thread states", 
+                                    debugThreadShowCallback);
+            menuDebug.AddCommand(   "mbxShow", 
+                                    "Show mailboxes",
+                                    " List of created mailboxes with the current status and statistics", 
+                                    debugMbxShowCallback
+                                    );
+            menuDebug.AddCommand(   "poolShow",
+                                    "Show pools",
+                                    " List of created pools with the current status and statistics", 
+                                    debugPoolShowCallback
+                                    );
 #if USEFMRSIM
-            menuDebug.AddCommand("loggerTest", "Run simple test of the logger",
-                                  " Create a Collector and start a random data simulator", debugLoggerTestCallback);
+            menuDebug.AddCommand(   "loggerTest",
+                                    "Run simple test of the logger",
+                                    " Create a Collector and start a random data simulator", 
+                                    debugLoggerTestCallback
+                                    );
+            menuDebug.AddCommand(   "MktSim",
+                                    "Check MarketSimulationMaof",
+                                    " ,k,,",
+                                    debugMarketSimulationCallback
+                                    );
 #endif
-            menuDebug.AddCommand("loggerShow", "Show existing loggers",
-                                  " List of created loggers with the statistics", debugLoggerShowCallback);
+            menuDebug.AddCommand(   "loggerShow", 
+                                    "Show existing loggers",
+                                    " List of created loggers with the statistics",
+                                    debugLoggerShowCallback
+                                    );
+            menuDebug.AddCommand(   "prodShow", 
+                                    "Show producers",
+                                    " List of created producers", 
+                                    debugProducerShowCallback
+                                    );
+            menuDebug.AddCommand(   "veriShow", 
+                                    "Show data verifiers",
+                                    " List of created data verifiers", 
+                                    debugVerifierShowCallback
+                                    );
+            #endregion;
 
-            menuDebug.AddCommand("prodShow", "Show producers",
-                                  " List of created producers", debugProducerShowCallback);
-
-            menuDebug.AddCommand("veriShow", "Show data verifiers",
-                                  " List of created data verifiers", debugVerifierShowCallback);
+            #region Tests commands;
 
             Menu menuTests = cli.RootMenu.AddMenu("tst", "Short tests",
                                    " Infrastructure/API tests");
@@ -1419,6 +1489,7 @@ namespace JQuant
                                   " Calls PreciseTime in tight loop and checks that the returned time is reasonable", debugRTClock1Callback);
             menuTests.AddCommand("rtclock_2", "RT clock test",
                                   " Calls PreciseTime and print out ticks", debugRTClock2Callback);
+            #endregion;
         }
 
         #endregion
