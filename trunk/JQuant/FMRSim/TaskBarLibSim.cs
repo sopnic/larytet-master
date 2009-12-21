@@ -374,14 +374,6 @@ namespace TaskBarLibSim
 
     public class K300Class : IK300, K300, IK300Event_Event
     {
-        // Events - even though they appear here,
-        // these events are out of date, use K300EventsClass onMaof / on Rezef / onMadad instead
-        // we'll need to clean up some time
-        /*public event IK300Event_FireMaofEventHandler FireMaof;
-        public event IK300Event_FireMaofCNTEventHandler FireMaofCNT;
-        public event IK300Event_FireRezefEventHandler FireRezef;
-        public event IK300Event_FireRezefCNTEventHandler FireRezefCNT;*/
-
         public K300Class()
         {
             maofStreamStarted = false;
@@ -1112,7 +1104,7 @@ namespace TaskBarLibSim
     /// <summary>
     /// this is a thread generating event based on the Maof log file
     /// </summary>
-    public class MaofDataGeneratorLogFile : EventGeneratorPlayback<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator
+    public class MaofDataGeneratorLogFile : EventGeneratorPlayback<K300MaofType>, ISimulationDataGenerator<K300MaofType>, JQuant.IDataGenerator, JQuant.IProducer<K300MaofType>
     {
         /// Log file to read the data from
         /// <param name="filename">
@@ -1127,7 +1119,7 @@ namespace TaskBarLibSim
         /// <param name="delay">
         /// A <see cref="System.Int32"/>
         /// Initial delay (milliseconds) before I start to send events 
-        /// Thi is simulation of the network delay
+        /// This is simulation of the network delay
         /// There are going to be two playbacks of the same log file running concurently -
         /// one (with zero initial delay) for the market simulation and another (delayed) for the
         /// trading algorithm
@@ -1254,6 +1246,33 @@ namespace TaskBarLibSim
         {
             return "Maof playback generator";
         }
+
+        public bool AddConsumer(JQuant.IConsumer<K300MaofType> consumer)
+        {
+            return true;
+        }
+
+        public bool RemoveConsumer(JQuant.IConsumer<K300MaofType> consumer)
+        {
+            return true;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.GetName();
+            }
+            set;
+        }
+
+        public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
+        {
+            names = new System.Collections.ArrayList(0);
+            values = new System.Collections.ArrayList(0);
+
+        }
+
     }
 
 

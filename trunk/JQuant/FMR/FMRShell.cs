@@ -782,27 +782,22 @@ namespace FMRShell
 
         public void Start(DataType dt)
         {
+            int rc = -1;
             switch (dt)
             {
                 case DataType.Maof:
-                    int tries = 0;
-                    int rc = -1;
-                    while (rc != 0 && tries < 5)
-                    {
-                        rc = k300Class.K300StartStream(K300StreamType.MaofStream);
-                        Console.WriteLine("MaofStream Started, rc=" + rc);
-                        tries++; ;
-                        if (rc != 0) Thread.Sleep(5 * 1000);
-                    }
+                    rc = k300Class.K300StartStream(K300StreamType.MaofStream);
+                    if (rc != 0) Console.WriteLine("Failed to start MaofStream, rc=" + rc);
                     break;
                 case DataType.Rezef:
                     rc = k300Class.K300StartStream(K300StreamType.RezefStream);
+                    if (rc != 0) Console.WriteLine("Failed to start RezefStream, rc=" + rc);
                     break;
                 case DataType.Madad:
                     rc = k300Class.K300StartStream(K300StreamType.IndexStream);
                     //OR - try this instead:
                     //rc = k300Class.K300StartStream(K300StreamType.MaofStream);
-                    Console.WriteLine("IndexStream Started, rc=" + rc);
+                    if (rc != 0) Console.WriteLine("Failed to start IndexfStream, rc=" + rc);
                     break;
                 default:
                     break;      //do nothing
