@@ -1259,10 +1259,7 @@ namespace TaskBarLibSim
 
         public string Name
         {
-            get
-            {
-                return this.GetName();
-            }
+            get;
             set;
         }
 
