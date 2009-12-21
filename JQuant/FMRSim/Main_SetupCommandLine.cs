@@ -1427,9 +1427,9 @@ namespace JQuant
                                     " Create a Collector and start a random data simulator", 
                                     debugLoggerTestCallback
                                     );
-            menuDebug.AddCommand(   "MktSim",
+            menuDebug.AddCommand(   "mrktsim",
                                     "Check MarketSimulationMaof",
-                                    " ,k,,",
+                                    "Create Maof Event Generator, connect to the Market simulation",
                                     debugMarketSimulationCallback
                                     );
 #endif
