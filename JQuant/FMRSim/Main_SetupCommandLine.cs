@@ -1452,7 +1452,7 @@ namespace JQuant
                                     debugLoggerTestCallback
                                     );
             menuDebug.AddCommand(   "mrktsim",
-                                    "Check MarketSimulationMaof - [Usage: mrktsim backlogfile]",
+                                    "Check MarketSimulationMaof - [Usage: mrktsim backlogfile | stop]",
                                     "Create Maof Event Generator, connect to the Market simulation",
                                     debugMarketSimulationCallback
                                     );
