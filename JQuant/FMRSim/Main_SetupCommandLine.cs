@@ -367,7 +367,31 @@ namespace JQuant
 
         protected void debugMarketSimulationCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
+            //check that the arguments are correct
+            if (cmdArguments.Length != 2)
+            {
+                iWrite.WriteLine("Wrong command usage, type: 'mrktsim <backlogfile>|stop'");
+            }
 
+            else if (cmdArguments[1].ToString().ToLower() == "stop")
+            {
+                k3.K300StopStream(K300StreamType.MaofStream);
+                k3 = default(K300Class);
+            }
+
+            else
+            {
+                //if K300Class instance is not already initilazed, do it now
+                if (this.k3 == default(K300Class)) k3 = new K300Class();
+                TaskBarLibSim.EventGenerator<K300MaofType> dataMaofGenerator =
+                    new TaskBarLibSim.MaofDataGeneratorLogFile(cmdArguments[1].ToString(), 1, 0);
+
+                //TaskBarLibSim.MarketSimulationMaof msm = new MarketSimulationMaof(dataMaofGenerator);
+                //initialize the simulation 
+                TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
+                //and start the data stream
+                k3.K300StartStream(K300StreamType.MaofStream);
+            }
         }
 
         protected void debugPrintResourcesNameAndStats(IWrite iWrite, System.Collections.ArrayList list)
@@ -1428,7 +1452,7 @@ namespace JQuant
                                     debugLoggerTestCallback
                                     );
             menuDebug.AddCommand(   "mrktsim",
-                                    "Check MarketSimulationMaof",
+                                    "Check MarketSimulationMaof - [Usage: mrktsim backlogfile]",
                                     "Create Maof Event Generator, connect to the Market simulation",
                                     debugMarketSimulationCallback
                                     );
@@ -1493,5 +1517,18 @@ namespace JQuant
         }
 
         #endregion
-    }
+
+        //For simulation purposes only:
+        //create K300Class instance which we will use to start and stop the stream
+        //note that this one may be used without performing login process
+        //but for functions that require SessionId, we will need to login
+#if USEFMRSIM
+        protected TaskBarLibSim.K300Class k3
+        {
+            get;
+            set;
+        }
+#endif
+
+    }//partial class Program
 }//namespace JQuant
