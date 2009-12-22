@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.IO;
@@ -345,11 +346,6 @@ namespace TaskBarLibSim
 
     public interface IK300Event_Event
     {
-        // Events
-        /*event IK300Event_FireMaofEventHandler FireMaof;
-        event IK300Event_FireMaofCNTEventHandler FireMaofCNT;
-        event IK300Event_FireRezefEventHandler FireRezef;
-        event IK300Event_FireRezefCNTEventHandler FireRezefCNT;*/
     }
 
 
@@ -1131,6 +1127,7 @@ namespace TaskBarLibSim
             // first event will be sent only after the delay expires
             base.SetDelay(delay);
             base.SetSpeedup(speedup);
+            consumers = new List<JQuant.IConsumer<K300MaofType>>(5);
         }
 
         ~MaofDataGeneratorLogFile()
@@ -1236,10 +1233,16 @@ namespace TaskBarLibSim
 
         protected override void SendEvents(ref K300MaofType data)
         {
-            SimulationTop.k300EventsClass.SendEventMaof(ref data);
+            //SimulationTop.k300EventsClass.SendEventMaof(ref data);
 
             // avoid tight loops in the system
-            Thread.Sleep(0);
+            //Thread.Sleep(0);
+
+            eventCounter++;
+            foreach (JQuant.IConsumer<K300MaofType> consumer in consumers)
+            {
+                consumer.Notify(eventCounter, data);
+            }
         }
 
         public string GetName()
@@ -1249,11 +1252,13 @@ namespace TaskBarLibSim
 
         public bool AddConsumer(JQuant.IConsumer<K300MaofType> consumer)
         {
+            consumers.Add(consumer);
             return true;
         }
 
         public bool RemoveConsumer(JQuant.IConsumer<K300MaofType> consumer)
         {
+            consumers.Remove(consumer);
             return true;
         }
 
@@ -1270,6 +1275,8 @@ namespace TaskBarLibSim
 
         }
 
+        protected List<JQuant.IConsumer<K300MaofType>> consumers;
+        protected int eventCounter = 0;
     }
 
 
@@ -1549,7 +1556,7 @@ namespace TaskBarLibSim
             field_LMT_BY2 = dataType.GetField("LMT_BY2");
             field_LMT_BY3 = dataType.GetField("LMT_BY3");
             field_LMY_BY1_NV = dataType.GetField("LMY_BY1_NV");
-            field_LMY_BY2_NV = dataType.GetField("LMY_BY3_NV");
+            field_LMY_BY2_NV = dataType.GetField("LMY_BY2_NV");
             field_LMY_BY3_NV = dataType.GetField("LMY_BY3_NV");
             field_LMT_SL1 = dataType.GetField("LMT_SL1");
             field_LMT_SL2 = dataType.GetField("LMT_SL2");
@@ -1607,20 +1614,34 @@ namespace TaskBarLibSim
             MarketData marketData = RawDataToMarketData(o);
 
             // GetKey() will return (in the simplest case) BNO_number (boxed integer)
-            object key = GetKey(o);
+            //object key = GetKey(o);
 
             // hopefully Item() will return null if there is no key in the hashtable
-            object security = securities[key];
-            if (security != null) // security is in the table. this is most likely outcome 
-            {
-                UpdateSecurity((MarketData)security, marketData);
-            }
-            else // I see this security (this BNO_number) very first time - add new entry to the hashtable
-            {
-                securities[key] = marketData;
-            }
+            //object security = securities[key];
+            //if (security != null) // security is in the table. this is most likely outcome 
+            //{
+              //  UpdateSecurity((MarketData)security, marketData);
+            //}
+            //else // I see this security (this BNO_number) very first time - add new entry to the hashtable
+           // {
+               // securities[key] = marketData;
+           // }
         }
 
+        int StrToInt(string s)
+        {
+            int result=0;
+            string t = s.Trim();
+            try
+            {
+                if (t!="") result=Int32.Parse(t);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Failed to parse string '" + t + "'");
+            }
+            return result;
+        }
 
         /// <summary>
         /// DataType is something like K300MaofType - lot of strings. The method will  convert
@@ -1638,23 +1659,43 @@ namespace TaskBarLibSim
         {
             MarketData md = new MarketData();
 
-            md.BNO_Num = Int32.Parse((string)field_BNO_Num.GetValue(dt));
-            md.LMT_BY1 = Int32.Parse((string)field_LMT_BY1.GetValue(dt));
-            md.LMT_BY2 = Int32.Parse((string)field_LMT_BY2.GetValue(dt));
-            md.LMT_BY3 = Int32.Parse((string)field_LMT_BY3.GetValue(dt));
-            md.LMY_BY1_NV = Int32.Parse((string)field_LMY_BY1_NV.GetValue(dt));
-            md.LMY_BY2_NV = Int32.Parse((string)field_LMY_BY2_NV.GetValue(dt));
-            md.LMY_BY3_NV = Int32.Parse((string)field_LMY_BY3_NV.GetValue(dt));
-            md.LMT_SL1 = Int32.Parse((string)field_LMT_SL1.GetValue(dt));
-            md.LMT_SL2 = Int32.Parse((string)field_LMT_SL2.GetValue(dt));
-            md.LMT_SL3 = Int32.Parse((string)field_LMT_SL3.GetValue(dt));
-            md.LMY_SL1_NV = Int32.Parse((string)field_LMY_SL1_NV.GetValue(dt));
-            md.LMY_SL2_NV = Int32.Parse((string)field_LMY_SL2_NV.GetValue(dt));
-            md.LMY_SL3_NV = Int32.Parse((string)field_LMY_SL3_NV.GetValue(dt));
-            md.LST_DL_PR = Int32.Parse((string)field_LST_DL_PR.GetValue(dt));
-            md.LST_DL_VL = Int32.Parse((string)field_LST_DL_VL.GetValue(dt));
-            md.DAY_VL = Int32.Parse((string)field_DAY_VL.GetValue(dt));
-            md.DAY_DIL_NO = Int32.Parse((string)field_DAY_DIL_NO.GetValue(dt));
+            //md.BNO_Num = Convert.ToInt32((string)field_BNO_Num.GetValue(dt));
+            md.BNO_Num = StrToInt((string)field_BNO_Num.GetValue(dt));
+            md.LMT_BY1 = StrToInt((string)field_LMT_BY1.GetValue(dt));
+            md.LMT_BY2 = StrToInt((string)field_LMT_BY2.GetValue(dt));
+            md.LMT_BY3 = StrToInt((string)field_LMT_BY3.GetValue(dt));
+            md.LMY_BY1_NV = StrToInt((string)field_LMY_BY1_NV.GetValue(dt));
+            md.LMY_BY2_NV = StrToInt((string)field_LMY_BY2_NV.GetValue(dt));
+            md.LMY_BY3_NV = StrToInt((string)field_LMY_BY3_NV.GetValue(dt));
+            md.LMT_SL1 = StrToInt((string)field_LMT_SL1.GetValue(dt));
+            md.LMT_SL2 = StrToInt((string)field_LMT_SL2.GetValue(dt));
+            md.LMT_SL3 = StrToInt((string)field_LMT_SL3.GetValue(dt));
+            md.LMY_SL1_NV = StrToInt((string)field_LMY_SL1_NV.GetValue(dt));
+            md.LMY_SL2_NV = StrToInt((string)field_LMY_SL2_NV.GetValue(dt));
+            md.LMY_SL3_NV = StrToInt((string)field_LMY_SL3_NV.GetValue(dt));
+            md.LST_DL_PR = StrToInt((string)field_LST_DL_PR.GetValue(dt));
+            md.LST_DL_VL = StrToInt((string)field_LST_DL_VL.GetValue(dt));
+            md.DAY_VL = StrToInt((string)field_DAY_VL.GetValue(dt));
+            md.DAY_DIL_NO = StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
+
+            Console.WriteLine(
+                md.BNO_Num + " " +
+                md.LMT_BY1 + " " +
+                md.LMT_BY2 + " " +
+                md.LMT_BY3 + " " +
+                md.LMY_BY1_NV + " " +
+                md.LMY_BY2_NV + " " +
+                md.LMY_BY3_NV + " " +
+                md.LMT_SL1 + " " +
+                md.LMT_SL2 + " " +
+                md.LMT_SL3 + " " +
+                md.LMY_SL1_NV + " " +
+                md.LMY_SL2_NV + " " +
+                md.LMY_SL3_NV + " " +
+                md.LST_DL_PR + " " +
+                md.LST_DL_VL + " " +
+                md.DAY_VL + " " +
+                md.DAY_DIL_NO);
 
             return md;
         }

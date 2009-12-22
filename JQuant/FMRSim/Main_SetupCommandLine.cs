@@ -375,22 +375,20 @@ namespace JQuant
 
             else if (cmdArguments[1].ToString().ToLower() == "stop")
             {
-                k3.K300StopStream(K300StreamType.MaofStream);
-                k3 = default(K300Class);
             }
 
             else
             {
                 //if K300Class instance is not already initilazed, do it now
-                if (this.k3 == default(K300Class)) k3 = new K300Class();
-                TaskBarLibSim.EventGenerator<K300MaofType> dataMaofGenerator =
-                    new TaskBarLibSim.MaofDataGeneratorLogFile(cmdArguments[1].ToString(), 1, 0);
+                MaofDataGeneratorLogFile dataMaofGenerator = 
+                    new MaofDataGeneratorLogFile(cmdArguments[1].ToString(), 1, 0);
 
-                //TaskBarLibSim.MarketSimulationMaof msm = new MarketSimulationMaof(dataMaofGenerator);
-                //initialize the simulation 
-                TaskBarLibSim.K300Class.InitStreamSimulation(dataMaofGenerator);
-                //and start the data stream
-                k3.K300StartStream(K300StreamType.MaofStream);
+                //I need a cast here, because MarketSimulationMaof expects parameter of type IProducer
+                MarketSimulationMaof msm = 
+                    new MarketSimulationMaof((JQuant.IProducer<K300MaofType>) dataMaofGenerator);
+
+                //initialize the simulation - call EventGenerator.Start() - start the data stream
+                dataMaofGenerator.Start();
             }
         }
 
@@ -1518,17 +1516,6 @@ namespace JQuant
 
         #endregion
 
-        //For simulation purposes only:
-        //create K300Class instance which we will use to start and stop the stream
-        //note that this one may be used without performing login process
-        //but for functions that require SessionId, we will need to login
-#if USEFMRSIM
-        protected TaskBarLibSim.K300Class k3
-        {
-            get;
-            set;
-        }
-#endif
 
     }//partial class Program
 }//namespace JQuant
