@@ -1768,6 +1768,41 @@ namespace TaskBarLibSim
         }
     }
 
+    public class MarketSimulationOrder
+    {
+        public MarketSimulationOrder()
+        {
+
+        }
+
+        //returns BNO_Num
+        public int GetSecurity()
+        {
+            return 0;
+        }
+
+        //Order's limit price 
+        //All of Maof orders are of type limit
+        public int GetPrice()
+        {
+            return 0;
+        }
+
+        //I prefer to call this indicator 'IsBuy', not 'IsSell'
+        //positive (true) is security accumulation negative is the opposite
+        public bool IsBuy
+        {
+            get;
+            protected set;
+        }
+
+        //reference to the TaskBar.MaofOrderType instance
+        object data;
+        //this one is used to track order's current position in the queue
+        int placeInOrderQueue;
+
+    }//class MarketSimulationOrder
+
 
     /// <summary>
     /// I need some class where all apparently disconnected classes are connected
