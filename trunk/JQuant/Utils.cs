@@ -85,6 +85,32 @@ namespace JQuant
         }
     }
 
+
+    public class Convert
+    {
+        public static int StrToInt(string s, int defaultValue)
+        {
+            int result = defaultValue;
+            string t = s.Trim();
+            try
+            {
+                if (t!="") result=Int32.Parse(t);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Failed to parse string '" + t + "'");
+            }
+            return result;
+        }
+
+        public static int StrToInt(string s)
+        {
+            int result = StrToInt(s, 0);
+            return result;
+        }
+
+    }
+
     /// <summary>
     /// converts a struct to a string with specified delimiters
     /// </summary>
@@ -189,6 +215,7 @@ namespace JQuant
         protected string delimiter;
     }
 
+    
     public interface IRandomString
     {
         string Next();

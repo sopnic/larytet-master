@@ -1628,21 +1628,6 @@ namespace TaskBarLibSim
            // }
         }
 
-        int StrToInt(string s)
-        {
-            int result=0;
-            string t = s.Trim();
-            try
-            {
-                if (t!="") result=Int32.Parse(t);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Failed to parse string '" + t + "'");
-            }
-            return result;
-        }
-
         /// <summary>
         /// DataType is something like K300MaofType - lot of strings. The method will  convert
         /// this into something convenient to work with.
@@ -1660,23 +1645,23 @@ namespace TaskBarLibSim
             MarketData md = new MarketData();
 
             //md.BNO_Num = Convert.ToInt32((string)field_BNO_Num.GetValue(dt));
-            md.BNO_Num = StrToInt((string)field_BNO_Num.GetValue(dt));
-            md.LMT_BY1 = StrToInt((string)field_LMT_BY1.GetValue(dt));
-            md.LMT_BY2 = StrToInt((string)field_LMT_BY2.GetValue(dt));
-            md.LMT_BY3 = StrToInt((string)field_LMT_BY3.GetValue(dt));
-            md.LMY_BY1_NV = StrToInt((string)field_LMY_BY1_NV.GetValue(dt));
-            md.LMY_BY2_NV = StrToInt((string)field_LMY_BY2_NV.GetValue(dt));
-            md.LMY_BY3_NV = StrToInt((string)field_LMY_BY3_NV.GetValue(dt));
-            md.LMT_SL1 = StrToInt((string)field_LMT_SL1.GetValue(dt));
-            md.LMT_SL2 = StrToInt((string)field_LMT_SL2.GetValue(dt));
-            md.LMT_SL3 = StrToInt((string)field_LMT_SL3.GetValue(dt));
-            md.LMY_SL1_NV = StrToInt((string)field_LMY_SL1_NV.GetValue(dt));
-            md.LMY_SL2_NV = StrToInt((string)field_LMY_SL2_NV.GetValue(dt));
-            md.LMY_SL3_NV = StrToInt((string)field_LMY_SL3_NV.GetValue(dt));
-            md.LST_DL_PR = StrToInt((string)field_LST_DL_PR.GetValue(dt));
-            md.LST_DL_VL = StrToInt((string)field_LST_DL_VL.GetValue(dt));
-            md.DAY_VL = StrToInt((string)field_DAY_VL.GetValue(dt));
-            md.DAY_DIL_NO = StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
+            md.BNO_Num = JQuant.Convert.StrToInt((string)field_BNO_Num.GetValue(dt));
+            md.LMT_BY1 = JQuant.Convert.StrToInt((string)field_LMT_BY1.GetValue(dt));
+            md.LMT_BY2 = JQuant.Convert.StrToInt((string)field_LMT_BY2.GetValue(dt));
+            md.LMT_BY3 = JQuant.Convert.StrToInt((string)field_LMT_BY3.GetValue(dt));
+            md.LMY_BY1_NV = JQuant.Convert.StrToInt((string)field_LMY_BY1_NV.GetValue(dt));
+            md.LMY_BY2_NV = JQuant.Convert.StrToInt((string)field_LMY_BY2_NV.GetValue(dt));
+            md.LMY_BY3_NV = JQuant.Convert.StrToInt((string)field_LMY_BY3_NV.GetValue(dt));
+            md.LMT_SL1 = JQuant.Convert.StrToInt((string)field_LMT_SL1.GetValue(dt));
+            md.LMT_SL2 = JQuant.Convert.StrToInt((string)field_LMT_SL2.GetValue(dt));
+            md.LMT_SL3 = JQuant.Convert.StrToInt((string)field_LMT_SL3.GetValue(dt));
+            md.LMY_SL1_NV = JQuant.Convert.StrToInt((string)field_LMY_SL1_NV.GetValue(dt));
+            md.LMY_SL2_NV = JQuant.Convert.StrToInt((string)field_LMY_SL2_NV.GetValue(dt));
+            md.LMY_SL3_NV = JQuant.Convert.StrToInt((string)field_LMY_SL3_NV.GetValue(dt));
+            md.LST_DL_PR = JQuant.Convert.StrToInt((string)field_LST_DL_PR.GetValue(dt));
+            md.LST_DL_VL = JQuant.Convert.StrToInt((string)field_LST_DL_VL.GetValue(dt));
+            md.DAY_VL = JQuant.Convert.StrToInt((string)field_DAY_VL.GetValue(dt));
+            md.DAY_DIL_NO = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
 
             Console.WriteLine(
                 md.BNO_Num + " " +
