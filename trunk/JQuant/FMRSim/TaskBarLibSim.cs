@@ -1046,6 +1046,15 @@ namespace TaskBarLibSim
             }
             
         }
+        
+        public virtual void Start()
+        {
+            if (speedup != 1.0)
+            {
+                System.Console.WriteLine("Simulation playback speedup "+speedup);
+            }
+            base.Start();
+        }
 
         protected void SetDelay(int delay)
         {
@@ -1538,7 +1547,7 @@ namespace TaskBarLibSim
     /// <summary>
     /// I work only with data containig BNO_Num field
     /// </summary>
-    public class MarketSimulation<DataType> : JQuant.IConsumer<DataType>
+    public class MarketSimulation<DataType> : JQuant.IConsumer<DataType>, JQuant.IResourceStatistics
     {
         protected class FSMState
         {
@@ -1601,6 +1610,20 @@ namespace TaskBarLibSim
             return res;
         }
 
+
+        public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
+        {
+            names = new System.Collections.ArrayList(8);
+            values = new System.Collections.ArrayList(8);
+
+            names.Add("Events"); values.Add(eventsCount);
+            names.Add("OrdersPlaced"); values.Add(ordersPlacedCount);
+            names.Add("OrdersFilled"); values.Add(ordersFilledCount);
+            names.Add("OrdersCanceled"); values.Add(ordersCanceledCount);
+            names.Add("OrdersPending"); values.Add(ordersPendingCount);
+            names.Add("Securities"); values.Add(securities.Count);
+        }
+
         /// <summary>
         /// The method is being called by Event Generator
         /// </summary>
@@ -1614,18 +1637,18 @@ namespace TaskBarLibSim
             MarketData marketData = RawDataToMarketData(o);
 
             // GetKey() will return (in the simplest case) BNO_number (boxed integer)
-            //object key = GetKey(o);
+            object key = GetKey(o);
 
             // hopefully Item() will return null if there is no key in the hashtable
-            //object security = securities[key];
-            //if (security != null) // security is in the table. this is most likely outcome 
-            //{
-              //  UpdateSecurity((MarketData)security, marketData);
-            //}
-            //else // I see this security (this BNO_number) very first time - add new entry to the hashtable
-           // {
-               // securities[key] = marketData;
-           // }
+            object security = securities[key];
+
+            // do I see this security (this BNO_number) very first time ? add new entry to the hashtable
+            // security is not in the table. this is not likely outcome. performance in not an issue at this point
+            if (security == null) 
+            {
+                securities[key] = marketData;
+            }
+            UpdateSecurity((MarketData)security, marketData);
         }
 
         /// <summary>
@@ -1663,25 +1686,6 @@ namespace TaskBarLibSim
             md.DAY_VL = JQuant.Convert.StrToInt((string)field_DAY_VL.GetValue(dt));
             md.DAY_DIL_NO = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
 
-            Console.WriteLine(
-                md.BNO_Num + " " +
-                md.LMT_BY1 + " " +
-                md.LMT_BY2 + " " +
-                md.LMT_BY3 + " " +
-                md.LMY_BY1_NV + " " +
-                md.LMY_BY2_NV + " " +
-                md.LMY_BY3_NV + " " +
-                md.LMT_SL1 + " " +
-                md.LMT_SL2 + " " +
-                md.LMT_SL3 + " " +
-                md.LMY_SL1_NV + " " +
-                md.LMY_SL2_NV + " " +
-                md.LMY_SL3_NV + " " +
-                md.LST_DL_PR + " " +
-                md.LST_DL_VL + " " +
-                md.DAY_VL + " " +
-                md.DAY_DIL_NO);
-
             return md;
         }
 
@@ -1712,6 +1716,8 @@ namespace TaskBarLibSim
         /// </param>
         protected void UpdateSecurity(MarketData md0, MarketData md1)
         {
+            // bump event counter
+            eventsCount++;
         }
 
 
@@ -1736,6 +1742,12 @@ namespace TaskBarLibSim
         protected FieldInfo field_LST_DL_VL;
         protected FieldInfo field_DAY_VL;
         protected FieldInfo field_DAY_DIL_NO;
+
+        protected int eventsCount;
+        protected int ordersPlacedCount;
+        protected int ordersFilledCount;
+        protected int ordersCanceledCount;
+        protected int ordersPendingCount;
     }
 
     /// <summary>

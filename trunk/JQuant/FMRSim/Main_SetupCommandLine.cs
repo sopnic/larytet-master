@@ -365,33 +365,61 @@ namespace JQuant
 
 
 
-        protected void debugMarketSimulationCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        static MarketSimulationMaof marketSimulationMaof;
+        protected void debugMarketSimulationMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            //check that the arguments are correct
-            if (cmdArguments.Length != 2)
+            string cmd = "", arg1 = "", arg2 = "";
+            switch (cmdArguments.Length)
             {
-                iWrite.WriteLine("Wrong command usage, type: 'mrktsim <backlogfile>|stop'");
+                case 0:
+                case 1:
+                iWrite.WriteLine("Usage: 'mrktsim start|stop' [backlogfile] [speedup]");
+                break;
+                
+                case 2:
+                cmd = cmdArguments[1].ToString().ToLower();
+                break;
+                
+                case 3:
+                case 4:
+                cmd = cmdArguments[1].ToString().ToLower();
+                arg1 = cmdArguments[2].ToString();
+                arg2 = cmdArguments[3].ToString();
+                break;
             }
 
-            else if (cmdArguments[1].ToString().ToLower() == "stop")
+            
+            if (cmd == "stop")
             {
             }
-
-            else
+            else if (cmd == "start") // log file name
             {
+                string logfile = arg1;
+                int speedup = JQuant.Convert.StrToInt(arg2, 1);
+                
                 //if K300Class instance is not already initilazed, do it now
                 MaofDataGeneratorLogFile dataMaofGenerator = 
-                    new MaofDataGeneratorLogFile(cmdArguments[1].ToString(), 1, 0);
+                    new MaofDataGeneratorLogFile(logfile, (double)speedup, 0);
 
                 //I need a cast here, because MarketSimulationMaof expects parameter of type IProducer
-                MarketSimulationMaof msm = 
-                    new MarketSimulationMaof(dataMaofGenerator);
+                marketSimulationMaof = new MarketSimulationMaof(dataMaofGenerator);
 
                 //initialize the simulation - call EventGenerator.Start() - start the data stream
                 dataMaofGenerator.Start();
             }
         }
+        
+        protected void debugMarketSimulationMaofStatCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            int columnSize = 8;
+            System.Collections.ArrayList names;
+            System.Collections.ArrayList values;
+            marketSimulationMaof.GetEventCounters(out names, out values);
 
+            CommandLineInterface.printTableHeader(iWrite, names, columnSize);
+            CommandLineInterface.printValues(iWrite, values, columnSize);
+        }
+        
         protected void debugPrintResourcesNameAndStats(IWrite iWrite, System.Collections.ArrayList list)
         {
             int entry = 0;
@@ -406,7 +434,7 @@ namespace JQuant
                 isEmpty = false;
 
                 IResourceStatistics resStat = (IResourceStatistics)resNamed;
-
+ 
                 System.Collections.ArrayList names;
                 System.Collections.ArrayList values;
                 resStat.GetEventCounters(out names, out values);
@@ -1396,6 +1424,23 @@ namespace JQuant
 
             #endregion;
 
+
+            Menu menuMarketSim = cli.RootMenu.AddMenu("ms", "Market simulation",
+                                   " Run market simulation");
+            
+            menuMarketSim.AddCommand(   "maof",
+                                    "Run MarketSimulationMaof - [Usage: maof backlogfile | stop]",
+                                    "Create Maof Event Generator, connect to the Maof Market simulation",
+                                    debugMarketSimulationMaofCallback
+                                    );
+
+            menuMarketSim.AddCommand(   "stat",
+                                    "Show statistics for the running market simulation",
+                                    "Display number of events, number of pending orders, placed orders",
+                                    debugMarketSimulationMaofStatCallback
+                                    );
+            
+            
             #region Debug commands;
 
             Menu menuDebug = cli.RootMenu.AddMenu("Dbg", "System debug info",
@@ -1448,11 +1493,6 @@ namespace JQuant
                                     "Run simple test of the logger",
                                     " Create a Collector and start a random data simulator", 
                                     debugLoggerTestCallback
-                                    );
-            menuDebug.AddCommand(   "mrktsim",
-                                    "Check MarketSimulationMaof - [Usage: mrktsim backlogfile | stop]",
-                                    "Create Maof Event Generator, connect to the Market simulation",
-                                    debugMarketSimulationCallback
                                     );
 #endif
             menuDebug.AddCommand(   "loggerShow", 
