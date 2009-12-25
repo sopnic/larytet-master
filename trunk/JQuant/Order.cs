@@ -120,6 +120,13 @@ namespace JQuant
     }
 
     /// <summary>
+    /// Base class for market orders. No limit price is provided 
+    /// </summary>
+    public class MarketOrderBase : OrderBase
+    {
+    }
+    
+    /// <summary>
     /// This one is specific to the options trading.
     /// this is a dataholder used for effective communication between 
     /// the order producer (algorithm) and the order processor (FSM)

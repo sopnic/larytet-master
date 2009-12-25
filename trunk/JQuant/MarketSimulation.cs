@@ -1,7 +1,7 @@
 
 using System;
 
-namespace JQuant
+namespace MarketSimulation
 {
     public class OrderPair : ICloneable
     {
@@ -86,12 +86,21 @@ namespace JQuant
         public int dayTransactions;  //number of transactions
     }
 
-    /// <summary>
-    /// I work only with data containig BNO_Num field
-    /// </summary>
-    public class MarketSimulation : JQuant.IResourceStatistics
+
+    public class LimitOrder : JQuant.LimitOrderBase
     {
-        protected MarketSimulation()
+        JQuant.OrderType type;
+    }
+
+
+
+    /// <summary>
+    /// Simulates real market behaviour. This simulaition is for back testing and requires
+    /// feed of historical data. Lot of assumptions, like placed orders do not change the market, etc.
+    /// </summary>
+    public class Core : JQuant.IResourceStatistics
+    {
+        protected Core()
         {
             // create hash table where all securities are stored
             securities = new System.Collections.Hashtable(200);
@@ -130,8 +139,10 @@ namespace JQuant
             {
                 // clone the data first - cloning is expensive and happens only very first time i meet
                 // specific security. in the subsequent calls to Notify() only relevant data will be updated
-                data = (MarketData)data.Clone();
-                securities[key] = data;
+                security = (MarketData)data.Clone();
+                securities[key] = security;
+
+                // get the security from the hash table in all cases
                 security = securities[key];
             }
             UpdateSecurity((MarketData)security, data);
@@ -153,18 +164,22 @@ namespace JQuant
         /// shift the orders position in the queue, etc.
         /// In all cases replace the current value with new one.
         /// </summary>
-        /// <param name="md0">
+        /// <param name="prev">
         /// A <see cref="MarketData"/>
         /// Currently stored data
         /// </param>
-        /// <param name="md1">
+        /// <param name="curr">
         /// A <see cref="MarketData"/>
         /// New data
         /// </param>
-        protected void UpdateSecurity(MarketData md0, MarketData md1)
+        protected void UpdateSecurity(MarketData prev, MarketData curr)
         {
             // bump event counter
             eventsCount++;
+
+
+            // compare field by field and update
+            // check pending orders
         }
 
 

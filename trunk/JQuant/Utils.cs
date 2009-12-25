@@ -88,6 +88,22 @@ namespace JQuant
 
     public class Convert
     {
+        public static double StrToDouble(string s, double defaultValue)
+        {
+            double result = defaultValue;
+            string t = s.Trim();
+            try
+            {
+                if (t!="") result=Double.Parse(t);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Failed to parse string '" + t + "'");
+            }
+            return result;
+        }
+
+        
         public static int StrToInt(string s, int defaultValue)
         {
             int result = defaultValue;

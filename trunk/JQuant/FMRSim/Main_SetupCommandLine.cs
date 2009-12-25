@@ -395,11 +395,11 @@ namespace JQuant
             else if (cmd == "start") // log file name
             {
                 string logfile = arg1;
-                int speedup = JQuant.Convert.StrToInt(arg2, 1);
+                double speedup = JQuant.Convert.StrToDouble(arg2, 1.0);
                 
                 //if K300Class instance is not already initilazed, do it now
                 MaofDataGeneratorLogFile dataMaofGenerator = 
-                    new MaofDataGeneratorLogFile(logfile, (double)speedup, 0);
+                    new MaofDataGeneratorLogFile(logfile, speedup, 0);
 
                 //I need a cast here, because MarketSimulationMaof expects parameter of type IProducer
                 marketSimulationMaof = new MarketSimulationMaof();

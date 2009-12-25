@@ -1522,7 +1522,7 @@ namespace TaskBarLibSim
     /// To make the whole exercise practical for the current phase I assume that incoming orders do not influence
     /// the market. I assume that if buy order's bid is equal to the best Ask the probability of the fill is 1
     /// </summary>
-    public class MarketSimulationMaof : JQuant.MarketSimulation, JQuant.IConsumer<K300MaofType>
+    public class MarketSimulationMaof : MarketSimulation.Core, JQuant.IConsumer<K300MaofType>
     {
         public MarketSimulationMaof()
         {
@@ -1547,7 +1547,7 @@ namespace TaskBarLibSim
 
             // Market depth (size of the order book) is 3 on TASE
             // i am going to reuse this object 
-            marketData = new JQuant.MarketData(3);
+            marketData = new MarketSimulation.MarketData(3);
         }
         
         public void Notify(int count, K300MaofType data)
@@ -1572,7 +1572,7 @@ namespace TaskBarLibSim
         /// A <see cref="MarketData"/>
         /// New object containing integers like Price, best bid/ask, etc.
         /// </returns>
-        protected void RawDataToMarketData(K300MaofType dt, ref JQuant.MarketData md)
+        protected void RawDataToMarketData(K300MaofType dt, ref MarketSimulation.MarketData md)
         {
             md.id = JQuant.Convert.StrToInt((string)field_BNO_Num.GetValue(dt));
             md.bid[0].price = JQuant.Convert.StrToInt((string)field_LMT_BY1.GetValue(dt));
@@ -1613,7 +1613,7 @@ namespace TaskBarLibSim
         protected FieldInfo field_DAY_DIL_NO;
 
 
-        protected JQuant.MarketData marketData;
+        protected MarketSimulation.MarketData marketData;
     }
 
     public class MarketSimulationOrder
