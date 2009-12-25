@@ -1546,6 +1546,7 @@ namespace TaskBarLibSim
             field_DAY_DIL_NO = dataType.GetField("DAY_DIL_NO");
 
             // Market depth (size of the order book) is 3 on TASE
+            // i am going to reuse this object 
             marketData = new JQuant.MarketData(3);
         }
         
@@ -1573,7 +1574,6 @@ namespace TaskBarLibSim
         /// </returns>
         protected void RawDataToMarketData(K300MaofType dt, ref JQuant.MarketData md)
         {
-            //md.BNO_Num = Convert.ToInt32((string)field_BNO_Num.GetValue(dt));
             md.id = JQuant.Convert.StrToInt((string)field_BNO_Num.GetValue(dt));
             md.bid[0].price = JQuant.Convert.StrToInt((string)field_LMT_BY1.GetValue(dt));
             md.bid[1].price = JQuant.Convert.StrToInt((string)field_LMT_BY2.GetValue(dt));

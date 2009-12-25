@@ -3,31 +3,69 @@ using System;
 
 namespace JQuant
 {
-    public class OrderPair
+    public class OrderPair : ICloneable
     {
         public int price;
         public int size;
+
+        public object Clone()
+        {
+            OrderPair op = new OrderPair();
+            op.price = this.price;
+            op.size = this.size;
+            return op;
+        }
     }
     
     /// <summary>
     /// Describes an asset, for example, TASE option this class is used in the MarketSimulation
     /// all data (prices / quantities) are integers. If required in cents/agorots
+    /// This object is expensive to create. Application will reuse objects or create pool of
+    /// objects
     /// </summary>
-    public class MarketData
+    public class MarketData : ICloneable
     {
         /// <summary>
         /// On TASE order book has depth 3
         /// </summary>
         public MarketData()
         {
-            bid = new OrderPair[3];
-            ask = new OrderPair[3];
+            Init(3);
         }
         
         public MarketData(int marketDepth)
         {
+            Init(marketDepth);
+        }
+
+
+        protected void Init(int marketDepth)
+        {
             bid = new OrderPair[marketDepth];
             ask = new OrderPair[marketDepth];
+
+
+            for (int i = 0;i < marketDepth;i++)
+            {
+                bid[i] = new OrderPair();
+                ask[i] = new OrderPair();
+            }
+        }
+        
+
+        public object Clone()
+        {
+            MarketData md = new MarketData(bid.Length);
+
+            md.ask = (OrderPair[])this.ask.Clone();
+            md.bid = (OrderPair[])this.bid.Clone();
+            md.id = this.id;
+            md.lastDeal = this.lastDeal;
+            md.lastDealSize = this.lastDealSize;
+            md.dayVolume = this.dayVolume;
+            md.dayTransactions = this.dayTransactions;
+            
+            return md;
         }
         
         // security ID - unique number
@@ -53,11 +91,6 @@ namespace JQuant
     /// </summary>
     public class MarketSimulation : JQuant.IResourceStatistics
     {
-        protected class FSMState
-        {
-            MarketData security;
-        }
-
         protected MarketSimulation()
         {
             // create hash table where all securities are stored
@@ -95,6 +128,9 @@ namespace JQuant
             // security is not in the table. this is not likely outcome. performance in not an issue at this point
             if (security == null) 
             {
+                // clone the data first - cloning is expensive and happens only very first time i meet
+                // specific security. in the subsequent calls to Notify() only relevant data will be updated
+                data = (MarketData)data.Clone();
                 securities[key] = data;
                 security = securities[key];
             }
