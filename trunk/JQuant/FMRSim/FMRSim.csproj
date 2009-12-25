@@ -72,6 +72,7 @@
     <Compile Include="..\PerformanceMonitor.cs" />
     <Compile Include="..\Locks.cs" />
     <Compile Include="..\DataValidation.cs" />
+    <Compile Include="..\MarketSimulation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
