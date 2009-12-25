@@ -12,6 +12,8 @@ namespace MarketSimulation
         OutOfMemoryError,
         [Description("Fill")]
         Fill,
+        [Description("PartialFill")]
+        PartialFill,
         [Description("UnknownSecurity")]
         UnknownSecurity
     };
@@ -123,17 +125,18 @@ namespace MarketSimulation
         /// Delegate method allows to place orders from different threads and state
         /// machines 
         /// </summary>
-        public delegate void OrderCallback(int id, ReturnCode errorCode);
+        public delegate void OrderCallback(int id, ReturnCode errorCode, int price, int quantity);
 
         protected class LimitOrder : JQuant.LimitOrderBase
         {
-            public LimitOrder(int id, int price, int quantity, OrderCallback callback)
+            public LimitOrder(int id, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
             {
                 this.id = id;
                 this.callback = callback;
                 this.Price = price;
                 this.Quantity = quantity;
                 state = OrderState.Pending;
+                this.Transaction = transaction;
             }
             
             /// <summary>
@@ -156,9 +159,16 @@ namespace MarketSimulation
 
 
             /// <summary>
-            /// Order book at the moment when the order was placed
+            /// Order book at the moment when the order was placed. Queue size is amount of equal or better
+            /// orders according to the order book. Every time deal is closed at better or equal price 
+            /// i move the order in the queue - queueSize goes to zero.
             /// </summary>
-            public MarketData marketData;
+            public int queueSize;
+
+            /// <summary>
+            /// total trading volume when the order was placed
+            /// </summary>
+            public int volume;            
         }
 
 
@@ -213,26 +223,31 @@ namespace MarketSimulation
         {
             // GetKey() will return (in the simplest case) BNO_number (boxed integer)
             object key = GetKey(data);
+            object fsm;
 
-            // hopefully Item() will return null if there is no key in the hashtable
-            object fsm = securities[key];
 
-            // do I see this security very first time ? add new entry to the hashtable
-            // this is not likely outcome. performance in not an issue at this point
-            if (fsm == null) 
+            lock (securities)
             {
-                // clone the data first - cloning is expensive and happens only very first time i meet
-                // specific security. in the subsequent calls to Notify() only relevant data will be updated
-                fsm = new FSM((MarketData)data.Clone());
-                securities[key] = fsm;
-
-                // get the security from the hash table in all cases
+                // hopefully Item() will return null if there is no key in the hashtable
                 fsm = securities[key];
-                
-                // i am going to call update in case if an order just being placed
-                // by concurrently running thread
+    
+                // do I see this security very first time ? add new entry to the hashtable
+                // this is not likely outcome. performance in not an issue at this point
+                if (fsm == null) 
+                {
+                    // clone the data first - cloning is expensive and happens only very first time i meet
+                    // specific security. in the subsequent calls to Notify() only relevant data will be updated
+                    fsm = new FSM((MarketData)data.Clone());
+                    securities[key] = fsm;
+    
+                    // get the security from the hash table in all cases
+                    // this line can be removed
+                    fsm = securities[key];
+                }
             }
-
+                    
+            // i am going to call update in case if an order just being placed
+            // by concurrently running thread
             UpdateSecurity((FSM)fsm, data);
         }
 
@@ -307,34 +322,50 @@ namespace MarketSimulation
         }
 
         /// <summary>
-        /// currently only limit ordres are supported
+        /// Currently only limit ordres are supported
         /// </summary>
         /// <returns>
         /// A <see cref="System.Boolean"/>
         /// Returns false on failure. Calling method will analyze errorCode to figure out
         /// what went wrong with the order
         /// </returns>
-        public bool PlaceOrder(int security, int price, int quantity, OrderCallback callback, ref ReturnCode errorCode)
+        public bool PlaceOrder(int security, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback, ref ReturnCode errorCode)
         {
             bool res = false;
 
             do
             {
-                object fsm = securities[security];
+                object o = securities[security];
 
-                if (fsm == null)
+                if (o == null)
                 {
                     errorCode = ReturnCode.UnknownSecurity;
                     break;
                 }
 
-                LimitOrder limitOrder = new LimitOrder(security, price, quantity, callback);
+                FSM fsm = (FSM)o;
+                MarketData md = fsm.marketData;
 
-                lock (fsm)
+                LimitOrder limitOrder = new LimitOrder(security, price, quantity, transaction, callback);
+
+                // store the current queue size, trading volume, etc.
+                limitOrder.volume = md.dayVolume;
+                int placeInQueue = CalculatePlaceInQueue(md, price, transaction);
+                limitOrder.queueSize = placeInQueue;
+
+                // immediate execution ? probably market price
+                if (placeInQueue < 0)
                 {
-                    // store the current queue size, trading volume, etc.
-                    // limitOrder
-                    ((FSM)fsm).orders.Add(limitOrder);
+                    FillOrder(md, ref limitOrder);
+                }
+
+                // if there is still something to fill add to the list of pending orders
+                if (limitOrder.Quantity > 0)
+                {
+                    lock (fsm)
+                    {
+                        ((FSM)fsm).orders.Add(limitOrder);
+                    }
                 }
                 
                 res = true;
@@ -343,6 +374,27 @@ namespace MarketSimulation
 
 
             return res;
+        }
+
+        /// <summary>
+        /// The method is called when there is a fair chance that the order can be filled
+        /// For example, order position in the queue is 0 and last deal was done at the order
+        /// price
+        /// The method will call application Callback if any changes in the order state
+        /// </summary>
+        protected void FillOrder(MarketData md, ref LimitOrder limitOrder)
+        {
+        }
+
+        /// <summary>
+        /// Calculate position of an order in the order book given the book and the 
+        /// price of the order (assumed limit order)
+        /// </summary>
+        protected static int CalculatePlaceInQueue(MarketData md, int price, JQuant.TransactionType transaction)
+        {
+            int placeInQueue = 0;
+
+            return placeInQueue;
         }
 
 
