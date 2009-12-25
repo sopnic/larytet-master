@@ -90,7 +90,14 @@ namespace JQuant
         /// <summary>
         /// Buy or Sell
         /// </summary>
-        public TransactionType TransType
+        public TransactionType Transaction
+        {
+            get;
+            protected set;
+        }
+
+
+        public OrderType Type
         {
             get;
             protected set;
