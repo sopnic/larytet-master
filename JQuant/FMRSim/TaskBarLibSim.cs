@@ -1459,6 +1459,7 @@ namespace TaskBarLibSim
             fields = t.GetFields();
             count = 0;
 
+            
             return;
         }
 
@@ -1513,53 +1514,19 @@ namespace TaskBarLibSim
     }
 
 
-    /// <summary>
-    /// Describes an asset, for example, TASE option this class is used in the MarketSimulation
-    /// all data (prices / quantities) are integers. If required in cents/agorots
-    /// </summary>
-    public class MarketData
-    {
-        public int BNO_Num;
-
-        // three best asks and bids - price and size
-        public int LMT_BY1;
-        public int LMT_BY2;
-        public int LMT_BY3;
-        public int LMY_BY1_NV;
-        public int LMY_BY2_NV;
-        public int LMY_BY3_NV;
-        public int LMT_SL1;
-        public int LMT_SL2;
-        public int LMT_SL3;
-        public int LMY_SL1_NV;
-        public int LMY_SL2_NV;
-        public int LMY_SL3_NV;
-
-        // last deal price and size
-        public int LST_DL_PR;
-        public int LST_DL_VL;
-
-        //Daily aggregated trading data
-        public int DAY_VL;      //volume
-        public int DAY_DIL_NO;  //number of transactions
-    }
 
     /// <summary>
-    /// I work only with data containig BNO_Num field
+    /// This is a simulation of the options Maof market. The class collects incoming events - events taken
+    /// from the historical data, keeps track of all strikes.
+    /// MarketSimulation compares pending orders with the market state and figures out if fill was possible
+    /// To make the whole exercise practical for the current phase I assume that incoming orders do not influence
+    /// the market. I assume that if buy order's bid is equal to the best Ask the probability of the fill is 1
     /// </summary>
-    public class MarketSimulation<DataType> : JQuant.IConsumer<DataType>, JQuant.IResourceStatistics
+    public class MarketSimulationMaof : JQuant.MarketSimulation, JQuant.IConsumer<K300MaofType>
     {
-        protected class FSMState
+        public MarketSimulationMaof()
         {
-            DataType security;
-
-        }
-
-        protected MarketSimulation(Type dataType, JQuant.IProducer<DataType> producer)
-        {
-            CheckDataType(dataType);
-            producer.AddConsumer(this);
-
+            Type dataType = typeof(K300MaofType);
             field_BNO_Num = dataType.GetField("BNO_Num");
             field_LMT_BY1 = dataType.GetField("LMT_BY1");
             field_LMT_BY2 = dataType.GetField("LMT_BY2");
@@ -1578,79 +1545,20 @@ namespace TaskBarLibSim
             field_DAY_VL = dataType.GetField("DAY_VL");
             field_DAY_DIL_NO = dataType.GetField("DAY_DIL_NO");
 
-            securities = new System.Collections.Hashtable(200);
+            // Market depth (size of the order book) is 3 on TASE
+            marketData = new JQuant.MarketData(3);
         }
-
-        private bool CheckDataType(Type dataType)
+        
+        public void Notify(int count, K300MaofType data)
         {
-            FieldInfo[] fields = dataType.GetFields();
+            // convert TASE format to the internal object
+            // same object is reused here
+            RawDataToMarketData(data, ref marketData);
 
-            System.Collections.Hashtable hashtable = new System.Collections.Hashtable(30);
-            foreach (FieldInfo fi in fields)
-            {
-                string fieldName = fi.Name;
-                hashtable.Add(fieldName, fieldName);
-            }
-
-            string[] MANDATORY_FIELDS = {"BNO_Num","LMT_BY1","LMT_BY2","LMT_BY3","LMY_BY1_NV","LMY_BY2_NV","LMY_BY3_NV",
-                                        "LMT_SL1","LMT_SL2","LMT_SL3","LMY_SL1_NV","LMY_SL2_NV","LMY_SL3_NV",
-                                        "LST_DL_PR","LST_DL_VL","DAY_VL","DAY_DIL_NO"};
-
-            bool res = true;
-            foreach (string s in MANDATORY_FIELDS)
-            {
-                if (!hashtable.Contains(s))
-                {
-                    System.Console.WriteLine("No mandatory field " + s + " in the type " + dataType.Name);
-                    res = false;
-                    break;
-                }
-            }
-
-            return res;
+            // forward to the market simulation logic
+            base.Notify(count, marketData);
         }
-
-
-        public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
-        {
-            names = new System.Collections.ArrayList(8);
-            values = new System.Collections.ArrayList(8);
-
-            names.Add("Events"); values.Add(eventsCount);
-            names.Add("OrdersPlaced"); values.Add(ordersPlacedCount);
-            names.Add("OrdersFilled"); values.Add(ordersFilledCount);
-            names.Add("OrdersCanceled"); values.Add(ordersCanceledCount);
-            names.Add("OrdersPending"); values.Add(ordersPendingCount);
-            names.Add("Securities"); values.Add(securities.Count);
-        }
-
-        /// <summary>
-        /// The method is being called by Event Generator
-        /// </summary>
-        public void Notify(int count, DataType data)
-        {
-            // do boxing - i want to be sure that this happens only once
-            object o = (object)data;
-
-            // create something better than a structure with strings
-            // i need integers to work with
-            MarketData marketData = RawDataToMarketData(o);
-
-            // GetKey() will return (in the simplest case) BNO_number (boxed integer)
-            object key = GetKey(o);
-
-            // hopefully Item() will return null if there is no key in the hashtable
-            object security = securities[key];
-
-            // do I see this security (this BNO_number) very first time ? add new entry to the hashtable
-            // security is not in the table. this is not likely outcome. performance in not an issue at this point
-            if (security == null) 
-            {
-                securities[key] = marketData;
-            }
-            UpdateSecurity((MarketData)security, marketData);
-        }
-
+        
         /// <summary>
         /// DataType is something like K300MaofType - lot of strings. The method will  convert
         /// this into something convenient to work with.
@@ -1663,68 +1571,29 @@ namespace TaskBarLibSim
         /// A <see cref="MarketData"/>
         /// New object containing integers like Price, best bid/ask, etc.
         /// </returns>
-        protected MarketData RawDataToMarketData(object dt)
+        protected void RawDataToMarketData(K300MaofType dt, ref JQuant.MarketData md)
         {
-            MarketData md = new MarketData();
-
             //md.BNO_Num = Convert.ToInt32((string)field_BNO_Num.GetValue(dt));
-            md.BNO_Num = JQuant.Convert.StrToInt((string)field_BNO_Num.GetValue(dt));
-            md.LMT_BY1 = JQuant.Convert.StrToInt((string)field_LMT_BY1.GetValue(dt));
-            md.LMT_BY2 = JQuant.Convert.StrToInt((string)field_LMT_BY2.GetValue(dt));
-            md.LMT_BY3 = JQuant.Convert.StrToInt((string)field_LMT_BY3.GetValue(dt));
-            md.LMY_BY1_NV = JQuant.Convert.StrToInt((string)field_LMY_BY1_NV.GetValue(dt));
-            md.LMY_BY2_NV = JQuant.Convert.StrToInt((string)field_LMY_BY2_NV.GetValue(dt));
-            md.LMY_BY3_NV = JQuant.Convert.StrToInt((string)field_LMY_BY3_NV.GetValue(dt));
-            md.LMT_SL1 = JQuant.Convert.StrToInt((string)field_LMT_SL1.GetValue(dt));
-            md.LMT_SL2 = JQuant.Convert.StrToInt((string)field_LMT_SL2.GetValue(dt));
-            md.LMT_SL3 = JQuant.Convert.StrToInt((string)field_LMT_SL3.GetValue(dt));
-            md.LMY_SL1_NV = JQuant.Convert.StrToInt((string)field_LMY_SL1_NV.GetValue(dt));
-            md.LMY_SL2_NV = JQuant.Convert.StrToInt((string)field_LMY_SL2_NV.GetValue(dt));
-            md.LMY_SL3_NV = JQuant.Convert.StrToInt((string)field_LMY_SL3_NV.GetValue(dt));
-            md.LST_DL_PR = JQuant.Convert.StrToInt((string)field_LST_DL_PR.GetValue(dt));
-            md.LST_DL_VL = JQuant.Convert.StrToInt((string)field_LST_DL_VL.GetValue(dt));
-            md.DAY_VL = JQuant.Convert.StrToInt((string)field_DAY_VL.GetValue(dt));
-            md.DAY_DIL_NO = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
+            md.id = JQuant.Convert.StrToInt((string)field_BNO_Num.GetValue(dt));
+            md.bid[0].price = JQuant.Convert.StrToInt((string)field_LMT_BY1.GetValue(dt));
+            md.bid[1].price = JQuant.Convert.StrToInt((string)field_LMT_BY2.GetValue(dt));
+            md.bid[2].price = JQuant.Convert.StrToInt((string)field_LMT_BY3.GetValue(dt));
+            md.bid[0].size = JQuant.Convert.StrToInt((string)field_LMY_BY1_NV.GetValue(dt));
+            md.bid[1].size = JQuant.Convert.StrToInt((string)field_LMY_BY2_NV.GetValue(dt));
+            md.bid[2].size = JQuant.Convert.StrToInt((string)field_LMY_BY3_NV.GetValue(dt));
+            md.ask[0].price = JQuant.Convert.StrToInt((string)field_LMT_SL1.GetValue(dt));
+            md.ask[1].price = JQuant.Convert.StrToInt((string)field_LMT_SL2.GetValue(dt));
+            md.ask[2].price = JQuant.Convert.StrToInt((string)field_LMT_SL3.GetValue(dt));
+            md.ask[0].size = JQuant.Convert.StrToInt((string)field_LMY_SL1_NV.GetValue(dt));
+            md.ask[1].size = JQuant.Convert.StrToInt((string)field_LMY_SL2_NV.GetValue(dt));
+            md.ask[2].size = JQuant.Convert.StrToInt((string)field_LMY_SL3_NV.GetValue(dt));
+            md.lastDeal = JQuant.Convert.StrToInt((string)field_LST_DL_PR.GetValue(dt));
+            md.lastDealSize = JQuant.Convert.StrToInt((string)field_LST_DL_VL.GetValue(dt));
+            md.dayVolume = JQuant.Convert.StrToInt((string)field_DAY_VL.GetValue(dt));
+            md.dayTransactions = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
 
-            return md;
         }
 
-        /// <summary>
-        /// Returns key for the hashtable
-        /// The implemenation is trivial - return BNO_Num
-        /// </summary>
-        protected virtual object GetKey(object o)
-        {
-            // i know that data contains field "BNO_Num" - no exceptions here
-            object BNO_Num = Int32.Parse((string)field_BNO_Num.GetValue(o));
-            return BNO_Num;
-        }
-
-
-        /// <summary>
-        /// If there is any pending (waiting execution) orders check if I can execute any,
-        /// shift the orders position in the queue, etc.
-        /// In all cases replace the current value with new one.
-        /// </summary>
-        /// <param name="md0">
-        /// A <see cref="MarketData"/>
-        /// Currently stored data
-        /// </param>
-        /// <param name="md1">
-        /// A <see cref="MarketData"/>
-        /// New data
-        /// </param>
-        protected void UpdateSecurity(MarketData md0, MarketData md1)
-        {
-            // bump event counter
-            eventsCount++;
-        }
-
-
-        /// <summary>
-        /// Collection of all traded symbols (different BNO_Num for TASE) 
-        /// </summary>
-        protected System.Collections.Hashtable securities;
         protected FieldInfo field_BNO_Num;
         protected FieldInfo field_LMT_BY1;
         protected FieldInfo field_LMT_BY2;
@@ -1743,26 +1612,8 @@ namespace TaskBarLibSim
         protected FieldInfo field_DAY_VL;
         protected FieldInfo field_DAY_DIL_NO;
 
-        protected int eventsCount;
-        protected int ordersPlacedCount;
-        protected int ordersFilledCount;
-        protected int ordersCanceledCount;
-        protected int ordersPendingCount;
-    }
 
-    /// <summary>
-    /// This is a simulation of the options Maof market. The class collects incoming events - events taken
-    /// from the historical data, keeps track of all strikes.
-    /// MarketSimulation compares pending orders with the market state and figures out if fill was possible
-    /// To make the whole exercise practical for the current phase I assume that incoming orders do not influence
-    /// the market. I assume that if buy order's bid is equal to the best Ask the probability of the fill is 1
-    /// </summary>
-    public class MarketSimulationMaof : MarketSimulation<K300MaofType>
-    {
-        public MarketSimulationMaof(JQuant.IProducer<K300MaofType> producer)
-            : base(typeof(K300MaofType), producer)
-        {
-        }
+        protected JQuant.MarketData marketData;
     }
 
     public class MarketSimulationOrder
