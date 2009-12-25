@@ -385,7 +385,7 @@ namespace JQuant
 
                 //I need a cast here, because MarketSimulationMaof expects parameter of type IProducer
                 MarketSimulationMaof msm = 
-                    new MarketSimulationMaof((JQuant.IProducer<K300MaofType>) dataMaofGenerator);
+                    new MarketSimulationMaof(dataMaofGenerator);
 
                 //initialize the simulation - call EventGenerator.Start() - start the data stream
                 dataMaofGenerator.Start();
