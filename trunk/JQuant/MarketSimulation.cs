@@ -152,6 +152,12 @@ namespace MarketSimulation
                 Init(0, price, quantity, transaction, null);
             }
 
+
+            public void UpdateQuantity(int quantity)
+            {
+                this.Quantity = quantity;
+            }
+
             protected void Init(int id, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
             {
                 this.id = id;
@@ -160,6 +166,20 @@ namespace MarketSimulation
                 this.Quantity = quantity;
                 state = OrderState.Pending;
                 this.Transaction = transaction;
+            }
+
+
+
+            /// <summary>
+            /// Is the order an internal order or placed by the applicaiton
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.Boolean"/>
+            /// Returns false if the order is internal order
+            /// </returns>
+            public bool SystemOrder()
+            {
+                return (callback != null);
             }
             
             /// <summary>
@@ -218,22 +238,23 @@ namespace MarketSimulation
         }
 
 
-        protected  class OrderQueue
+        protected  class OrderQueue : JQuant.IResourceStatistics
         {
             /// <summary>
             /// i keep price and transaction type only for debug purposes
             /// </summary>
-            public OrderQueue(int price, JQuant.TransactionType transaction)
+            public OrderQueue(int securityId, int price, JQuant.TransactionType transaction)
             {
-                this.Price = price;
-                this.Transaction = transaction;
+                this.price = price;
+                this.transaction = transaction;
+                this.securityId = securityId;
                 
                 // crete queue of orders and preallocate a couple some entries.                
                 orders = new System.Collections.Generic.LinkedList<MarketSimulation.Core.LimitOrder>();
             }
 
             /// <summary>
-            /// Add a non-system order to the end of the queue
+            /// Add a non-system (internal) order to the end of the queue
             /// I have different cases here
             /// - list is empty
             /// - list's tail is occupied by the system order
@@ -245,22 +266,165 @@ namespace MarketSimulation
                 // will attempt the trck concurrently
                 lock (orders)
                 {
+                    countAddOrderTotal++;
+                    
+                    LimitOrder lastOrder = orders.Last.Value;
+                    if ( (orders.Count == 0) ||  // empty list
+                       lastOrder.SystemOrder() ) // last order is a system order
+                    {
+                        if (orders.Count == 0) countAddOrderToEmpty++;
+                        else countAddOrderAfter++;
+                        
+                        // create a new order, add to the end of list
+                        LimitOrder lo = new LimitOrder(this.price, quantity, this.transaction);
+                        orders.AddLast(lo);
+                    }
+                    else // I keep the list as short as possible 
+                    {    // increment quantity in the last internal order
+                        countAddOrderUpdate++;
+                        lastOrder.UpdateQuantity(quantity+lastOrder.Quantity);
+                    }
+
+                    sizeTotal += quantity;
+                    sizeInternal += quantity;
+                } // lock (orders)
+            }
+
+            /// <summary>
+            /// Add system order - always to the end of list
+            /// </summary>
+            public void AddOrder(LimitOrder order)
+            {
+                lock (orders)
+                {
+                    orders.AddLast(order);
+                    countAddSystemOrder++;
+                    sizeSystem += order.Quantity;
+                    sizeTotal += order.Quantity;
                 }
+            }
+
+            /// <summary>
+            /// Remove specified number of securities from the head of the list
+            /// This method handles case when a system order gets fill
+            /// </summary>
+            public void RemoveOrder(int quantity)
+            {
+                lock (orders)
+                {
+                    counRemoveOrderTotal++;
+
+                    // can I remove so many securities ?
+                    if (sizeTotal < quantity)
+                    {
+                        System.Console.WriteLine(ShortDescription() + " Can't remove "+quantity+" from "+sizeTotal+" total");
+                        quantity = sizeTotal;
+                    }
+
+                    // loop until quantity is removed or the list is empty
+                    // i handle two cases here - remove of internal and remove of system orders
+                    // this is order placed by the system .this is a simulation, so i have to "fix" the order queue.
+                    // i will remove both system orders and internal orders - i double the quantity of orders removed. 
+                    // This way i restore the queue like system order fill never happened.
+                    while ((quantity > 0) && (orders.Count > 0))
+                    {
+                        LimitOrder lo = orders.First.Value;
+
+                        if (lo.SystemOrder())
+                        {
+                            // quantity -= lo.Quantity;  - i am NOT going to do this. market does NOT see me
+                            
+                            int fillSize = Math.Min(quantity, lo.Quantity);  // can be partial fill - let upper layer handle this
+                            sizeSystem -= fillSize;
+                            
+                            // add the order to the queue of filled orders 
+
+                            // if not partial fill remove the order from the queue
+                            if (fillSize >= lo.Quantity)
+                            {
+                                orders.RemoveFirst();
+                            }
+                            else // this is partial fill - just update the quantity
+                            {
+                                lo.UpdateQuantity(lo.Quantity - quantity);
+                                // i have to skip the node in the list, but at this point i print error and remove the entry 
+                                System.Console.WriteLine(ShortDescription() + " Don't know to hanle partial fills order "+lo.id);
+                                orders.RemoveFirst();
+                            }
+                        }
+                        else  // internal order
+                        {
+                            if (lo.Quantity <= quantity)  // remove the whole node
+                            {
+                                quantity -= lo.Quantity;
+                                orders.RemoveFirst();
+                            }
+                            else  // just update the Quantity in the first node
+                            {
+                                lo = new LimitOrder(this.price, lo.Quantity-quantity, this.transaction);
+                                orders.First.Value = lo;
+                                quantity = 0;
+                            }
+                            sizeInternal -= quantity;
+                        }
+                    }
+                    sizeTotal -= quantity;
+                }  // lock (orders)
+                    
+            }
+
+            protected string ShortDescription()
+            {
+                string sd = "Order book "+this.securityId+" "+this.transaction.ToString()+" "+this.price;
+                return sd;
             }
             
             protected System.Collections.Generic.LinkedList<LimitOrder> orders;
             
-            public int Price
+            public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
             {
-                get;
-                protected set;
+                names = new System.Collections.ArrayList(8);
+                values = new System.Collections.ArrayList(8);
+    
+                names.Add("securityId"); values.Add(securityId);
+                names.Add("price"); values.Add(price);
+                names.Add("Sell"); values.Add(transaction == JQuant.TransactionType.SELL);
+                names.Add("ListSize"); values.Add(orders.Count);
+                names.Add("SizeTotal"); values.Add(sizeTotal);
+                names.Add("sizeInternalTotal"); values.Add(sizeInternal);
+                names.Add("sizeSystemTotal"); values.Add(sizeSystem);
+                names.Add("countAddOrderToEmpty"); values.Add(countAddOrderToEmpty);
+                names.Add("countAddOrderAfter"); values.Add(countAddOrderAfter);
+                names.Add("countAddOrderUpdate"); values.Add(countAddOrderUpdate);
+                names.Add("countAddOrderTotal"); values.Add(countAddOrderTotal);
+                names.Add("countAddSystemOrder"); values.Add(countAddSystemOrder);
             }
-                
-            public JQuant.TransactionType Transaction
-            {
-                get;
-                protected set;
-            }
+            
+            protected int price;
+            protected int securityId;
+            protected JQuant.TransactionType transaction;
+
+            /// <summary>
+            /// total size of orders - summ of all bids (asks)
+            /// </summary>
+            protected int sizeTotal;
+            
+            /// <summary>
+            /// size of internal orders
+            /// </summary>
+            protected int sizeInternal;
+            
+            /// <summary>
+            /// size of orders placed by the application (by system)
+            /// </summary>
+            protected int sizeSystem;
+            
+            protected int countAddOrderToEmpty;
+            protected int countAddOrderAfter;
+            protected int countAddOrderUpdate;
+            protected int countAddOrderTotal;
+            protected int countAddSystemOrder;
+            protected int counRemoveOrderTotal;
         }
 
         /// <summary>
@@ -272,10 +436,16 @@ namespace MarketSimulation
         {
             public OrderBook()
             {
-                slots = new System.Collections.Generic.LinkedList<OrderQueue>();
+                slots = new System.Collections.SortedList();
             }
 
-            protected System.Collections.Generic.LinkedList<OrderQueue> slots;
+
+            
+
+            /// <summary>
+            /// Slots are ordered by price
+            /// </summary>
+            protected System.Collections.SortedList slots;
         }
         
         /// <summary>
