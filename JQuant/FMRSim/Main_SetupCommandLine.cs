@@ -381,6 +381,10 @@ namespace JQuant
                 break;
                 
                 case 3:
+                cmd = cmdArguments[1].ToString().ToLower();
+                arg1 = cmdArguments[2].ToString();
+                break;
+                
                 case 4:
                 cmd = cmdArguments[1].ToString().ToLower();
                 arg1 = cmdArguments[2].ToString();
