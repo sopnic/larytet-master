@@ -1036,7 +1036,7 @@ namespace MarketSimulation
             int size = keys.Count;
             
             int[] ids = new int[size];
-            
+
             keys.CopyTo(ids, 0);
 
             return ids;
