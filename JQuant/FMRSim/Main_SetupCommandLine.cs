@@ -420,7 +420,39 @@ namespace JQuant
             CommandLineInterface.printTableHeader(iWrite, names, columnSize);
             CommandLineInterface.printValues(iWrite, values, columnSize);
         }
-        
+
+        protected void debugMarketSimulationMaofSecsCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            int columnSize = 12;
+            int[] ids = marketSimulationMaof.GetSecurities();
+            
+            System.Collections.ArrayList names = new System.Collections.ArrayList();
+            names.Add("Id");names.Add("BidSystem");names.Add("AskSystem");
+            CommandLineInterface.printTableHeader(iWrite, names, columnSize);
+            
+            foreach (int id in ids)
+            {
+                System.Collections.ArrayList values = new System.Collections.ArrayList();
+                int idxStatSize;
+                
+                JQuant.IResourceStatistics bids = marketSimulationMaof.GetOrderBook(id, JQuant.TransactionType.BUY);
+                System.Collections.ArrayList bidStatValues;
+                System.Collections.ArrayList bidStatNames;
+                bids.GetEventCounters(out bidStatNames, out bidStatValues);
+                idxStatSize = bidStatNames.IndexOf("SizeSystem");
+                int bidSystem = (int)bidStatValues[idxStatSize];
+                
+                JQuant.IResourceStatistics asks = marketSimulationMaof.GetOrderBook(id, JQuant.TransactionType.SELL);
+                System.Collections.ArrayList askStatValues;
+                System.Collections.ArrayList askStatNames;
+                asks.GetEventCounters(out askStatNames, out askStatValues);
+                int askSystem = (int)askStatValues[idxStatSize];
+                
+                values.Add(id);values.Add(bidSystem);values.Add(askSystem);
+                CommandLineInterface.printValues(iWrite, values, columnSize);
+            }
+        }
+
         protected void debugPrintResourcesNameAndStats(IWrite iWrite, System.Collections.ArrayList list)
         {
             int entry = 0;
@@ -1437,10 +1469,15 @@ namespace JQuant
 
             menuMarketSim.AddCommand(   "stat",
                                     "Show statistics for the running market simulation",
-                                    "Display number of events, number of pending orders, placed orders",
+                                    "Display number of events, number of placed orders",
                                     debugMarketSimulationMaofStatCallback
                                     );
             
+            menuMarketSim.AddCommand(   "secs",
+                                    "Show list of securities",
+                                    "Display list of securities including number of orders",
+                                    debugMarketSimulationMaofSecsCallback
+                                    );
             
             #region Debug commands;
 
