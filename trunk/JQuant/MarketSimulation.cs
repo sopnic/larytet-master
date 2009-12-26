@@ -759,10 +759,12 @@ namespace MarketSimulation
                 names = new System.Collections.ArrayList(8);
                 values = new System.Collections.ArrayList(8);
     
-                names.Add("securityId"); values.Add(securityId);
+                names.Add("SecurityId"); values.Add(securityId);
                 names.Add("Sell"); values.Add(transaction == JQuant.TransactionType.SELL);
                 names.Add("ListSize"); values.Add(slots.Count);
-                names.Add("sizeSystem"); values.Add(sizeSystem);
+
+                // name SizeSystem is used in the debug 
+                names.Add("SizeSystem"); values.Add(sizeSystem);
             }
 
             protected class BidComparator : System.Collections.IComparer
