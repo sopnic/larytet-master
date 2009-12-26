@@ -228,16 +228,6 @@ namespace MarketSimulation
             }
             
             /// <summary>
-            /// available at the moment market data including security ID
-            /// </summary>
-            // public MarketData marketData;
-            
-            /// <summary>
-            /// List of pending orders
-            /// </summary>
-            // public System.Collections.ArrayList orders;
-
-            /// <summary>
             /// keep all ask orders here
             /// </summary>
             public OrderBook orderBookAsk;
@@ -792,6 +782,16 @@ namespace MarketSimulation
                 }
             }
 
+
+            public OrderQueue[] GetQueues()
+            {
+                System.Collections.ICollection collection = slots.Values;
+                OrderQueue[] oqs = new OrderQueue[collection.Count];
+                collection.CopyTo(oqs, 0);
+
+                return oqs;
+            }
+
             /// <summary>
             /// Slots are ordered by price
             /// Ask order queues are ordered from lower price to higher price and 
@@ -829,9 +829,9 @@ namespace MarketSimulation
             names.Add("OrdersPlaced"); values.Add(ordersPlacedCount);
             names.Add("OrdersFilled"); values.Add(ordersFilledCount);
             names.Add("OrdersCanceled"); values.Add(ordersCanceledCount);
-            names.Add("OrdersPending"); values.Add(ordersPendingCount);
             names.Add("Securities"); values.Add(securities.Count);
         }
+
 
         /// <summary>
         /// The method is being called by Event Generator to notify the market simulation, that
@@ -879,6 +879,7 @@ namespace MarketSimulation
         {
             // add order to the list of orders which got fill
             filledOrdersThread.Send(order);
+            ordersFilledCount++;
         }
 
         /// <summary>
@@ -939,11 +940,14 @@ namespace MarketSimulation
                 if (haveFill)
                 {
                     filledOrdersThread.Send(lo);
+                    ordersFilledCount++;
                 }
                 else  // add the order to the order book
                 {
                     orderBook.PlaceOrder(lo);
+                    ordersPlacedCount++;
                 }
+
                 
                 res = true;
             }
@@ -968,6 +972,74 @@ namespace MarketSimulation
             
         }
 
+
+        /// <summary>
+        /// Called from CLI to display counters and debug info
+        /// </summary>
+        public JQuant.IResourceStatistics GetOrderBook(int securityId, JQuant.TransactionType transaction)
+        {
+            JQuant.IResourceStatistics ob = null;
+
+            do
+            {
+                // hopefully Item() will return null if there is no key in the hashtable
+                object o = securities[securityId];
+
+                if (o == null)
+                {
+                    break;
+                }
+
+                FSM fsm = (FSM)o;
+                if (transaction == JQuant.TransactionType.SELL)
+                    ob = fsm.orderBookAsk;
+                else
+                    ob = fsm.orderBookBid;
+            }
+            while (false);
+
+            return (ob);
+        }
+
+        /// <summary>
+        /// Called from CLI to display counters and debug info
+        /// </summary>
+        public JQuant.IResourceStatistics[] GetOrderQueues(int securityId, JQuant.TransactionType transaction)
+        {
+            JQuant.IResourceStatistics[] oqs = null;
+
+            do
+            {
+                OrderBook ob = (OrderBook)GetOrderBook(securityId, transaction);
+
+                if (ob == null)
+                {
+                    break;
+                }
+
+                oqs = (JQuant.IResourceStatistics[])(ob.GetQueues());
+            }
+            while (false);
+
+            return (oqs);
+        }
+
+        /// <summary>
+        /// return list of securities
+        /// </summary>
+        public int[] GetSecurities()
+        {
+            System.Collections.ICollection keys = securities.Keys;
+           
+            int size = keys.Count;
+            
+            int[] ids = new int[size];
+            
+            keys.CopyTo(ids, 0);
+
+            return ids;
+        }
+        
         /// <summary>
         /// Collection of all traded symbols (different BNO_Num for TASE)
         /// I keep objects of type FSM in the hashtable
@@ -979,6 +1051,5 @@ namespace MarketSimulation
         protected int ordersPlacedCount;
         protected int ordersFilledCount;
         protected int ordersCanceledCount;
-        protected int ordersPendingCount;
     }
 }
