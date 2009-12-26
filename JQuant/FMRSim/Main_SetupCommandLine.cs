@@ -433,6 +433,8 @@ namespace JQuant
             System.Collections.ArrayList names = new System.Collections.ArrayList();
             names.Add("Id");names.Add("BidSystem");names.Add("AskSystem");
             CommandLineInterface.printTableHeader(iWrite, names, columnSize);
+
+            System.Array.Sort(ids);
             
             foreach (int id in ids)
             {
