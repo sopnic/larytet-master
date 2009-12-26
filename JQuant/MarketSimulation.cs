@@ -1,4 +1,3 @@
-
 using System;
 using System.ComponentModel;
 
@@ -87,8 +86,8 @@ namespace MarketSimulation
             md.ask = (OrderPair[])this.ask.Clone();
             md.bid = (OrderPair[])this.bid.Clone();
             md.id = this.id;
-            md.lastDeal = this.lastDeal;
-            md.lastDealSize = this.lastDealSize;
+            md.lastTrade = this.lastTrade;
+            md.lastTradeSize = this.lastTradeSize;
             md.dayVolume = this.dayVolume;
             md.dayTransactions = this.dayTransactions;
             
@@ -105,8 +104,8 @@ namespace MarketSimulation
         
 
         // last deal price and size
-        public int lastDeal;
-        public int lastDealSize;
+        public int lastTrade;
+        public int lastTradeSize;
 
         // Aggregated trading data over the trading period (day)
         public int dayVolume;        //volume
@@ -238,16 +237,24 @@ namespace MarketSimulation
         }
 
 
-        protected  class OrderQueue : JQuant.IResourceStatistics
+        /// <summary>
+        /// OrderQueue and OrderBook will call this method to let know upper layers that the
+        /// system order (order place by the application) got fill
+        /// </summary>
+        protected delegate void FillOrder(LimitOrder order, int quantity);
+        
+        protected class OrderQueue : JQuant.IResourceStatistics
         {
+
             /// <summary>
             /// i keep price and transaction type only for debug purposes
             /// </summary>
-            public OrderQueue(int securityId, int price, JQuant.TransactionType transaction)
+            public OrderQueue(int securityId, int price, JQuant.TransactionType transaction, FillOrder fillOrder)
             {
                 this.price = price;
                 this.transaction = transaction;
                 this.securityId = securityId;
+                this.fillOrder = fillOrder;
                 
                 // crete queue of orders and preallocate a couple some entries.                
                 orders = new System.Collections.Generic.LinkedList<MarketSimulation.Core.LimitOrder>();
@@ -335,7 +342,8 @@ namespace MarketSimulation
                             // quantity -= lo.Quantity;  - i am NOT going to do this. market does NOT see me
                             
                             int fillSize = Math.Min(quantity, lo.Quantity);  // can be partial fill - let upper layer handle this
-                            sizeSystem -= fillSize;
+                            // sizeSystem -= fillSize;
+                            sizeSystem -= lo.Quantity; // no partial fills
                             
                             // add the order to the queue of filled orders 
 
@@ -350,6 +358,8 @@ namespace MarketSimulation
                                 // i have to skip the node in the list, but at this point i print error and remove the entry 
                                 System.Console.WriteLine(ShortDescription() + " Don't know to hanle partial fills order "+lo.id);
                                 orders.RemoveFirst();
+                                // notify upper layer that the order got fill
+                                fillOrder(lo, fillSize);
                             }
                         }
                         else  // internal order
@@ -373,9 +383,32 @@ namespace MarketSimulation
                     
             }
 
+
+            /// <summary>
+            /// Remove system order. This is result of order cancel
+            /// </summary>
+            public void RemoveOrder(LimitOrder order)
+            {
+                lock (orders)
+                {
+                    System.Collections.Generic.LinkedListNode<LimitOrder> node = orders.Find(order);
+                    if (node != null)
+                    {
+                        sizeSystem -= order.Quantity;
+                        sizeTotal -= order.Quantity;
+                        orders.Remove(node);
+                    }
+                    else
+                    {
+                        System.Console.WriteLine(ShortDescription()+"Can't remove order "+order.id+". Not found in the list");
+                    }                    
+                } 
+            }
+
+
             protected string ShortDescription()
             {
-                string sd = "Order book "+this.securityId+" "+this.transaction.ToString()+" "+this.price;
+                string sd = "Order queue "+this.securityId+" "+this.transaction.ToString()+" "+this.price;
                 return sd;
             }
             
@@ -425,28 +458,135 @@ namespace MarketSimulation
             protected int countAddOrderTotal;
             protected int countAddSystemOrder;
             protected int counRemoveOrderTotal;
-        }
+            protected FillOrder fillOrder;
+        }  // class OrderQueue
 
         /// <summary>
         /// TASE supports order book of depth three - three slots for asks and three slots for bids
         /// I arrange book order as a list of slots ordered by price. The size of the list is not
-        /// neccessary three 
+        /// neccessary three
         /// </summary>
-        protected class OrderBook
+        protected class OrderBook : JQuant.IResourceStatistics
         {
-            public OrderBook()
+            /// <summary>
+            /// Create OrderBook - i keep two books for every security. One book for asks and another
+            /// book for bids.
+            /// I keep security id for debug
+            /// Argument "fillOrder" is a method to call when a system order got fill
+            /// </summary>
+            public OrderBook(int securityId, JQuant.TransactionType transaction, FillOrder fillOrder)
             {
+                this.securityId = securityId;
+                this.transaction = transaction;
+                this.fillOrder = fillOrder;
+                
                 slots = new System.Collections.SortedList();
             }
 
 
+            /// <summary>
+            /// If there is no system orders updating of the book is trivial - i just store the market data
+            /// The things get interesting when a first order is placed. I allocate the order queues and 
+            /// update will update the queues.
+            /// </summary>
+            public void Update(MarketData md)
+            {
+                if (sizeSystem <= 0) // most likely there are no system orders - i will store the market data and get out
+                {                    // i am very fast in most cases
+                    marketData = md;
+                }
+                else // there are pending system orders
+                {
+                    // i have previous record (marketData) and current record (md)
+                    // let's figure out what happened
+
+                    int tradeSize = (md.dayVolume - marketData.dayVolume);
+                    if (tradeSize < 0)
+                    {
+                        System.Console.WriteLine(ShortDescription()+" negative change in day volume from "+md.dayVolume+" to "+ 
+                                                marketData.dayVolume+" are not consistent");
+                    } 
+                    else if (tradeSize > 0) // there was a deal ? let's check the price of the deal and size of the deal
+                    {
+                        if (tradeSize != md.lastTradeSize)  // sanity check - any misssing records out there ?
+                        {
+                            System.Console.WriteLine(ShortDescription()+" last trade size "+md.lastTradeSize+
+                                                    " and change in day volume from "+md.dayVolume+" to "+ marketData.dayVolume+" are not consistent");
+                        }
+
+
+                        
+                        
+                    } // trade closed
+                    
+
+                    
+                }
+            }
+
+
+            /// <summary>
+            /// Application calls the method to check if there is immediate fill is possible.
+            /// For the ask order books of bids will be checked.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.Boolean"/>
+            /// </returns>
+            public bool CheckImmediateFill(LimitOrder order)
+            {
+                JQuant.TransactionType orderTransaction = order.Transaction;
+
+                // book of asks for the buy order
+                // book of bids for the sell order
+                if (this.transaction == orderTransaction)
+                {
+                    System.Console.WriteLine(ShortDescription()+" Check fill for order "+order.id + " "+order.Transaction);
+                    return false;
+                }
+
+                
+                if (orderTransaction == JQuant.TransactionType.SELL) // check if there is a higher or equal bid 
+                {
+                    return (order.Price <= marketData.bid[0].price);
+                }
+                else // buy order - check if there is lower or equal ask
+                {
+                    return (order.Price >= marketData.ask[0].price);
+                }
+            }
             
+            protected string ShortDescription()
+            {
+                string sd = "Order book "+this.securityId+" "+this.transaction.ToString()+" ";
+                return sd;
+            }
+            
+            public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
+            {
+                names = new System.Collections.ArrayList(8);
+                values = new System.Collections.ArrayList(8);
+    
+                names.Add("securityId"); values.Add(securityId);
+                names.Add("Sell"); values.Add(transaction == JQuant.TransactionType.SELL);
+                names.Add("ListSize"); values.Add(slots.Count);
+                names.Add("sizeSystem"); values.Add(sizeSystem);
+            }
 
             /// <summary>
             /// Slots are ordered by price
             /// </summary>
             protected System.Collections.SortedList slots;
-        }
+
+            /// <summary>
+            /// total size of all placed by the system orders
+            /// </summary>
+            protected int sizeSystem;
+            
+            protected MarketData marketData;
+            protected int securityId;
+            protected JQuant.TransactionType transaction;
+            protected FillOrder fillOrder;
+        } // class OrderBook
         
         /// <summary>
         /// Use child class (wrapper) like MarketSimulationMaof to create instance of the MarketSimulation
@@ -613,7 +753,6 @@ namespace MarketSimulation
                 // immediate execution ? probably market price
                 if (placeInQueue < 0)
                 {
-                    FillOrder(md, ref limitOrder);
                 }
 
                 // if there is still something to fill add to the list of pending orders
@@ -631,16 +770,6 @@ namespace MarketSimulation
 
 
             return res;
-        }
-
-        /// <summary>
-        /// The method is called when there is a fair chance that the order can be filled
-        /// For example, order position in the queue is 0 and last deal was done at the order
-        /// price
-        /// The method will call application Callback if any changes in the order state
-        /// </summary>
-        protected void FillOrder(MarketData md, ref LimitOrder limitOrder)
-        {
         }
 
         /// <summary>

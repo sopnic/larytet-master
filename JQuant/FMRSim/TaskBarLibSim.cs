@@ -1587,8 +1587,8 @@ namespace TaskBarLibSim
             md.ask[0].size = JQuant.Convert.StrToInt((string)field_LMY_SL1_NV.GetValue(dt));
             md.ask[1].size = JQuant.Convert.StrToInt((string)field_LMY_SL2_NV.GetValue(dt));
             md.ask[2].size = JQuant.Convert.StrToInt((string)field_LMY_SL3_NV.GetValue(dt));
-            md.lastDeal = JQuant.Convert.StrToInt((string)field_LST_DL_PR.GetValue(dt));
-            md.lastDealSize = JQuant.Convert.StrToInt((string)field_LST_DL_VL.GetValue(dt));
+            md.lastTrade = JQuant.Convert.StrToInt((string)field_LST_DL_PR.GetValue(dt));
+            md.lastTradeSize = JQuant.Convert.StrToInt((string)field_LST_DL_VL.GetValue(dt));
             md.dayVolume = JQuant.Convert.StrToInt((string)field_DAY_VL.GetValue(dt));
             md.dayTransactions = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
 
