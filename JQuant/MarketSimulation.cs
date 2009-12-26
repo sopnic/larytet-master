@@ -127,9 +127,32 @@ namespace MarketSimulation
         /// </summary>
         public delegate void OrderCallback(int id, ReturnCode errorCode, int price, int quantity);
 
+
+        /// <summary>
+        /// There are two sources of the orders
+        /// - system orders, placed by the trading algorithm
+        /// - internally (by market simulation itself) placed orders based on the order book updates
+        /// </summary>
         protected class LimitOrder : JQuant.LimitOrderBase
         {
+            /// <summary>
+            /// Order is placed by the system
+            /// </summary>
             public LimitOrder(int id, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
+            {
+                Init(id, price, quantity, transaction, callback);
+            }
+
+            /// <summary>
+            /// this constructor is used to create non-system orders, where order size is important
+            /// I keep price and transaction type for internal checks only
+            /// </summary>
+            public LimitOrder(int price, int quantity, JQuant.TransactionType transaction)
+            {
+                Init(0, price, quantity, transaction, null);
+            }
+
+            protected void Init(int id, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
             {
                 this.id = id;
                 this.callback = callback;
@@ -193,7 +216,71 @@ namespace MarketSimulation
             /// </summary>
             public System.Collections.ArrayList orders;
         }
+
+
+        protected  class OrderQueue
+        {
+            /// <summary>
+            /// i keep price and transaction type only for debug purposes
+            /// </summary>
+            public OrderQueue(int price, JQuant.TransactionType transaction)
+            {
+                this.Price = price;
+                this.Transaction = transaction;
+                
+                // crete queue of orders and preallocate a couple some entries.                
+                orders = new System.Collections.Generic.LinkedList<MarketSimulation.Core.LimitOrder>();
+            }
+
+            /// <summary>
+            /// Add a non-system order to the end of the queue
+            /// I have different cases here
+            /// - list is empty
+            /// - list's tail is occupied by the system order
+            /// - list's tail is occupied by non-sysem order
+            /// </summary>
+            public void AddOrder(int quantity)
+            {
+                // i am adding entries to the list and I have no idea how many threads
+                // will attempt the trck concurrently
+                lock (orders)
+                {
+                }
+            }
+            
+            protected System.Collections.Generic.LinkedList<LimitOrder> orders;
+            
+            public int Price
+            {
+                get;
+                protected set;
+            }
+                
+            public JQuant.TransactionType Transaction
+            {
+                get;
+                protected set;
+            }
+        }
+
+        /// <summary>
+        /// TASE supports order book of depth three - three slots for asks and three slots for bids
+        /// I arrange book order as a list of slots ordered by price. The size of the list is not
+        /// neccessary three 
+        /// </summary>
+        protected class OrderBook
+        {
+            public OrderBook()
+            {
+                slots = new System.Collections.Generic.LinkedList<OrderQueue>();
+            }
+
+            protected System.Collections.Generic.LinkedList<OrderQueue> slots;
+        }
         
+        /// <summary>
+        /// Use child class (wrapper) like MarketSimulationMaof to create instance of the MarketSimulation
+        /// </summary>
         protected Core()
         {
             // create hash table where all securities are stored
