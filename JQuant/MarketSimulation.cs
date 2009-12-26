@@ -269,6 +269,11 @@ namespace MarketSimulation
             /// </summary>
             public void AddOrder(int quantity)
             {
+                if (quantity < 0)
+                {
+                    RemoveOrder(-quantity);
+                    return;
+                }
                 // i am adding entries to the list and I have no idea how many threads
                 // will attempt the trck concurrently
                 lock (orders)
@@ -286,8 +291,8 @@ namespace MarketSimulation
                         LimitOrder lo = new LimitOrder(this.price, quantity, this.transaction);
                         orders.AddLast(lo);
                     }
-                    else // I keep the list as short as possible 
-                    {    // increment quantity in the last internal order
+                    else // I keep the order queue as short as possible 
+                    {    // increment quantity in the last (tail) internal order
                         countAddOrderUpdate++;
                         lastOrder.UpdateQuantity(quantity+lastOrder.Quantity);
                     }
@@ -432,6 +437,19 @@ namespace MarketSimulation
                 names.Add("countAddOrderTotal"); values.Add(countAddOrderTotal);
                 names.Add("countAddSystemOrder"); values.Add(countAddSystemOrder);
             }
+
+            /// <summary>
+            /// Returns aggregated size of all orders waiting in the queue
+            /// </summary>
+            public int GetSize()
+            {
+                return sizeTotal;
+            }
+            
+            public int GetSizeInernal()
+            {
+                return sizeInternal;
+            }
             
             protected int price;
             protected int securityId;
@@ -492,38 +510,155 @@ namespace MarketSimulation
             public void Update(MarketData md)
             {
                 if (sizeSystem <= 0) // most likely there are no system orders - i will store the market data and get out
-                {                    // i am very fast in most cases
+                {                    // i want to be fast 
                     marketData = md;
                 }
                 else // there are pending system orders
                 {
                     // i have previous record (marketData) and current record (md)
                     // let's figure out what happened
+                    Update_trade(md);  // probably a trade ?
+                    Update_queue(md); // probably some orders are pulled out or added ?
 
-                    int tradeSize = (md.dayVolume - marketData.dayVolume);
-                    if (tradeSize < 0)
-                    {
-                        System.Console.WriteLine(ShortDescription()+" negative change in day volume from "+md.dayVolume+" to "+ 
-                                                marketData.dayVolume+" are not consistent");
-                    } 
-                    else if (tradeSize > 0) // there was a deal ? let's check the price of the deal and size of the deal
-                    {
-                        if (tradeSize != md.lastTradeSize)  // sanity check - any misssing records out there ?
-                        {
-                            System.Console.WriteLine(ShortDescription()+" last trade size "+md.lastTradeSize+
-                                                    " and change in day volume from "+md.dayVolume+" to "+ marketData.dayVolume+" are not consistent");
-                        }
-
-
-                        
-                        
-                    } // trade closed
-                    
-
-                    
+                    // finally replace the data
+                    marketData = md;
                 }
             }
 
+
+            /// <summary>
+            /// The method is called if in the Update() i discover that there was a trade
+            /// I have to figure out size of the trade and remove the traded securities from the queue
+            /// </summary>
+            protected void Update_trade(MarketData md)
+            {
+                int tradeSize = (md.dayVolume - marketData.dayVolume);
+                if (tradeSize < 0)
+                {
+                    System.Console.WriteLine(ShortDescription()+" negative change in day volume from "+md.dayVolume+" to "+ 
+                                            marketData.dayVolume+" are not consistent");
+                } 
+                else if (tradeSize > 0) // there was a trade ? let's check the price of the deal and size of the deal
+                {
+                    if (tradeSize != md.lastTradeSize)  // sanity check - any misssing records out there ?
+                    {
+                        System.Console.WriteLine(ShortDescription()+" last trade size "+md.lastTradeSize+
+                                                " and change in day volume from "+md.dayVolume+" to "+ marketData.dayVolume+" are not consistent");
+                    }
+                    // i remove the traded securities from the queue(s) starting from the best (head of the ordered list "slots")
+                    while (slots.Count > 0)
+                    {
+                        OrderQueue orderQueue = (OrderQueue)slots[0];
+                        
+                        int size0 = orderQueue.GetSize();  // get queue size
+                        orderQueue.RemoveOrder(tradeSize); // remove the trade
+                        int size1 = orderQueue.GetSize();  // get queue size
+                        
+                        if (size1 == 0)  // if the queue empty - remove the queue
+                        {
+                            slots.RemoveAt(0);
+                        }
+                        int removed = size0 - size1;
+                        tradeSize -= removed;
+                        if (tradeSize == 0)  // i removed the trade from the order queue ?
+                        {
+                            break;
+                        }
+                    }
+                    if (tradeSize > 0)
+                    {
+                        System.Console.WriteLine(ShortDescription()+" failed to remove the trade remains "+tradeSize);
+                    }
+                } // tradeSize > 0 - there was a trade
+            }
+                
+
+            /// <summary>
+            /// This method is called to check if there was a change in the order queues, for
+            /// example some orders were pulled or some orders were added to the order queues
+            /// </summary>
+            protected void Update_queue(MarketData md)
+            {
+                OrderPair[] mdBookOrders;
+                OrderPair[] marketDataBookOrders;
+                if (this.transaction == JQuant.TransactionType.SELL) // i am an ask book
+                {
+                    mdBookOrders = md.ask;
+                    marketDataBookOrders = marketData.ask;
+                }
+                else  // i am a bid book 
+                {
+                    mdBookOrders = md.bid;
+                    marketDataBookOrders = marketData.bid;
+                }
+
+                int size = mdBookOrders.Length;
+                for (int i = 0;i < size;i++)
+                {
+                    int marketDataPrice = marketDataBookOrders[i].price;
+                    int mdPrice = mdBookOrders[i].price;
+                    int queueIdx;
+                    OrderQueue orderQueue;
+                    lock (slots)
+                    {
+                        queueIdx = slots.IndexOfKey(marketDataPrice);
+                        orderQueue = (OrderQueue)slots[queueIdx];
+                    }
+                    // simple case - size of orders changed
+                    if ((mdPrice == marketDataPrice) && 
+                        (mdBookOrders[i].size != marketDataBookOrders[i].size) && 
+                        (orderQueue.GetSizeInernal() == mdBookOrders[i].size) )    // and size of the queue already represents that
+                    {                                                              // probably thanks to Update_trade()
+                    }
+                    if ((mdPrice == marketDataPrice) &&                              
+                        (mdBookOrders[i].size != marketDataBookOrders[i].size) && 
+                        (orderQueue.GetSizeInernal() != mdBookOrders[i].size) )    // size changed because some of the orders pulled out
+                    {
+                        int addedOrders = mdBookOrders[i].size - orderQueue.GetSizeInernal();
+                        // if result is negative the orders were removed (pulled by the market participants)
+                        // orderQueue.AddOrder(int) handles negative numbers
+                        orderQueue.AddOrder(addedOrders);
+                    }
+                    // price of orders changed. In some queues there are system orders. I want to keep the queues
+                    // containing system orders
+                    // if i do not have order queue with this price i create one
+                    // i move all internal orders to another queue and remove the old queue if empty
+                    // i add a new queue to the book
+                    if (mdBookOrders[i].price != marketDataBookOrders[i].price)
+                    {
+                        OrderQueue orderQueueNew;
+                        int queueIdxNew;
+                        lock (slots)  // create a new order queue if there is no queue at this price exists
+                        {
+                            queueIdxNew = slots.IndexOfKey(mdPrice);
+                            if (queueIdxNew < 0)
+                            {
+                                orderQueueNew = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
+                                slots.Add(mdPrice, orderQueueNew);  // add newly created queue to the list of queues sorted by price
+                            }
+                            else
+                            {
+                                orderQueueNew = (OrderQueue)(slots[queueIdxNew]);
+                            }
+                        }
+                        int sizeInternal = orderQueue.GetSizeInernal();  // remove all internal orders from the old queue
+                        orderQueue.RemoveOrder(sizeInternal);
+                        lock (slots)                    
+                        {                                       // remove the queue from the list if empty
+                            if (orderQueue.GetSize() <= 0) slots.RemoveAt(queueIdx);
+                        }
+                        sizeInternal = orderQueueNew.GetSizeInernal();   // add orders to the tail of the new queue
+                        orderQueueNew.AddOrder(mdBookOrders[i].size - sizeInternal);  // orderQueue.AddOrder(int) handles both positive and negative arguments
+                    }
+                }
+            }
+
+            protected void FillOrderCallback(LimitOrder order, int fillSize)
+            {
+            }
+
+
+                                                           
 
             /// <summary>
             /// Application calls the method to check if there is immediate fill is possible.
@@ -574,6 +709,8 @@ namespace MarketSimulation
 
             /// <summary>
             /// Slots are ordered by price
+            /// Ask order queues are ordered from lower price to higher price and 
+            /// book of bids aranged from higher price to lower price
             /// </summary>
             protected System.Collections.SortedList slots;
 
