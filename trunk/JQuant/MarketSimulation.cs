@@ -219,21 +219,33 @@ namespace MarketSimulation
         /// </summary>
         protected class FSM
         {
-            public FSM(MarketData marketData)
+            public FSM(MarketData marketData, FillOrderBook fillOrderCallback)
             {
-                orders = new System.Collections.ArrayList(3);
-                this.marketData = marketData;
+                // orders = new System.Collections.ArrayList(3);
+                // this.marketData = marketData;
+                orderBookAsk = new OrderBook(marketData.id, JQuant.TransactionType.SELL, fillOrderCallback);
+                orderBookBid = new OrderBook(marketData.id, JQuant.TransactionType.BUY, fillOrderCallback);
             }
             
             /// <summary>
             /// available at the moment market data including security ID
             /// </summary>
-            public MarketData marketData;
+            // public MarketData marketData;
             
             /// <summary>
             /// List of pending orders
             /// </summary>
-            public System.Collections.ArrayList orders;
+            // public System.Collections.ArrayList orders;
+
+            /// <summary>
+            /// keep all ask orders here
+            /// </summary>
+            public OrderBook orderBookAsk;
+            
+            /// <summary>
+            /// keep all bid orders here
+            /// </summary>
+            public OrderBook orderBookBid;
         }
 
 
@@ -354,13 +366,16 @@ namespace MarketSimulation
                             // add the order to the queue of filled orders 
 
                             // if not partial fill remove the order from the queue
-                            if (fillSize >= lo.Quantity)
+                            if (fillSize >= lo.Quantity) //i got fill
                             {
                                 orders.RemoveFirst();
+                                // notify upper layer (orderbook) that the order got fill
+                                fillOrder(this, lo, fillSize);
                             }
                             else // this is partial fill - just update the quantity
                             {
-                                lo.UpdateQuantity(lo.Quantity - quantity);
+                                fillSize = lo.Quantity;
+                                // lo.UpdateQuantity(lo.Quantity - fillSize);
                                 // i have to skip the node in the list, but at this point i print error and remove the entry 
                                 System.Console.WriteLine(ShortDescription() + " Don't know to hanle partial fills order "+lo.id);
                                 orders.RemoveFirst();
@@ -732,7 +747,6 @@ namespace MarketSimulation
                     System.Console.WriteLine(ShortDescription()+" Check fill for order "+order.id + " "+order.Transaction);
                     return false;
                 }
-
                 
                 if (orderTransaction == JQuant.TransactionType.SELL) // check if there is a higher or equal bid 
                 {
@@ -802,6 +816,8 @@ namespace MarketSimulation
         {
             // create hash table where all securities are stored
             securities = new System.Collections.Hashtable(200);
+            FilledOrdersThread filledOrdersThread = new FilledOrdersThread();
+            filledOrdersThread.Start();
         }
 
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
@@ -825,7 +841,7 @@ namespace MarketSimulation
         /// </summary>
         public void Notify(int count, MarketData data)
         {
-            // GetKey() will return (in the simplest case) BNO_number (boxed integer)
+            // GetKey() will return security id
             object key = GetKey(data);
             object fsm;
 
@@ -841,7 +857,7 @@ namespace MarketSimulation
                 {
                     // clone the data first - cloning is expensive and happens only very first time i meet
                     // specific security. in the subsequent calls to Notify() only relevant data will be updated
-                    fsm = new FSM((MarketData)data.Clone());
+                    fsm = new FSM((MarketData)data.Clone(), FillOrderCallback);
                     securities[key] = fsm;
     
                     // get the security from the hash table in all cases
@@ -855,6 +871,15 @@ namespace MarketSimulation
             UpdateSecurity((FSM)fsm, data);
         }
 
+        /// <summary>
+        /// This method is called from the order book
+        /// I forward the call to the application
+        /// </summary>
+        protected void FillOrderCallback(OrderBook book, LimitOrder order, int fillSize)
+        {
+            // add order to the list of orders which got fill
+            filledOrdersThread.Send(order);
+        }
 
         /// <summary>
         /// Returns key for the hashtable
@@ -867,62 +892,15 @@ namespace MarketSimulation
 
 
         /// <summary>
-        /// If there is any pending (waiting execution) orders check if I can execute any,
-        /// shift the orders position in the queue, etc.
-        /// In all cases replace the current value with new one.
+        /// Let the order books handle the update
         /// </summary>
-        /// <param name="fsm">
-        /// A <see cref="FSM"/>
-        /// Currently stored data
-        /// </param>
-        /// <param name="curr">
-        /// A <see cref="MarketData"/>
-        /// New data
-        /// </param>
         protected void UpdateSecurity(FSM fsm, MarketData marketData)
         {
             // bump event counter
             eventsCount++;
 
-            int ordersCount = 0;
-
-            // compare field by field and update
-            // Fast and dirty - replace the data in the FSM
-            lock (fsm)
-            {
-                fsm.marketData = (MarketData)marketData.Clone();
-                ordersCount = fsm.orders.Count;
-            }
-
-            // check pending orders
-            if (ordersCount != 0)
-            {
-                LimitOrder[] limitOrders;
-
-                // i assume that the list is not long - convert to array
-                // this way i do not have to synchronize the whole matching procedure, but only
-                // hopefully quick list-to-array conversion
-                lock (fsm)
-                {
-                    limitOrders = (LimitOrder[])fsm.orders.ToArray();
-                }
-                foreach (LimitOrder limitOrder in limitOrders)
-                {
-                    MatchOrder(fsm, limitOrder);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Match the order if possible. Current approach is "no partial fills"
-        /// I want to see for sell (buy) order
-        /// - bid (or ask) with at least the order price
-        /// - deals done after the order placed at prices better or equal 
-        /// to the order price. number of deals should be at least total size of bids (asks) 
-        /// at the moment the order placed
-        /// </summary>
-        protected void MatchOrder(FSM fsm, LimitOrder limitOrder)
-        {
+            fsm.orderBookAsk.Update(marketData);
+            fsm.orderBookBid.Update(marketData);
         }
 
         /// <summary>
@@ -948,27 +926,23 @@ namespace MarketSimulation
                 }
 
                 FSM fsm = (FSM)o;
-                MarketData md = fsm.marketData;
+                OrderBook orderBook;
+                if (transaction == JQuant.TransactionType.SELL) orderBook = fsm.orderBookAsk; // sell order - book of asks
+                else orderBook = fsm.orderBookBid;  // this is buy order - books of bids
 
-                LimitOrder limitOrder = new LimitOrder(security, price, quantity, transaction, callback);
 
-                // store the current queue size, trading volume, etc.
-                limitOrder.volume = md.dayVolume;
-                int placeInQueue = CalculatePlaceInQueue(md, price, transaction);
-                limitOrder.queueSize = placeInQueue;
+                LimitOrder lo = new LimitOrder(security, price, quantity, transaction, callback);
 
-                // immediate execution ? probably market price
-                if (placeInQueue < 0)
+
+                // may be i can get fill immediately
+                bool haveFill = orderBook.CheckImmediateFill(lo);
+                if (haveFill)
                 {
+                    filledOrdersThread.Send(lo);
                 }
-
-                // if there is still something to fill add to the list of pending orders
-                if (limitOrder.Quantity > 0)
+                else  // add the order to the order book
                 {
-                    lock (fsm)
-                    {
-                        ((FSM)fsm).orders.Add(limitOrder);
-                    }
+                    orderBook.PlaceOrder(lo);
                 }
                 
                 res = true;
@@ -979,23 +953,27 @@ namespace MarketSimulation
             return res;
         }
 
-        /// <summary>
-        /// Calculate position of an order in the order book given the book and the 
-        /// price of the order (assumed limit order)
-        /// </summary>
-        protected static int CalculatePlaceInQueue(MarketData md, int price, JQuant.TransactionType transaction)
+
+        protected class FilledOrdersThread : JQuant.MailboxThread<LimitOrder>
         {
-            int placeInQueue = 0;
+            public FilledOrdersThread()
+                : base("msFldOrdr", 100)
+            {
+            }
 
-            return placeInQueue;
+            protected virtual void HandleMessage(LimitOrder lo)
+            {
+                lo.callback(lo.id, ReturnCode.Fill, lo.Price, lo.Quantity);
+            }
+            
         }
-
 
         /// <summary>
         /// Collection of all traded symbols (different BNO_Num for TASE)
         /// I keep objects of type FSM in the hashtable
         /// </summary>
         protected System.Collections.Hashtable securities;
+        protected FilledOrdersThread filledOrdersThread;
 
         protected int eventsCount;
         protected int ordersPlacedCount;
