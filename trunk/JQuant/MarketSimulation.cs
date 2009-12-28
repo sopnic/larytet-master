@@ -960,6 +960,12 @@ namespace MarketSimulation
         }
 
 
+        /// <summary>
+        /// Small thread which calls application's callbacks
+        /// Every time an order filled MarketSimulation.Core sends a message to the thread. Thread
+        /// wakes up and calls application callback - informs the application that the order got fill
+        /// The idea is to execute the application hook from a separate (different priority) context.
+        /// </summary>
         protected class FilledOrdersThread : JQuant.MailboxThread<LimitOrder>
         {
             public FilledOrdersThread()
@@ -1005,6 +1011,9 @@ namespace MarketSimulation
 
         /// <summary>
         /// Called from CLI to display counters and debug info
+        /// Returns order queues statistics
+        /// There is a different method which returns current situation in the bid/ask queues
+        /// and a another method which returns the most recent log entry 
         /// </summary>
         public JQuant.IResourceStatistics[] GetOrderQueues(int securityId, JQuant.TransactionType transaction)
         {
