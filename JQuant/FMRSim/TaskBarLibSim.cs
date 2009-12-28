@@ -1548,6 +1548,7 @@ namespace TaskBarLibSim
             // Market depth (size of the order book) is 3 on TASE
             // i am going to reuse this object 
             marketData = new MarketSimulation.MarketData(3);
+            securities = new System.Collections.Hashtable(100);
         }
         
         public void Notify(int count, K300MaofType data)
@@ -1614,6 +1615,12 @@ namespace TaskBarLibSim
 
 
         protected MarketSimulation.MarketData marketData;
+        
+        /// <summary>
+        /// Collection of all traded symbols (different BNO_Num for TASE)
+        /// I keep the last update data in this hash table
+        /// </summary>
+        protected System.Collections.Hashtable securities;
     }
 
     public class MarketSimulationOrder
