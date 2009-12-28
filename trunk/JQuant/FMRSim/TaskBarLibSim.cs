@@ -767,7 +767,6 @@ namespace TaskBarLibSim
             }
         }
 
-
         /// <summary>
         /// Returns next chunk of data of type. If Ok return true 
         /// The method should block the calling thread until the next chunk
@@ -952,7 +951,7 @@ namespace TaskBarLibSim
                 Thread.Sleep(initialDelay);
                 initialDelay = 0;
             }
-            
+
 
             bool parseRes = false;
 
@@ -1009,7 +1008,7 @@ namespace TaskBarLibSim
         private void DoDelay(TimeSpan timeSpan)
         {
             int delayLog = 0, delayPb = 0;
-            
+
             // this not the first time the method is called
             // calculate how much time went locally and according to the log
             if (baseTimeSpanLog != default(TimeSpan))
@@ -1018,7 +1017,7 @@ namespace TaskBarLibSim
 
                 // how much time elapsed from the base time - time when I started playback
                 delayPb = (int)((dtPb - baseTimePb).TotalMilliseconds);
-                
+
                 // how much time elapsed according to the log file
                 delayLog = (int)((timeSpan - baseTimeSpanLog).TotalMilliseconds);
             }
@@ -1034,7 +1033,7 @@ namespace TaskBarLibSim
             // local (playback) time runs faster
             // delayPb is time elapsed from the last call to the method
             delayPb = (int)(delayPb * this.speedup);
-            
+
             // if i am running faster than log i'll do delay. if i am slower there is nothing to do.
             // calculate next sleep. the shortest possible sleep can be limited
             // In Windows i can't sleep for shorter period than 15ms, but i am not worry about that
@@ -1044,14 +1043,14 @@ namespace TaskBarLibSim
                 int delay = delayLog - delayPb;
                 Thread.Sleep(delay);
             }
-            
+
         }
-        
-        public virtual void Start()
+
+        public override void Start()
         {
             if (speedup != 1.0)
             {
-                System.Console.WriteLine("Simulation playback speedup "+speedup);
+                System.Console.WriteLine("Simulation playback speedup " + speedup);
             }
             base.Start();
         }
@@ -1060,7 +1059,7 @@ namespace TaskBarLibSim
         {
             this.initialDelay = delay;
         }
-        
+
         protected void SetSpeedup(double speedup)
         {
             this.speedup = speedup;
@@ -1459,7 +1458,7 @@ namespace TaskBarLibSim
             fields = t.GetFields();
             count = 0;
 
-            
+
             return;
         }
 
@@ -1550,7 +1549,7 @@ namespace TaskBarLibSim
             marketData = new MarketSimulation.MarketData(3);
             securities = new System.Collections.Hashtable(100);
         }
-        
+
         public void Notify(int count, K300MaofType data)
         {
             // convert TASE format to the internal object
@@ -1560,7 +1559,7 @@ namespace TaskBarLibSim
             // forward to the market simulation logic
             base.Notify(count, marketData);
         }
-        
+
         /// <summary>
         /// DataType is something like K300MaofType - lot of strings. The method will  convert
         /// this into something convenient to work with.
@@ -1591,7 +1590,7 @@ namespace TaskBarLibSim
             md.lastTrade = JQuant.Convert.StrToInt((string)field_LST_DL_PR.GetValue(dt));
             md.lastTradeSize = JQuant.Convert.StrToInt((string)field_LST_DL_VL.GetValue(dt));
             md.dayVolume = JQuant.Convert.StrToInt((string)field_DAY_VL.GetValue(dt));
-            md.dayTransactions = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
+            //md.dayTransactions = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
 
         }
 
@@ -1615,12 +1614,12 @@ namespace TaskBarLibSim
 
 
         protected MarketSimulation.MarketData marketData;
-        
+
         /// <summary>
         /// Collection of all traded symbols (different BNO_Num for TASE)
         /// I keep the last update data in this hash table
         /// </summary>
-        protected System.Collections.Hashtable securities;
+        protected new System.Collections.Hashtable securities;
     }
 
     public class MarketSimulationOrder

@@ -1530,7 +1530,7 @@ namespace FMRShell
             protected set;
         }
 
-        public new TransactionType TransType
+        public TransactionType TransType
         {
             get;
             set;
