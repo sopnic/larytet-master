@@ -363,9 +363,9 @@ namespace JQuant
 
         #region Debug Callbacks
 
-
-
         static MarketSimulationMaof marketSimulationMaof;
+        MaofDataGeneratorLogFile dataMaofGenerator;
+
         protected void debugMarketSimulationMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             string cmd = "", arg1 = "", arg2 = "";
@@ -373,36 +373,43 @@ namespace JQuant
             {
                 case 0:
                 case 1:
-                iWrite.WriteLine("Usage: 'mrktsim start|stop' [backlogfile] [speedup]");
-                break;
-                
+                    iWrite.WriteLine("Usage: maof start backlogfile [speedup] | stop");
+                    break;
+
                 case 2:
-                cmd = cmdArguments[1].ToString().ToLower();
-                break;
-                
+                    cmd = cmdArguments[1].ToString().ToLower();
+                    break;
+
                 case 3:
-                cmd = cmdArguments[1].ToString().ToLower();
-                arg1 = cmdArguments[2].ToString();
-                break;
-                
+                    cmd = cmdArguments[1].ToString().ToLower();
+                    arg1 = cmdArguments[2].ToString();
+                    break;
+
                 case 4:
-                cmd = cmdArguments[1].ToString().ToLower();
-                arg1 = cmdArguments[2].ToString();
-                arg2 = cmdArguments[3].ToString();
-                break;
+                    cmd = cmdArguments[1].ToString().ToLower();
+                    arg1 = cmdArguments[2].ToString();
+                    arg2 = cmdArguments[3].ToString();
+                    break;
             }
 
-            
+
             if (cmd == "stop")
             {
+                dataMaofGenerator.Stop();
+                dataMaofGenerator.RemoveConsumer(marketSimulationMaof);
+                marketSimulationMaof = default(MarketSimulationMaof);
+                dataMaofGenerator = default(MaofDataGeneratorLogFile);
+
+                iWrite.WriteLine("maof stop called");
             }
+
             else if (cmd == "start") // log file name
             {
                 string logfile = arg1;
                 double speedup = JQuant.Convert.StrToDouble(arg2, 1.0);
-                
+
                 //if K300Class instance is not already initilazed, do it now
-                MaofDataGeneratorLogFile dataMaofGenerator = 
+                this.dataMaofGenerator =
                     new MaofDataGeneratorLogFile(logfile, speedup, 0);
 
                 //I need a cast here, because MarketSimulationMaof expects parameter of type IProducer
@@ -413,7 +420,7 @@ namespace JQuant
                 dataMaofGenerator.Start();
             }
         }
-        
+
         protected void debugMarketSimulationMaofStatCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int columnSize = 8;
@@ -429,32 +436,39 @@ namespace JQuant
         {
             int columnSize = 12;
             int[] ids = marketSimulationMaof.GetSecurities();
-            
+
             System.Collections.ArrayList names = new System.Collections.ArrayList();
-            names.Add("Id");names.Add("BidSystem");names.Add("AskSystem");
+            names.Add("Id");
+            names.Add("BidSystem");
+            names.Add("AskSystem");
+
             CommandLineInterface.printTableHeader(iWrite, names, columnSize);
 
             System.Array.Sort(ids);
-            
+
             foreach (int id in ids)
             {
                 System.Collections.ArrayList values = new System.Collections.ArrayList();
                 int idxStatSize;
-                
+
                 JQuant.IResourceStatistics bids = marketSimulationMaof.GetOrderBook(id, JQuant.TransactionType.BUY);
                 System.Collections.ArrayList bidStatValues;
                 System.Collections.ArrayList bidStatNames;
                 bids.GetEventCounters(out bidStatNames, out bidStatValues);
                 idxStatSize = bidStatNames.IndexOf("SizeSystem");
                 int bidSystem = (int)bidStatValues[idxStatSize];
-                
+
                 JQuant.IResourceStatistics asks = marketSimulationMaof.GetOrderBook(id, JQuant.TransactionType.SELL);
                 System.Collections.ArrayList askStatValues;
                 System.Collections.ArrayList askStatNames;
                 asks.GetEventCounters(out askStatNames, out askStatValues);
                 int askSystem = (int)askStatValues[idxStatSize];
-                
-                values.Add(id);values.Add(bidSystem);values.Add(askSystem);
+                int askInternal = (int)
+
+                values.Add(id);
+                values.Add(bidSystem);
+                values.Add(askSystem);
+
                 CommandLineInterface.printValues(iWrite, values, columnSize);
             }
         }
@@ -473,7 +487,7 @@ namespace JQuant
                 isEmpty = false;
 
                 IResourceStatistics resStat = (IResourceStatistics)resNamed;
- 
+
                 System.Collections.ArrayList names;
                 System.Collections.ArrayList values;
                 resStat.GetEventCounters(out names, out values);
@@ -1413,36 +1427,36 @@ namespace JQuant
             Menu menuOperations = cli.RootMenu.AddMenu("Oper", "Operations",
                                    " Login, start stream&log");
 
-            menuOperations.AddCommand(  "Login", 
+            menuOperations.AddCommand("Login",
                                         "Login to the remote server",
-                                        " The call will block until login succeeds", 
+                                        " The call will block until login succeeds",
                                         operLoginCallback
                                         );
-            menuOperations.AddCommand(  "Logout", 
+            menuOperations.AddCommand("Logout",
                                         "Perform the logout process",
-                                        " The call will block until logout succeeds", 
+                                        " The call will block until logout succeeds",
                                         operLogoutCallback
                                         );
-            menuOperations.AddCommand(  "StartLog", 
+            menuOperations.AddCommand("StartLog",
                                         "Log data stream - choose MF|RZ|MDD.",
-                                        " Start trading data stream and run logger. In simulation mode playback file can be specified", 
+                                        " Start trading data stream and run logger. In simulation mode playback file can be specified",
                                         operLogCallback
                                         );
-            menuOperations.AddCommand(  "StopLog", 
+            menuOperations.AddCommand("StopLog",
                                         "Stop previosly started Maof Log - MF | MDD | RZ, to stop stream type Y",
-                                        " Stop logger - Maof(MF) | Madad (MDD) | Rezef (RZ) and stream (Y/N). ", 
+                                        " Stop logger - Maof(MF) | Madad (MDD) | Rezef (RZ) and stream (Y/N). ",
                                         operStopLogCallback);
-            menuOperations.AddCommand(  "StopStream",
+            menuOperations.AddCommand("StopStream",
                                         "Stop previosly started data stream - MF | MDD | RZ",
-                                        " Stop data stream - Maof(MF) | Madad (MDD) | Rezef (RZ) ", 
+                                        " Stop data stream - Maof(MF) | Madad (MDD) | Rezef (RZ) ",
                                         StopStreamCallBack
                                         );
-            menuOperations.AddCommand(  "ShowLog", 
+            menuOperations.AddCommand("ShowLog",
                                         "Show existing loggers",
-                                        " List of created loggers with the statistics", 
+                                        " List of created loggers with the statistics",
                                         debugLoggerShowCallback
                                         );
-            menuOperations.AddCommand(  "AS400TimeTest", 
+            menuOperations.AddCommand("AS400TimeTest",
                                         "ping the server",
                                         "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                         debugGetAS400DTCallback);
@@ -1463,95 +1477,97 @@ namespace JQuant
 
             #endregion;
 
+            #region Market Simulation commands;
 
             Menu menuMarketSim = cli.RootMenu.AddMenu("ms", "Market simulation",
                                    " Run market simulation");
-            
-            menuMarketSim.AddCommand(   "maof",
+
+            menuMarketSim.AddCommand("maof",
                                     "Run MarketSimulationMaof - [Usage: maof backlogfile | stop]",
                                     "Create Maof Event Generator, connect to the Maof Market simulation",
                                     debugMarketSimulationMaofCallback
                                     );
 
-            menuMarketSim.AddCommand(   "stat",
+            menuMarketSim.AddCommand("stat",
                                     "Show statistics for the running market simulation",
                                     "Display number of events, number of placed orders",
                                     debugMarketSimulationMaofStatCallback
                                     );
-            
-            menuMarketSim.AddCommand(   "secs",
+
+            menuMarketSim.AddCommand("secs",
                                     "Show list of securities",
                                     "Display list of securities including number of orders",
                                     debugMarketSimulationMaofSecsCallback
                                     );
-            
+            #endregion;
+
             #region Debug commands;
 
             Menu menuDebug = cli.RootMenu.AddMenu("Dbg", "System debug info",
                                    " Created objetcs, access to the system statistics");
 
-            menuDebug.AddCommand(   "loginTest", 
+            menuDebug.AddCommand("loginTest",
                                     "Run simple test of the login",
                                     " Create a FMRShell.Connection(xmlfile) and call Open()", debugLoginCallback);
 
-            menuDebug.AddCommand(   "sh161", 
+            menuDebug.AddCommand("sh161",
                                     "Get TA25 Index weights",
-                                    "Get TA25 Index weights", 
+                                    "Get TA25 Index weights",
                                     debugLogSH161DataCallback
                                     );
-            menuDebug.AddCommand(   "AS400TimeTest", 
+            menuDebug.AddCommand("AS400TimeTest",
                                     "ping the server",
                                     "ping AS400 server in order to get latency and synchronize local amachine time with server's",
                                     debugGetAS400DTCallback);
-            menuDebug.AddCommand(   "fmrPing", 
+            menuDebug.AddCommand("fmrPing",
                                     "Start FMR ping thread",
                                     " Ping AS400 server continuosly [login|logout|stat|kill]",
                                     debugFMRPingCallback);
 
-            menuDebug.AddCommand(   "threadPoolShow",
+            menuDebug.AddCommand("threadPoolShow",
                                     "Show thread pools",
-                                    " List of created thread pools", 
+                                    " List of created thread pools",
                                     debugThreadPoolShowCallback
                                     );
-            menuDebug.AddCommand(   "timerShow", 
+            menuDebug.AddCommand("timerShow",
                                     "Show timers",
-                                    " List of created timers and timer tasks", 
+                                    " List of created timers and timer tasks",
                                     debugTimerShowCallback
                                     );
-            menuDebug.AddCommand(   "threadShow", 
+            menuDebug.AddCommand("threadShow",
                                     "Show threads",
-                                    " List of created threads and thread states", 
+                                    " List of created threads and thread states",
                                     debugThreadShowCallback);
-            menuDebug.AddCommand(   "mbxShow", 
+            menuDebug.AddCommand("mbxShow",
                                     "Show mailboxes",
-                                    " List of created mailboxes with the current status and statistics", 
+                                    " List of created mailboxes with the current status and statistics",
                                     debugMbxShowCallback
                                     );
-            menuDebug.AddCommand(   "poolShow",
+            menuDebug.AddCommand("poolShow",
                                     "Show pools",
-                                    " List of created pools with the current status and statistics", 
+                                    " List of created pools with the current status and statistics",
                                     debugPoolShowCallback
                                     );
 #if USEFMRSIM
-            menuDebug.AddCommand(   "loggerTest",
+            menuDebug.AddCommand("loggerTest",
                                     "Run simple test of the logger",
-                                    " Create a Collector and start a random data simulator", 
+                                    " Create a Collector and start a random data simulator",
                                     debugLoggerTestCallback
                                     );
 #endif
-            menuDebug.AddCommand(   "loggerShow", 
+            menuDebug.AddCommand("loggerShow",
                                     "Show existing loggers",
                                     " List of created loggers with the statistics",
                                     debugLoggerShowCallback
                                     );
-            menuDebug.AddCommand(   "prodShow", 
+            menuDebug.AddCommand("prodShow",
                                     "Show producers",
-                                    " List of created producers", 
+                                    " List of created producers",
                                     debugProducerShowCallback
                                     );
-            menuDebug.AddCommand(   "veriShow", 
+            menuDebug.AddCommand("veriShow",
                                     "Show data verifiers",
-                                    " List of created data verifiers", 
+                                    " List of created data verifiers",
                                     debugVerifierShowCallback
                                     );
             #endregion;

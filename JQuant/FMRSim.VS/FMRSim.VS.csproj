@@ -115,6 +115,9 @@
     <Compile Include="..\DataValidation.cs">
       <Link>DataValidation.cs</Link>
     </Compile>
+    <Compile Include="..\MarketSimulation.cs">
+      <Link>MarketSimulation.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskBarLib">
