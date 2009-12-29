@@ -397,6 +397,7 @@ namespace JQuant
             {
                 dataMaofGenerator.Stop();
                 dataMaofGenerator.RemoveConsumer(marketSimulationMaof);
+				marketSimulationMaof.Dispose();
                 marketSimulationMaof = default(MarketSimulationMaof);
                 dataMaofGenerator = default(MaofDataGeneratorLogFile);
 
