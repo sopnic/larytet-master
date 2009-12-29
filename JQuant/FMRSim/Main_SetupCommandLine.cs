@@ -401,7 +401,12 @@ namespace JQuant
                 marketSimulationMaof = default(MarketSimulationMaof);
                 dataMaofGenerator = default(MaofDataGeneratorLogFile);
 
-                iWrite.WriteLine("maof stop called");
+                    iWrite.WriteLine("maof stop called");
+                }
+                else
+                {
+                    iWrite.WriteLine("No active simulation to stop.");
+                }
             }
 
             else if (cmd == "start") // log file name
@@ -410,38 +415,55 @@ namespace JQuant
                 double speedup = JQuant.Convert.StrToDouble(arg2, 1.0);
 
                 //if K300Class instance is not already initilazed, do it now
-                this.dataMaofGenerator =
-                    new MaofDataGeneratorLogFile(logfile, speedup, 0);
+                if (this.dataMaofGenerator == default(MaofDataGeneratorLogFile))
+                {
+                    this.dataMaofGenerator =
+                        new MaofDataGeneratorLogFile(logfile, speedup, 0);
 
-                //I need a cast here, because MarketSimulationMaof expects parameter of type IProducer
-                marketSimulationMaof = new MarketSimulationMaof();
-                dataMaofGenerator.AddConsumer(marketSimulationMaof);
+                    //I need a cast here, because MarketSimulationMaof expects parameter of type IProducer
+                    marketSimulationMaof = new MarketSimulationMaof();
+                    dataMaofGenerator.AddConsumer(marketSimulationMaof);
 
-                //initialize the simulation - call EventGenerator.Start() - start the data stream
-                dataMaofGenerator.Start();
+                    //initialize the simulation - call EventGenerator.Start() - start the data stream
+                    dataMaofGenerator.Start();
+                }
+                else    //for the moment I don't want the mess of running multiple simulations simultaneously.
+                {
+                    iWrite.WriteLine("Maof simulation " + dataMaofGenerator.Name + "is already running.");
+                    iWrite.WriteLine("Only a single simulation at a time is possible.");
+                }
             }
         }
 
         protected void debugMarketSimulationMaofStatCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            int columnSize = 8;
-            System.Collections.ArrayList names;
-            System.Collections.ArrayList values;
-            marketSimulationMaof.GetEventCounters(out names, out values);
+            if (dataMaofGenerator != default(MaofDataGeneratorLogFile)) // check if there active simulation to get data from 
+            {                                                           // to prevent System.NullReferenceException
+                int columnSize = 8;
+                System.Collections.ArrayList names;
+                System.Collections.ArrayList values;
+                marketSimulationMaof.GetEventCounters(out names, out values);
 
-            CommandLineInterface.printTableHeader(iWrite, names, columnSize);
-            CommandLineInterface.printValues(iWrite, values, columnSize);
+                CommandLineInterface.printTableHeader(iWrite, names, columnSize);
+                CommandLineInterface.printValues(iWrite, values, columnSize);
+            }
+            else
+            {
+                iWrite.WriteLine("No active simulations.");
+            }
         }
 
         protected void debugMarketSimulationMaofSecsCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int columnSize = 12;
-            int[] ids = marketSimulationMaof.GetSecurities();
+            int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
 
             System.Collections.ArrayList names = new System.Collections.ArrayList();
             names.Add("Id");
             names.Add("BidSystem");
             names.Add("AskSystem");
+            names.Add("Best Bid");
+            names.Add("Best Ask");
 
             CommandLineInterface.printTableHeader(iWrite, names, columnSize);
 
@@ -463,12 +485,14 @@ namespace JQuant
                 System.Collections.ArrayList askStatValues;
                 System.Collections.ArrayList askStatNames;
                 asks.GetEventCounters(out askStatNames, out askStatValues);
+                idxStatSize = askStatNames.IndexOf("SizeSystem");
                 int askSystem = (int)askStatValues[idxStatSize];
-                int askInternal = (int)
 
                 values.Add(id);
                 values.Add(bidSystem);
                 values.Add(askSystem);
+                values.Add(marketSimulationMaof.GetOrderQueue(id,TransactionType.BUY).price);
+                values.Add(marketSimulationMaof.GetOrderQueue(id, TransactionType.SELL).price);
 
                 CommandLineInterface.printValues(iWrite, values, columnSize);
             }
