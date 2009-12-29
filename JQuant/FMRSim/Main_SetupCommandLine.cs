@@ -391,15 +391,16 @@ namespace JQuant
                     arg2 = cmdArguments[3].ToString();
                     break;
             }
-
-
+            
             if (cmd == "stop")
             {
-                dataMaofGenerator.Stop();
-                dataMaofGenerator.RemoveConsumer(marketSimulationMaof);
-				marketSimulationMaof.Dispose();
-                marketSimulationMaof = default(MarketSimulationMaof);
-                dataMaofGenerator = default(MaofDataGeneratorLogFile);
+                if (dataMaofGenerator!=default(MaofDataGeneratorLogFile))
+                {
+                    dataMaofGenerator.Stop();
+                    dataMaofGenerator.RemoveConsumer(marketSimulationMaof);
+				    marketSimulationMaof.Dispose();
+                    marketSimulationMaof = default(MarketSimulationMaof);
+                    dataMaofGenerator = default(MaofDataGeneratorLogFile);
 
                     iWrite.WriteLine("maof stop called");
                 }
@@ -407,8 +408,7 @@ namespace JQuant
                 {
                     iWrite.WriteLine("No active simulation to stop.");
                 }
-            }
-
+            }        
             else if (cmd == "start") // log file name
             {
                 string logfile = arg1;
