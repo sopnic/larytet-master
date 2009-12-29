@@ -850,6 +850,11 @@ namespace MarketSimulation
                 return oqs;
             }
 
+            public MarketData GetMarketData()
+            {
+                return this.marketData;
+            }
+
             /// <summary>
             /// Slots are ordered by price
             /// Ask order queues are ordered from lower price to higher price and 
@@ -880,22 +885,16 @@ namespace MarketSimulation
 		
 		
 		/// <summary>
+        /// Implement IDisposable.
 		/// Call this method to clean up the MarketSimulation
 		/// The method stops threads 
 		/// </summary>
 		public void Dispose()
 		{
-			filledOrdersThread.Stop();
+            filledOrdersThread.Stop();  //Stop() causes MailboxThread.Dispose()
 			filledOrdersThread = null;
-			securities = null;
+			securities = null; 
 		}
-
-        //Implement IDisposable
-        public void Dispose()
-        {
-            this.securities = default(System.Collections.Hashtable);
-            this.filledOrdersThread.Stop(); //Stop() causes MailboxThread.Dispose()
-        }
 
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
@@ -1043,7 +1042,7 @@ namespace MarketSimulation
         public OrderPair GetOrderQueue(int securityId, JQuant.TransactionType transType)
         {
             OrderPair op = new OrderPair();
-            OrderQueue[] oq;
+            MarketData md;
 
             object o = securities[securityId];
 
@@ -1056,17 +1055,17 @@ namespace MarketSimulation
 
             if (transType == JQuant.TransactionType.SELL)
             {
-                oq = fsm.orderBookAsk.GetQueues();
-            }
+                md = fsm.orderBookAsk.GetMarketData();
+                if (md!= null)
+                    op = md.ask[0];
+             }
             else
-                oq = fsm.orderBookBid.GetQueues();
-
-            if (oq.Length > 0)
             {
-                op.price = oq[0].GetPrice();
-                op.size = oq[0].GetSize();
+                md = fsm.orderBookBid.GetMarketData();
+                if (md != null)
+                    op = md.bid[0];
             }
-
+                
             return op;
         }
         
