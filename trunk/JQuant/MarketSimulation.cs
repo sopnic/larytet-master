@@ -1,3 +1,4 @@
+
 using System;
 using System.ComponentModel;
 
@@ -585,7 +586,7 @@ namespace MarketSimulation
             }
 
             /// <summary>
-            /// Add a system order to the order book
+            /// Add a system order to the order book.
             /// </summary>
             public void PlaceOrder(LimitOrder order)
             {
@@ -889,15 +890,22 @@ namespace MarketSimulation
 			securities = null;
 		}
 
+        //Implement IDisposable
+        public void Dispose()
+        {
+            this.securities = default(System.Collections.Hashtable);
+            this.filledOrdersThread.Stop(); //Stop() causes MailboxThread.Dispose()
+        }
+
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
             names = new System.Collections.ArrayList(8);
             values = new System.Collections.ArrayList(8);
             /*1*/
-            names.Add("Events");
+            names.Add("Events");    //total number of lines (events) read from the historical log
             values.Add(eventsCount);
             /*2*/
-            names.Add("OrdersPlaced");
+            names.Add("OrdersPlaced");  //number of system order placed
             values.Add(ordersPlacedCount);
             /*3*/
             names.Add("OrdersFilled");
@@ -906,15 +914,15 @@ namespace MarketSimulation
             names.Add("OrdersCanceled");
             values.Add(ordersCanceledCount);
             /*5*/
-            names.Add("Securities");
+            names.Add("Securities");    //number of tradable securities (in the hashtable)
             values.Add(securities.Count);
         }
 
         /// <summary>
         /// The method is being called by Event Generator to notify the market simulation, that
-        /// there is a new event went through, for example change in the order book
-        /// Argument "data" can be reused by the calling thread. If the data to be processed 
-        /// asynchronously Notify() should clone the object
+        /// there is a new event went through, for example change in the order book.
+        /// Argument "data" can be reused by the calling thread. If the data is processed 
+        /// asynchronously, Notify() should clone the object.
         /// </summary>
         public void Notify(int count, MarketData data)
         {
@@ -927,9 +935,9 @@ namespace MarketSimulation
                 // hopefully Item() will return null if there is no key in the hashtable
                 fsm = securities[key];
 
-                // do I see this security very first time? then add new entry to the hashtable
-                // this is not likely outcome (occurs several tens of times at the start of the trading sesssion). 
-                // performance in not an issue at this point
+                // Do I see this security very first time? Then add new entry to the hashtable.
+                // This is not likely outcome (occurs several tens of times at the start of the trading sesssion). 
+                // Performance is not an issue at this point
                 if (fsm == null)
                 {
                     // clone the data first - cloning is expensive and happens only very first time i meet
@@ -970,7 +978,7 @@ namespace MarketSimulation
 
 
         /// <summary>
-        /// Let the order books handle the update
+        /// Let the order books handle the update, in case there is a log or system event. 
         /// </summary>
         protected void UpdateSecurity(FSM fsm, MarketData marketData)
         {
@@ -982,7 +990,9 @@ namespace MarketSimulation
         }
 
         /// <summary>
-        /// Currently only limit ordres are supported
+        /// Place a system order. First checks for the possibility of immediate fill,
+        /// if not possible - places it to the limit order book.
+        /// Currently only limit ordres are supported (suitable for maof options).
         /// </summary>
         /// <returns>
         /// A <see cref="System.Boolean"/>
@@ -1030,10 +1040,39 @@ namespace MarketSimulation
             return res;
         }
 
+        public OrderPair GetOrderQueue(int securityId, JQuant.TransactionType transType)
+        {
+            OrderPair op = new OrderPair();
+            OrderQueue[] oq;
 
+            object o = securities[securityId];
+
+            if (o == null)
+            {
+                return null;
+            }
+
+            FSM fsm = (FSM)o;
+
+            if (transType == JQuant.TransactionType.SELL)
+            {
+                oq = fsm.orderBookAsk.GetQueues();
+            }
+            else
+                oq = fsm.orderBookBid.GetQueues();
+
+            if (oq.Length > 0)
+            {
+                op.price = oq[0].GetPrice();
+                op.size = oq[0].GetSize();
+            }
+
+            return op;
+        }
+        
         /// <summary>
         /// Small thread which calls application's callbacks
-        /// Every time an order filled MarketSimulation.Core sends a message to the thread. Thread
+        /// every time an order filled MarketSimulation.Core sends a message to the thread. Thread
         /// wakes up and calls application callback - informs the application that the order got fill
         /// The idea is to execute the application hook from a separate (different priority) context.
         /// </summary>
@@ -1052,7 +1091,8 @@ namespace MarketSimulation
         }
 
         /// <summary>
-        /// Called from CLI to display counters and debug info
+        /// Called from CLI to display counters and debug info.
+        /// Returns the current state of the limit order book.
         /// </summary>
         public JQuant.IResourceStatistics GetOrderBook(int securityId, JQuant.TransactionType transaction)
         {
@@ -1075,15 +1115,15 @@ namespace MarketSimulation
                     ob = fsm.orderBookBid;
             }
             while (false);
-
+            
             return (ob);
         }
 
         /// <summary>
         /// Called from CLI to display counters and debug info
-        /// Returns order queues statistics
+        /// and returns order queues statistics.
         /// There is a different method which returns current situation in the bid/ask queues
-        /// and a another method which returns the most recent log entry 
+        /// and a another method which returns the most recent log entry.
         /// </summary>
         public JQuant.IResourceStatistics[] GetOrderQueues(int securityId, JQuant.TransactionType transaction)
         {
@@ -1106,7 +1146,7 @@ namespace MarketSimulation
         }
 
         /// <summary>
-        /// return list of securities
+        /// Returns list of securities.
         /// </summary>
         public int[] GetSecurities()
         {
@@ -1127,8 +1167,13 @@ namespace MarketSimulation
         /// </summary>
         protected System.Collections.Hashtable securities;
         protected FilledOrdersThread filledOrdersThread;
-
+        /// <summary>
+        /// total number of lines (events) read from the historical log
+        /// </summary>
         protected int eventsCount;
+        /// <summary>
+        /// number of system order placed
+        /// </summary>
         protected int ordersPlacedCount;
         protected int ordersFilledCount;
         protected int ordersCanceledCount;
