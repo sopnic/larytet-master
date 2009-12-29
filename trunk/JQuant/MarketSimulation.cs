@@ -124,7 +124,7 @@ namespace MarketSimulation
     ///     For the sake of simplicity we assume that system orders are invisible to the market, 
     ///     and they don't affect trading (no. of transactions etc.). 
     /// </summary>
-    public class Core : JQuant.IResourceStatistics
+    public class Core : JQuant.IResourceStatistics, IDisposable
     {
         /// <summary>
         /// Market simulation will call this method if and when order state changes.
@@ -873,9 +873,21 @@ namespace MarketSimulation
         {
             // create hash table where all securities are stored
             securities = new System.Collections.Hashtable(200);
-            FilledOrdersThread filledOrdersThread = new FilledOrdersThread();
+            filledOrdersThread = new FilledOrdersThread();
             filledOrdersThread.Start();
         }
+		
+		
+		/// <summary>
+		/// Call this method to clean up the MarketSimulation
+		/// The method stops threads 
+		/// </summary>
+		public void Dispose()
+		{
+			filledOrdersThread.Stop();
+			filledOrdersThread = null;
+			securities = null;
+		}
 
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
