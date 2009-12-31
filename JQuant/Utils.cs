@@ -11,11 +11,31 @@ using System.Diagnostics;
 
 namespace JQuant
 {
+    public class ArrayUtils
+    {
+        public static void SetData(int[] array, int data)
+        {
+            for (int i = 0;i < array.Length;i++)
+            {
+                array[i] = data;
+            }
+        }
+
+        public static int[] CreateInitializedArray(int data, int size)
+        {
+            int[] array = new int[size];
+            SetData(array, data);
+
+            return array;
+        }
+        
+    }
+        
     /// <summary>
     /// C# enum does not allow to reload ToString method
     /// I need patch here 
     /// </summary>
-    class EnumUtils
+    public class EnumUtils
     {
         /// <summary>
         /// resolves enum - looks for the description
