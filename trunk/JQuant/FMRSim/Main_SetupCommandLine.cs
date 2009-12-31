@@ -462,7 +462,7 @@ namespace JQuant
         
         protected void debugMarketSimulationMaofStatCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            string cmd = "maof";
+            string cmd = "core";
 
             if (dataMaofGenerator == default(MaofDataGeneratorLogFile)) // check if there active simulation to get data from 
             {                                                           // to prevent System.NullReferenceException
@@ -564,7 +564,7 @@ namespace JQuant
         
         protected void debugMarketSimulationMaofSecsCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            string cmd = "maof";
+            string cmd = "book";
 
             if (dataMaofGenerator == default(MaofDataGeneratorLogFile)) // check if there active simulation to get data from 
             {                                                           // to prevent System.NullReferenceException
