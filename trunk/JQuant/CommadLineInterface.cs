@@ -356,11 +356,10 @@ namespace JQuant
             iWrite.WriteLine(s);
         }
 
-        public static void printTableHeader(IWrite iWrite, System.Collections.ArrayList names, int columnSize)
+        public static void printTableHeader(IWrite iWrite, System.Collections.ArrayList names, int[] columns)
         {
             int line = 0;
             bool printed = true;
-            int charsInColumn = columnSize - 1;
             int maxOutputSLength = 0;
 
             while (printed)
@@ -370,6 +369,8 @@ namespace JQuant
 
                 for (int i = 0; i < names.Count; i++)
                 {
+                    int columnSize = columns[i];
+                    int charsInColumn = columnSize - 1;
                     string s = "";
                     string name = names[i].ToString();
 
@@ -400,19 +401,32 @@ namespace JQuant
 
             printSeparator(iWrite, maxOutputSLength);
         }
+        
+        public static void printTableHeader(IWrite iWrite, System.Collections.ArrayList names, int columnSize)
+        {
+            int[] columns = JQuant.ArrayUtils.CreateInitializedArray(columnSize, names.Count);
+            printTableHeader(iWrite, names, columns);
+        }
 
-        public static void printValues(IWrite iWrite, System.Collections.ArrayList values, int columnSize)
+        public static void printValues(IWrite iWrite, System.Collections.ArrayList values, int[] columns)
         {
             string outputS = "";
             for (int i = 0; i < values.Count; i++)
             {
                 string s = "";
+                int columnSize = columns[i];
 
                 // add blank up to columnSize
                 s = OutputUtils.FormatField(values[i].ToString(), columnSize);
                 outputS += s;
             }
             iWrite.WriteLine(outputS);
+        }
+        
+        public static void printValues(IWrite iWrite, System.Collections.ArrayList values, int columnSize)
+        {
+            int[] columns = JQuant.ArrayUtils.CreateInitializedArray(columnSize, values.Count);
+            printValues(iWrite, values, columns);
         }
 
         public static string[] SplitCommand(string command)

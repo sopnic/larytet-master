@@ -373,7 +373,7 @@ namespace JQuant
             {
                 case 0:
                 case 1:
-                    iWrite.WriteLine("Usage: maof start backlogfile [speedup] | stop");
+                    iWrite.WriteLine("Usage: maof start <backlogfile> [speedup] | stop");
                     break;
 
                 case 2:
@@ -435,37 +435,93 @@ namespace JQuant
             }
         }
 
+        protected void debugMarketSimulationMaofStatMaof(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+        }
+        
+        protected void debugMarketSimulationMaofStatCore(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            int columnSize = 8;
+            System.Collections.ArrayList names;
+            System.Collections.ArrayList values;
+            marketSimulationMaof.GetEventCounters(out names, out values);
+
+            CommandLineInterface.printTableHeader(iWrite, names, columnSize);
+            CommandLineInterface.printValues(iWrite, values, columnSize);
+        }
+        
+        protected void debugMarketSimulationMaofStatBook(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            iWrite.WriteLine("Not supported");
+        }
+        
+        protected void debugMarketSimulationMaofStatQueue(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            iWrite.WriteLine("Not supported");
+        }
+        
         protected void debugMarketSimulationMaofStatCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            if (dataMaofGenerator != default(MaofDataGeneratorLogFile)) // check if there active simulation to get data from 
-            {                                                           // to prevent System.NullReferenceException
-                int columnSize = 8;
-                System.Collections.ArrayList names;
-                System.Collections.ArrayList values;
-                marketSimulationMaof.GetEventCounters(out names, out values);
+            string cmd = "maof";
 
-                CommandLineInterface.printTableHeader(iWrite, names, columnSize);
-                CommandLineInterface.printValues(iWrite, values, columnSize);
+            if (dataMaofGenerator == default(MaofDataGeneratorLogFile)) // check if there active simulation to get data from 
+            {                                                           // to prevent System.NullReferenceException
+                iWrite.WriteLine("No active market simulations.");
+                return;
+            }
+            
+            if (cmdArguments.Length > 1)
+            {
+                cmd = (string)cmdArguments[1];
+            }
+
+            if (cmd == "maof")
+            {
+                debugMarketSimulationMaofStatMaof(iWrite, cmdName, cmdArguments);
+            }
+            else if (cmd == "core")
+            {
+                debugMarketSimulationMaofStatCore(iWrite, cmdName, cmdArguments);
+            }
+            else if (cmd == "book")
+            {
+                debugMarketSimulationMaofStatBook(iWrite, cmdName, cmdArguments);
+            }
+            else if (cmd == "queue")
+            {
+                debugMarketSimulationMaofStatQueue(iWrite, cmdName, cmdArguments);
             }
             else
             {
-                iWrite.WriteLine("No active simulations.");
+                iWrite.WriteLine("Only arguments maof, core, book, queue are supported");
             }
         }
 
-        protected void debugMarketSimulationMaofSecsCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void debugMarketSimulationMaofSecsMaof(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            int columnSize = 12;
+            iWrite.WriteLine("Not supported");
+        }
+        
+        protected void debugMarketSimulationMaofSecsCore(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            iWrite.WriteLine("Not supported");
+        }
+        
+        protected void debugMarketSimulationMaofSecsBook(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
             int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
 
             System.Collections.ArrayList names = new System.Collections.ArrayList();
             names.Add("Id");
+            names.Add("Name");
             names.Add("BidSystem");
             names.Add("AskSystem");
             names.Add("Best Bid");
             names.Add("Best Ask");
 
-            CommandLineInterface.printTableHeader(iWrite, names, columnSize);
+            int[] columns = JQuant.ArrayUtils.CreateInitializedArray(12, names.Count);
+            
+            CommandLineInterface.printTableHeader(iWrite, names, columns);
 
             System.Array.Sort(ids);
 
@@ -489,12 +545,55 @@ namespace JQuant
                 int askSystem = (int)askStatValues[idxStatSize];
 
                 values.Add(id);
+                values.Add(marketSimulationMaof.GetSecurityName(id));
                 values.Add(bidSystem);
                 values.Add(askSystem);
                 values.Add(marketSimulationMaof.GetOrderQueue(id,TransactionType.BUY).price);
                 values.Add(marketSimulationMaof.GetOrderQueue(id, TransactionType.SELL).price);
 
-                CommandLineInterface.printValues(iWrite, values, columnSize);
+                CommandLineInterface.printValues(iWrite, values, columns);
+            }
+        }
+        
+        protected void debugMarketSimulationMaofSecsQueue(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            iWrite.WriteLine("Not supported");
+        }
+        
+        protected void debugMarketSimulationMaofSecsCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            string cmd = "maof";
+
+            if (dataMaofGenerator == default(MaofDataGeneratorLogFile)) // check if there active simulation to get data from 
+            {                                                           // to prevent System.NullReferenceException
+                iWrite.WriteLine("No active market simulations.");
+                return;
+            }
+            
+            if (cmdArguments.Length > 1)
+            {
+                cmd = (string)cmdArguments[1];
+            }
+
+            if (cmd == "maof")
+            {
+                debugMarketSimulationMaofSecsMaof(iWrite, cmdName, cmdArguments);
+            }
+            else if (cmd == "core")
+            {
+                debugMarketSimulationMaofSecsCore(iWrite, cmdName, cmdArguments);
+            }
+            else if (cmd == "book")
+            {
+                debugMarketSimulationMaofSecsBook(iWrite, cmdName, cmdArguments);
+            }
+            else if (cmd == "queue")
+            {
+                debugMarketSimulationMaofSecsQueue(iWrite, cmdName, cmdArguments);
+            }
+            else
+            {
+                iWrite.WriteLine("Only arguments maof, core, book, queue are supported");
             }
         }
 
@@ -1508,14 +1607,14 @@ namespace JQuant
                                    " Run market simulation");
 
             menuMarketSim.AddCommand("maof",
-                                    "Run MarketSimulationMaof - [Usage: maof backlogfile | stop]",
+                                    "Run MarketSimulationMaof. Usage: maof start <backlogfile> [speedup] | stop",
                                     "Create Maof Event Generator, connect to the Maof Market simulation",
                                     debugMarketSimulationMaofCallback
                                     );
 
             menuMarketSim.AddCommand("stat",
-                                    "Show statistics for the running market simulation",
-                                    "Display number of events, number of placed orders",
+                                    "Show statistics for the running market simulation. Usage: maof|core|book|queue",
+                                    "Display number of events, number of placed orders at different layers of the market simulaiton",
                                     debugMarketSimulationMaofStatCallback
                                     );
 

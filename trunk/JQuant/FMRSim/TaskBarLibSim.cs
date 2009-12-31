@@ -1575,7 +1575,13 @@ namespace TaskBarLibSim
         /// </returns>
         protected void RawDataToMarketData(K300MaofType dt, ref MarketSimulation.MarketData md)
         {
-            md.id = JQuant.Convert.StrToInt((string)field_BNO_Num.GetValue(dt));
+            // get ID (unique integeder)
+            int securityId = JQuant.Convert.StrToInt((string)field_BNO_Num.GetValue(dt));
+
+            // update local hash table - i keep the latest entry
+            securities[securityId] = dt;
+            
+            md.id = securityId;
             md.bid[0].price = JQuant.Convert.StrToInt((string)field_LMT_BY1.GetValue(dt));
             md.bid[1].price = JQuant.Convert.StrToInt((string)field_LMT_BY2.GetValue(dt));
             md.bid[2].price = JQuant.Convert.StrToInt((string)field_LMT_BY3.GetValue(dt));
@@ -1593,6 +1599,28 @@ namespace TaskBarLibSim
             md.dayVolume = JQuant.Convert.StrToInt((string)field_DAY_VL.GetValue(dt));
             //md.dayTransactions = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
 
+        }
+
+        /// <summary>
+        /// Returns entry from the hashtable keeping the latest market snapshot
+        /// </summary>
+        public K300MaofType GetSecurity(int id)
+        {
+            return (K300MaofType)securities[id];
+        }
+
+        public string GetSecurityName(int id)
+        {
+            string res = "Unknown";
+            
+            object o = securities[id];
+            if (o != null)
+            {
+                K300MaofType md = (K300MaofType)o;
+                res = md.BNO_NAME;
+            }
+
+            return res;
         }
 
         protected FieldInfo field_BNO_Num;
