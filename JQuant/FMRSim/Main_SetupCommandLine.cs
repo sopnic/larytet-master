@@ -516,10 +516,12 @@ namespace JQuant
             names.Add("Name");
             names.Add("BidSystem");
             names.Add("AskSystem");
-            names.Add("Best Bid");
-            names.Add("Best Ask");
+            names.Add("BestBid");
+            names.Add("BestAsk");
 
-            int[] columns = JQuant.ArrayUtils.CreateInitializedArray(12, names.Count);
+            int[] columns = JQuant.ArrayUtils.CreateInitializedArray(6, names.Count);
+            columns[0] = 10;
+            columns[1] = 16;
             
             CommandLineInterface.printTableHeader(iWrite, names, columns);
 
