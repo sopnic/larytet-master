@@ -1015,7 +1015,12 @@ namespace MarketSimulation
 
             do
             {
-                object o = securities[security];
+				object o;
+				
+				lock (securities)
+				{
+	                o = securities[security];
+				}
 
                 if (o == null)
                 {
@@ -1055,7 +1060,11 @@ namespace MarketSimulation
             OrderPair op = new OrderPair();
             MarketData md;
 
-            object o = securities[securityId];
+			object o;
+			lock (securities)
+			{
+	            o = securities[securityId];
+			}
 
             if (o == null)
             {
@@ -1110,8 +1119,13 @@ namespace MarketSimulation
 
             do
             {
-                // hopefully Item() will return null if there is no key in the hashtable
-                object o = securities[securityId];
+				object o;
+				
+				lock (securities)
+				{
+                   // hopefully Item() will return null if there is no key in the hashtable
+	                o = securities[securityId];
+				}
 
                 if (o == null)
                 {
@@ -1141,6 +1155,7 @@ namespace MarketSimulation
 
             do
             {
+				// GetOrderBook will take care of exclusive locks
                 OrderBook ob = (OrderBook)GetOrderBook(securityId, transaction);
 
                 if (ob == null)
@@ -1161,17 +1176,44 @@ namespace MarketSimulation
         /// </summary>
         public int[] GetSecurities()
         {
-            System.Collections.ICollection keys = securities.Keys;
-
-            int size = keys.Count;
-
-            int[] ids = new int[size];
-
-            keys.CopyTo(ids, 0);
+			int[] ids;
+			
+			// i do not know where the hashtable is getting copied
+			// just in case i lock everything
+			lock (securities)
+			{
+	            System.Collections.ICollection keys = securities.Keys;
+	
+	            int size = keys.Count;
+	
+	            ids = new int[size];
+	
+	            keys.CopyTo(ids, 0);
+			}
 
             return ids;
         }
 
+        public MarketData GetSecurity(int securityId)
+        {
+			object o;
+			
+			lock (securities)
+			{
+				o = securities[securityId];
+			}
+			
+			MarketData md = default(MarketData);
+			
+			if (o != null)
+			{
+				md = (MarketData)o;
+			}
+			
+
+            return md;
+        }
+		
         /// <summary>
         /// Collection of all traded symbols (different BNO_Num for TASE). 
         /// I keep objects of type FSM in the hashtable.
