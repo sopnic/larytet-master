@@ -137,7 +137,7 @@ namespace JQuant
 	            return res;
 	        }
 			
-			public int GetExpirationPrice(int id)
+			public int GetExpirationPrice()
 			{
 	            int res = 0;
 	            
@@ -149,7 +149,7 @@ namespace JQuant
 	            return res;
 			}
 			
-			public bool IsPut(int id)
+			public bool IsPut()
 			{
 	            bool res = false;
 	            
@@ -158,6 +158,70 @@ namespace JQuant
 	                string bno_name = md.BNO_NAME;
 					char firstChar = bno_name[0];
 					res = (firstChar == 'P');
+	            }
+	
+	            return res;
+			}
+			
+			/// <summary>
+			/// Returns best bids or asks
+			/// </summary>
+			public MarketSimulation.OrderPair[] GetBook(TransactionType transaction)
+			{
+	            MarketSimulation.OrderPair[] res;
+				
+				if (transaction == TransactionType.SELL)
+				{
+					res = GetBookAsk();
+				}
+				else
+				{
+					res = GetBookBid();
+				}
+	            
+	
+	            return res;
+			}
+			
+			/// <summary>
+			/// Returns order book
+			/// </summary>
+			public MarketSimulation.OrderPair[] GetBookBid()
+			{
+	            MarketSimulation.OrderPair[] res = new MarketSimulation.OrderPair[0];
+	            
+	            if (exists)
+	            {
+					// i have three best bids (three best buy orders)
+					res = new MarketSimulation.OrderPair[3];
+					res[0] = new MarketSimulation.OrderPair(
+					           JQuant.Convert.StrToInt(md.LMT_BY1, 0), JQuant.Convert.StrToInt(md.LMY_BY1_NV, 0));
+					res[1] = new MarketSimulation.OrderPair(
+					           JQuant.Convert.StrToInt(md.LMT_BY2, 0), JQuant.Convert.StrToInt(md.LMY_BY2_NV, 0));
+					res[2] = new MarketSimulation.OrderPair(
+					           JQuant.Convert.StrToInt(md.LMT_BY3, 0), JQuant.Convert.StrToInt(md.LMY_BY3_NV, 0));
+	            }
+	
+	            return res;
+			}
+			
+			/// <summary>
+			/// Returns order book
+			/// </summary>
+			public MarketSimulation.OrderPair[] GetBookAsk()
+			{
+	            MarketSimulation.OrderPair[] res = new MarketSimulation.OrderPair[0];
+	            
+	            if (exists)
+	            {
+					// i have three best bids (three best buy orders)
+					res = new MarketSimulation.OrderPair[3];
+					res[0] = new MarketSimulation.OrderPair(
+					           JQuant.Convert.StrToInt(md.LMT_SL1, 0), JQuant.Convert.StrToInt(md.LMY_SL1_NV, 0));
+					res[1] = new MarketSimulation.OrderPair(
+					           JQuant.Convert.StrToInt(md.LMT_SL2, 0), JQuant.Convert.StrToInt(md.LMY_SL2_NV, 0));
+					res[2] = new MarketSimulation.OrderPair(
+					           JQuant.Convert.StrToInt(md.LMT_SL3, 0), JQuant.Convert.StrToInt(md.LMY_SL3_NV, 0));
 	            }
 	
 	            return res;
