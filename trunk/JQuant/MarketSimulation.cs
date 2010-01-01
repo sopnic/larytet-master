@@ -812,16 +812,16 @@ namespace MarketSimulation
             {
                 names = new System.Collections.ArrayList(4);
                 values = new System.Collections.ArrayList(4);
-                /*0*/
+                /* 0 */
                 names.Add("SecurityId");
                 values.Add(securityId);
-                /*1*/
+                /* 1 */
                 names.Add("Sell");
                 values.Add(transaction == JQuant.TransactionType.SELL);
-                /*2*/
+                /* 2 */
                 names.Add("ListSize");
                 values.Add(slots.Count);
-                /*3*/
+                /* 3 */
                 // name SizeSystem is used in the debug 
                 names.Add("SizeSystem");
                 values.Add(sizeSystem);
@@ -1145,6 +1145,7 @@ namespace MarketSimulation
 
                 if (ob == null)
                 {
+					System.Console.WriteLine("Order book for security "+securityId+" not found");
                     break;
                 }
 
