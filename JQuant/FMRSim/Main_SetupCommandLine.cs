@@ -529,6 +529,7 @@ namespace JQuant
 
             foreach (int id in ids)
             {
+				MarketSimulationMaof.Option option = marketSimulationMaof.GetSecurity(id);
                 System.Collections.ArrayList values = new System.Collections.ArrayList();
                 int idxStatSize;
 
@@ -547,7 +548,7 @@ namespace JQuant
                 int askSystem = (int)askStatValues[idxStatSize];
 
                 values.Add(id);
-                values.Add(marketSimulationMaof.GetSecurityName(id));
+                values.Add(option.GetName());
                 values.Add(bidSystem);
                 values.Add(askSystem);
                 values.Add(marketSimulationMaof.GetOrderQueue(id,TransactionType.BUY).price);

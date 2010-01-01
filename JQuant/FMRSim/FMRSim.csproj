@@ -73,6 +73,7 @@
     <Compile Include="..\Locks.cs" />
     <Compile Include="..\DataValidation.cs" />
     <Compile Include="..\MarketSimulation.cs" />
+    <Compile Include="..\MarketSimulation_Maof.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
