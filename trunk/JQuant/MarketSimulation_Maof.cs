@@ -48,6 +48,10 @@ namespace JQuant
             securities = new System.Collections.Hashtable(100);
         }
 
+		/// <summary>
+		/// The meethod belongs to the IConsumer interface and called from
+		/// data genrerator, like MaofDataGeneratorLogFile
+		/// </summary>
         public void Notify(int count, K300MaofType data)
         {
             // convert TASE format to the internal object

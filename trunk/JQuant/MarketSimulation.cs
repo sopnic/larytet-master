@@ -932,6 +932,7 @@ namespace MarketSimulation
         /// there is a new event went through, for example change in the order book.
         /// Argument "data" can be reused by the calling thread. If the data is processed 
         /// asynchronously, Notify() should clone the object.
+        /// In the current setup MarketSimulationMaof.Notify calls the method
         /// </summary>
         public void Notify(int count, MarketData data)
         {
