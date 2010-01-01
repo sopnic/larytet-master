@@ -502,11 +502,6 @@ namespace JQuant
             iWrite.WriteLine("Not supported");
         }
         
-        protected void debugMarketSimulationMaofSecsCore(IWrite iWrite, string cmdName, object[] cmdArguments)
-        {
-            iWrite.WriteLine("Not supported");
-        }
-		
 		protected string OrderPair2String(MarketSimulation.OrderPair op, int columnSize)
 		{
 		    string res = "" + op.price + ":" + op.size + " ";
@@ -581,6 +576,16 @@ namespace JQuant
             }
         }
         
+		/// <summary>
+		/// This method do two things 
+		/// - get list of securities from the MarketSimulationMaof
+		/// For every security ask MarketSimulation.Core what the Core thinks about it. 
+		/// </summary>
+        protected void debugMarketSimulationMaofSecsCore(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            iWrite.WriteLine("Not supported");
+        }
+		
         protected void debugMarketSimulationMaofSecsQueue(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             iWrite.WriteLine("Not supported");
