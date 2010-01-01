@@ -497,7 +497,7 @@ namespace JQuant
             }
         }
 
-        protected void debugMarketSimulationMaofSecsMaof(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void debugMarketSimulationMaofSecsBook(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             iWrite.WriteLine("Not supported");
         }
@@ -506,22 +506,29 @@ namespace JQuant
         {
             iWrite.WriteLine("Not supported");
         }
+		
+		protected string OrderPair2String(MarketSimulation.OrderPair op, int columnSize)
+		{
+		    string res = "" + op.price + ":" + op.size + " ";
+			res = OutputUtils.FormatField(res, columnSize);
+			return res;
+		}
         
-		protected string OrderBook2String(MarketSimulation.OrderPair[] book)
+		protected string OrderBook2String(MarketSimulation.OrderPair[] book, int columnSize)
 		{
 			string res = "";
 			
 			for (int i = 0;i < book.Length;i++)
 			{
 				MarketSimulation.OrderPair op = book[i];
-				res = res + op.price + "/" + op.size + "|";
+				res = res + OrderPair2String(op, columnSize);
 			}
 			
 			return res;
 		}
 		
 		
-        protected void debugMarketSimulationMaofSecsBook(IWrite iWrite, string cmdName, object[] cmdArguments)
+        protected void debugMarketSimulationMaofSecsMaof(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
 
@@ -536,6 +543,8 @@ namespace JQuant
             int[] columns = JQuant.ArrayUtils.CreateInitializedArray(6, names.Count);
             columns[0] = 10;
             columns[1] = 16;
+            columns[4] = 30;
+            columns[5] = 30;
             
             CommandLineInterface.printTableHeader(iWrite, names, columns);
 
@@ -565,8 +574,8 @@ namespace JQuant
                 values.Add(option.GetName());
                 values.Add(bidSystem);
                 values.Add(askSystem);
-                values.Add(OrderBook2String(option.GetBookBid()));
-                values.Add(OrderBook2String(option.GetBookAsk()));
+                values.Add(OrderBook2String(option.GetBookBid(), 9));
+                values.Add(OrderBook2String(option.GetBookAsk(), 9));
 
                 CommandLineInterface.printValues(iWrite, values, columns);
             }
@@ -579,7 +588,7 @@ namespace JQuant
         
         protected void debugMarketSimulationMaofSecsCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            string cmd = "book";
+            string cmd = "maof";
 
             if (dataMaofGenerator == default(MaofDataGeneratorLogFile)) // check if there active simulation to get data from 
             {                                                           // to prevent System.NullReferenceException
@@ -1636,7 +1645,7 @@ namespace JQuant
                                     );
 
             menuMarketSim.AddCommand("secs",
-                                    "Show list of securities",
+                                    "Show list of securities. Usage secs maof|core|book|queue",
                                     "Display list of securities including number of orders",
                                     debugMarketSimulationMaofSecsCallback
                                     );
