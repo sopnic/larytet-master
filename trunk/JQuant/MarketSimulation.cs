@@ -32,6 +32,16 @@ namespace MarketSimulation
 
     public class OrderPair : ICloneable
     {
+		public OrderPair(int price, int size)
+		{
+			this.price = price;
+			this.size = size;
+		}
+		
+		public OrderPair()
+		{
+		}
+		
         public int price;
         public int size;
 

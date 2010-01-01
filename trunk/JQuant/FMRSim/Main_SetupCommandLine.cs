@@ -507,6 +507,20 @@ namespace JQuant
             iWrite.WriteLine("Not supported");
         }
         
+		protected string OrderBook2String(MarketSimulation.OrderPair[] book)
+		{
+			string res = "";
+			
+			for (int i = 0;i < book.Length;i++)
+			{
+				MarketSimulation.OrderPair op = book[i];
+				res = res + op.price + "/" + op.size + "|";
+			}
+			
+			return res;
+		}
+		
+		
         protected void debugMarketSimulationMaofSecsBook(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
@@ -516,8 +530,8 @@ namespace JQuant
             names.Add("Name");
             names.Add("BidSystem");
             names.Add("AskSystem");
-            names.Add("BestBid");
-            names.Add("BestAsk");
+            names.Add("Bid:PriceVolume");
+            names.Add("Ask:PriceVolume");
 
             int[] columns = JQuant.ArrayUtils.CreateInitializedArray(6, names.Count);
             columns[0] = 10;
@@ -551,8 +565,8 @@ namespace JQuant
                 values.Add(option.GetName());
                 values.Add(bidSystem);
                 values.Add(askSystem);
-                values.Add(marketSimulationMaof.GetOrderQueue(id,TransactionType.BUY).price);
-                values.Add(marketSimulationMaof.GetOrderQueue(id, TransactionType.SELL).price);
+                values.Add(OrderBook2String(option.GetBookBid()));
+                values.Add(OrderBook2String(option.GetBookAsk()));
 
                 CommandLineInterface.printValues(iWrite, values, columns);
             }
