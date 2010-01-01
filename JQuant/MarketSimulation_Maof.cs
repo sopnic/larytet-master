@@ -238,7 +238,7 @@ namespace JQuant
         /// <summary>
         /// Returns entry from the hashtable keeping the latest market snapshot
         /// </summary>
-        public Option GetSecurity(int id)
+        public Option GetOption(int id)
         {
             return new Option(id, this);
         }

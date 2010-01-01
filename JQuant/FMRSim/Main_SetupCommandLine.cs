@@ -545,7 +545,7 @@ namespace JQuant
 
             foreach (int id in ids)
             {
-				MarketSimulationMaof.Option option = marketSimulationMaof.GetSecurity(id);
+				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
                 System.Collections.ArrayList values = new System.Collections.ArrayList();
 
                 values.Add(id);
@@ -575,7 +575,8 @@ namespace JQuant
 
             foreach (int id in ids)
             {
-				MarketSimulationMaof.Option option = marketSimulationMaof.GetSecurity(id);
+				MarketSimulation.MarketData md = marketSimulationMaof.GetSecurity(id);
+				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
                 System.Collections.ArrayList values = new System.Collections.ArrayList();
 
 				
