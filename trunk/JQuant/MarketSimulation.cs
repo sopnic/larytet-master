@@ -247,7 +247,7 @@ namespace MarketSimulation
             public FSM(MarketData marketData, FillOrderBook fillOrderCallback)
             {
                 // orders = new System.Collections.ArrayList(3);
-                // this.marketData = marketData;
+                this.marketData = marketData;
                 orderBookAsk = new OrderBook(marketData.id, JQuant.TransactionType.SELL, fillOrderCallback);
                 orderBookBid = new OrderBook(marketData.id, JQuant.TransactionType.BUY, fillOrderCallback);
             }
@@ -261,6 +261,11 @@ namespace MarketSimulation
             /// keep all bid orders here
             /// </summary>
             public OrderBook orderBookBid;
+			
+			/// <summary>
+			/// I keep reference to the latest update for debug
+			/// </summary>
+			public MarketData marketData;
         }
 
 
@@ -1203,11 +1208,13 @@ namespace MarketSimulation
 				o = securities[securityId];
 			}
 			
+			FSM fsm = default(FSM);			
 			MarketData md = default(MarketData);
 			
 			if (o != null)
 			{
-				md = (MarketData)o;
+				fsm = (FSM)o;
+				md = fsm.marketData;
 			}
 			
 

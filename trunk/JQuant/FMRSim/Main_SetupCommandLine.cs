@@ -626,7 +626,49 @@ namespace JQuant
 		/// </summary>
         protected void debugMarketSimulationMaofSecsCore(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            iWrite.WriteLine("Not supported");
+            int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
+
+            System.Collections.ArrayList names = new System.Collections.ArrayList();
+            names.Add("Id");
+            names.Add("Name");
+            names.Add("CoreId");
+            names.Add("Bid:PriceVolume");
+            names.Add("Ask:PriceVolume");
+            names.Add("LastTrade");
+            names.Add("LastTradeSize");
+            names.Add("DayVolume");
+
+            int[] columns = JQuant.ArrayUtils.CreateInitializedArray(6, names.Count);
+            columns[0] = 9;
+            columns[1] = 12;
+            columns[2] = 9;
+            columns[3] = 30;
+            columns[4] = 30;
+            
+            CommandLineInterface.printTableHeader(iWrite, names, columns);
+
+            System.Array.Sort(ids);
+
+            foreach (int id in ids)
+            {
+				// i need MarketSimulationMaof.Option to show the name of the option
+				// currently I take care only of options
+				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);			
+				// get information kept in the MrketSimulation.Core
+				MarketSimulation.MarketData md = marketSimulationMaof.GetSecurity(id);
+                System.Collections.ArrayList values = new System.Collections.ArrayList();
+
+                values.Add(id);
+                values.Add(option.GetName());
+                values.Add(md.id);
+                values.Add(OrderBook2String(md.bid, 9));
+                values.Add(OrderBook2String(md.ask, 9));
+                values.Add(md.lastTrade);
+                values.Add(md.lastTradeSize);
+                values.Add(md.dayVolume);
+
+                CommandLineInterface.printValues(iWrite, values, columns);
+            }
         }
 		
         protected void debugMarketSimulationMaofSecsQueue(IWrite iWrite, string cmdName, object[] cmdArguments)
