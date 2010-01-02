@@ -939,8 +939,15 @@ namespace MarketSimulation
         /// asynchronously, Notify() should clone the object.
         /// In the current setup MarketSimulationMaof.Notify calls the method
         /// </summary>
-        public void Notify(int count, MarketData data)
+        public void Notify(int count, MarketData dataIn)
         {
+            // clone the data first - cloning is expensive, but i have no choice right now
+			MarketData data = (MarketData)dataIn.Clone();
+			if (data.ask[0].price != dataIn.ask[0].price)
+			{
+				// System.Console.WriteLine("Bad cloning");
+			}
+			
             // GetKey() will return security id
             object key = GetKey(data);
             object fsm;
@@ -955,9 +962,7 @@ namespace MarketSimulation
                 // Performance is not an issue at this point
                 if (fsm == null)
                 {
-                    // clone the data first - cloning is expensive and happens only very first time i meet
-                    // specific security. in the subsequent calls to Notify() only relevant data will be updated
-                    fsm = new FSM((MarketData)data.Clone(), FillOrderCallback);
+                    fsm = new FSM(data, FillOrderCallback);
                     securities[key] = fsm;
 
                     // get the security from the hash table in all cases
@@ -1000,6 +1005,8 @@ namespace MarketSimulation
             // bump event counter
             eventsCount++;
 
+			fsm.marketData = marketData;
+			
             fsm.orderBookAsk.Update(marketData);
             fsm.orderBookBid.Update(marketData);
         }
