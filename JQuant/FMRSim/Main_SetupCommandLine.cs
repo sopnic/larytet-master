@@ -452,7 +452,69 @@ namespace JQuant
         
         protected void debugMarketSimulationMaofStatBook(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            iWrite.WriteLine("Not supported");
+            int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
+			int[] columns = new int[0];
+			bool firstLoop = true;
+
+            System.Collections.ArrayList names = new System.Collections.ArrayList();
+            names.Add("Name");
+
+            System.Array.Sort(ids);
+
+            foreach (int id in ids)
+            {
+				MarketSimulation.MarketData md = marketSimulationMaof.GetSecurity(id);
+				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
+                System.Collections.ArrayList values = new System.Collections.ArrayList();
+
+				
+                JQuant.IResourceStatistics bids = marketSimulationMaof.GetOrderBook(id, JQuant.TransactionType.BUY);
+                System.Collections.ArrayList bidValues;
+                System.Collections.ArrayList bidNames;
+                bids.GetEventCounters(out bidNames, out bidValues);
+
+                JQuant.IResourceStatistics asks = marketSimulationMaof.GetOrderBook(id, JQuant.TransactionType.SELL);
+                System.Collections.ArrayList askValues;
+                System.Collections.ArrayList askNames;
+                asks.GetEventCounters(out askNames, out askValues);
+
+				// print table header if this is first loop
+				if (firstLoop)
+				{
+					firstLoop = false;
+					for (int i = 0;i < bidNames.Count;i++)
+					{
+						names.Add(bidNames[i]);
+					}
+					for (int i = 0;i < askNames.Count;i++)
+					{
+						names.Add(askNames[i]);
+					}
+		            columns = JQuant.ArrayUtils.CreateInitializedArray(6, names.Count);
+		            columns[0] = 16;
+		            columns[1] = 10;
+		            columns[2] = 6;
+		            columns[3] = 6;
+		            columns[4] = 6;
+		            columns[5] = 10;
+		            columns[6] = 6;
+		            columns[7] = 6;
+		            columns[8] = 6;
+		            CommandLineInterface.printTableHeader(iWrite, names, columns);
+				}
+				
+                values.Add(option.GetName());
+				for (int i = 0;i < bidValues.Count;i++)
+				{
+					values.Add(bidValues[i]);
+				}
+				for (int i = 0;i < askValues.Count;i++)
+				{
+					values.Add(askValues[i]);
+				}
+
+                CommandLineInterface.printValues(iWrite, values, columns);
+            }
         }
         
         protected void debugMarketSimulationMaofStatQueue(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -564,69 +626,7 @@ namespace JQuant
 		/// </summary>
         protected void debugMarketSimulationMaofSecsCore(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
-			int[] columns = new int[0];
-			bool firstLoop = true;
-
-            System.Collections.ArrayList names = new System.Collections.ArrayList();
-            names.Add("Name");
-
-            System.Array.Sort(ids);
-
-            foreach (int id in ids)
-            {
-				MarketSimulation.MarketData md = marketSimulationMaof.GetSecurity(id);
-				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
-                System.Collections.ArrayList values = new System.Collections.ArrayList();
-
-				
-                JQuant.IResourceStatistics bids = marketSimulationMaof.GetOrderBook(id, JQuant.TransactionType.BUY);
-                System.Collections.ArrayList bidStatValues;
-                System.Collections.ArrayList bidStatNames;
-                bids.GetEventCounters(out bidStatNames, out bidStatValues);
-
-                JQuant.IResourceStatistics asks = marketSimulationMaof.GetOrderBook(id, JQuant.TransactionType.SELL);
-                System.Collections.ArrayList askStatValues;
-                System.Collections.ArrayList askStatNames;
-                asks.GetEventCounters(out askStatNames, out askStatValues);
-
-				// print table header if this is first loop
-				if (firstLoop)
-				{
-					firstLoop = false;
-					for (int i = 0;i < bidStatNames.Count;i++)
-					{
-						names.Add(bidStatNames[i]);
-					}
-					for (int i = 0;i < askStatNames.Count;i++)
-					{
-						names.Add(askStatNames[i]);
-					}
-		            columns = JQuant.ArrayUtils.CreateInitializedArray(6, names.Count);
-		            columns[0] = 16;
-		            columns[1] = 10;
-		            columns[2] = 6;
-		            columns[3] = 6;
-		            columns[4] = 6;
-		            columns[5] = 10;
-		            columns[6] = 6;
-		            columns[7] = 6;
-		            columns[8] = 6;
-		            CommandLineInterface.printTableHeader(iWrite, names, columns);
-				}
-				
-                values.Add(option.GetName());
-				for (int i = 0;i < bidStatValues.Count;i++)
-				{
-					values.Add(bidStatValues[i]);
-				}
-				for (int i = 0;i < askStatValues.Count;i++)
-				{
-					values.Add(askStatValues[i]);
-				}
-
-                CommandLineInterface.printValues(iWrite, values, columns);
-            }
+            iWrite.WriteLine("Not supported");
         }
 		
         protected void debugMarketSimulationMaofSecsQueue(IWrite iWrite, string cmdName, object[] cmdArguments)
