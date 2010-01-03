@@ -67,6 +67,17 @@ namespace MarketSimulation
 			
 			return dst;
 		}
+		
+		public static string ToString(OrderPair[] src)
+		{
+			string res = "";
+			foreach (OrderPair op in src)
+			{
+				res = res + op.price+":"+op.size+" ";
+			}
+				
+			return res;
+		}
     }
 
     /// <summary>
@@ -119,6 +130,12 @@ namespace MarketSimulation
 
             return md;
         }
+		
+		public override string ToString()
+		{
+			string res = "id="+id+" bids="+OrderPair.ToString(bid)+" asks="+OrderPair.ToString(ask)+" lt="+lastTrade+":"+lastTradeSize+" dv="+dayVolume;
+			return res;
+		}
 
         // security ID - unique number
         public int id;
@@ -328,9 +345,8 @@ namespace MarketSimulation
                 {
                     countAddOrderTotal++;
 
-                    LimitOrder lastOrder = orders.Last.Value;
                     if ((orders.Count == 0) ||  // list is empty OR
-                       lastOrder.SystemOrder()) // last order is a system order
+                       orders.Last.Value.SystemOrder()) // last order is a system order
                     {
                         if (orders.Count == 0) countAddOrderToEmpty++;
                         else countAddOrderAfter++;
@@ -344,6 +360,7 @@ namespace MarketSimulation
                     // - keep only blocks of system orders, around non-system ones
                     {    // increment quantity in the last (tail) internal order
                         countAddOrderUpdate++;
+						LimitOrder lastOrder = orders.Last.Value;
                         lastOrder.UpdateQuantity(quantity + lastOrder.Quantity);
                     }
 
@@ -590,6 +607,14 @@ namespace MarketSimulation
                     iComparer = new BidComparator();
 
                 slots = new System.Collections.SortedList(iComparer);
+				
+				// i am creating a dummy data - mostly zeros. Any first real data will cause 
+				// the queue to reinitialize
+				marketData = new MarketData(3);
+		        marketData.id = securityId;
+		        marketData.lastTrade = 0;
+		        marketData.lastTradeSize = 0;
+		        marketData.dayVolume = 0;
             }
 
             /// <summary>
@@ -599,6 +624,7 @@ namespace MarketSimulation
             /// </summary>
             public void Update(MarketData md)
             {
+#if MARKETSIM_FAST
                 if (sizeSystem <= 0) // most likely there are no system orders - i will store the market data and get out
                 {                    // i want to be fast 
                     marketData = md;
@@ -613,6 +639,15 @@ namespace MarketSimulation
                     // finally replace the data
                     marketData = md;
                 }
+#else
+                // i have previous record (marketData) and current record (md)
+                // let's figure out what happened
+                Update_trade(md);  // probably a trade ?
+                Update_queue(md);  // probably some orders are pulled out or added ?
+
+                // finally replace the data
+                marketData = md;
+#endif
             }
 
             /// <summary>
@@ -687,7 +722,12 @@ namespace MarketSimulation
 
                     if (tradeSize > 0)
                     {
+						// if i reached here i have accounting problem. The trade i see in the log is larger than 
+						// total of all positions in the order queue. such large trade could not take place unless
+						// i have wrong total position
                         System.Console.WriteLine(ShortDescription() + " failed to remove the trade remains " + tradeSize);
+                        System.Console.WriteLine("NewData=" + md.ToString());
+                        System.Console.WriteLine("CurData=" + marketData.ToString());
                     }
                 } // tradeSize > 0 - there was a trade
             }
@@ -718,21 +758,33 @@ namespace MarketSimulation
                 {
                     int marketDataPrice = marketDataBookOrders[i].price;
                     int mdPrice = mdBookOrders[i].price;
-                    int queueIdx;
-                    OrderQueue orderQueue;
-                    lock (slots)
-                    {
-                        queueIdx = slots.IndexOfKey(marketDataPrice);
-                        orderQueue = (OrderQueue)slots[queueIdx];
-                    }
 
                     if ((mdPrice == marketDataPrice) && // simple case - slot prices in place, queue length changed
                         (mdBookOrders[i].size != marketDataBookOrders[i].size))
                     {
+	                    int queueIdx = -1;
+	                    OrderQueue orderQueue = null;
+	                    lock (slots)
+	                    {
+	                        queueIdx = slots.IndexOfKey(marketDataPrice);
+							if (queueIdx >= 0)
+							{
+			                    orderQueue = (OrderQueue)slots[queueIdx];
+								if (orderQueue == null)
+								{
+									System.Console.WriteLine("MarketSimulation.BookOrders slot for price "+marketDataPrice+" is null");
+									System.Console.WriteLine("Cur="+marketData.ToString());
+									System.Console.WriteLine("New="+md.ToString());
+								}
+							}
+							else
+							{
+								System.Console.WriteLine("MarketSimulation.BookOrders slot for price "+marketDataPrice+" not found");
+							}
+	                    }
                         if (orderQueue.GetSizeInernal() == mdBookOrders[i].size)    // and size of the queue already represents that
                         {                                                           // probably thanks to Update_trade()
                         }                                                           // - just do nothing
-
                         else    // orderQueue.GetSizeInernal() != mdBookOrders[i].size
                         {       // size changed because some of the orders pulled out
                             int addedOrders = mdBookOrders[i].size - orderQueue.GetSizeInernal();
@@ -740,7 +792,6 @@ namespace MarketSimulation
                             // orderQueue.AddOrder(int) handles negative numbers
                             orderQueue.AddOrder(addedOrders);
                         }
-
                     }
 
                     // Price of orders changed. In some queues there are system orders. 
@@ -750,6 +801,16 @@ namespace MarketSimulation
                     // if empty - I add a new queue to the book
                     if (mdBookOrders[i].price != marketDataBookOrders[i].price)
                     {
+	                    int queueIdx = -1;
+	                    OrderQueue orderQueue = null;
+	                    lock (slots)
+	                    {
+	                        queueIdx = slots.IndexOfKey(marketDataPrice);
+							if (queueIdx >= 0)
+							{
+			                    orderQueue = (OrderQueue)slots[queueIdx];
+							}
+	                    }
                         OrderQueue orderQueueNew;
                         int queueIdxNew;
                         lock (slots)
@@ -765,12 +826,16 @@ namespace MarketSimulation
                                 orderQueueNew = (OrderQueue)(slots[queueIdxNew]);
                             }
                         }
-                        int sizeInternal = orderQueue.GetSizeInernal();  // remove all internal orders from the old queue
-                        orderQueue.RemoveOrder(sizeInternal);
-                        lock (slots)
-                        {                                       // remove the queue from the list if empty
-                            if (orderQueue.GetSize() <= 0) slots.RemoveAt(queueIdx);
-                        }
+						int sizeInternal;
+						if (orderQueue != null)
+						{
+	                        sizeInternal = orderQueue.GetSizeInernal();  // remove all internal orders from the old queue
+	                        orderQueue.RemoveOrder(sizeInternal);        // if such queue exists
+	                        lock (slots)
+	                        {                                            // remove the queue from the orders book if empty
+	                            if (orderQueue.GetSize() <= 0) slots.RemoveAt(queueIdx);
+	                        }
+						}
                         sizeInternal = orderQueueNew.GetSizeInernal();   // add orders to the tail of the new queue
                         orderQueueNew.AddOrder(mdBookOrders[i].size - sizeInternal);  // orderQueue.AddOrder(int) handles both positive and negative arguments
                     }
