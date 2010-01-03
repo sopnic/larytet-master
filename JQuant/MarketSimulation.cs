@@ -52,6 +52,21 @@ namespace MarketSimulation
             op.size = this.size;
             return op;
         }
+		
+		/// <summary>
+		/// I have no idea if CSharp array knows to clone itself
+		/// I put here some trivial implementation
+		/// </summary>
+		public static OrderPair[] Clone(OrderPair[] src)
+		{
+			OrderPair[] dst = new OrderPair[src.Length];
+			for (int i = 0;i < dst.Length;i++)
+			{
+				dst[i] = (OrderPair)src[i].Clone();
+			}
+			
+			return dst;
+		}
     }
 
     /// <summary>
@@ -95,8 +110,8 @@ namespace MarketSimulation
         {
             MarketData md = new MarketData(bid.Length);
 
-            md.ask = (OrderPair[])this.ask.Clone();
-            md.bid = (OrderPair[])this.bid.Clone();
+            md.ask = OrderPair.Clone(this.ask);
+            md.bid = OrderPair.Clone(this.bid);
             md.id = this.id;
             md.lastTrade = this.lastTrade;
             md.lastTradeSize = this.lastTradeSize;
