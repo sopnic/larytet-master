@@ -39,6 +39,11 @@ namespace JQuant
             // same object is reused here
             RawDataToMarketData(data, ref marketData);
 
+            // update local hash table - i keep the latest entry
+			// This is a bug potentially - i have to clone the structure here
+			// This works only becase data gennerator created a new object 
+            securities[marketData.id] = data;
+			
             // forward to the market simulation logic
             base.Notify(count, marketData);
         }
@@ -57,13 +62,7 @@ namespace JQuant
         /// </returns>
         protected void RawDataToMarketData(K300MaofType dt, ref MarketSimulation.MarketData md)
         {
-            // get ID (unique integeder)
-            int securityId = JQuant.Convert.StrToInt(dt.BNO_Num);
-
-            // update local hash table - i keep the latest entry
-            securities[securityId] = dt;
-            
-            md.id = securityId;
+            md.id = JQuant.Convert.StrToInt(dt.BNO_Num);
             md.bid[0].price = JQuant.Convert.StrToInt(dt.LMT_BY1);
             md.bid[1].price = JQuant.Convert.StrToInt(dt.LMT_BY2);
             md.bid[2].price = JQuant.Convert.StrToInt(dt.LMT_BY3);
@@ -223,9 +222,6 @@ namespace JQuant
         {
             return new Option(id, this);
         }
-
-
-
 
         protected MarketSimulation.MarketData marketData;
 
