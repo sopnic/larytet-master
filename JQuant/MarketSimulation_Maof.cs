@@ -23,25 +23,6 @@ namespace JQuant
     {
         public MarketSimulationMaof()
         {
-            Type dataType = typeof(K300MaofType);
-            field_BNO_Num = dataType.GetField("BNO_Num");
-            field_LMT_BY1 = dataType.GetField("LMT_BY1");
-            field_LMT_BY2 = dataType.GetField("LMT_BY2");
-            field_LMT_BY3 = dataType.GetField("LMT_BY3");
-            field_LMY_BY1_NV = dataType.GetField("LMY_BY1_NV");
-            field_LMY_BY2_NV = dataType.GetField("LMY_BY2_NV");
-            field_LMY_BY3_NV = dataType.GetField("LMY_BY3_NV");
-            field_LMT_SL1 = dataType.GetField("LMT_SL1");
-            field_LMT_SL2 = dataType.GetField("LMT_SL2");
-            field_LMT_SL3 = dataType.GetField("LMT_SL3");
-            field_LMY_SL1_NV = dataType.GetField("LMY_SL1_NV");
-            field_LMY_SL2_NV = dataType.GetField("LMY_SL2_NV");
-            field_LMY_SL3_NV = dataType.GetField("LMY_SL3_NV");
-            field_LST_DL_PR = dataType.GetField("LST_DL_PR");
-            field_LST_DL_VL = dataType.GetField("LST_DL_VL");
-            field_DAY_VL = dataType.GetField("DAY_VL");
-            field_DAY_DIL_NO = dataType.GetField("DAY_DIL_NO");
-
             // Market depth (size of the order book) is 3 on TASE
             // i am going to reuse this object 
             marketData = new MarketSimulation.MarketData(3);
@@ -77,27 +58,27 @@ namespace JQuant
         protected void RawDataToMarketData(K300MaofType dt, ref MarketSimulation.MarketData md)
         {
             // get ID (unique integeder)
-            int securityId = JQuant.Convert.StrToInt((string)field_BNO_Num.GetValue(dt));
+            int securityId = JQuant.Convert.StrToInt(dt.BNO_Num);
 
             // update local hash table - i keep the latest entry
             securities[securityId] = dt;
             
             md.id = securityId;
-            md.bid[0].price = JQuant.Convert.StrToInt((string)field_LMT_BY1.GetValue(dt));
-            md.bid[1].price = JQuant.Convert.StrToInt((string)field_LMT_BY2.GetValue(dt));
-            md.bid[2].price = JQuant.Convert.StrToInt((string)field_LMT_BY3.GetValue(dt));
-            md.bid[0].size = JQuant.Convert.StrToInt((string)field_LMY_BY1_NV.GetValue(dt));
-            md.bid[1].size = JQuant.Convert.StrToInt((string)field_LMY_BY2_NV.GetValue(dt));
-            md.bid[2].size = JQuant.Convert.StrToInt((string)field_LMY_BY3_NV.GetValue(dt));
-            md.ask[0].price = JQuant.Convert.StrToInt((string)field_LMT_SL1.GetValue(dt));
-            md.ask[1].price = JQuant.Convert.StrToInt((string)field_LMT_SL2.GetValue(dt));
-            md.ask[2].price = JQuant.Convert.StrToInt((string)field_LMT_SL3.GetValue(dt));
-            md.ask[0].size = JQuant.Convert.StrToInt((string)field_LMY_SL1_NV.GetValue(dt));
-            md.ask[1].size = JQuant.Convert.StrToInt((string)field_LMY_SL2_NV.GetValue(dt));
-            md.ask[2].size = JQuant.Convert.StrToInt((string)field_LMY_SL3_NV.GetValue(dt));
-            md.lastTrade = JQuant.Convert.StrToInt((string)field_LST_DL_PR.GetValue(dt));
-            md.lastTradeSize = JQuant.Convert.StrToInt((string)field_LST_DL_VL.GetValue(dt));
-            md.dayVolume = JQuant.Convert.StrToInt((string)field_DAY_VL.GetValue(dt));
+            md.bid[0].price = JQuant.Convert.StrToInt(dt.LMT_BY1);
+            md.bid[1].price = JQuant.Convert.StrToInt(dt.LMT_BY2);
+            md.bid[2].price = JQuant.Convert.StrToInt(dt.LMT_BY3);
+            md.bid[0].size = JQuant.Convert.StrToInt(dt.LMY_BY1_NV);
+            md.bid[1].size = JQuant.Convert.StrToInt(dt.LMY_BY2_NV);
+            md.bid[2].size = JQuant.Convert.StrToInt(dt.LMY_BY3_NV);
+            md.ask[0].price = JQuant.Convert.StrToInt(dt.LMT_SL1);
+            md.ask[1].price = JQuant.Convert.StrToInt(dt.LMT_SL2);
+            md.ask[2].price = JQuant.Convert.StrToInt(dt.LMT_SL3);
+            md.ask[0].size = JQuant.Convert.StrToInt(dt.LMY_SL1_NV);
+            md.ask[1].size = JQuant.Convert.StrToInt(dt.LMY_SL2_NV);
+            md.ask[2].size = JQuant.Convert.StrToInt(dt.LMY_SL3_NV);
+            md.lastTrade = JQuant.Convert.StrToInt(dt.LST_DL_PR);
+            md.lastTradeSize = JQuant.Convert.StrToInt(dt.LST_DL_VL);
+            md.dayVolume = JQuant.Convert.StrToInt(dt.DAY_VL);
             //md.dayTransactions = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
 
         }
@@ -244,23 +225,6 @@ namespace JQuant
         }
 
 
-        protected FieldInfo field_BNO_Num;
-        protected FieldInfo field_LMT_BY1;
-        protected FieldInfo field_LMT_BY2;
-        protected FieldInfo field_LMT_BY3;
-        protected FieldInfo field_LMY_BY1_NV;
-        protected FieldInfo field_LMY_BY2_NV;
-        protected FieldInfo field_LMY_BY3_NV;
-        protected FieldInfo field_LMT_SL1;
-        protected FieldInfo field_LMT_SL2;
-        protected FieldInfo field_LMT_SL3;
-        protected FieldInfo field_LMY_SL1_NV;
-        protected FieldInfo field_LMY_SL2_NV;
-        protected FieldInfo field_LMY_SL3_NV;
-        protected FieldInfo field_LST_DL_PR;
-        protected FieldInfo field_LST_DL_VL;
-        protected FieldInfo field_DAY_VL;
-        protected FieldInfo field_DAY_DIL_NO;
 
 
         protected MarketSimulation.MarketData marketData;
