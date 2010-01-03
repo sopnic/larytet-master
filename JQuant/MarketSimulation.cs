@@ -1082,9 +1082,9 @@ namespace MarketSimulation
             return res;
         }
 
-        public OrderPair GetOrderQueue(int securityId, JQuant.TransactionType transType)
+        public OrderPair[] GetOrderQueue(int securityId, JQuant.TransactionType transType)
         {
-            OrderPair op = new OrderPair();
+            OrderPair[] op = null;
             MarketData md;
 
 			object o;
@@ -1093,25 +1093,24 @@ namespace MarketSimulation
 	            o = securities[securityId];
 			}
 
-            if (o == null)
+            if (o != null)
             {
-                return null;
+	            FSM fsm = (FSM)o;
+	
+	            if (transType == JQuant.TransactionType.SELL)
+	            {
+	                md = fsm.orderBookAsk.GetMarketData();
+	                if (md!= null)
+	                    op = md.ask;
+	             }
+	            else
+	            {
+	                md = fsm.orderBookBid.GetMarketData();
+	                if (md != null)
+	                    op = md.bid;
+	            }
             }
 
-            FSM fsm = (FSM)o;
-
-            if (transType == JQuant.TransactionType.SELL)
-            {
-                md = fsm.orderBookAsk.GetMarketData();
-                if (md!= null)
-                    op = md.ask[0];
-             }
-            else
-            {
-                md = fsm.orderBookBid.GetMarketData();
-                if (md != null)
-                    op = md.bid[0];
-            }
                 
             return op;
         }
