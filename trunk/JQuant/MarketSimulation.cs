@@ -945,7 +945,7 @@ namespace MarketSimulation
 			MarketData data = (MarketData)dataIn.Clone();
 			if (data.ask[0].price != dataIn.ask[0].price)
 			{
-				// System.Console.WriteLine("Bad cloning");
+				System.Console.WriteLine("Bad cloning");
 			}
 			
             // GetKey() will return security id
