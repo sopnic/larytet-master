@@ -561,7 +561,39 @@ namespace JQuant
 
         protected void debugMarketSimulationMaofSecsBook(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            iWrite.WriteLine("Not supported");
+            int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
+			
+            System.Collections.ArrayList names = new System.Collections.ArrayList();
+            names.Add("Id");
+            names.Add("Name");
+            names.Add("Bid:PriceVolume");
+            names.Add("Ask:PriceVolume");
+
+            int[] columns = JQuant.ArrayUtils.CreateInitializedArray(6, names.Count);
+            columns[0] = 10;
+            columns[1] = 16;
+            columns[2] = 30;
+            columns[3] = 30;
+            
+            CommandLineInterface.printTableHeader(iWrite, names, columns);
+
+            System.Array.Sort(ids);
+
+            foreach (int id in ids)
+            {
+				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
+                System.Collections.ArrayList values = new System.Collections.ArrayList();
+				
+                MarketSimulation.OrderPair[] bids = marketSimulationMaof.GetOrderQueue(id, JQuant.TransactionType.BUY);
+                MarketSimulation.OrderPair[] asks = marketSimulationMaof.GetOrderQueue(id, JQuant.TransactionType.SELL);
+
+                values.Add(id);
+                values.Add(option.GetName());
+                values.Add(OrderBook2String(bids, 9));
+                values.Add(OrderBook2String(asks, 9));
+
+                CommandLineInterface.printValues(iWrite, values, columns);
+            }
         }
         
 		protected string OrderPair2String(MarketSimulation.OrderPair op, int columnSize)
