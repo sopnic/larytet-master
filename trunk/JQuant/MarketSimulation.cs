@@ -799,7 +799,7 @@ namespace MarketSimulation
                     // If i do not have order queue (slot) with this price I create one,
                     // then move all internal orders to another slot and remove the old queue
                     // if empty - I add a new queue to the book
-                    if (mdBookOrders[i].price != marketDataBookOrders[i].price)
+                    if (mdPrice != marketDataPrice)
                     {
 	                    int queueIdx = -1;
 	                    OrderQueue orderQueue = null;
@@ -820,6 +820,12 @@ namespace MarketSimulation
                             {
                                 orderQueueNew = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
                                 slots.Add(mdPrice, orderQueueNew);  // add newly created queue to the list of queues sorted by price
+								if (enableTrace)
+								{
+									System.Console.WriteLine("OrderBook add slot price="+marketDataPrice);
+									System.Console.WriteLine("Cur="+marketData.ToString());
+									System.Console.WriteLine("New="+md.ToString());
+								}
                             }
                             else
                             {
@@ -833,7 +839,16 @@ namespace MarketSimulation
 	                        orderQueue.RemoveOrder(sizeInternal);        // if such queue exists
 	                        lock (slots)
 	                        {                                            // remove the queue from the orders book if empty
-	                            if (orderQueue.GetSize() <= 0) slots.RemoveAt(queueIdx);
+	                            if (orderQueue.GetSize() <= 0) 
+								{
+									if (enableTrace)
+									{
+										System.Console.WriteLine("OrderBook remove slot price="+marketDataPrice);
+										System.Console.WriteLine("Cur="+marketData.ToString());
+										System.Console.WriteLine("New="+md.ToString());
+									}
+									slots.RemoveAt(queueIdx);
+								}
 	                        }
 						}
                         sizeInternal = orderQueueNew.GetSizeInernal();   // add orders to the tail of the new queue
@@ -857,6 +872,11 @@ namespace MarketSimulation
                     if (queueEmpty) slots.Remove(queue.GetPrice());
                 }
             }
+			
+			public void EnableTrace(bool enable)
+			{
+				this.enableTrace = enable;
+			}
 
             /// <summary>
             /// Application calls the method to check if there is immediate fill is possible.
@@ -965,6 +985,7 @@ namespace MarketSimulation
             protected int securityId;
             protected JQuant.TransactionType transaction;
             protected FillOrderBook fillOrder;
+			protected bool enableTrace;
         } // class OrderBook
 
         /// <summary>
@@ -974,6 +995,7 @@ namespace MarketSimulation
         {
             // create hash table where all securities are stored
             securities = new System.Collections.Hashtable(200);
+			enableTrace = new System.Collections.Hashtable(200);
             filledOrdersThread = new FilledOrdersThread();
             filledOrdersThread.Start();
         }
@@ -1023,10 +1045,6 @@ namespace MarketSimulation
         {
             // clone the data first - cloning is expensive, but i have no choice right now
 			MarketData data = (MarketData)dataIn.Clone();
-			if (data.ask[0].price != dataIn.ask[0].price)
-			{
-				System.Console.WriteLine("Bad cloning");
-			}
 			
             // GetKey() will return security id
             object key = GetKey(data);
@@ -1084,6 +1102,12 @@ namespace MarketSimulation
         {
             // bump event counter
             eventsCount++;
+			
+			if (enableTrace[fsm.marketData.id] != null)
+			{
+				((FSM)fsm).orderBookAsk.EnableTrace(true);
+				((FSM)fsm).orderBookBid.EnableTrace(true);
+			}
 
 			fsm.marketData = marketData;
 			
@@ -1262,6 +1286,37 @@ namespace MarketSimulation
             return (oqs);
         }
 
+		public void EnableTrace(int securityId, bool enable)
+		{
+            do
+            {
+				// GetOrderBook will take care of exclusive locks
+                OrderBook obBuy = (OrderBook)GetOrderBook(securityId, JQuant.TransactionType.BUY);
+                OrderBook obSell = (OrderBook)GetOrderBook(securityId, JQuant.TransactionType.SELL);
+
+                if (obBuy != null)
+                {
+	                obBuy.EnableTrace(enable);
+                }
+                if (obSell != null)
+                {
+	                obSell.EnableTrace(enable);
+                }
+				
+				// add flag to the hashtable. When i create a book i will see the trace flag
+				if (enable)
+				{
+					enableTrace.Add(securityId,  true);
+				}
+				else
+				{
+					enableTrace.Remove(securityId);
+				}
+					
+            }
+            while (false);
+		}
+
         /// <summary>
         /// Returns list of securities.
         /// </summary>
@@ -1323,5 +1378,10 @@ namespace MarketSimulation
         protected int ordersPlacedCount;
         protected int ordersFilledCount;
         protected int ordersCanceledCount;
+		
+		/// <summary>
+		/// Keep debug trace enable flags  
+		/// </summary>
+		protected System.Collections.Hashtable enableTrace;
     }
 }
