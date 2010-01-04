@@ -1290,6 +1290,19 @@ namespace MarketSimulation
             return (oqs);
         }
 
+		public bool GetEnableTrace(int securityId)
+		{
+			bool res = false;
+            object fsm = securities[securityId];
+			
+			if (fsm != null)
+			{
+				res = (enableTrace[((FSM)fsm).marketData.id] != null);
+			}
+					
+			return res;
+		}
+		
 		public void EnableTrace(int securityId, bool enable)
 		{
             do
