@@ -424,7 +424,8 @@ namespace JQuant
                     marketSimulationMaof = new MarketSimulationMaof();
                     dataMaofGenerator.AddConsumer(marketSimulationMaof);
 					
-					marketSimulationMaof.EnableTrace(80608128, true);
+//					marketSimulationMaof.EnableTrace(80608128, true);
+					marketSimulationMaof.EnableTrace(80616808, true);
 
                     //initialize the simulation - call EventGenerator.Start() - start the data stream
                     dataMaofGenerator.Start();
