@@ -373,7 +373,7 @@ namespace JQuant
             {
                 case 0:
                 case 1:
-                    iWrite.WriteLine("Usage: maof start <backlogfile> [speedup] | stop");
+                    iWrite.WriteLine("Usage: maof create <backlogfile> [speedup] | stop | start");
                     break;
 
                 case 2:
@@ -411,6 +411,18 @@ namespace JQuant
             }        
             else if (cmd == "start") // log file name
             {
+                if (this.dataMaofGenerator != default(MaofDataGeneratorLogFile))
+                {
+                    // call EventGenerator.Start() - start the data stream
+                    dataMaofGenerator.Start();
+				}
+				else
+				{
+                    iWrite.WriteLine("Use 'create' first to create the market simulation");
+				}
+			}
+            else if (cmd == "create") // log file name
+            {
                 string logfile = arg1;
                 double speedup = JQuant.Convert.StrToDouble(arg2, 1.0);
 
@@ -426,9 +438,7 @@ namespace JQuant
 					
 //					marketSimulationMaof.EnableTrace(80608128, true);
 					marketSimulationMaof.EnableTrace(80616808, true);
-
-                    //initialize the simulation - call EventGenerator.Start() - start the data stream
-                    dataMaofGenerator.Start();
+                    iWrite.WriteLine("Use 'start' to start the market simulation");
                 }
                 else    //for the moment I don't want the mess of running multiple simulations simultaneously.
                 {
@@ -748,6 +758,37 @@ namespace JQuant
             }
         }
 
+        protected void debugMarketSimulationMaofTraceCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
+			int[] columns = new int[0];
+			bool firstLoop = true;
+			
+            if (cmdArguments.Length < 2)
+            {
+                iWrite.WriteLine("Security ID is required");
+				return;
+            }
+            if (marketSimulationMaof == default(MarketSimulationMaof))
+            {
+                iWrite.WriteLine("Create market simulation first");
+				return;
+			}
+			
+			int securityId = Convert.StrToInt((string)(cmdArguments[1]), 0);
+			bool enable = false;
+			
+			if (cmdArguments.Length > 2)
+			{
+				enable = Boolean.Parse((string)(cmdArguments[2]));
+			}
+			else
+			{
+				enable = !(marketSimulationMaof.GetEnableTrace(securityId));
+			}
+			marketSimulationMaof.EnableTrace(securityId, enable);
+		}
+		
         protected void debugPrintResourcesNameAndStats(IWrite iWrite, System.Collections.ArrayList list)
         {
             int entry = 0;
@@ -1758,13 +1799,13 @@ namespace JQuant
                                    " Run market simulation");
 
             menuMarketSim.AddCommand("maof",
-                                    "Run MarketSimulationMaof. Usage: maof start <backlogfile> [speedup] | stop",
+                                    "Run MarketSimulationMaof. Usage: maof create <backlogfile> [speedup] | start | stop",
                                     "Create Maof Event Generator, connect to the Maof Market simulation",
                                     debugMarketSimulationMaofCallback
                                     );
 
             menuMarketSim.AddCommand("stat",
-                                    "Show statistics for the running market simulation. Usage: maof|core|book|queue",
+                                    "Show statistics for the running market simulation. Usage: stat core|book|queue",
                                     "Display number of events, number of placed orders at different layers of the market simulaiton",
                                     debugMarketSimulationMaofStatCallback
                                     );
@@ -1774,7 +1815,14 @@ namespace JQuant
                                     "Display list of securities including number of orders",
                                     debugMarketSimulationMaofSecsCallback
                                     );
-            #endregion;
+
+			
+            menuMarketSim.AddCommand("trace",
+                                    "Enable trace for specific security. Usage: trace <securityId> <enable|disable>",
+                                    "",
+                                    debugMarketSimulationMaofTraceCallback
+                                    );
+			#endregion;
 
             #region Debug commands;
 
