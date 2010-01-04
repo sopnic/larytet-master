@@ -646,7 +646,7 @@ namespace MarketSimulation
                 Update_queue(md);  // probably some orders are pulled out or added ?
 
                 // finally replace the data
-                marketData = md;
+                this.marketData = md;
 #endif
             }
 
@@ -769,7 +769,7 @@ namespace MarketSimulation
 	                        queueIdx = slots.IndexOfKey(marketDataPrice);
 							if (queueIdx >= 0)
 							{
-			                    orderQueue = (OrderQueue)slots[queueIdx];
+			                    orderQueue = (OrderQueue)slots.GetByIndex(queueIdx);
 								if (orderQueue == null)
 								{
 									System.Console.WriteLine("MarketSimulation.BookOrders slot for price "+marketDataPrice+" is null");
@@ -822,7 +822,7 @@ namespace MarketSimulation
                                 slots.Add(mdPrice, orderQueueNew);  // add newly created queue to the list of queues sorted by price
 								if (enableTrace)
 								{
-									System.Console.WriteLine("OrderBook add slot price="+marketDataPrice);
+									System.Console.WriteLine("OrderBook add slot price="+mdPrice);
 									System.Console.WriteLine("Cur="+marketData.ToString());
 									System.Console.WriteLine("New="+md.ToString());
 								}
