@@ -781,6 +781,8 @@ namespace MarketSimulation
 							else
 							{
 								System.Console.WriteLine("MarketSimulation.BookOrders slot for price "+marketDataPrice+" not found");
+								System.Console.WriteLine("Cur="+marketData.ToString());
+								System.Console.WriteLine("New="+md.ToString());
 							}
 	                    }
                         if (orderQueue.GetSizeInernal() == mdBookOrders[i].size)    // and size of the queue already represents that
