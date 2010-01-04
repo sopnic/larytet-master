@@ -1320,14 +1320,11 @@ namespace MarketSimulation
 	                obSell.EnableTrace(enable);
                 }
 				
+				enableTrace.Remove(securityId);
 				// add flag to the hashtable. When i create a book i will see the trace flag
 				if (enable)
 				{
 					enableTrace.Add(securityId,  true);
-				}
-				else
-				{
-					enableTrace.Remove(securityId);
 				}
 					
             }
