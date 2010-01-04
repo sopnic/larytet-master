@@ -669,7 +669,7 @@ namespace MarketSimulation
                     }
                     else
                     {
-                        orderQueue = (OrderQueue)slots[idxQueue];
+                        orderQueue = (OrderQueue)slots.GetByIndex(idxQueue);
                     }
 
                     // i have a system order in the book. update counter
@@ -702,8 +702,9 @@ namespace MarketSimulation
                     // i remove the traded securities from the queue(s) starting from the best (head of the ordered list "slots")
                     while (slots.Count > 0)
                     {
-                        OrderQueue orderQueue = (OrderQueue)slots[0];
-
+						// get the head of the ordered by price list
+                        OrderQueue orderQueue = (OrderQueue)slots.GetByIndex(0); 
+						
                         int size0 = orderQueue.GetSize();  // get queue size
                         orderQueue.RemoveOrder(tradeSize); // remove the trade
                         int size1 = orderQueue.GetSize();  // get queue size
@@ -808,7 +809,7 @@ namespace MarketSimulation
 	                        queueIdx = slots.IndexOfKey(marketDataPrice);
 							if (queueIdx >= 0)
 							{
-			                    orderQueue = (OrderQueue)slots[queueIdx];
+			                    orderQueue = (OrderQueue)slots.GetByIndex(queueIdx);
 							}
 	                    }
                         OrderQueue orderQueueNew;
@@ -829,7 +830,7 @@ namespace MarketSimulation
                             }
                             else
                             {
-                                orderQueueNew = (OrderQueue)(slots[queueIdxNew]);
+                                orderQueueNew = (OrderQueue)(slots.GetByIndex(queueIdxNew));
                             }
                         }
 						int sizeInternal;
