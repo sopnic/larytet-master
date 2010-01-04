@@ -1067,6 +1067,13 @@ namespace MarketSimulation
                     // get the security from the hash table in all cases
                     // this line can be removed
                     fsm = securities[key];
+					
+					// enable trace in the order books if required
+					if (enableTrace[((FSM)fsm).marketData.id] != null)
+					{
+						((FSM)fsm).orderBookAsk.EnableTrace(true);
+						((FSM)fsm).orderBookBid.EnableTrace(true);
+					}
                 }
             }
 
@@ -1104,12 +1111,6 @@ namespace MarketSimulation
             // bump event counter
             eventsCount++;
 			
-			if (enableTrace[fsm.marketData.id] != null)
-			{
-				((FSM)fsm).orderBookAsk.EnableTrace(true);
-				((FSM)fsm).orderBookBid.EnableTrace(true);
-			}
-
 			fsm.marketData = marketData;
 			
             fsm.orderBookAsk.Update(marketData);
