@@ -396,7 +396,7 @@ namespace MarketSimulation
                     // can I remove so many securities ?
                     if (sizeTotal < quantity)
                     {
-                        System.Console.WriteLine(ShortDescription() + " Can't remove " + quantity + " from " + sizeTotal + " total");
+                        // System.Console.WriteLine(ShortDescription() + " Can't remove " + quantity + " from " + sizeTotal + " total");
                         quantity = sizeTotal;
                     }
 
@@ -425,6 +425,7 @@ namespace MarketSimulation
                                 orders.RemoveFirst();
                                 // notify upper layer (orderbook) that the order got fill
                                 fillOrder(this, lo, fillSize);
+								sizeTotal -= lo.Quantity;
                             }
                             else // this is partial fill - just update the quantity
                             {
@@ -435,6 +436,7 @@ namespace MarketSimulation
                                 orders.RemoveFirst();
                                 // notify upper layer that the order got fill
                                 fillOrder(this, lo, fillSize);
+								sizeTotal -= fillSize;
                             }
                         }
                         else  // internal order
@@ -442,18 +444,19 @@ namespace MarketSimulation
                             if (lo.Quantity <= quantity)  // remove the whole node
                             {
                                 quantity -= lo.Quantity;
+								sizeTotal -= lo.Quantity;
                                 orders.RemoveFirst();
                             }
                             else  // just update the Quantity in the first node
                             {
                                 lo = new LimitOrder(this.price, lo.Quantity - quantity, this.transaction);
                                 orders.First.Value = lo;
+								sizeTotal -= quantity;
                                 quantity = 0;
                             }
                             sizeInternal -= quantity;
                         }
                     }
-                    sizeTotal -= quantity;
                 }  // lock (orders)
 
             }
@@ -687,6 +690,7 @@ namespace MarketSimulation
             protected void Update_trade(MarketData md)
             {
                 int tradeSize = (md.dayVolume - marketData.dayVolume);
+				int totalToRemove = tradeSize;
                 if (tradeSize < 0)
                 {
                     System.Console.WriteLine(ShortDescription() + " negative change in day volume from " + md.dayVolume + " to " +
@@ -742,7 +746,7 @@ namespace MarketSimulation
 						// if i reached here i have accounting problem. The trade i see in the log is larger than 
 						// total of all positions in the order queue. such large trade could not take place unless
 						// i have wrong total position
-                        System.Console.WriteLine(ShortDescription() + " failed to remove the trade remains " + tradeSize);
+						System.Console.WriteLine(ShortDescription() + " failed to remove the trade remains " + tradeSize+" from "+totalToRemove);
 						if (enableTrace)
 						{
 							System.Console.WriteLine("NewData=" + md.ToString());
@@ -778,6 +782,7 @@ namespace MarketSimulation
                 for (int i = 0; i < size; i++)
                 {
                     int mdPrice = mdBookOrders[i].price;
+					int mdSize = mdBookOrders[i].size;
 					// find slot with this price
 					OrderQueue orderQueue = null;
                     lock (slots)
@@ -792,7 +797,7 @@ namespace MarketSimulation
 						// and add  the orders to the tail of the queue
 						// and remove from the head
 						// Method AddOrder() handles negative numbers too
-						orderQueue.AddOrder(size-size_cur);
+						orderQueue.AddOrder(mdSize-size_cur);
 						
 						// add to the list of touched queues
 						touchedQueues.Add(orderQueue);
@@ -800,7 +805,7 @@ namespace MarketSimulation
 					else  // there is no such slot - add a new slot
 					{
                         orderQueue = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
-						orderQueue.AddOrder(size);
+						orderQueue.AddOrder(mdSize);
                         slots.Add(mdPrice, orderQueue);  // add newly created queue to the list of queues sorted by price
 						if (enableTrace)
 						{
