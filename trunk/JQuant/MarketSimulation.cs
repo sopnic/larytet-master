@@ -843,7 +843,7 @@ namespace MarketSimulation
 	                        orderQueue.RemoveOrder(sizeInternal);        // if such queue exists
 	                        lock (slots)
 	                        {                                            // remove the queue from the orders book if empty
-	                            if (orderQueue.GetSize() <= 0) 
+	                            if ( (orderQueue.GetSize() <= 0) && (mdBookOrders[i].size != 0) )
 								{
 									if (enableTrace)
 									{
