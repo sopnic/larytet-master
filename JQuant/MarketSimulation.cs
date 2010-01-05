@@ -774,91 +774,75 @@ namespace MarketSimulation
                 }
 
                 int size = mdBookOrders.Length;
+				System.Collections.ArrayList touchedQueues = new System.Collections.ArrayList(5);
                 for (int i = 0; i < size; i++)
                 {
-                    int marketDataPrice = marketDataBookOrders[i].price;
                     int mdPrice = mdBookOrders[i].price;
-
-                    if ((mdPrice == marketDataPrice) &&                         // simple case - slot prices in place, 
-                        (mdBookOrders[i].size != marketDataBookOrders[i].size)) // only order queue length changed
+					// find slot with this price
+					OrderQueue orderQueue = null;
+                    lock (slots)
                     {
-	                    OrderQueue orderQueue = null;
-	                    lock (slots)
-	                    {
-							if (slots.ContainsKey(marketDataPrice)) orderQueue = (OrderQueue)(slots[marketDataPrice]);
-							if (orderQueue == null)
+						if (slots.ContainsKey(mdPrice)) orderQueue = (OrderQueue)(slots[mdPrice]);
+					}
+					if (orderQueue != null)  // i have two cases - there is a slot for this price (typical) and ...
+					{
+						int size_cur = orderQueue.GetSize();
+						
+						// i just update size of the queue. i take optimistic approach 
+						// and add  the orders to the tail of the queue
+						// and remove from the head
+						// Method AddOrder() handles negative numbers too
+						orderQueue.AddOrder(size-size_cur);
+						
+						// add to the list of touched queues
+						touchedQueues.Add(orderQueue);
+					}
+					else  // there is no such slot - add a new slot
+					{
+                        orderQueue = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
+						orderQueue.AddOrder(size);
+                        slots.Add(mdPrice, orderQueue);  // add newly created queue to the list of queues sorted by price
+						if (enableTrace)
+						{
+							System.Console.WriteLine("OrderBook add slot price="+mdPrice);
+							System.Console.WriteLine("Cur="+marketData.ToString());
+							System.Console.WriteLine("New="+md.ToString());
+						}
+						// add to the list of touched queues
+						touchedQueues.Add(orderQueue);
+					}
+					
+					// remove all queues which are not touched and do not contain 
+					// system orders
+					lock (slots)
+					{
+						foreach (OrderQueue oq in slots.Values)
+						{
+							int systemOrders = oq.GetSize() - oq.GetSizeInernal();
+							int price = oq.GetPrice();
+							if (!touchedQueues.Contains(oq) && (systemOrders >= 0))
 							{
-								System.Console.WriteLine("MarketSimulation orderQueue is null "+ securityId+" slot for price "+marketDataPrice+" is null");
+								slots.Remove(price);
 								if (enableTrace)
 								{
+									System.Console.WriteLine("OrderBook remove slot price="+price);
 									System.Console.WriteLine("Cur="+marketData.ToString());
 									System.Console.WriteLine("New="+md.ToString());
 								}
 							}
-	                    }
-                        if (orderQueue.GetSizeInernal() == mdBookOrders[i].size)    // and size of the queue already represents that
-                        {                                                           // probably thanks to Update_trade()
-                        }                                                           // - just do nothing
-                        else    // orderQueue.GetSizeInernal() != mdBookOrders[i].size
-                        {       // size changed because some of the orders pulled out
-                            int addedOrders = mdBookOrders[i].size - orderQueue.GetSizeInernal();
-                            // if result is negative the orders were removed (canceled by the market participants)
-                            // orderQueue.AddOrder(int) handles negative numbers
-                            orderQueue.AddOrder(addedOrders);
-                        }
-                    }
-
-                    // Price of orders changed. In some queues there are system orders. 
-                    // I want to keep the queues containing system orders.
-                    // If i do not have order queue (slot) with this price I create one,
-                    // then move all internal orders to another slot and remove the old queue
-                    // if empty - I add a new queue to the book
-                    if (mdPrice != marketDataPrice)
-                    {
-	                    OrderQueue orderQueue = null;
-	                    lock (slots)
-	                    {
-							if (slots.ContainsKey(marketDataPrice)) orderQueue = ((OrderQueue)slots[marketDataPrice]);
-						}
-                        OrderQueue orderQueueNew = null;
-                        lock (slots)
-                        {
-                            if (slots.ContainsKey(mdPrice)) orderQueueNew = (OrderQueue)(slots[mdPrice]);
-                            if (orderQueueNew == null)    // create a new order queue if there is no queue at this price
-                            {
-                                orderQueueNew = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
-                                slots.Add(mdPrice, orderQueueNew);  // add newly created queue to the list of queues sorted by price
+							else if (systemOrders > 0)
+							{
+								System.Console.WriteLine(ShortDescription()+" OrderBook was not removed slot price="+price);
 								if (enableTrace)
 								{
-									System.Console.WriteLine("OrderBook add slot price="+mdPrice);
+									System.Console.WriteLine("OrderBook remove slot price="+price);
 									System.Console.WriteLine("Cur="+marketData.ToString());
 									System.Console.WriteLine("New="+md.ToString());
 								}
-                            }
-                        }
-						int sizeInternal;
-						if (orderQueue != null)
-						{
-	                        sizeInternal = orderQueue.GetSizeInernal();  // remove all internal orders from the old queue
-	                        orderQueue.RemoveOrder(sizeInternal);        // if such queue exists
-	                        lock (slots)
-	                        {                                            // remove the queue from the orders book if empty
-	                            if ( (orderQueue.GetSize() <= 0) && (mdBookOrders[i].size != 0) )
-								{
-									if (enableTrace)
-									{
-										System.Console.WriteLine("OrderBook remove slot price="+marketDataPrice);
-										System.Console.WriteLine("Cur="+marketData.ToString());
-										System.Console.WriteLine("New="+md.ToString());
-									}
-									slots.Remove(marketDataPrice);
-								}
-	                        }
+							}
 						}
-                        sizeInternal = orderQueueNew.GetSizeInernal();   // add orders to the tail of the new queue
-                        orderQueueNew.AddOrder(mdBookOrders[i].size - sizeInternal);  // orderQueue.AddOrder(int) handles both positive and negative arguments
-                    }
-                }
+					}
+				}
             }
 
             /// <summary>
