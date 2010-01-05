@@ -597,7 +597,7 @@ namespace MarketSimulation
                 this.transaction = transaction;
                 this.fillOrder = fillOrder;
 
-                System.Collections.IComparer iComparer;
+                System.Collections.Generic.IComparer<int> iComparer;
 
                 // i keep order queue in the list slots ordered
                 // best bid (ask) should be at the head of the list index 0
@@ -606,7 +606,7 @@ namespace MarketSimulation
                 else
                     iComparer = new BidComparator();
 
-                slots = new System.Collections.SortedList(iComparer);
+                slots = new System.Collections.Generic.SortedList<int, OrderQueue>(10, iComparer);
 				
 				// i am creating a dummy data - mostly zeros. Any first real data will cause 
 				// the queue to reinitialize
@@ -655,23 +655,23 @@ namespace MarketSimulation
             /// </summary>
             public void PlaceOrder(LimitOrder order)
             {
-                int idxQueue;
-                OrderQueue orderQueue;
+                OrderQueue orderQueue = null;
+				int price = order.Price;
 
                 // i am looking for an order queue with specific price
                 lock (slots)
                 {
-                    idxQueue = slots.IndexOfKey(order.Price);
-                    if (idxQueue < 0)  // there is no such order queue  - create a new one 
-                    {                  // and add it to the order book
-                        orderQueue = new OrderQueue(this.securityId, order.Price, this.transaction, FillOrderCallback);
-                        slots.Add(order.Price, orderQueue);
+                    if (slots.ContainsKey(price)) orderQueue = (OrderQueue)(slots[price]);
+                    if (orderQueue == null)  // there is no such order queue  - create a new one 
+                    {                        // and add it to the order book
+                        orderQueue = new OrderQueue(this.securityId, price, this.transaction, FillOrderCallback);
+                        slots.Add(price, orderQueue);
+						if (enableTrace)
+						{
+							System.Console.WriteLine("OrderBook placeOrder add slot price="+order.Price);
+						}
                     }
-                    else
-                    {
-                        orderQueue = (OrderQueue)slots.GetByIndex(idxQueue);
-                    }
-
+					
                     // i have a system order in the book. update counter
                     sizeSystem += order.Quantity;
                 }
@@ -692,34 +692,50 @@ namespace MarketSimulation
                     System.Console.WriteLine(ShortDescription() + " negative change in day volume from " + md.dayVolume + " to " +
                                             marketData.dayVolume + " are not consistent");
                 }
-                else if (tradeSize > 0) // there was a trade ? let's check the price of the deal and size of the deal
-                {
+                else if (tradeSize > 0) // there was a trade ? let's check the price 
+                {                       // of the deal and size of the deal
                     if (tradeSize != md.lastTradeSize)  // sanity check - any misssing records out there ?
                     {
                         System.Console.WriteLine(ShortDescription() + " last trade size " + md.lastTradeSize +
                                                 " and change in day volume from " + md.dayVolume + " to " + marketData.dayVolume + " are not consistent");
                     }
-                    // i remove the traded securities from the queue(s) starting from the best (head of the ordered list "slots")
-                    while (slots.Count > 0)
-                    {
-						// get the head of the ordered by price list
-                        OrderQueue orderQueue = (OrderQueue)slots.GetByIndex(0); 
-						
-                        int size0 = orderQueue.GetSize();  // get queue size
-                        orderQueue.RemoveOrder(tradeSize); // remove the trade
-                        int size1 = orderQueue.GetSize();  // get queue size
-
-                        if (size1 == 0)  // if the queue empty - remove the queue
-                        {
-                            slots.RemoveAt(0);
-                        }
-                        int removed = size0 - size1;
-                        tradeSize -= removed;
-                        if (tradeSize == 0)  // i removed the trade from the order queue ?
-                        {
-                            break;
-                        }
-                    }
+					
+					lock (slots)
+					{
+	                    // i remove the traded securities from the queue(s) starting 
+						// from the best (head of the ordered list "slots")
+						foreach (OrderQueue orderQueue in slots.Values)
+						{
+							int price = orderQueue.GetPrice();
+							
+	                        int size0 = orderQueue.GetSize();  // get queue size
+	                        orderQueue.RemoveOrder(tradeSize); // remove the trade
+	                        int size1 = orderQueue.GetSize();  // get queue size
+	
+	                        if (size1 == 0)  // if the queue empty - remove the queue
+	                        {
+								lock (slots)
+								{
+									if (slots.ContainsKey(price))
+									{
+			                            slots.Remove(price);
+									}
+								}
+								if (enableTrace)
+								{
+									System.Console.WriteLine("OrderBook remove head slot price="+orderQueue.GetPrice());
+									System.Console.WriteLine("Cur="+marketData.ToString());
+									System.Console.WriteLine("New="+md.ToString());
+								}
+	                        }
+	                        int removed = size0 - size1;
+	                        tradeSize -= removed;
+	                        if (tradeSize == 0)  // i removed the trade from the order queue ?
+	                        {
+	                            break;
+	                        }
+						} // foreach
+					}
 
                     if (tradeSize > 0)
                     {
@@ -727,8 +743,11 @@ namespace MarketSimulation
 						// total of all positions in the order queue. such large trade could not take place unless
 						// i have wrong total position
                         System.Console.WriteLine(ShortDescription() + " failed to remove the trade remains " + tradeSize);
-                        System.Console.WriteLine("NewData=" + md.ToString());
-                        System.Console.WriteLine("CurData=" + marketData.ToString());
+						if (enableTrace)
+						{
+							System.Console.WriteLine("NewData=" + md.ToString());
+							System.Console.WriteLine("CurData=" + marketData.ToString());
+						}
                     }
                 } // tradeSize > 0 - there was a trade
             }
@@ -760,29 +779,21 @@ namespace MarketSimulation
                     int marketDataPrice = marketDataBookOrders[i].price;
                     int mdPrice = mdBookOrders[i].price;
 
-                    if ((mdPrice == marketDataPrice) && // simple case - slot prices in place, queue length changed
-                        (mdBookOrders[i].size != marketDataBookOrders[i].size))
+                    if ((mdPrice == marketDataPrice) &&                         // simple case - slot prices in place, 
+                        (mdBookOrders[i].size != marketDataBookOrders[i].size)) // only order queue length changed
                     {
-	                    int queueIdx = -1;
 	                    OrderQueue orderQueue = null;
 	                    lock (slots)
 	                    {
-	                        queueIdx = slots.IndexOfKey(marketDataPrice);
-							if (queueIdx >= 0)
+							if (slots.ContainsKey(marketDataPrice)) orderQueue = (OrderQueue)(slots[marketDataPrice]);
+							if (orderQueue == null)
 							{
-			                    orderQueue = (OrderQueue)slots.GetByIndex(queueIdx);
-								if (orderQueue == null)
+								System.Console.WriteLine("MarketSimulation orderQueue is null "+ securityId+" slot for price "+marketDataPrice+" is null");
+								if (enableTrace)
 								{
-									System.Console.WriteLine("MarketSimulation.BookOrders slot for price "+marketDataPrice+" is null");
 									System.Console.WriteLine("Cur="+marketData.ToString());
 									System.Console.WriteLine("New="+md.ToString());
 								}
-							}
-							else
-							{
-								System.Console.WriteLine("MarketSimulation.BookOrders slot for price "+marketDataPrice+" not found");
-								System.Console.WriteLine("Cur="+marketData.ToString());
-								System.Console.WriteLine("New="+md.ToString());
 							}
 	                    }
                         if (orderQueue.GetSizeInernal() == mdBookOrders[i].size)    // and size of the queue already represents that
@@ -804,22 +815,16 @@ namespace MarketSimulation
                     // if empty - I add a new queue to the book
                     if (mdPrice != marketDataPrice)
                     {
-	                    int queueIdx = -1;
 	                    OrderQueue orderQueue = null;
 	                    lock (slots)
 	                    {
-	                        queueIdx = slots.IndexOfKey(marketDataPrice);
-							if (queueIdx >= 0)
-							{
-			                    orderQueue = (OrderQueue)slots.GetByIndex(queueIdx);
-							}
-	                    }
-                        OrderQueue orderQueueNew;
-                        int queueIdxNew;
+							if (slots.ContainsKey(marketDataPrice)) orderQueue = ((OrderQueue)slots[marketDataPrice]);
+						}
+                        OrderQueue orderQueueNew = null;
                         lock (slots)
                         {
-                            queueIdxNew = slots.IndexOfKey(mdPrice);
-                            if (queueIdxNew < 0)    // create a new order queue if there is no queue at this price
+                            if (slots.ContainsKey(mdPrice)) orderQueueNew = (OrderQueue)(slots[mdPrice]);
+                            if (orderQueueNew == null)    // create a new order queue if there is no queue at this price
                             {
                                 orderQueueNew = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
                                 slots.Add(mdPrice, orderQueueNew);  // add newly created queue to the list of queues sorted by price
@@ -829,10 +834,6 @@ namespace MarketSimulation
 									System.Console.WriteLine("Cur="+marketData.ToString());
 									System.Console.WriteLine("New="+md.ToString());
 								}
-                            }
-                            else
-                            {
-                                orderQueueNew = (OrderQueue)(slots.GetByIndex(queueIdxNew));
                             }
                         }
 						int sizeInternal;
@@ -850,7 +851,7 @@ namespace MarketSimulation
 										System.Console.WriteLine("Cur="+marketData.ToString());
 										System.Console.WriteLine("New="+md.ToString());
 									}
-									slots.RemoveAt(queueIdx);
+									slots.Remove(marketDataPrice);
 								}
 	                        }
 						}
@@ -872,7 +873,15 @@ namespace MarketSimulation
                 lock (slots)
                 {
                     sizeSystem -= order.Quantity;
-                    if (queueEmpty) slots.Remove(queue.GetPrice());
+                    if (queueEmpty) 
+					{
+						int price = queue.GetPrice();
+						slots.Remove(price);
+						if (enableTrace)
+						{
+							System.Console.WriteLine("OrderBook remove head slot price="+price);
+						}
+					}
                 }
             }
 			
@@ -938,30 +947,30 @@ namespace MarketSimulation
             /// <summary>
             /// Used to help sort and compare order book of bids.
             /// </summary>
-            protected class BidComparator : System.Collections.IComparer
+            protected class BidComparator : System.Collections.Generic.IComparer<int>
             {
-                public int Compare(Object x, Object y)
+                public int Compare(int x, int y)
                 {
                     // higher bid is closer to the head of the sorted list
-                    return ((int)y - (int)x);
+                    return (y - x);
                 }
             }
 
             /// <summary>
             /// Used to help sort and compare order book of asks.
             /// </summary>
-            protected class AskComparator : System.Collections.IComparer
+            protected class AskComparator : System.Collections.Generic.IComparer<int>
             {
-                public int Compare(Object x, Object y)
+                public int Compare(int x, int y)
                 {
                     // higher ask is closer to the tail of the sorted list
-                    return ((int)x - (int)y);
+                    return (x - y);
                 }
             }
 
             public OrderQueue[] GetQueues()
             {
-                System.Collections.ICollection collection = slots.Values;
+                System.Collections.Generic.IList<OrderQueue> collection = slots.Values;
                 OrderQueue[] oqs = new OrderQueue[collection.Count];
                 collection.CopyTo(oqs, 0);
 
@@ -978,7 +987,7 @@ namespace MarketSimulation
             /// Ask order queues are ordered from lower price to higher price and 
             /// book of bids aranged from higher price to lower price.
             /// </summary>
-            protected System.Collections.SortedList slots;
+            protected System.Collections.Generic.SortedList<int, OrderQueue> slots;
 
             /// <summary>
             /// total size of all orders placed by the system.
