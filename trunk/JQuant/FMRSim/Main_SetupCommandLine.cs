@@ -437,7 +437,7 @@ namespace JQuant
                     dataMaofGenerator.AddConsumer(marketSimulationMaof);
 					
 //					marketSimulationMaof.EnableTrace(80608128, true);
-					marketSimulationMaof.EnableTrace(80616808, true);
+//					marketSimulationMaof.EnableTrace(80616808, true);
                     iWrite.WriteLine("Use 'start' to start the market simulation");
                 }
                 else    //for the moment I don't want the mess of running multiple simulations simultaneously.
