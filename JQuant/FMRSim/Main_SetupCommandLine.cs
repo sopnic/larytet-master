@@ -365,6 +365,22 @@ namespace JQuant
 
         static MarketSimulationMaof marketSimulationMaof;
         MaofDataGeneratorLogFile dataMaofGenerator;
+		
+		/// <summary>
+		/// This is a magic (aka Trust the force) method which goes through the 
+		/// CLI command arguments and look for a ticker IDs. The emthod recognize 
+		/// different formats of tickers. For example
+		/// - the unique integer 80613003
+		/// - partial integer 13003 (if unique)
+		/// - description 'Call 1800 Nov'
+		/// - description 'C1800Nov'
+		/// - description 'Put1800 Nov'
+		/// - full name 'TA9Z00960C'
+		/// </summary>
+		protected int FindSecurity(object[] cmdArguments)
+		{
+			return 0;
+		}
 
         protected void debugMarketSimulationMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
@@ -788,6 +804,22 @@ namespace JQuant
 			}
 			marketSimulationMaof.EnableTrace(securityId, enable);
 		}
+
+        protected void debugMarketSimulationMaofWatchCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+		{
+            iWrite.WriteLine("Not supported");
+		}
+		
+        protected void debugMarketSimulationMaofPlaceOrderCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+		{
+            iWrite.WriteLine("Not supported");
+		}
+		
+        protected void debugMarketSimulationMaofCancelOrderCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+		{
+            iWrite.WriteLine("Not supported");
+		}
+		
 		
         protected void debugPrintResourcesNameAndStats(IWrite iWrite, System.Collections.ArrayList list)
         {
@@ -1819,8 +1851,28 @@ namespace JQuant
 			
             menuMarketSim.AddCommand("trace",
                                     "Enable trace for specific security. Usage: trace <securityId> <enable|disable>",
-                                    "",
+                                    "Enable/disable debug trace for specific security. Security identifier can be a unique number, \n"+
+			                         "or things like 'C1800Oct', 'call 1800 Oct', 'call1800Oct', etc.  ",
                                     debugMarketSimulationMaofTraceCallback
+                                    );
+
+			
+            menuMarketSim.AddCommand("w",
+                                    "Add security to the watch list. Usage: w [add|rmv] <securityId> ",
+                                    "Add (remove) specific security to (from) watch list.  ",
+                                    debugMarketSimulationMaofWatchCallback
+                                    );
+			
+            menuMarketSim.AddCommand("p",
+                                    "Place order. Usage: p <securityId> [limit]",
+                                    "Place order for specific security",
+                                    debugMarketSimulationMaofPlaceOrderCallback
+                                    );
+			
+            menuMarketSim.AddCommand("c",
+                                    "Cancel order. Usage: c <securityId>",
+                                    "Cancels previously placed order",
+                                    debugMarketSimulationMaofCancelOrderCallback
                                     );
 			#endregion;
 
