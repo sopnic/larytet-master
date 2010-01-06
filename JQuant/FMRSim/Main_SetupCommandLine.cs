@@ -395,15 +395,20 @@ namespace JQuant
 		{
 			id = 0;
 			bool res = false;
-			
+
+            System.Console.WriteLine("Find "+putcall+" "+strike+" "+month);
+            
 			// generate MAOF style name - something like "P01080DEC"
 			strike = JQuant.OutputUtils.FormatField(strike, 5, '0');
 			month = month.ToUpper();
+            putcall = putcall.Substring(0, 1);
+            putcall = putcall.ToUpper();
 			string name = putcall+strike+month;
 			
 			if (names.ContainsKey(name))
 			{
 				id = names[name];
+                System.Console.WriteLine("Found "+putcall+" "+strike+" "+month+" id="+id);
 				res = true;
 			}
 			
@@ -481,9 +486,10 @@ namespace JQuant
 			// look in the command for regexp jan|feb)($| +)' first
 			// Other possibilities are: ' +([0-9]+) *([c,p]) *(jan|feb)($| +)'
 			// the final case is any set of digits ' +([0-9]+)($| +)'
-			const string months = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec";
-			const string pattern1 = " +([c,p]) *([0-9]+) *("+months+")($| +)";
-			const string pattern2 = " +([0-9]+) *([c,p]) *("+months+")($| +)";
+			const string monthPattern = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec";
+            const string putcallPattern = "c|p|C|P|call|put|CALL|PUT|Call|Put]";
+			const string pattern1 = " +("+putcallPattern+") *([0-9]+) *("+monthPattern+")($| +)";
+			const string pattern2 = " +([0-9]+) *("+putcallPattern+") *("+monthPattern+")($| +)";
 			const string pattern3 = " +([0-9]+)($| +)";
 			System.Text.RegularExpressions.GroupCollection groups;
 			int matchesCount;
@@ -500,10 +506,9 @@ namespace JQuant
 				if (matchesCount == 1)
 				{
 					System.Text.RegularExpressions.Group group = groups[1];
-					System.Text.RegularExpressions.CaptureCollection captures = group.Captures;
-					string putcall = captures[0].ToString();
-					string strike = captures[1].ToString();
-					string month = captures[2].ToString();					
+					string putcall = groups[1].Captures[0].ToString(); // group[0] is reserved for the whole match
+					string strike = groups[2].Captures[0].ToString();
+					string month = groups[3].Captures[0].ToString();					
 					res = FindSecurity(names, putcall, strike, month, out id);
 					break;
 				}
@@ -516,11 +521,9 @@ namespace JQuant
 				}
 				if (matchesCount == 1)
 				{
-					System.Text.RegularExpressions.Group group = groups[1];
-					System.Text.RegularExpressions.CaptureCollection captures = group.Captures;
-					string strike = captures[1].ToString();
-					string putcall = captures[0].ToString();
-					string month = captures[2].ToString();					
+					string strike = groups[2].Captures[0].ToString();  // group[0] is reserved for the whole match
+					string putcall = groups[1].Captures[0].ToString();
+					string month = groups[3].Captures[0].ToString();					
 					res = FindSecurity(names, putcall, strike, month, out id);
 					break;
 				}
@@ -529,9 +532,7 @@ namespace JQuant
                 GetMatchGroups(pattern3, text, out groups, out matchesCount);
 				if (matchesCount > 0)
 				{
-					System.Text.RegularExpressions.Group group = groups[1];
-					System.Text.RegularExpressions.CaptureCollection captures = group.Captures;
-					string digits = captures[0].ToString();
+					string digits = groups[1].Captures[0].ToString(); // group[0] is reserved for the whole match
 					int idxFirst = idNamesStr.IndexOf(digits);
 					int idxSecond = idNamesStr.LastIndexOf(digits);
 					string firstMatch = idNamesStr.Substring(idxFirst, idNamesStr.IndexOf(" ", idxFirst)-idxFirst);
