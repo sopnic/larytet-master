@@ -408,7 +408,7 @@ namespace JQuant
 				System.Text.RegularExpressions.Regex regex;
 				System.Text.RegularExpressions.Match match;
 				
-				string pattern1 = " +([c,p]) *([0-9])+ *("+months+")($| +)";
+				string pattern1 = " +([c,p]) *([0-9]+) *("+months+")($| +)";
 				regex = new System.Text.RegularExpressions.Regex(pattern1);
 				match = regex.Match(text);
 				int[] groupNumbers = regex.GetGroupNumbers();
