@@ -379,7 +379,7 @@ namespace JQuant
 			do
 			{
 				matchesCount = matches.Count;
-				if (matchesCount != 1)
+				if (matchesCount < 1)
 				{
 					break;
 				}
@@ -394,18 +394,52 @@ namespace JQuant
 		protected static bool FindSecurity(System.Collections.Generic.Dictionary<string, int> names, string putcall, string strike, string month, out int id)
 		{
 			id = 0;
-			// generate MAOF style name
+			bool res = false;
 			
-			return false;
+			// generate MAOF style name - something like "P01080DEC"
+			strike = JQuant.OutputUtils.FormatField(strike, 5, '0');
+			month = month.ToUpper();
+			string name = putcall+strike+month;
+			
+			if (names.ContainsKey(name))
+			{
+				id = names[name];
+				res = true;
+			}
+			
+			return res;
 		}
 		
 		/// <summary>
 		/// This is what I get: 'T25 P01080 DEC9'
-		/// This is what I return: 'P01080DEC9'
+		/// This is what I return: 'P01080DEC' or null
 		/// </summary>
 		protected static string convertBnoName(string BNO_NAME_E)
 		{
-			return null;
+			const string months = "JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC";
+			const string pattern = "T25 (P|C)([0-9]+) ("+months+")[0-9]{1}";
+			System.Text.RegularExpressions.GroupCollection groups;
+			int matchesCount;
+			GetMatchGroups(pattern, BNO_NAME_E, out groups,  out matchesCount);
+			string res = null;
+			
+			if (matchesCount == 1)
+			{
+				System.Text.RegularExpressions.Group group = groups[1];
+				System.Text.RegularExpressions.CaptureCollection captures = group.Captures;
+				
+				string putcall = captures[0].ToString();
+				string strike = captures[1].ToString();
+				string month = captures[2].ToString();
+				
+				res = putcall+strike+month;
+			}
+			else
+			{
+				System.Console.WriteLine("Failed to parse BNO_NAME_E '"+BNO_NAME_E+"'");
+			}
+			
+			return res;
 		}
 		
 		/// <summary>
@@ -434,9 +468,13 @@ namespace JQuant
 			// fill the dictionary and string of all IDs
 			foreach (int i in ids)
 			{
-				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
-	            names.Add(option.GetName(), id);
-				idNames.Append(id);idNames.Append(" ");
+				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(i);
+				string name = convertBnoName(option.GetName());
+	            if (name != null) 
+				{
+					names.Add(name, i);
+				}
+				idNames.Append(i);idNames.Append(" ");
 			}
 			string idNamesStr = idNames.ToString();
 			
@@ -466,7 +504,7 @@ namespace JQuant
 					string putcall = captures[0].ToString();
 					string strike = captures[1].ToString();
 					string month = captures[2].ToString();					
-					res = true;
+					res = FindSecurity(names, putcall, strike, month, out id);
 					break;
 				}
 				
@@ -480,10 +518,10 @@ namespace JQuant
 				{
 					System.Text.RegularExpressions.Group group = groups[1];
 					System.Text.RegularExpressions.CaptureCollection captures = group.Captures;
-					string digits = captures[1].ToString();
-					string strike = captures[0].ToString();
+					string strike = captures[1].ToString();
+					string putcall = captures[0].ToString();
 					string month = captures[2].ToString();					
-					res = true;
+					res = FindSecurity(names, putcall, strike, month, out id);
 					break;
 				}
 

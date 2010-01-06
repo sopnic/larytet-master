@@ -72,12 +72,19 @@ namespace JQuant
         /// </summary>
         static public string FormatField(string val, int fieldSize)
         {
+			string s = FormatField(val, fieldSize, ' ');
+
+            return s;
+        }
+		
+        static public string FormatField(string val, int fieldSize, char filler)
+        {
             StringBuilder s = new StringBuilder("" + val, fieldSize);
 
             int count = s.Length;
             for (int i = count; i < fieldSize; i++)
             {
-                s.Insert(0, ' ');
+                s.Insert(0, filler);
             }
 
             return s.ToString();
