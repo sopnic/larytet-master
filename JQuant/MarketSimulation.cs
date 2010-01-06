@@ -746,9 +746,9 @@ namespace MarketSimulation
 						// if i reached here i have accounting problem. The trade i see in the log is larger than 
 						// total of all positions in the order queue. such large trade could not take place unless
 						// i have wrong total position
-						System.Console.WriteLine(ShortDescription() + " failed to remove the trade remains " + tradeSize+" from "+totalToRemove);
 						if (enableTrace)
 						{
+							System.Console.WriteLine(ShortDescription() + " failed to remove the trade remains " + tradeSize+" from "+totalToRemove);
 							System.Console.WriteLine("NewData=" + md.ToString());
 							System.Console.WriteLine("CurData=" + marketData.ToString());
 						}
