@@ -396,8 +396,6 @@ namespace JQuant
 			id = 0;
 			bool res = false;
 
-            System.Console.WriteLine("Find "+putcall+" "+strike+" "+month);
-            
 			// generate MAOF style name - something like "P01080DEC"
 			strike = JQuant.OutputUtils.FormatField(strike, 5, '0');
 			month = month.ToUpper();
@@ -408,7 +406,6 @@ namespace JQuant
 			if (names.ContainsKey(name))
 			{
 				id = names[name];
-                System.Console.WriteLine("Found "+putcall+" "+strike+" "+month+" id="+id);
 				res = true;
 			}
 			
