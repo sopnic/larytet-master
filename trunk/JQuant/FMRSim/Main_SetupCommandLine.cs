@@ -426,13 +426,13 @@ namespace JQuant
 			if (matchesCount == 1)
 			{
 				System.Text.RegularExpressions.Group group = groups[1];
-				System.Text.RegularExpressions.CaptureCollection captures = group.Captures;
 				
-				string putcall = captures[0].ToString();
-				string strike = captures[1].ToString();
-				string month = captures[2].ToString();
+				string putcall = groups[1].Captures[0].ToString();
+				string strike = groups[2].Captures[0].ToString();
+				string month = groups[3].Captures[0].ToString();
 				
 				res = putcall+strike+month;
+				// System.Console.WriteLine("convertBnoName "+BNO_NAME_E+" to "+res);
 			}
 			else
 			{
@@ -985,7 +985,16 @@ namespace JQuant
 		
         protected void debugMarketSimulationMaofPlaceOrderCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
-            iWrite.WriteLine("Not supported");
+			int id;
+			bool res = FindSecurity(cmdName, out id);
+			if (res)
+			{
+				iWrite.WriteLine("Security found ID="+id);
+			}
+			else
+			{
+				iWrite.WriteLine("Unknown security");
+			}
 		}
 		
         protected void debugMarketSimulationMaofCancelOrderCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
