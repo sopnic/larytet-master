@@ -377,12 +377,13 @@ namespace JQuant
 		/// - description 'Put1800 Nov'
 		/// - full name 'TA9Z00960C'
 		/// </summary>
-		protected bool FindSecurity(string command, out int id, out int offset)
+		protected bool FindSecurity(string text, out int id, out int offset)
 		{
 			// get the list of securities
             int[] ids = marketSimulationMaof.GetSecurities();   
 			offset = 0;
 			id = 0;
+			bool res = false;
 			
 			// my key is name of the option and my value is unique option Id (integer)
 			// On TASE ID is an integer
@@ -398,11 +399,32 @@ namespace JQuant
 				idNames.Append(id);idNames.Append(" ");
 			}
 			
-			// look in the command for regexp ' +[c,p] *[0-9]+ *(jan|feb|..)($| +)' first
-			// Other possibilities are: ' +[0-9]+ *[c,p] *(jan|feb|..)($| +)'
+			// look in the command for regexp jan|feb)($| +)' first
+			// Other possibilities are: ' +([0-9])+ *([c,p]) *(jan|feb)($| +)'
+			const string months = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec";
+			do
+			{
+				System.Text.RegularExpressions.Regex regex;
+				System.Text.RegularExpressions.Match match;
+				
+				string pattern1 = " +([c,p]) *([0-9])+ *("+months+")($| +)";
+				regex = new System.Text.RegularExpressions.Regex(pattern1);
+				match = regex.Match(text);
+				int[] groupNumbers = regex.GetGroupNumbers();
+				
+				if (match.Length > 2)
+				{
+					System.Console.WriteLine("I expect only one match");
+					break;
+				}
+				
+				
+				res = false;
+			}
+			while (false);
 			
 			
-			return false;
+			return res;
 		}
 
         protected void debugMarketSimulationMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
