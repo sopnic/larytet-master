@@ -387,11 +387,15 @@ namespace JQuant
 			// my key is name of the option and my value is unique option Id (integer)
 			// On TASE ID is an integer
 			System.Collections.Generic.Dictionary<string, int> names = new System.Collections.Generic.Dictionary<string, int>(ids.Length);
+			// i need an array (string) of IDs to look for patial integer IDs
+			System.Text.StringBuilder idNames = new System.Text.StringBuilder(ids.Length*10);
+			
 			
 			foreach (int i in ids)
 			{
 				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
 	            names.Add(option.GetName(), id);
+				idNames.Append(id);idNames.Append(" ");
 			}
 			
 			// look in the command for regexp ' +[c,p] *[0-9]+ *(jan|feb|..)($| +)' first
