@@ -115,7 +115,7 @@ namespace JQuant
 	            
 	            if (exists)
 	            {
-	                res = md.Symbol;
+	                res = md.BNO_NAME_E;
 	            }
 	
 	            return res;
