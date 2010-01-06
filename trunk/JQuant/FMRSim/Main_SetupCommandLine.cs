@@ -400,7 +400,8 @@ namespace JQuant
 			}
 			
 			// look in the command for regexp jan|feb)($| +)' first
-			// Other possibilities are: ' +([0-9])+ *([c,p]) *(jan|feb)($| +)'
+			// Other possibilities are: ' +([0-9]+) *([c,p]) *(jan|feb)($| +)'
+			// the final case is any set of digits ' +([0-9]+)($| +)'
 			const string months = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec";
 			do
 			{
