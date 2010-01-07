@@ -906,6 +906,12 @@ namespace JQuant
 		
         protected void debugMarketSimulationMaofSecsQueue(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
+            if (marketSimulationMaof == default(MarketSimulationMaof)) // check if there active simulation to get data from 
+            {                                                           
+                iWrite.WriteLine("No active market simulations.");
+                return;
+            }
+            
             iWrite.WriteLine("Not supported");
         }
         
@@ -979,25 +985,101 @@ namespace JQuant
 
         protected void debugMarketSimulationMaofWatchCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
+            if (marketSimulationMaof == default(MarketSimulationMaof)) // check if there active simulation to get data from 
+            {                                                           
+                iWrite.WriteLine("No active market simulations.");
+                return;
+            }
+            
             iWrite.WriteLine("Not supported");
 		}
 		
+        protected void placeOrderCallback(int id, MarketSimulation.ReturnCode errorCode, int price, int quantity)
+        {
+        }
+        
         protected void debugMarketSimulationMaofPlaceOrderCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
+            if (marketSimulationMaof == default(MarketSimulationMaof)) // check if there active simulation to get data from 
+            {                                                           
+                iWrite.WriteLine("No active market simulations.");
+                return;
+            }
+            
 			int id;
 			bool res = FindSecurity(cmdName, out id);
-			if (res)
+			if (!res)
 			{
-				iWrite.WriteLine("Security found ID="+id);
+                iWrite.WriteLine("Unknown security in the command "+cmdName);
+                return;
 			}
-			else
-			{
-				iWrite.WriteLine("Unknown security");
-			}
+
+            // i got security ID
+            bool buyOrder = (cmdArguments[1].ToString().ToUpper().CompareTo("BUY") == 0);
+            bool sellOrder = (cmdArguments[1].ToString().ToUpper().CompareTo("SELL") == 0);
+            if (!buyOrder && !sellOrder)
+            {
+                iWrite.WriteLine("Use words buy or sell to specify the order type");
+                return;
+            }
+            if (buyOrder && sellOrder)
+            {
+                iWrite.WriteLine("Internal error: both buy and sell in "+cmdArguments[1]);
+                return;
+            }
+
+
+            // are there three and only three numbers in the command line ?
+            const string patternNumbers = ".+ +[0-9]+ +.+[0-9]+ +[0-9]+";
+            System.Text.RegularExpressions.Regex regexNumbers = new System.Text.RegularExpressions.Regex(patternNumbers);
+            System.Text.RegularExpressions.MatchCollection matches = regexNumbers.Matches(cmdName);
+            if (matches.Count != 1)
+            {
+                iWrite.WriteLine("Three and only three numbers - security ID, limit price and quantiy are allowed. I got '"+cmdName+"'");
+                return;
+            }
+
+            // last arguments are price and quantity
+            string limitPriceStr = cmdArguments[cmdArguments.Length-2].ToString();
+            string quantintyStr = cmdArguments[cmdArguments.Length-1].ToString();
+            int limitPrice = Int32.Parse(limitPriceStr);
+            int quantity = Int32.Parse(quantintyStr);
+            if (limitPrice == 0)
+            {
+                iWrite.WriteLine("Failed to parse limit price "+limitPriceStr);
+                return;
+            }
+            if (quantity == 0)
+            {
+                iWrite.WriteLine("Failed to parse quantinty "+quantintyStr);
+                return;
+            }
+
+            TransactionType transaction;
+            if (buyOrder)
+            {
+                transaction = TransactionType.BUY;
+            }
+            else 
+            {
+                transaction = TransactionType.SELL;
+            }
+            MarketSimulation.ReturnCode errorCode;
+            res = marketSimulationMaof.PlaceOrder(id, limitPrice, quantity, transaction, placeOrderCallback, out errorCode);
+            if (!res)
+            {
+                iWrite.WriteLine("Failed to place order error="+errorCode);
+            }
 		}
 		
         protected void debugMarketSimulationMaofCancelOrderCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
+            if (marketSimulationMaof == default(MarketSimulationMaof)) // check if there active simulation to get data from 
+            {                                                           
+                iWrite.WriteLine("No active market simulations.");
+                return;
+            }
+            
             iWrite.WriteLine("Not supported");
 		}
 		
@@ -2046,7 +2128,7 @@ namespace JQuant
                                     );
 			
             menuMarketSim.AddCommand("p",
-                                    "Place order. Usage: p <securityId> [limit]",
+                                    "Place order. Usage: p [buy|sell] <securityId>  [limit] [quantity]",
                                     "Place order for specific security. "+"Security identifier can be a unique number, \n"+
 			                         "or things like 'C1800Oct', 'call 1800 Oct', 'call1800Oct', etc.  ",
                                     debugMarketSimulationMaofPlaceOrderCallback

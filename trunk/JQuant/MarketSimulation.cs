@@ -6,6 +6,8 @@ namespace MarketSimulation
 {
     public enum ReturnCode
     {
+        [Description("NoError")]
+        NoError,
         [Description("UnknownError")]
         UnknownError,
         [Description("OutOfMemory")]
@@ -1127,7 +1129,7 @@ namespace MarketSimulation
         /// Returns false on failure. Calling method will analyze errorCode to figure out 
         /// what went wrong with the order
         /// </returns>
-        public bool PlaceOrder(int security, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback, ref ReturnCode errorCode)
+        public bool PlaceOrder(int security, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback, out ReturnCode errorCode)
         {
             bool res = false;
 
@@ -1167,6 +1169,7 @@ namespace MarketSimulation
                 }
 
                 res = true;
+                errorCode = ReturnCode.NoError;
             }
             while (false);
 
