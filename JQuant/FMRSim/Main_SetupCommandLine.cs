@@ -418,11 +418,12 @@ namespace JQuant
 		/// </summary>
 		protected static string convertBnoName(string BNO_NAME_E)
 		{
-			const string months = "JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC";
-			const string pattern = "T25 (P|C)([0-9]+) ("+months+")[0-9]{1}";
+			const string patternOption = MarketSimulationMaof.BNO_NAME_PATTERN_OPTION;
+            System.Text.RegularExpressions.Regex regexOption = new System.Text.RegularExpressions.Regex(patternOption);
+            
 			System.Text.RegularExpressions.GroupCollection groups;
 			int matchesCount;
-			GetMatchGroups(pattern, BNO_NAME_E, out groups,  out matchesCount);
+			GetMatchGroups(patternOption, BNO_NAME_E, out groups,  out matchesCount);
 			string res = null;
 			
 			if (matchesCount == 1)
@@ -438,7 +439,7 @@ namespace JQuant
 			}
 			else
 			{
-				System.Console.WriteLine("Failed to parse BNO_NAME_E '"+BNO_NAME_E+"'");
+				// System.Console.WriteLine("Failed to parse BNO_NAME_E '"+BNO_NAME_E+"'");
 			}
 			
 			return res;
