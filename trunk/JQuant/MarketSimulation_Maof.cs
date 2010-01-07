@@ -27,8 +27,27 @@ namespace JQuant
             // i am going to reuse this object 
             marketData = new MarketSimulation.MarketData(3);
             securities = new System.Collections.Hashtable(100);
+
+            
+            regexOption = new System.Text.RegularExpressions.Regex(BNO_NAME_PATTERN_OPTION);
+            regexFuture = new System.Text.RegularExpressions.Regex(BNO_NAME_PATTERN_FUTURE);
         }
 
+        /// <summary>
+        /// Pattern for regular expression - 12 months
+        /// </summary>
+        protected const string MONTHS_PATTERN = "JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC";
+
+        /// <summary>
+        /// Pattern for regular expression - BNO_NAME_E for Maof option
+        /// </summary>
+        public const string BNO_NAME_PATTERN_OPTION = "T25 (P|C)([0-9]+) ("+MONTHS_PATTERN+")[0-9]+";
+
+        /// <summary>
+        /// Pattern for regular expression - BNO_NAME_E for Maof future
+        /// </summary>
+        public const string BNO_NAME_PATTERN_FUTURE = "T25 F ("+MONTHS_PATTERN+")[0-9]+";
+        
 		/// <summary>
 		/// The meethod belongs to the IConsumer interface and called from
 		/// data genrerator, like MaofDataGeneratorLogFile
@@ -48,6 +67,39 @@ namespace JQuant
             base.Notify(count, marketData);
         }
 
+
+        /// <summary>
+        /// Returns false if I want to drop the data instead of fowarding to the
+        /// MarketSimulation.Core
+        /// </summary>
+        protected bool FilterMaofData(K300MaofType dt)
+        {
+            string BNO_NAME_E = dt.BNO_NAME_E;
+            bool res;
+            
+            System.Text.RegularExpressions.MatchCollection matches = regexOption.Matches(BNO_NAME_E);
+            res = (matches.Count == 1);  // i expect exactly one match
+            
+            if (matches.Count < 1)
+            {
+                matches = regexFuture.Matches(BNO_NAME_E);
+                if (matches.Count < 1)  // this is not an option and not a future - report error
+                {
+                    System.Console.WriteLine("Maof MarketSimulation: drop data for "+BNO_NAME_E);
+                }
+                else
+                {
+                    // System.Console.WriteLine("Maof MarketSimulation: drop data for future "+BNO_NAME_E);
+                }
+            }
+            else if (matches.Count > 1)
+            {
+                System.Console.WriteLine("Maof MarketSimulation: drop data for "+BNO_NAME_E+" because of multiple match");
+            }
+            
+            return res;
+        }
+
         /// <summary>
         /// DataType is something like K300MaofType - lot of strings. The method will  convert
         /// this into something convenient to work with.
@@ -62,24 +114,25 @@ namespace JQuant
         /// </returns>
         protected void RawDataToMarketData(K300MaofType dt, ref MarketSimulation.MarketData md)
         {
-            md.id = JQuant.Convert.StrToInt(dt.BNO_Num);
-            md.bid[0].price = JQuant.Convert.StrToInt(dt.LMT_BY1);
-            md.bid[1].price = JQuant.Convert.StrToInt(dt.LMT_BY2);
-            md.bid[2].price = JQuant.Convert.StrToInt(dt.LMT_BY3);
-            md.bid[0].size = JQuant.Convert.StrToInt(dt.LMY_BY1_NV);
-            md.bid[1].size = JQuant.Convert.StrToInt(dt.LMY_BY2_NV);
-            md.bid[2].size = JQuant.Convert.StrToInt(dt.LMY_BY3_NV);
-            md.ask[0].price = JQuant.Convert.StrToInt(dt.LMT_SL1);
-            md.ask[1].price = JQuant.Convert.StrToInt(dt.LMT_SL2);
-            md.ask[2].price = JQuant.Convert.StrToInt(dt.LMT_SL3);
-            md.ask[0].size = JQuant.Convert.StrToInt(dt.LMY_SL1_NV);
-            md.ask[1].size = JQuant.Convert.StrToInt(dt.LMY_SL2_NV);
-            md.ask[2].size = JQuant.Convert.StrToInt(dt.LMY_SL3_NV);
-            md.lastTrade = JQuant.Convert.StrToInt(dt.LST_DL_PR);
-            md.lastTradeSize = JQuant.Convert.StrToInt(dt.LST_DL_VL);
-            md.dayVolume = JQuant.Convert.StrToInt(dt.DAY_VL);
-            //md.dayTransactions = JQuant.Convert.StrToInt((string)field_DAY_DIL_NO.GetValue(dt));
-
+            if (FilterMaofData(dt))
+            {
+                md.id = JQuant.Convert.StrToInt(dt.BNO_Num);
+                md.bid[0].price = JQuant.Convert.StrToInt(dt.LMT_BY1);
+                md.bid[1].price = JQuant.Convert.StrToInt(dt.LMT_BY2);
+                md.bid[2].price = JQuant.Convert.StrToInt(dt.LMT_BY3);
+                md.bid[0].size = JQuant.Convert.StrToInt(dt.LMY_BY1_NV);
+                md.bid[1].size = JQuant.Convert.StrToInt(dt.LMY_BY2_NV);
+                md.bid[2].size = JQuant.Convert.StrToInt(dt.LMY_BY3_NV);
+                md.ask[0].price = JQuant.Convert.StrToInt(dt.LMT_SL1);
+                md.ask[1].price = JQuant.Convert.StrToInt(dt.LMT_SL2);
+                md.ask[2].price = JQuant.Convert.StrToInt(dt.LMT_SL3);
+                md.ask[0].size = JQuant.Convert.StrToInt(dt.LMY_SL1_NV);
+                md.ask[1].size = JQuant.Convert.StrToInt(dt.LMY_SL2_NV);
+                md.ask[2].size = JQuant.Convert.StrToInt(dt.LMY_SL3_NV);
+                md.lastTrade = JQuant.Convert.StrToInt(dt.LST_DL_PR);
+                md.lastTradeSize = JQuant.Convert.StrToInt(dt.LST_DL_VL);
+                md.dayVolume = JQuant.Convert.StrToInt(dt.DAY_VL);
+            }
         }
 
 		/// <summary>
@@ -230,5 +283,9 @@ namespace JQuant
         /// I keep the last update data in this hash table
         /// </summary>
         protected new System.Collections.Hashtable securities;
+
+        protected System.Text.RegularExpressions.Regex regexOption;
+        protected System.Text.RegularExpressions.Regex regexFuture;
+        
     }
 }
