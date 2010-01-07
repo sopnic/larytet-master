@@ -2031,7 +2031,7 @@ namespace JQuant
 			
             menuMarketSim.AddCommand("trace",
                                     "Enable trace for specific security. Usage: trace <securityId> <enable|disable>",
-                                    "Enable/disable debug trace for specific security. Security identifier can be a unique number, \n"+
+                                    "Enable/disable debug trace for specific security. "+"Security identifier can be a unique number, \n"+
 			                         "or things like 'C1800Oct', 'call 1800 Oct', 'call1800Oct', etc.  ",
                                     debugMarketSimulationMaofTraceCallback
                                     );
@@ -2039,19 +2039,22 @@ namespace JQuant
 			
             menuMarketSim.AddCommand("w",
                                     "Add security to the watch list. Usage: w [add|rmv] <securityId> ",
-                                    "Add (remove) specific security to (from) watch list.  ",
+                                    "Add (remove) specific security to (from) watch list. "+"Security identifier can be a unique number, \n"+
+			                         "or things like 'C1800Oct', 'call 1800 Oct', 'call1800Oct', etc.  ",
                                     debugMarketSimulationMaofWatchCallback
                                     );
 			
             menuMarketSim.AddCommand("p",
                                     "Place order. Usage: p <securityId> [limit]",
-                                    "Place order for specific security",
+                                    "Place order for specific security. "+"Security identifier can be a unique number, \n"+
+			                         "or things like 'C1800Oct', 'call 1800 Oct', 'call1800Oct', etc.  ",
                                     debugMarketSimulationMaofPlaceOrderCallback
                                     );
 			
             menuMarketSim.AddCommand("c",
                                     "Cancel order. Usage: c <securityId>",
-                                    "Cancels previously placed order",
+                                    "Cancels previously placed order. "+"Security identifier can be a unique number, \n"+
+			                         "or things like 'C1800Oct', 'call 1800 Oct', 'call1800Oct', etc.  ",
                                     debugMarketSimulationMaofCancelOrderCallback
                                     );
 			#endregion;
