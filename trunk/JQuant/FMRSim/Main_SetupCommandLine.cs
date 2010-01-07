@@ -1030,7 +1030,7 @@ namespace JQuant
 
 
             // are there three and only three numbers in the command line ?
-            const string patternNumbers = ".+ +[0-9]+ +.+[0-9]+ +[0-9]+";
+            const string patternNumbers = ".+[0-9]+.+[0-9]+ +[0-9]+";
             System.Text.RegularExpressions.Regex regexNumbers = new System.Text.RegularExpressions.Regex(patternNumbers);
             System.Text.RegularExpressions.MatchCollection matches = regexNumbers.Matches(cmdName);
             if (matches.Count != 1)
