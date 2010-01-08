@@ -996,6 +996,18 @@ namespace JQuant
 		
         protected void placeOrderCallback(int id, MarketSimulation.ReturnCode errorCode, int price, int quantity)
         {
+            MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
+            string optionName = option.GetName();
+            if (errorCode != MarketSimulation.ReturnCode.NoError)
+            {
+                System.Console.WriteLine("Order {1} id {2} price {3} quantity {4} failed on {5}", 
+                                         optionName, id, price, quantity, errorCode.ToString());
+            }
+            else
+            {
+                System.Console.WriteLine("Order {1} id {2} price {3} quantity {4} got fill", 
+                                         optionName, id, price, quantity);
+            }
         }
         
         protected void debugMarketSimulationMaofPlaceOrderCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
@@ -1065,7 +1077,8 @@ namespace JQuant
                 transaction = TransactionType.SELL;
             }
             MarketSimulation.ReturnCode errorCode;
-            res = marketSimulationMaof.PlaceOrder(id, limitPrice, quantity, transaction, placeOrderCallback, out errorCode);
+            MarketSimulation.ISystemLimitOrder order = marketSimulationMaof.CreateOrder(id, limitPrice, quantity, transaction, placeOrderCallback);
+            res = marketSimulationMaof.PlaceOrder(order, out errorCode);
             if (!res)
             {
                 iWrite.WriteLine("Failed to place order error="+errorCode);
