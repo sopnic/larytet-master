@@ -194,6 +194,11 @@ namespace MarketSimulation
         /// </summary>
         public delegate void OrderCallback(int id, ReturnCode errorCode, int price, int quantity);
 
+        /// <summary>
+        /// Market simulation will call this method if and when any change in the security added to
+        /// the watchlist
+        /// </summary>
+        public delegate void WatchlistCallback(MarketData md);
 
         /// <summary>
         /// There are two sources of the orders placed by the trading algorithm
@@ -1141,7 +1146,11 @@ namespace MarketSimulation
             fsm.orderBookBid.Update(marketData);
         }
 
-        protected int orderId;
+        /// <summary>
+        /// Start not from zero - looks better in  print 
+        /// </summary>
+        protected int orderId = 111;
+        
         protected int GenerateOrderId()
         {            
             int res;
@@ -1173,6 +1182,7 @@ namespace MarketSimulation
         /// Place a system order. First checks for the possibility of immediate fill,
         /// if not possible - places it to the limit order book.
         /// Currently only limit ordres are supported (suitable for maof options).
+        /// In the future child class MarketSimulationMaof will provide API which calls TaskBarLibSim
         /// </summary>
         /// <returns>
         /// A <see cref="System.Boolean"/>
@@ -1279,6 +1289,22 @@ namespace MarketSimulation
 
         }
 
+        /// <summary>
+        /// Small thread which notifies application when a change for security added to the
+        /// watch list. Mainly debug 
+        /// </summary>
+        protected class WatchThread : JQuant.MailboxThread<MarketData>
+        {
+            public WatchThread()
+                : base("msWatch", 100)
+            {
+            }
+
+            protected override void HandleMessage(MarketData md)
+            {
+            }
+        }
+        
         /// <summary>
         /// Called from CLI to display counters and debug info.
         /// Returns the current state of the limit order book.
