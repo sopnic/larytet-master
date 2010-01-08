@@ -32,6 +32,23 @@ namespace MarketSimulation
         PartialFill
     };
 
+    /// <summary>
+    /// I need a public API and I do not want to expose any details of LimitOrder
+    /// Application will use objects of this type to place and cancel orders
+    /// </summary>
+    public interface ISystemLimitOrder
+    {
+        /// <summary>
+        /// unique ID of the order
+        /// This field is provided by the application and ignored by the simulation
+        /// </summary>
+        int Id
+        {
+            set;
+            get;
+        }
+    }
+    
     public class OrderPair : ICloneable
     {
 		public OrderPair(int price, int size)
@@ -184,14 +201,14 @@ namespace MarketSimulation
         /// - non-system orders, placed internally (by market simulation itself), 
         ///   based on the order book updates from the log
         /// </summary>
-        protected class LimitOrder : JQuant.LimitOrderBase
+        protected class LimitOrder : JQuant.LimitOrderBase, ISystemLimitOrder
         {
             /// <summary>
             /// Order is placed by the system (algorithm)
             /// </summary>
-            public LimitOrder(int id, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
+            public LimitOrder(int security, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
             {
-                Init(id, price, quantity, transaction, callback);
+                Init(security, price, quantity, transaction, callback);
             }
 
             /// <summary>
@@ -217,9 +234,9 @@ namespace MarketSimulation
             /// <param name="quantity">order's quantity</param>
             /// <param name="transaction">buy or sell</param>
             /// <param name="callback">callback method </param>
-            protected void Init(int id, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
+            protected void Init(int security, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
             {
-                this.id = id;
+                this.security = security;
                 this.callback = callback;
                 this.Price = price;
                 this.Quantity = quantity;
@@ -243,8 +260,13 @@ namespace MarketSimulation
             /// unique ID of the order
             /// This field is provided by the application and ignored by the simulation
             /// </summary>
-            public int id;
+            public int Id
+            {
+                set;
+                get;
+            }
 
+            public int security;
 
             /// <summary>
             /// method to call when the order status changes
@@ -434,7 +456,7 @@ namespace MarketSimulation
                                 fillSize = lo.Quantity;
                                 // lo.UpdateQuantity(lo.Quantity - fillSize);
                                 // i have to skip the node in the list, but at this point i print error and remove the entry 
-                                System.Console.WriteLine(ShortDescription() + " Don't know to hanle partial fills order " + lo.id);
+                                System.Console.WriteLine(ShortDescription() + " Don't know to hanle partial fills order " + lo.Id);
                                 orders.RemoveFirst();
                                 // notify upper layer that the order got fill
                                 fillOrder(this, lo, fillSize);
@@ -480,7 +502,7 @@ namespace MarketSimulation
                     }
                     else
                     {
-                        System.Console.WriteLine(ShortDescription() + "Can't remove order " + order.id + ". Not found in the list");
+                        System.Console.WriteLine(ShortDescription() + "Can't remove order " + order.Id + ". Not found in the list");
                     }
                 }
             }
@@ -896,7 +918,7 @@ namespace MarketSimulation
                 // book of bids for the sell order
                 if (this.transaction == orderTransaction)
                 {
-                    System.Console.WriteLine(ShortDescription() + " Check fill for order " + order.id + " " + order.Transaction);
+                    System.Console.WriteLine(ShortDescription() + " Check fill for order " + order.Id + " " + order.Transaction);
                     return false;
                 }
 
@@ -1119,6 +1141,34 @@ namespace MarketSimulation
             fsm.orderBookBid.Update(marketData);
         }
 
+        protected int orderId;
+        protected int GenerateOrderId()
+        {            
+            int res;
+            
+            lock (this)
+            {
+                res = orderId;
+                orderId++;
+            }
+            
+            return res;
+        }
+
+        /// <summary>
+        /// Use this method to create orders. Property ISystemLimitOrder.Id will contain unique order Id
+        /// </summary>
+        /// <returns>
+        /// A <see cref="ISystemLimitOrder"/>
+        /// </returns>
+        public ISystemLimitOrder CreateOrder(int security, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
+        {
+            LimitOrder lo = new LimitOrder(security, price, quantity, transaction, callback);
+            lo.Id = GenerateOrderId();
+
+            return lo;
+        }
+        
         /// <summary>
         /// Place a system order. First checks for the possibility of immediate fill,
         /// if not possible - places it to the limit order book.
@@ -1129,17 +1179,18 @@ namespace MarketSimulation
         /// Returns false on failure. Calling method will analyze errorCode to figure out 
         /// what went wrong with the order
         /// </returns>
-        public bool PlaceOrder(int security, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback, out ReturnCode errorCode)
+        public bool PlaceOrder(ISystemLimitOrder systemOrder, out ReturnCode errorCode)
         {
             bool res = false;
 
             do
             {
+                LimitOrder lo = (LimitOrder)systemOrder;
 				object o;
 				
 				lock (securities)
 				{
-	                o = securities[security];
+	                o = securities[lo.security];
 				}
 
                 if (o == null)
@@ -1150,10 +1201,9 @@ namespace MarketSimulation
 
                 FSM fsm = (FSM)o;
                 OrderBook orderBook;
-                if (transaction == JQuant.TransactionType.SELL) orderBook = fsm.orderBookAsk; // sell order - book of asks
+                if (lo.Transaction == JQuant.TransactionType.SELL) orderBook = fsm.orderBookAsk; // sell order - book of asks
                 else orderBook = fsm.orderBookBid;  // this is buy order - books of bids
 
-                LimitOrder lo = new LimitOrder(security, price, quantity, transaction, callback);
 
                 // maybe i can get fill immediately?
                 bool haveFill = orderBook.CheckImmediateFill(lo);
@@ -1224,7 +1274,7 @@ namespace MarketSimulation
 
             protected override void HandleMessage(LimitOrder lo)
             {
-                lo.callback(lo.id, ReturnCode.Fill, lo.Price, lo.Quantity);
+                lo.callback(lo.Id, ReturnCode.Fill, lo.Price, lo.Quantity);
             }
 
         }
