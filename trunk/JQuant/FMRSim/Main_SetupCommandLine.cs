@@ -370,7 +370,6 @@ namespace JQuant
 		{
 			System.Text.RegularExpressions.Regex regex;
 			groups = null;
-			bool res = false;
 			matchesCount = 0;
 			
 			regex = new System.Text.RegularExpressions.Regex(pattern);
@@ -419,7 +418,6 @@ namespace JQuant
 		protected static string convertBnoName(string BNO_NAME_E)
 		{
 			const string patternOption = MarketSimulationMaof.BNO_NAME_PATTERN_OPTION;
-            System.Text.RegularExpressions.Regex regexOption = new System.Text.RegularExpressions.Regex(patternOption);
             
 			System.Text.RegularExpressions.GroupCollection groups;
 			int matchesCount;
@@ -428,8 +426,6 @@ namespace JQuant
 			
 			if (matchesCount == 1)
 			{
-				System.Text.RegularExpressions.Group group = groups[1];
-				
 				string putcall = groups[1].Captures[0].ToString();
 				string strike = groups[2].Captures[0].ToString();
 				string month = groups[3].Captures[0].ToString();
@@ -503,7 +499,6 @@ namespace JQuant
 				
 				if (matchesCount == 1)
 				{
-					System.Text.RegularExpressions.Group group = groups[1];
 					string putcall = groups[1].Captures[0].ToString(); // group[0] is reserved for the whole match
 					string strike = groups[2].Captures[0].ToString();
 					string month = groups[3].Captures[0].ToString();					
@@ -530,7 +525,7 @@ namespace JQuant
                 GetMatchGroups(pattern3, text, out groups, out matchesCount);
 				if (matchesCount > 0)
 				{
-					string digits = groups[1].Captures[0].ToString(); // group[0] is reserved for the whole match
+					string digits = groups[0].Captures[0].ToString(); // group[0] is reserved for the whole match
 					int idxFirst = idNamesStr.IndexOf(digits);
 					int idxSecond = idNamesStr.LastIndexOf(digits);
 					string firstMatch = idNamesStr.Substring(idxFirst, idNamesStr.IndexOf(" ", idxFirst)-idxFirst);
@@ -664,7 +659,6 @@ namespace JQuant
 
             foreach (int id in ids)
             {
-				MarketSimulation.MarketData md = marketSimulationMaof.GetSecurity(id);
 				MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
                 System.Collections.ArrayList values = new System.Collections.ArrayList();
 
@@ -954,10 +948,6 @@ namespace JQuant
 
         protected void debugMarketSimulationMaofTraceCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
-            int[] ids = marketSimulationMaof.GetSecurities();   //get the list of securities
-			int[] columns = new int[0];
-			bool firstLoop = true;
-			
             if (cmdArguments.Length < 2)
             {
                 iWrite.WriteLine("Security ID is required");
