@@ -797,14 +797,14 @@ namespace JQuant
             }
         }
         
-		protected string OrderPair2String(MarketSimulation.OrderPair op, int columnSize)
+		protected static string OrderPair2String(MarketSimulation.OrderPair op, int columnSize)
 		{
 		    string res = "" + op.price + ":" + op.size + " ";
 			res = OutputUtils.FormatField(res, columnSize);
 			return res;
 		}
         
-		protected string OrderBook2String(MarketSimulation.OrderPair[] book, int columnSize)
+		protected static string OrderBook2String(MarketSimulation.OrderPair[] book, int columnSize)
 		{
 			string res = "";
 			
@@ -983,15 +983,79 @@ namespace JQuant
 			marketSimulationMaof.EnableTrace(securityId, enable);
 		}
 
+
+        public class WatchlistCallback
+        {
+            public WatchlistCallback(IWrite iWrite)
+            {
+                this.iWrite = iWrite;
+            }
+            
+            /// <summary>
+            /// called by MarketSimulation when a change is in the status of the security 
+            /// </summary>
+            public void callback(MarketSimulation.MarketData md)
+            {
+                int id = md.id;
+                MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
+                string optionName = option.GetName();
+    
+                // print everything out - name, bids, asks
+                MarketSimulation.OrderPair[] bids = md.bid;
+                MarketSimulation.OrderPair[] asks = md.ask;
+    
+                System.Collections.ArrayList values = new System.Collections.ArrayList();
+                int[] columns = {8, 12, 6, 6, 30, 30};
+    
+                values.Add(id);
+                values.Add(optionName);
+                values.Add(md.lastTrade);
+                values.Add(md.dayVolume);
+                values.Add(OrderBook2String(bids, 9));
+                values.Add(OrderBook2String(asks, 9));
+    
+                CommandLineInterface.printValues(iWrite, values, columns);
+            }
+
+            protected IWrite iWrite;
+        }
+
+        protected WatchlistCallback watchlistCallback;
         protected void debugMarketSimulationMaofWatchCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
+            if (watchlistCallback == null) // create a watchlist callback in the first call
+            {
+                watchlistCallback = new WatchlistCallback(iWrite);
+            }
             if (marketSimulationMaof == default(MarketSimulationMaof)) // check if there active simulation to get data from 
             {                                                           
                 iWrite.WriteLine("No active market simulations.");
                 return;
             }
-            
-            iWrite.WriteLine("Not supported");
+            if (cmdArguments.Length < 3)
+            {
+                iWrite.WriteLine("At least two arguments are required");
+                return;
+            }
+            int id;
+            bool res = FindSecurity(cmdName, out id);
+            if (!res)
+            {
+                iWrite.WriteLine("Unknown security in the command "+cmdName);
+                return;
+            }
+
+            // first argument is add or rmv
+            string addRmv = cmdArguments[1].ToString();
+            addRmv = addRmv.ToUpper();
+            if (addRmv.CompareTo("ADD") == 0)
+            {
+                marketSimulationMaof.AddWatch(id, watchlistCallback.callback);
+            }
+            else
+            {
+                marketSimulationMaof.RemoveWatch(id);
+            }
 		}
 		
         protected void placeOrderCallback(int id, MarketSimulation.ReturnCode errorCode, int price, int quantity)

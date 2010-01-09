@@ -198,7 +198,7 @@ namespace MarketSimulation
         /// Market simulation will call this method if and when any change in the security added to
         /// the watchlist
         /// </summary>
-        public delegate void WatchlistCallback(MarketData md);
+        public delegate void WatchlistCallback(MarketSimulation.MarketData md);
 
         /// <summary>
         /// There are two sources of the orders placed by the trading algorithm
@@ -311,6 +311,8 @@ namespace MarketSimulation
                 this.marketData = marketData;
                 orderBookAsk = new OrderBook(marketData.id, JQuant.TransactionType.SELL, fillOrderCallback);
                 orderBookBid = new OrderBook(marketData.id, JQuant.TransactionType.BUY, fillOrderCallback);
+                watchlistCallback = null;
+                watchEnable = false;
             }
 
             /// <summary>
@@ -327,6 +329,13 @@ namespace MarketSimulation
 			/// I keep reference to the latest update for debug
 			/// </summary>
 			public MarketData marketData;
+
+            /// <summary>
+            /// if not null this security added to the watchlist
+            /// every time there is an update i will call application callback
+            /// </summary>
+            public WatchlistCallback watchlistCallback;
+            public bool watchEnable;
         }
 
 
@@ -1026,8 +1035,12 @@ namespace MarketSimulation
             // create hash table where all securities are stored
             securities = new System.Collections.Hashtable(200);
 			enableTrace = new System.Collections.Hashtable(200);
+            
             filledOrdersThread = new FilledOrdersThread();
             filledOrdersThread.Start();
+
+            watchThread = new WatchThread();
+            watchThread.Start();
         }
 		
 		
@@ -1038,8 +1051,12 @@ namespace MarketSimulation
 		/// </summary>
 		public void Dispose()
 		{
-            filledOrdersThread.Stop();  //Stop() causes MailboxThread.Dispose()
+            filledOrdersThread.Stop();  // stop the helper threads - 
+            watchThread.Stop();         // Stop() calls MailboxThread.Dispose()
+
+            // help the grabage collector to free large data blocks faster
 			filledOrdersThread = null;
+            watchThread = null;
 			securities = null; 
 		}
 
@@ -1103,6 +1120,7 @@ namespace MarketSimulation
 						((FSM)fsm).orderBookAsk.EnableTrace(true);
 						((FSM)fsm).orderBookBid.EnableTrace(true);
 					}
+
                 }
             }
 
@@ -1144,6 +1162,12 @@ namespace MarketSimulation
 			
             fsm.orderBookAsk.Update(marketData);
             fsm.orderBookBid.Update(marketData);
+
+            // notify application on change
+            if (fsm.watchEnable)
+            {
+                watchThread.Send(fsm);
+            }
         }
 
         /// <summary>
@@ -1293,15 +1317,16 @@ namespace MarketSimulation
         /// Small thread which notifies application when a change for security added to the
         /// watch list. Mainly debug 
         /// </summary>
-        protected class WatchThread : JQuant.MailboxThread<MarketData>
+        protected class WatchThread : JQuant.MailboxThread<FSM>
         {
             public WatchThread()
                 : base("msWatch", 100)
             {
             }
 
-            protected override void HandleMessage(MarketData md)
+            protected override void HandleMessage(FSM fsm)
             {
+                fsm.watchlistCallback(fsm.marketData);
             }
         }
         
@@ -1379,7 +1404,60 @@ namespace MarketSimulation
 					
 			return res;
 		}
-		
+
+        /// <summary>
+        /// Add security to the watch list 
+        /// </summary>
+        /// <param name="securityId">
+        /// A <see cref="System.Int32"/>
+        /// </param>
+        /// <param name="callback">
+        /// A <see cref="MarketSimulation.WatchlistCallback"/>
+        /// MarketSimulation will call the application hook asynchronously when any update
+        /// in the security state
+        /// </param>
+        /// <returns>
+        /// A <see cref="System.Boolean"/>
+        /// Return true id success
+        /// </returns>
+        public bool AddWatch(int securityId, MarketSimulation.Core.WatchlistCallback callback)
+        {
+            bool res = false;
+            object o = securities[securityId];
+            
+            if (o != null)
+            {
+                FSM fsm = (FSM)o;
+                fsm.watchlistCallback = callback;
+                fsm.watchEnable = true;
+                res = true;
+            }
+                    
+            return res;
+        }
+
+        /// <summary>
+        /// Remove security from the watch list. Because callbacks are asynchronous and done fom a
+        /// separate thread application can get one or more callback even after call to RemoveWatch()
+        /// </summary>
+        public bool RemoveWatch(int securityId)
+        {
+            bool res = false;
+            object o = securities[securityId];
+            
+            if (o != null)
+            {
+                FSM fsm = (FSM)o;
+                // i do not set fsm.watchlistCallback to null because a separate thread can try to call
+                // the method. This is up to application to remember that RemoveWatch is not an immediate
+                // operation
+                fsm.watchEnable = false;
+                res = true;
+            }
+                    
+            return res;
+        }
+        
 		public void EnableTrace(int securityId, bool enable)
 		{
             do
@@ -1459,6 +1537,8 @@ namespace MarketSimulation
         /// </summary>
         protected System.Collections.Hashtable securities;
         protected FilledOrdersThread filledOrdersThread;
+        protected WatchThread watchThread;
+        
         /// <summary>
         /// total number of lines (events) read from the historical log
         /// </summary>
