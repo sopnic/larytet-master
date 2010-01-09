@@ -371,6 +371,7 @@ namespace JQuant
 			System.Text.RegularExpressions.Regex regex;
 			groups = null;
 			matchesCount = 0;
+            text = text.ToUpper();
 			
 			regex = new System.Text.RegularExpressions.Regex(pattern);
 			System.Text.RegularExpressions.MatchCollection matches = regex.Matches(text);
@@ -480,7 +481,7 @@ namespace JQuant
 			// look in the command for regexp jan|feb)($| +)' first
 			// Other possibilities are: ' +([0-9]+) *([c,p]) *(jan|feb)($| +)'
 			// the final case is any set of digits ' +([0-9]+)($| +)'
-			const string monthPattern = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec";
+            const string monthPattern = "JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC";            
             const string putcallPattern = "c|p|C|P|call|put|CALL|PUT|Call|Put]";
 			const string pattern1 = " +("+putcallPattern+") *([0-9]+) *("+monthPattern+")($| +)";
 			const string pattern2 = " +([0-9]+) *("+putcallPattern+") *("+monthPattern+")($| +)";
