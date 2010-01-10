@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name     Litportal fix
+// @name     Litportal HTML Only
 // @description Fixes litportal.ru
 // @include  http://www.litportal.ru/genre*/author*/read/*
 // ==/UserScript==
@@ -12,6 +12,12 @@ function EmptyFunction()
 function fixWindowGetSelection()
 {
 	unsafeWindow.LockSel = EmptyFunction;
+
+	// remove event handlers
+//	document.onmousedown= myClick;
+	document.ondragstart=EmptyFunction;
+	document.onselectstart = EmptyFunction;
+	document.ontextmenu = EmptyFunction;
 }
 
 var waitForTextCount = 0;
@@ -29,7 +35,7 @@ function unprotect(text)
 	pageHtml = pageHtml.replace(new RegExp('<(h[1-6]|div|p)','gi'), '\n<$1');
 	pageHtml = pageHtml.replace(new RegExp('[ \t]*align="justify"','gi'), '');
 
-//	GM_log("Text1="+text.innerHTML);
+	text.innerHTML = pageHtml;
 	
 	return text;
 }
@@ -37,7 +43,7 @@ function unprotect(text)
 unsafeWindow.waitForText = function() 
 {
 	var text = document.getElementById("page_text");
-	if (text == null) {
+	if ( (text == null) || (text.innerHTML.length < 100 ) ) {
 		++waitForTextCount;
 		if (waitForTextCount < 200) {
 			window.setTimeout("waitForText()", 200);
@@ -53,17 +59,23 @@ unsafeWindow.waitForText = function()
 var Links = new Array();
 function findLinks()
 {
-	// <a class="main" href="http://www.litportal.ru/genre16/author4033/read/page/10/book17736.html">10</a>	
+	// i am looking for links like
+	// <a class="main" href="http://www.litportal.ru/genre16/author4033/read/page/2/book17736.html">2</a>	
 	var allLinks = document.evaluate("//a[@href]", document, null,
 			XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-	regExp = new RegExp("litportal.{1}ru/genre[0-9]+/author[0-9]+/read/page/[0-9]+/book[0-9]+", "gi");
+
+	var regExp = new RegExp("litportal.{1}ru/genre[0-9]+/author[0-9]+/read/page/[0-9]+/book[0-9]+", "gi");
+	var regExpPage = new RegExp("(page/)([0-9]+)", "gi");
 	for (var i = 0; i < allLinks.snapshotLength; i++) {
 		var link = allLinks.snapshotItem(i);
 		href = link.getAttribute("href");
+		pageMatch = href.match(regExpPage);
 		if (href.match(regExp)) {
-			Links.push(link);
+//			GM_log("pageMatch="+pageMatch[0]+" href="+href);
+			Links[ (pageMatch[0]) ] = link;
 		}
 	}
+	Links.sort();
 }
 
 function cleanUp() {
@@ -75,7 +87,7 @@ function cleanUp() {
 	}
 	document.body.style.background = "white";
 	document.body.style.color = "black";
-//	document.innerHtml = "";
+
 }
 
 function modifyPage(text)
@@ -89,16 +101,23 @@ function modifyPage(text)
 		cleanUp();
 	}
 	var count = 1;
-	while (Links.length > 0)
-	{
-		var link = Links.pop();
+	var linksText = "";
+	regExp = new RegExp("page/[0-9]+", "gi");
 
-//		GM_log("Link="+link+", href="+href);
-		// document.addChild(link);
+	for (var link in Links)
+	{
+		href = Links[link].getAttribute("href");
+		var m = href.match(regExp);
+		if (m != null) {
+			linksText += '<a href="' + href + '">'+m[0]+'</a> &nbsp; &nbsp; ';
+		}
 		count++;
 	}
-	text = unprotect(text);//	GM_log("Text2="+text.innerHTML);
-//	document.body.parent.addChild(text);
+
+	linksText += ""
+	text = unprotect(text);	cleanUp();
+	document.write("<head></head>"+"<body>"+linksText+"<br>"+text.innerHTML+"</body>");
+	document.body.style.fontSize = "12px";
 }
 
 // Minor fix first
