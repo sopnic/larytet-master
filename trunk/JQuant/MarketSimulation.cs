@@ -723,7 +723,7 @@ namespace MarketSimulation
                     sizeSystem += order.Quantity;
                 }
 
-                // add order to the queue
+                // add order to the queue - existing queue or one just created 
                 orderQueue.AddOrder(order);
             }
 

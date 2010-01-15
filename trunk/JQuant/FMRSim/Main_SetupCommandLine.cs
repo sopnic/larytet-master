@@ -527,15 +527,16 @@ namespace JQuant
 				if (matchesCount > 0)
 				{
 					string digits = groups[0].Captures[0].ToString(); // group[0] is reserved for the whole match
-					int idxFirst = idNamesStr.IndexOf(digits);
+					int idxFirst = idNamesStr.IndexOf(digits);        // idNamesStr is a string containing all existing Ids followed by blank
 					int idxSecond = idNamesStr.LastIndexOf(digits);
-					string firstMatch = idNamesStr.Substring(idxFirst, idNamesStr.IndexOf(" ", idxFirst)-idxFirst);
-					string secondMatch = idNamesStr.Substring(idxSecond, idNamesStr.IndexOf(" ", idxSecond)-idxSecond);
+					string firstMatch = idNamesStr.Substring(idxFirst, idNamesStr.IndexOf(" ", idxFirst+1)-idxFirst);
+					string secondMatch = idNamesStr.Substring(idxSecond, idNamesStr.IndexOf(" ", idxSecond+1)-idxSecond);
 					if (idxFirst != idxSecond)
 					{
 						System.Console.WriteLine("I have at least two matches '"+firstMatch+"' and '"+secondMatch+"'");
 						break;
 					}
+                    System.Console.WriteLine("firstMatch={0},secondMatch={1},digits={2}",firstMatch,secondMatch,digits);
 					// i got a single match - convert to ID
 					id = Int32.Parse(firstMatch);
 					res = true;
