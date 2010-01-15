@@ -996,7 +996,6 @@ namespace JQuant
                 MarketSimulation.OrderPair[] asks = md.ask;
     
                 System.Collections.ArrayList values = new System.Collections.ArrayList();
-                int[] columns = {8, 12, 6, 6, 30, 30};
     
                 values.Add(id);
                 values.Add(optionName);
@@ -1005,23 +1004,71 @@ namespace JQuant
                 values.Add(OrderBook2String(bids, 9));
                 values.Add(OrderBook2String(asks, 9));
     
-                CommandLineInterface.printValues(iWrite, values, columns);
+                CommandLineInterface.printValues(iWrite, values, this.columns);
             }
 
+            public void printLegend()
+            {
+                System.Collections.ArrayList values = new System.Collections.ArrayList();
+    
+                values.Add("Id");
+                values.Add("Name");
+                values.Add("LastTradeSize");
+                values.Add("DayVolume");
+                values.Add("Bids");
+                values.Add("Asks");
+                
+                CommandLineInterface.printValues(iWrite, values, this.columns);
+            }
+
+            public void printList()
+            {
+                int[] list = marketSimulationMaof.WatchList();
+                for (int i = 0;i < list.Length;i++)
+                {
+                    int id = list[i];
+                    MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
+                    string optionName = option.GetName();
+                    System.Collections.ArrayList values = new System.Collections.ArrayList();
+                    values.Add(id);
+                    values.Add(optionName);
+                    CommandLineInterface.printValues(iWrite, values, this.columns);
+                }
+            }
             protected IWrite iWrite;
+            protected int[] columns = {8, 12, 6, 6, 30, 30};
         }
 
         protected WatchlistCallback watchlistCallback;
         protected void debugMarketSimulationMaofWatchCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
-            if (watchlistCallback == null) // create a watchlist callback in the first call
-            {
-                watchlistCallback = new WatchlistCallback(iWrite);
-            }
             if (marketSimulationMaof == default(MarketSimulationMaof)) // check if there active simulation to get data from 
             {                                                           
                 iWrite.WriteLine("No active market simulations.");
                 return;
+            }
+            if (watchlistCallback == null) // create a watchlist callback in the first call
+            {
+                watchlistCallback = new WatchlistCallback(iWrite);
+            }
+            if (cmdArguments.Length == 2)
+            {
+                // argument is legend or list
+                string legendList = cmdArguments[1].ToString();
+                legendList = legendList.ToUpper();
+                if (legendList.CompareTo("LEGEND") == 0)
+                {
+                    watchlistCallback.printLegend();
+                }
+                else if (legendList.CompareTo("LIST") == 0)
+                {
+                    watchlistCallback.printList();
+                }
+                else
+                {
+                    iWrite.WriteLine("Use commands legend or list");
+                }
+                return ;
             }
             if (cmdArguments.Length < 3)
             {
@@ -1053,15 +1100,15 @@ namespace JQuant
         {
             MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
             string optionName = option.GetName();
-            if (errorCode != MarketSimulation.ReturnCode.NoError)
+            if (errorCode == MarketSimulation.ReturnCode.Fill)
             {
-                System.Console.WriteLine("Order {1} id {2} price {3} quantity {4} failed on {5}", 
-                                         optionName, id, price, quantity, errorCode.ToString());
-            }
-            else
-            {
-                System.Console.WriteLine("Order {1} id {2} price {3} quantity {4} got fill", 
+                System.Console.WriteLine("Order {0} id {1} quantity {3} got fill at price {2}", 
                                          optionName, id, price, quantity);
+            }
+            else 
+            {
+                System.Console.WriteLine("Order {0} id {1} price {2} quantity {3} failed on {4}", 
+                                         optionName, id, price, quantity, errorCode.ToString());
             }
         }
         
@@ -2189,8 +2236,9 @@ namespace JQuant
 
 			
             menuMarketSim.AddCommand("w",
-                                    "Add security to the watch list. Usage: w [add|rmv] <securityId> ",
-                                    "Add (remove) specific security to (from) watch list. "+"Security identifier can be a unique number, \n"+
+                                    "Add security to the watch list. Usage: w [add|rmv|legend|list] <securityId> ",
+                                    "Add (remove) specific security to (from) watch list, pint list of watched securities.\n"
+                                     +"Security identifier can be a unique number, \n"+
 			                         "or things like 'C1800Oct', 'call 1800 Oct', 'call1800Oct', etc.  ",
                                     debugMarketSimulationMaofWatchCallback
                                     );

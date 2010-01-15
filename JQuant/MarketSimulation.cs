@@ -271,6 +271,12 @@ namespace MarketSimulation
                 get;
             }
 
+            public int FillPrice
+            {
+                set;
+                get;
+            }
+
             public int security;
 
             /// <summary>
@@ -927,28 +933,49 @@ namespace MarketSimulation
             public bool CheckImmediateFill(LimitOrder order)
             {
                 JQuant.TransactionType orderTransaction = order.Transaction;
+                bool res = false;
 
                 // book of asks for the buy order
                 // book of bids for the sell order
                 if (this.transaction == orderTransaction)
                 {
-                    System.Console.WriteLine(ShortDescription() + " Check fill for order " + order.Id + " " + order.Transaction);
-                    return false;
+                    System.Console.WriteLine(ShortDescription() + " Check fill for order " + order.Id + " " + order.Transaction + " at " +
+                                             order.Price +  " in the book " + BookTypeName());
                 }
-
-                if (orderTransaction == JQuant.TransactionType.SELL) // check if there is a higher or equal bid 
+                else if (orderTransaction == JQuant.TransactionType.SELL) // check if there is a higher or equal bid 
                 {
-                    return (order.Price <= marketData.bid[0].price);
+                    if (order.Price <= marketData.bid[0].price)
+                    {
+                        res = true;
+                        order.FillPrice = marketData.bid[0].price;
+                    }
                 }
                 else // buy order - check if there is lower or equal ask
                 {
-                    return (order.Price >= marketData.ask[0].price);
+                    if (order.Price >= marketData.ask[0].price)
+                    {
+                        res = true;
+                        order.FillPrice = marketData.ask[0].price;
+                    }
                 }
+                return res;
+            }
+
+            /// <summary>
+            /// Return "BID" or "ASK"
+            /// </summary>
+            protected string BookTypeName()
+            {
+                if (this.transaction == JQuant.TransactionType.SELL)
+                {
+                    return "ASK";
+                }
+                return "BID";
             }
 
             protected string ShortDescription()
             {
-                string sd = "Order book " + this.securityId + " " + this.transaction.ToString() + " ";
+                string sd = "Order book " + this.securityId + " " + BookTypeName() + " ";
                 return sd;
             }
 
@@ -1234,13 +1261,22 @@ namespace MarketSimulation
                 }
 
                 FSM fsm = (FSM)o;
-                OrderBook orderBook;
-                if (lo.Transaction == JQuant.TransactionType.SELL) orderBook = fsm.orderBookAsk; // sell order - book of asks
-                else orderBook = fsm.orderBookBid;  // this is buy order - books of bids
+                OrderBook orderBook, orderBookImmediateFill;
+                
+                if (lo.Transaction == JQuant.TransactionType.SELL)
+                {
+                    orderBook = fsm.orderBookAsk; // sell order - book of asks
+                    orderBookImmediateFill = fsm.orderBookBid;
+                }
+                else
+                {
+                    orderBook = fsm.orderBookBid;  // this is buy order - books of bids
+                    orderBookImmediateFill = fsm.orderBookAsk;
+                }
 
 
                 // maybe i can get fill immediately?
-                bool haveFill = orderBook.CheckImmediateFill(lo);
+                bool haveFill = orderBookImmediateFill.CheckImmediateFill(lo);
                 if (haveFill)
                 {
                     filledOrdersThread.Send(lo);
@@ -1308,7 +1344,7 @@ namespace MarketSimulation
 
             protected override void HandleMessage(LimitOrder lo)
             {
-                lo.callback(lo.Id, ReturnCode.Fill, lo.Price, lo.Quantity);
+                lo.callback(lo.Id, ReturnCode.Fill, lo.FillPrice, lo.Quantity);
             }
 
         }
@@ -1455,6 +1491,30 @@ namespace MarketSimulation
                 res = true;
             }
                     
+            return res;
+        }
+
+        /// <summary>
+        /// Return list of securities added to watch
+        /// </summary>
+        public int[] WatchList()
+        {
+            System.Collections.Generic.List<int> list = new System.Collections.Generic.List<int>(securities.Count);
+            System.Collections.ICollection values;
+            lock (securities)
+            {
+                values = securities.Values;
+            }
+            foreach (object o in values)
+            {
+                FSM fsm = (FSM)o;
+                if (fsm.watchEnable)
+                {
+                    list.Add(fsm.marketData.id);
+                }
+            }
+            
+            int[] res = list.ToArray();
             return res;
         }
         
