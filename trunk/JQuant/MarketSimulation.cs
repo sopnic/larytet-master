@@ -420,10 +420,11 @@ namespace MarketSimulation
             {
                 lock (orders)
                 {
+                    System.Console.WriteLine(ShortDescription()+ ": place order "+order.Transaction+" price="+order.Price+" system="+order.SystemOrder()+" placeInQ="+sizeTotal);
                     orders.AddLast(order);
                     countAddSystemOrder++;
                     sizeSystem += order.Quantity;
-                    sizeTotal += order.Quantity;
+                    // sizeTotal += order.Quantity;
                 }
             }
 
@@ -438,10 +439,10 @@ namespace MarketSimulation
                     counRemoveOrderTotal++;
 
                     // can I remove so many securities ?
-                    if (sizeTotal < quantity)
+                    if ((sizeTotal+sizeSystem) < quantity)
                     {
                         // System.Console.WriteLine(ShortDescription() + " Can't remove " + quantity + " from " + sizeTotal + " total");
-                        quantity = sizeTotal;
+                        quantity = (sizeTotal+sizeSystem);
                     }
 
                     // loop until quantity is removed or the list is empty
@@ -460,8 +461,7 @@ namespace MarketSimulation
                             int fillSize = Math.Min(quantity, lo.Quantity);  // can be partial fill - let upper layer handle this
                             // sizeSystem -= fillSize;
                             sizeSystem -= lo.Quantity; // no partial fills
-
-                            // add the order to the queue of filled orders 
+                            lo.FillPrice = price;
 
                             // if not partial fill - remove the order from the queue
                             if (fillSize >= lo.Quantity) //i got fill
@@ -469,7 +469,7 @@ namespace MarketSimulation
                                 orders.RemoveFirst();
                                 // notify upper layer (orderbook) that the order got fill
                                 fillOrder(this, lo, fillSize);
-								sizeTotal -= lo.Quantity;
+								// sizeTotal -= lo.Quantity;
                             }
                             else // this is partial fill - just update the quantity
                             {
@@ -480,7 +480,7 @@ namespace MarketSimulation
                                 orders.RemoveFirst();
                                 // notify upper layer that the order got fill
                                 fillOrder(this, lo, fillSize);
-								sizeTotal -= fillSize;
+								// sizeTotal -= fillSize;
                             }
                         }
                         else  // internal order
@@ -517,7 +517,7 @@ namespace MarketSimulation
                     if (node != null)
                     {
                         sizeSystem -= order.Quantity;
-                        sizeTotal -= order.Quantity;
+                        // sizeTotal -= order.Quantity;
                         orders.Remove(node);
                     }
                     else
@@ -534,7 +534,6 @@ namespace MarketSimulation
                 return sd;
             }
 
-            protected System.Collections.Generic.LinkedList<LimitOrder> orders;
 
             public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
             {
@@ -584,7 +583,12 @@ namespace MarketSimulation
             /// </summary>
             public int GetSize()
             {
-                return sizeTotal;
+                return (sizeTotal+sizeSystem);
+            }
+            
+            public bool ContainsSystemOrders()
+            {
+                return (sizeSystem > 0);
             }
 
             public int GetSizeInernal()
@@ -596,6 +600,8 @@ namespace MarketSimulation
             {
                 return price;
             }
+            
+            protected System.Collections.Generic.LinkedList<LimitOrder> orders;
 
             protected int price;
             protected int securityId;
@@ -712,19 +718,17 @@ namespace MarketSimulation
                     if (orderQueue == null)  // there is no such order queue  - create a new one 
                     {                        // and add it to the order book
                         orderQueue = new OrderQueue(this.securityId, price, this.transaction, FillOrderCallback);
-                        slots.Add(price, orderQueue);
 						if (enableTrace)
 						{
 							System.Console.WriteLine("OrderBook placeOrder add slot price="+order.Price);
 						}
-                    }
-					
+                        slots.Add(price, orderQueue);
+                    }					
+                    // add order to the queue - existing queue or one just created 
+                    orderQueue.AddOrder(order);
                     // i have a system order in the book. update counter
                     sizeSystem += order.Quantity;
                 }
-
-                // add order to the queue - existing queue or one just created 
-                orderQueue.AddOrder(order);
             }
 
             /// <summary>
@@ -733,6 +737,7 @@ namespace MarketSimulation
             /// </summary>
             protected void Update_trade(MarketData md)
             {
+                int tradePrice = md.lastTrade; 
                 int tradeSize = (md.dayVolume - marketData.dayVolume);
 				int totalToRemove = tradeSize;
                 if (tradeSize < 0)
@@ -755,7 +760,15 @@ namespace MarketSimulation
 						foreach (OrderQueue orderQueue in slots.Values)
 						{
 							int price = orderQueue.GetPrice();
-							
+
+                            if ((transaction == JQuant.TransactionType.BUY) && (tradePrice > price)) // i can't remove queues for
+                            {                                                                        //  which the last trade price is not good enough
+                                break;
+                            }
+                            if ((transaction == JQuant.TransactionType.SELL) && (tradePrice < price))
+                            {                                                                       
+                                break;
+                            }
 	                        int size0 = orderQueue.GetSize();  // get queue size
 	                        orderQueue.RemoveOrder(tradeSize); // remove the trade
 	                        int size1 = orderQueue.GetSize();  // get queue size
@@ -865,11 +878,17 @@ namespace MarketSimulation
 					// system orders
 					lock (slots)
 					{
+                        int bestQueuePrice = 0;
+                        if (slots.Count > 0)
+                        {
+                            OrderQueue bestQueue = slots.Values[0];
+                            bestQueuePrice = bestQueue.GetPrice();
+                        }
 						foreach (OrderQueue oq in slots.Values)
 						{
-							int systemOrders = oq.GetSize() - oq.GetSizeInernal();
+							bool containsSystemOrders = oq.ContainsSystemOrders();
 							int price = oq.GetPrice();
-							if (!touchedQueues.Contains(oq) && (systemOrders >= 0))
+							if (  (!containsSystemOrders) && (!touchedQueues.Contains(oq))  )
 							{
 								slots.Remove(price);
 								if (enableTrace)
@@ -879,15 +898,33 @@ namespace MarketSimulation
 									System.Console.WriteLine("New="+md.ToString());
 								}
 							}
-							else if (systemOrders > 0)
+							else if (containsSystemOrders)
 							{
-								System.Console.WriteLine(ShortDescription()+" OrderBook was not removed slot price="+price);
-								if (enableTrace)
-								{
-									System.Console.WriteLine("OrderBook remove slot price="+price);
-									System.Console.WriteLine("Cur="+marketData.ToString());
-									System.Console.WriteLine("New="+md.ToString());
-								}
+                                if ( (transaction == JQuant.TransactionType.BUY) && (price > bestQueuePrice) )// probably the whole order queue shifted
+                                {                                                                                // check if i have fill
+                                    oq.RemoveOrder(oq.GetSize());
+                                    slots.Remove(price);
+                                    if (enableTrace)
+                                    {
+                                        System.Console.WriteLine("OrderBook remove slot price="+price);
+                                        System.Console.WriteLine("Cur="+marketData.ToString());
+                                        System.Console.WriteLine("New="+md.ToString());
+                                    }
+                                }
+                                else if ( (transaction == JQuant.TransactionType.SELL) && (price < bestQueuePrice) )
+                                {                                                                       
+                                    oq.RemoveOrder(oq.GetSize());
+                                    slots.Remove(price);
+                                    if (enableTrace)
+                                    {
+                                        System.Console.WriteLine("OrderBook remove slot price="+price);
+                                        System.Console.WriteLine("Cur="+marketData.ToString());
+                                        System.Console.WriteLine("New="+md.ToString());
+                                    }
+                                }
+                                else
+                                {
+                                }
 							}
 						}
 					}

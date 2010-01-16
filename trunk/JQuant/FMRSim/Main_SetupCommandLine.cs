@@ -536,7 +536,7 @@ namespace JQuant
 						System.Console.WriteLine("I have at least two matches '"+firstMatch+"' and '"+secondMatch+"'");
 						break;
 					}
-                    System.Console.WriteLine("firstMatch={0},secondMatch={1},digits={2}",firstMatch,secondMatch,digits);
+                    // System.Console.WriteLine("firstMatch={0},secondMatch={1},digits={2}",firstMatch,secondMatch,digits);
 					// i got a single match - convert to ID
 					id = Int32.Parse(firstMatch);
 					res = true;
