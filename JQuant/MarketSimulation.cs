@@ -40,9 +40,35 @@ namespace MarketSimulation
     {
         /// <summary>
         /// unique ID of the order
-        /// This field is provided by the application and ignored by the simulation
         /// </summary>
         int Id
+        {
+            set;
+            get;
+        }
+
+        /// <summary>
+        /// unique ID of the security
+        /// </summary>
+        int SecurityId
+        {
+            set;
+            get;
+        }
+        
+        /// <summary>
+        /// limit price
+        /// </summary>
+        int Price
+        {
+            set;
+            get;
+        }
+        
+        /// <summary>
+        /// fill price
+        /// </summary>
+        int FillPrice
         {
             set;
             get;
@@ -171,7 +197,6 @@ namespace MarketSimulation
 
         // Aggregated trading data over the trading period (day)
         public int dayVolume;        //volume
-        //I removed dayTransactions, dayVolume alone can serve as new transaction indicator
     }
 
 
@@ -192,7 +217,7 @@ namespace MarketSimulation
         /// Market simulation will call this method if and when order state changes.
         /// Delegate method allows to place orders from different threads and state machines. 
         /// </summary>
-        public delegate void OrderCallback(int id, ReturnCode errorCode, int price, int quantity);
+        public delegate void OrderCallback(MarketSimulation.ReturnCode errorCode, ISystemLimitOrder lo, int quantity);
 
         /// <summary>
         /// Market simulation will call this method if and when any change in the security added to
@@ -241,7 +266,7 @@ namespace MarketSimulation
             /// <param name="callback">callback method </param>
             protected void Init(int security, int price, int quantity, JQuant.TransactionType transaction, OrderCallback callback)
             {
-                this.security = security;
+                this.SecurityId = security;
                 this.callback = callback;
                 this.Price = price;
                 this.Quantity = quantity;
@@ -277,7 +302,11 @@ namespace MarketSimulation
                 get;
             }
 
-            public int security;
+            public int SecurityId
+            {
+                set;
+                get;
+            }
 
             /// <summary>
             /// method to call when the order status changes
@@ -376,11 +405,11 @@ namespace MarketSimulation
             /// - list's tail is occupied by the system order
             /// - list's tail is occupied by non-sysem order (placed by algorithm)
             /// </summary>
-            public void AddOrder(int quantity)
+            public void AddOrder(int quantity, bool removeSystem)
             {
                 if (quantity < 0)
                 {
-                    RemoveOrder(-quantity); //System order cancellation?
+                    RemoveOrder(-quantity, removeSystem); //System order cancellation?
                     return;
                 }
                 // i am adding entries to the list and I have no idea how many threads
@@ -432,7 +461,7 @@ namespace MarketSimulation
             /// Remove specified number of securities from the head of the list
             /// This method handles case when a system order gets fill
             /// </summary>
-            public void RemoveOrder(int quantity)
+            public void RemoveOrder(int quantity, bool removeSystem)
             {
                 lock (orders)
                 {
@@ -454,7 +483,7 @@ namespace MarketSimulation
                     {
                         LimitOrder lo = orders.First.Value;
 
-                        if (lo.SystemOrder())
+                        if (removeSystem && lo.SystemOrder())
                         {
                             // quantity -= lo.Quantity;  - i am NOT going to do this. market does NOT see me
 
@@ -482,6 +511,10 @@ namespace MarketSimulation
                                 fillOrder(this, lo, fillSize);
 								// sizeTotal -= fillSize;
                             }
+                        }
+                        else if (!removeSystem && lo.SystemOrder())
+                        {
+                            break;  // keep system order in the head of list
                         }
                         else  // internal order
                         {
@@ -766,11 +799,11 @@ namespace MarketSimulation
                                 break;
                             }
                             if ((transaction == JQuant.TransactionType.SELL) && (tradePrice < price))
-                            {                                                                       
+                            {
                                 break;
                             }
 	                        int size0 = orderQueue.GetSize();  // get queue size
-	                        orderQueue.RemoveOrder(tradeSize); // remove the trade
+	                        orderQueue.RemoveOrder(tradeSize, true); // remove the trade
 	                        int size1 = orderQueue.GetSize();  // get queue size
 	
 	                        if (size1 == 0)  // if the queue empty - remove the queue
@@ -846,7 +879,7 @@ namespace MarketSimulation
                     {
 						if (slots.ContainsKey(mdPrice)) orderQueue = (OrderQueue)(slots[mdPrice]);
 					}
-					if (orderQueue != null)  // i have two cases - there is a slot for this price (typical) and ...
+					if (orderQueue != null)  // i have two cases - there is a slot for this price (typical) ...
 					{
 						int size_cur = orderQueue.GetSize();
 						
@@ -854,15 +887,15 @@ namespace MarketSimulation
 						// and add  the orders to the tail of the queue
 						// and remove from the head
 						// Method AddOrder() handles negative numbers too
-						orderQueue.AddOrder(mdSize-size_cur);
+						orderQueue.AddOrder(mdSize-size_cur, false);
 						
 						// add to the list of touched queues
 						touchedQueues.Add(orderQueue);
 					}
-					else  // there is no such slot - add a new slot
+					else                      // ... and there is no such slot - add a new slot
 					{
                         orderQueue = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
-						orderQueue.AddOrder(mdSize);
+						orderQueue.AddOrder(mdSize, false);
                         slots.Add(mdPrice, orderQueue);  // add newly created queue to the list of queues sorted by price
 						if (enableTrace)
 						{
@@ -902,25 +935,9 @@ namespace MarketSimulation
 							{
                                 if ( (transaction == JQuant.TransactionType.BUY) && (price > bestQueuePrice) )// probably the whole order queue shifted
                                 {                                                                                // check if i have fill
-                                    oq.RemoveOrder(oq.GetSize());
-                                    slots.Remove(price);
-                                    if (enableTrace)
-                                    {
-                                        System.Console.WriteLine("OrderBook remove slot price="+price);
-                                        System.Console.WriteLine("Cur="+marketData.ToString());
-                                        System.Console.WriteLine("New="+md.ToString());
-                                    }
                                 }
                                 else if ( (transaction == JQuant.TransactionType.SELL) && (price < bestQueuePrice) )
                                 {                                                                       
-                                    oq.RemoveOrder(oq.GetSize());
-                                    slots.Remove(price);
-                                    if (enableTrace)
-                                    {
-                                        System.Console.WriteLine("OrderBook remove slot price="+price);
-                                        System.Console.WriteLine("Cur="+marketData.ToString());
-                                        System.Console.WriteLine("New="+md.ToString());
-                                    }
                                 }
                                 else
                                 {
@@ -937,6 +954,8 @@ namespace MarketSimulation
             /// </summary>
             protected void FillOrderCallback(OrderQueue queue, LimitOrder order, int fillSize)
             {
+
+                JQuant.OutputUtils.PrintCallStack();
                 this.fillOrder(this, order, fillSize);
 
                 bool queueEmpty = (queue.GetSize() == 0);
@@ -1288,7 +1307,7 @@ namespace MarketSimulation
 				
 				lock (securities)
 				{
-	                o = securities[lo.security];
+	                o = securities[lo.SecurityId];
 				}
 
                 if (o == null)
@@ -1381,7 +1400,7 @@ namespace MarketSimulation
 
             protected override void HandleMessage(LimitOrder lo)
             {
-                lo.callback(lo.Id, ReturnCode.Fill, lo.FillPrice, lo.Quantity);
+                lo.callback(ReturnCode.Fill, lo, lo.Quantity);
             }
 
         }
