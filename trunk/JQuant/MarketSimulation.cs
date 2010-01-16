@@ -954,8 +954,6 @@ namespace MarketSimulation
             /// </summary>
             protected void FillOrderCallback(OrderQueue queue, LimitOrder order, int fillSize)
             {
-
-                JQuant.OutputUtils.PrintCallStack();
                 this.fillOrder(this, order, fillSize);
 
                 bool queueEmpty = (queue.GetSize() == 0);
