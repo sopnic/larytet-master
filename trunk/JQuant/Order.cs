@@ -122,7 +122,7 @@ namespace JQuant
         public int Price
         {
             get;
-            protected set;
+            set;
         }
     }
 

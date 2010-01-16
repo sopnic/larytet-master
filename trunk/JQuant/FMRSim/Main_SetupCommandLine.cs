@@ -1097,19 +1097,19 @@ namespace JQuant
             }
 		}
 		
-        protected void placeOrderCallback(int id, MarketSimulation.ReturnCode errorCode, int price, int quantity)
+        protected void placeOrderCallback(MarketSimulation.ReturnCode errorCode, MarketSimulation.ISystemLimitOrder lo, int quantity)
         {
-            MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(id);
+            MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(lo.SecurityId);
             string optionName = option.GetName();
             if (errorCode == MarketSimulation.ReturnCode.Fill)
             {
-                System.Console.WriteLine("Order {0} id {1} quantity {3} got fill at price {2}", 
-                                         optionName, id, price, quantity);
+                System.Console.WriteLine("Order {0} {5} id {1} quantity {3} price {4} got fill at price {2}", 
+                                         optionName, lo.Id, lo.FillPrice, quantity, lo.Price, lo.SecurityId);
             }
             else 
             {
                 System.Console.WriteLine("Order {0} id {1} price {2} quantity {3} failed on {4}", 
-                                         optionName, id, price, quantity, errorCode.ToString());
+                                         optionName, lo.Id, lo.Price, quantity, errorCode.ToString());
             }
         }
         

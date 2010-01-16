@@ -57,6 +57,19 @@ namespace JQuant
     /// </summary>
     public class OutputUtils
     {
+
+        public static void PrintCallStack()
+        {
+            System.Diagnostics.StackTrace stackTrace = new StackTrace();           // get call stack
+            System.Diagnostics.StackFrame[] stackFrames = stackTrace.GetFrames();  // get method calls (frames)
+            
+            // write call stack method names
+            foreach (StackFrame stackFrame in stackFrames)
+            {
+                System.Console.WriteLine(stackFrame.GetMethod().Name);   // write method name
+            }
+        }
+        
         /// <summary>
         /// add trailing blanks to the integer if neccessary 
         /// </summary>
