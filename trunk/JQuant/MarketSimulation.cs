@@ -902,26 +902,13 @@ namespace MarketSimulation
 
             /// <summary>
             /// This method is called from the order queue
-            /// I forward the call to application. I remove the queue if empty
+            /// I forward the call to application
             /// </summary>
             protected void FillOrderCallback(OrderQueue queue, LimitOrder order, int fillSize)
             {
+				// this is actually call to the application callback and 
+				// last chance for the MarketSimulation to manipulate the order
                 this.fillOrder(this, order, fillSize);
-
-                bool queueEmpty = (queue.GetSize() == 0);
-                lock (slots)
-                {
-                    sizeSystem -= order.Quantity;
-                    if (queueEmpty) 
-					{
-						int price = queue.GetPrice();
-						slots.Remove(price);
-						if (enableTrace)
-						{
-							System.Console.WriteLine("OrderBook remove head slot price="+price);
-						}
-					}
-                }
             }
 			
 			public void EnableTrace(bool enable)
