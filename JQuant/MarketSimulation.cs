@@ -774,16 +774,11 @@ namespace MarketSimulation
                 int tradeSize = (md.dayVolume - marketData.dayVolume);
 				int totalToRemove = tradeSize;
                 if (tradeSize < 0)
-                {
                     System.Console.WriteLine(ShortDescription() + " negative change in day volume from " + md.dayVolume + " to " +
                                             marketData.dayVolume + " are not consistent");
-                }
-				
                 if ((tradeSize > 0) && (tradeSize != md.lastTradeSize))  // sanity check - any misssing records out there ?
-                {
                     System.Console.WriteLine(ShortDescription() + " last trade size " + md.lastTradeSize +
                                             " and change in day volume from " + md.dayVolume + " to " + marketData.dayVolume + " are not consistent");
-                }
 				
                 if (tradeSize > 0) // there was a trade ? let's check the price 
                 {                       // of the deal and size of the deal					
@@ -847,8 +842,8 @@ namespace MarketSimulation
 
                 int size = mdBookOrders.Length;
 				System.Collections.ArrayList touchedQueues = new System.Collections.ArrayList(5);
-                for (int i = 0; i < size; i++)
-                {
+                for (int i = 0; i < size; i++)                              // get a slot (price) from the order book
+                {                                                           // and check if I already have such slot
                     int mdPrice = mdBookOrders[i].price;
 					int mdSize = mdBookOrders[i].size;
 					// find slot with this price
@@ -887,27 +882,28 @@ namespace MarketSimulation
 						// add to the list of touched queues
 						touchedQueues.Add(orderQueue);
 					}
-					
-					// remove all queues which are not touched and do not contain system orders
-					lock (slots)
-					{
-						foreach (OrderQueue oq in slots.Values)
-						{
-							bool containsSystemOrders = oq.ContainsSystemOrders();
-							int price = oq.GetPrice();
-							if (  (!containsSystemOrders) && (!touchedQueues.Contains(oq))  )
-							{
-								slots.Remove(price);
-								if (enableTrace)
-								{
-									System.Console.WriteLine("OrderBook remove slot price="+price);
-									System.Console.WriteLine("Cur="+marketData.ToString());
-									System.Console.WriteLine("New="+md.ToString());
-								}
-							}
-						} // foreach 
-					} // lock (slots)
 				}
+				
+				
+				// remove all queues which are not touched and do not contain system orders
+				lock (slots)
+				{
+					foreach (OrderQueue oq in slots.Values)
+					{
+						bool containsSystemOrders = oq.ContainsSystemOrders();
+						if (  (!containsSystemOrders) && (!touchedQueues.Contains(oq))  )
+						{
+							int price = oq.GetPrice();
+							slots.Remove(price);
+							if (enableTrace)
+							{
+								System.Console.WriteLine("OrderBook remove slot price="+price);
+								System.Console.WriteLine("Cur="+marketData.ToString());
+								System.Console.WriteLine("New="+md.ToString());
+							}
+						}
+					} // foreach 
+				} // lock (slots)
             }
 
             /// <summary>
