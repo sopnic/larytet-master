@@ -710,7 +710,6 @@ namespace MarketSimulation
             /// </summary>
             public void Update(MarketData md)
             {
-#if MARKETSIM_FAST
                 if (sizeSystem <= 0) // most likely there are no system orders - i will store the market data and get out
                 {                    // i want to be fast 
                     marketData = md;
@@ -720,20 +719,11 @@ namespace MarketSimulation
                     // i have previous record (marketData) and current record (md)
                     // let's figure out what happened
                     Update_trade(md);  // probably a trade ?
-                    Update_queue(md); // probably some orders are pulled out or added ?
+                    Update_queue(md);  // probably some orders are pulled out or added ?
 
                     // finally replace the data
                     marketData = md;
                 }
-#else
-                // i have previous record (marketData) and current record (md)
-                // let's figure out what happened
-                Update_trade(md);  // probably a trade ?
-                Update_queue(md);  // probably some orders are pulled out or added ?
-
-                // finally replace the data
-                this.marketData = md;
-#endif
             }
 
             /// <summary>
