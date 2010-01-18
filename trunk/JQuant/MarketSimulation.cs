@@ -778,72 +778,50 @@ namespace MarketSimulation
                     System.Console.WriteLine(ShortDescription() + " negative change in day volume from " + md.dayVolume + " to " +
                                             marketData.dayVolume + " are not consistent");
                 }
-                else if (tradeSize > 0) // there was a trade ? let's check the price 
-                {                       // of the deal and size of the deal
-                    if (tradeSize != md.lastTradeSize)  // sanity check - any misssing records out there ?
-                    {
-                        System.Console.WriteLine(ShortDescription() + " last trade size " + md.lastTradeSize +
-                                                " and change in day volume from " + md.dayVolume + " to " + marketData.dayVolume + " are not consistent");
-                    }
-					
+				
+                if ((tradeSize > 0) && (tradeSize != md.lastTradeSize))  // sanity check - any misssing records out there ?
+                {
+                    System.Console.WriteLine(ShortDescription() + " last trade size " + md.lastTradeSize +
+                                            " and change in day volume from " + md.dayVolume + " to " + marketData.dayVolume + " are not consistent");
+                }
+				
+                if (tradeSize > 0) // there was a trade ? let's check the price 
+                {                       // of the deal and size of the deal					
 					lock (slots)
 					{
-	                    // i remove the traded securities from the queue(s) starting 
-						// from the best (head of the ordered list "slots")
-						foreach (OrderQueue orderQueue in slots.Values)
-						{
+						foreach (OrderQueue orderQueue in slots.Values)  // i remove the traded securities from the queue(s) starting 
+						{                                                // from the best (head of the ordered list "slots")
 							int price = orderQueue.GetPrice();
 
-                            if ((transaction == JQuant.TransactionType.BUY) && (tradePrice > price)) // i can't remove queues for
-                            {                                                                        //  which the last trade price is not good enough
-                                break;
-                            }
-                            if ((transaction == JQuant.TransactionType.SELL) && (tradePrice < price))
-                            {
-                                break;
-                            }
-	                        int size0 = orderQueue.GetSize();  // get queue size
-	                        orderQueue.RemoveOrder(tradeSize, true); // remove the trade
-	                        int size1 = orderQueue.GetSize();  // get queue size
+                            if ((transaction == JQuant.TransactionType.BUY) && (tradePrice > price)) break; // i can't remove queues for
+                            if ((transaction == JQuant.TransactionType.SELL) && (tradePrice < price)) break; // which the last trade price is not good enough
+							
+	                        int size0 = orderQueue.GetSize();           // get queue size
+	                        orderQueue.RemoveOrder(tradeSize, true);    // remove the trade, "true" means handle system orders too
+	                        int size1 = orderQueue.GetSize();           // get queue size
 	
-	                        if (size1 == 0)  // if the queue empty - remove the queue
-	                        {
-								lock (slots)
-								{
-									if (slots.ContainsKey(price))
-									{
-			                            slots.Remove(price);
-									}
-								}
-								if (enableTrace)
-								{
-									System.Console.WriteLine("OrderBook remove head slot price="+orderQueue.GetPrice());
-									System.Console.WriteLine("Cur="+marketData.ToString());
-									System.Console.WriteLine("New="+md.ToString());
-								}
-	                        }
 	                        int removed = size0 - size1;
 	                        tradeSize -= removed;
-	                        if (tradeSize == 0)  // i removed the trade from the order queue ?
+	                        if (tradeSize == 0)  // i removed the trade completely ?
 	                        {
 	                            break;
 	                        }
 						} // foreach
 					}
-
-                    if (tradeSize > 0)
-                    {
-						// if i reached here i have accounting problem. The trade i see in the log is larger than 
-						// total of all positions in the order queue. such large trade could not take place unless
-						// i have wrong total position
-						if (enableTrace)
-						{
-							System.Console.WriteLine(ShortDescription() + " failed to remove the trade remains " + tradeSize+" from "+totalToRemove);
-							System.Console.WriteLine("NewData=" + md.ToString());
-							System.Console.WriteLine("CurData=" + marketData.ToString());
-						}
-                    }
                 } // tradeSize > 0 - there was a trade
+				
+                if (tradeSize > 0)
+                {
+					// if i reached here i have accounting problem. The trade i see in the log is larger than 
+					// total of all positions in the order queue. such large trade could not take place unless
+					// i have wrong total position or order book information is not complete
+					if (enableTrace)
+					{
+						System.Console.WriteLine(ShortDescription() + " failed to remove the trade remains " + tradeSize+" from "+totalToRemove);
+						System.Console.WriteLine("NewData=" + md.ToString());
+						System.Console.WriteLine("CurData=" + marketData.ToString());
+					}
+                }
             }
 
 
@@ -879,13 +857,13 @@ namespace MarketSimulation
                     {
 						if (slots.ContainsKey(mdPrice)) orderQueue = (OrderQueue)(slots[mdPrice]);
 					}
-					if (orderQueue != null)  // i have two cases - there is a slot for this price (typical) ...
+					if (orderQueue != null)  // i have two cases - i already have a slot for this price (typical) ...
 					{
 						int size_cur = orderQueue.GetSize();
 						
 						// i just update size of the queue. i take optimistic approach 
-						// and add  the orders to the tail of the queue
-						// and remove from the head
+						// and add the orders to the tail of the queue. 
+						// and remove from the head. I do not remove the system orders here
 						// Method AddOrder() handles negative numbers too
 						orderQueue.AddOrder(mdSize-size_cur, false);
 						
@@ -896,7 +874,10 @@ namespace MarketSimulation
 					{
                         orderQueue = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
 						orderQueue.AddOrder(mdSize, false);
-                        slots.Add(mdPrice, orderQueue);  // add newly created queue to the list of queues sorted by price
+						lock (slots)
+						{
+	                        slots.Add(mdPrice, orderQueue);  // add newly created queue to the list of queues sorted by price
+						}
 						if (enableTrace)
 						{
 							System.Console.WriteLine("OrderBook add slot price="+mdPrice);
@@ -907,16 +888,9 @@ namespace MarketSimulation
 						touchedQueues.Add(orderQueue);
 					}
 					
-					// remove all queues which are not touched and do not contain 
-					// system orders
+					// remove all queues which are not touched and do not contain system orders
 					lock (slots)
 					{
-                        int bestQueuePrice = 0;
-                        if (slots.Count > 0)
-                        {
-                            OrderQueue bestQueue = slots.Values[0];
-                            bestQueuePrice = bestQueue.GetPrice();
-                        }
 						foreach (OrderQueue oq in slots.Values)
 						{
 							bool containsSystemOrders = oq.ContainsSystemOrders();
@@ -931,20 +905,8 @@ namespace MarketSimulation
 									System.Console.WriteLine("New="+md.ToString());
 								}
 							}
-							else if (containsSystemOrders)
-							{
-                                if ( (transaction == JQuant.TransactionType.BUY) && (price > bestQueuePrice) )// probably the whole order queue shifted
-                                {                                                                                // check if i have fill
-                                }
-                                else if ( (transaction == JQuant.TransactionType.SELL) && (price < bestQueuePrice) )
-                                {                                                                       
-                                }
-                                else
-                                {
-                                }
-							}
-						}
-					}
+						} // foreach 
+					} // lock (slots)
 				}
             }
 
