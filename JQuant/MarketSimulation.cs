@@ -842,7 +842,7 @@ namespace MarketSimulation
                     {
 						if (slots.ContainsKey(mdPrice)) orderQueue = (OrderQueue)(slots[mdPrice]);
 					}
-					if (orderQueue != null)  // i have two cases - i already have a slot for this price (typical) ...
+					if (orderQueue != null)  // two cases - i already have a slot for this price (typical) ...
 					{
 						int size_cur = orderQueue.GetSize();
 						
@@ -851,9 +851,6 @@ namespace MarketSimulation
 						// and remove from the head. I do not remove the system orders here
 						// Method AddOrder() handles negative numbers too
 						orderQueue.AddOrder(mdSize-size_cur, false);
-						
-						// add to the list of touched queues
-						touchedQueues.Add(orderQueue);
 					}
 					else                      // ... and there is no such slot - add a new slot
 					{
@@ -865,23 +862,29 @@ namespace MarketSimulation
 						}
 						if (enableTrace)
 						{
-							System.Console.WriteLine("OrderBook add slot price="+mdPrice);
-							System.Console.WriteLine("Cur="+marketData.ToString());
-							System.Console.WriteLine("New="+md.ToString());
+							System.Console.WriteLine("OrderBook add slot price="+mdPrice);System.Console.WriteLine("Cur="+marketData.ToString());System.Console.WriteLine("New="+md.ToString());
 						}
-						// add to the list of touched queues
-						touchedQueues.Add(orderQueue);
 					}
+					// add the queue to the list of touched queues
+					touchedQueues.Add(orderQueue);
 				}
 				
 				
 				// remove all queues which are not touched and do not contain system orders
+				RemoveQueues(touchedQueues, md);
+            }
+			
+			/// <summary>
+			/// Helper removes all queues which are NOT on the list
+			/// </summary>
+			protected void RemoveQueues(System.Collections.ArrayList keepQueues, MarketData md)
+			{
 				lock (slots)
 				{
 					foreach (OrderQueue oq in slots.Values)
 					{
 						bool containsSystemOrders = oq.ContainsSystemOrders();
-						if (  (!containsSystemOrders) && (!touchedQueues.Contains(oq))  )
+						if (  (!containsSystemOrders) && (!keepQueues.Contains(oq))  )
 						{
 							int price = oq.GetPrice();
 							slots.Remove(price);
@@ -894,7 +897,8 @@ namespace MarketSimulation
 						}
 					} // foreach 
 				} // lock (slots)
-            }
+			}
+
 
             /// <summary>
             /// This method is called from the order queue
