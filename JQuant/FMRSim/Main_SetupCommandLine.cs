@@ -998,6 +998,7 @@ namespace JQuant
     
                 System.Collections.ArrayList values = new System.Collections.ArrayList();
     
+                values.Add(md.tick);
                 values.Add(id);
                 values.Add(optionName);
                 values.Add(md.lastTrade);
@@ -1012,6 +1013,7 @@ namespace JQuant
             {
                 System.Collections.ArrayList values = new System.Collections.ArrayList();
     
+                values.Add("Tick");
                 values.Add("Id");
                 values.Add("Name");
                 values.Add("LastTradeSize");
@@ -1037,7 +1039,7 @@ namespace JQuant
                 }
             }
             protected IWrite iWrite;
-            protected int[] columns = {8, 12, 6, 6, 30, 30};
+            protected int[] columns = {8, 10, 12, 6, 6, 30, 30};
         }
 
         protected WatchlistCallback watchlistCallback;
@@ -1103,13 +1105,13 @@ namespace JQuant
             string optionName = option.GetName();
             if (errorCode == MarketSimulation.ReturnCode.Fill)
             {
-                System.Console.WriteLine("Order {0} {5} id {1} quantity {3} price {4} got fill at price {2}", 
-                                         optionName, lo.Id, lo.FillPrice, quantity, lo.Price, lo.SecurityId);
+                System.Console.WriteLine("Tick {6} Order {0} {5} id {1} quantity {3} price {4} got fill at price {2}", 
+                                         optionName, lo.Id, lo.FillPrice, quantity, lo.Price, lo.SecurityId, lo.FillTick);
             }
             else 
             {
-                System.Console.WriteLine("Order {0} id {1} price {2} quantity {3} failed on {4}", 
-                                         optionName, lo.Id, lo.Price, quantity, errorCode.ToString());
+                System.Console.WriteLine("Tick {5} Order {0} id {1} price {2} quantity {3} failed on {4}", 
+                                         optionName, lo.Id, lo.Price, quantity, errorCode.ToString(), lo.FillTick);
             }
         }
         

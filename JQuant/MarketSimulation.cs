@@ -73,6 +73,12 @@ namespace MarketSimulation
             set;
             get;
         }
+		
+		long FillTick
+		{
+			set;
+			get;
+		}
     }
     
     public class OrderPair : ICloneable
@@ -172,6 +178,7 @@ namespace MarketSimulation
             md.lastTrade = this.lastTrade;
             md.lastTradeSize = this.lastTradeSize;
             md.dayVolume = this.dayVolume;
+			md.tick = this.tick;
 
             return md;
         }
@@ -305,6 +312,12 @@ namespace MarketSimulation
                 get;
             }
 
+            public long FillTick
+            {
+                set;
+                get;
+            }
+
             public int SecurityId
             {
                 set;
@@ -408,11 +421,11 @@ namespace MarketSimulation
             /// - list's tail is occupied by the system order
             /// - list's tail is occupied by non-sysem order (placed by algorithm)
             /// </summary>
-            public void AddOrder(int quantity, bool removeSystem)
+            public void AddOrder(int quantity, bool removeSystem, long tick)
             {
                 if (quantity < 0)
                 {
-                    RemoveOrder(-quantity, removeSystem); //System order cancellation?
+                    RemoveOrder(-quantity, removeSystem, tick); //System order cancellation?
                     return;
                 }
                 // i am adding entries to the list and I have no idea how many threads
@@ -464,7 +477,7 @@ namespace MarketSimulation
             /// Remove specified number of securities from the head of the list
             /// This method handles case when a system order gets fill
             /// </summary>
-            public void RemoveOrder(int quantity, bool removeSystem)
+            public void RemoveOrder(int quantity, bool removeSystem, long tick)
             {
                 lock (orders)
                 {
@@ -494,6 +507,7 @@ namespace MarketSimulation
                             // sizeSystem -= fillSize;
                             sizeSystem -= lo.Quantity; // no partial fills
                             lo.FillPrice = price;
+							lo.FillTick = tick;
 
                             // if not partial fill - remove the order from the queue
                             if (fillSize >= lo.Quantity) //i got fill
@@ -763,6 +777,7 @@ namespace MarketSimulation
             /// </summary>
             protected void Update_trade(MarketData md)
             {
+				long tick = md.tick;
                 int tradePrice = md.lastTrade; 
                 int tradeSize = (md.dayVolume - marketData.dayVolume);
 				int totalToRemove = tradeSize;
@@ -785,7 +800,7 @@ namespace MarketSimulation
                             if ((transaction == JQuant.TransactionType.SELL) && (tradePrice < price)) break; // which the last trade price is not good enough
 							
 	                        int size0 = orderQueue.GetSize();           // get queue size
-	                        orderQueue.RemoveOrder(tradeSize, true);    // remove the trade, "true" means handle system orders too
+	                        orderQueue.RemoveOrder(tradeSize, true, tick);    // remove the trade, "true" means handle system orders too
 	                        int size1 = orderQueue.GetSize();           // get queue size
 	
 	                        int removed = size0 - size1;
@@ -819,6 +834,7 @@ namespace MarketSimulation
             /// </summary>
             protected void Update_queue(MarketData md)
             {
+				long tick = md.tick;
                 OrderPair[] mdBookOrders;
                 OrderPair[] marketDataBookOrders;
 
@@ -853,12 +869,12 @@ namespace MarketSimulation
 						// and add the orders to the tail of the queue. 
 						// and remove from the head. I do not remove the system orders here
 						// Method AddOrder() handles negative numbers too
-						orderQueue.AddOrder(mdSize-size_cur, false);
+						orderQueue.AddOrder(mdSize-size_cur, false, tick);
 					}
 					else                      // ... and there is no such slot - add a new slot
 					{
                         orderQueue = new OrderQueue(this.securityId, mdPrice, this.transaction, FillOrderCallback);
-						orderQueue.AddOrder(mdSize, false);
+						orderQueue.AddOrder(mdSize, false, tick);
 						lock (slots)
 						{
 	                        slots.Add(mdPrice, orderQueue);  // add newly created queue to the list of queues sorted by price
