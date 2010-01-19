@@ -197,6 +197,9 @@ namespace MarketSimulation
 
         // Aggregated trading data over the trading period (day)
         public int dayVolume;        //volume
+		
+		// time stamp 
+		public long tick;
     }
 
 
