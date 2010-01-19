@@ -132,6 +132,7 @@ namespace JQuant
                 md.lastTrade = JQuant.Convert.StrToInt(dt.LST_DL_PR);
                 md.lastTradeSize = JQuant.Convert.StrToInt(dt.LST_DL_VL);
                 md.dayVolume = JQuant.Convert.StrToInt(dt.DAY_VL);
+				md.tick = JQuant.Convert.StrToLong(dt.UPD_TIME, 0);
             }
         }
 

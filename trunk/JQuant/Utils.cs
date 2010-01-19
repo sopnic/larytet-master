@@ -134,7 +134,7 @@ namespace JQuant
             string t = s.Trim();
             try
             {
-                if (t!="") result=Double.Parse(t);
+                if (t!="") result = Double.Parse(t);
             }
             catch (FormatException)
             {
@@ -143,6 +143,20 @@ namespace JQuant
             return result;
         }
 
+        public static long StrToLong(string s, long defaultValue)
+        {
+            long result = defaultValue;
+            string t = s.Trim();
+            try
+            {
+                if (t!="") result = Int64.Parse(t);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Failed to parse string '" + t + "'");
+            }
+            return result;
+        }
         
         public static int StrToInt(string s, int defaultValue)
         {
@@ -165,6 +179,11 @@ namespace JQuant
             return result;
         }
 
+        public static long StrToLong(string s)
+        {
+            long result = StrToLong(s, 0);
+            return result;
+        }
     }
 
     /// <summary>
