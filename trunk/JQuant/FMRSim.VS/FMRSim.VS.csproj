@@ -118,6 +118,9 @@
     <Compile Include="..\MarketSimulation.cs">
       <Link>MarketSimulation.cs</Link>
     </Compile>
+    <Compile Include="..\MarketSimulation_Maof.cs">
+      <Link>MarketSimulation_Maof.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="TaskBarLib">
