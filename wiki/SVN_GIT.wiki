@@ -16,16 +16,23 @@
 
   * List of GIT hosting sites http://stackoverflow.com/questions/109440/best-git-repository-hosting-for-commercial-project
 
-  * http://github.com/ free for open source. $12/mo for small group
+  * http://github.com/ 
+  free for open source. $12/mo for small group
 
-  * http://www.assembla.com/catalog/featured $49/mon or $3/user/mon, $0.30/100MB  all included GIT/SVN/ticket system, SSL, Amazon based backup. Wiki, File attachments, chat room, 1 month free 
+  * http://www.assembla.com/catalog/featured 
+  $49/mon or $3/user/mon, $0.30/100MB  all included GIT/SVN/ticket system, SSL, Amazon based backup. Wiki, File attachments, chat room, 1 month free 
 
-  * http://www.indefero.net/plans.html $80/year SVN/GIT, issue tracking, project timelines, 1 month free 
+  * http://www.indefero.net/plans.html 
+  $80/year SVN/GIT, issue tracking, project timelines, 1 month free 
 
-  * http://www.codebasehq.com/packages $8/mon for 10 users SSL, Wiki, Time tracking
+  * http://www.codebasehq.com/packages 
+  $8/mon for 10 users SSL, Wiki, Time tracking
 
-  * http://unfuddle.com/ free for 2 developers, $9/mon for 10 developers
+  * http://unfuddle.com/ 
+  free for 2 developers, $9/mon for 10 developers
 
-  * http://gitorious.org/about Open source only. Used by Qt and OpenSUSE-yast among others. Source code http://gitorious.org/gitorious 
+  * http://gitorious.org/about
+  Open source only. Used by Qt and OpenSUSE-yast among others. Source code http://gitorious.org/gitorious 
 
-  * http://sourcerepo.com/ $4/mon unlimited - Trac or Redmine for project management and issue system
+  * http://sourcerepo.com/ 
+  $4/mon unlimited - Trac or Redmine for project management and issue system
