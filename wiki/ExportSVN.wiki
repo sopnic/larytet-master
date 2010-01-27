@@ -19,3 +19,5 @@ chmod +x /tmp/svn/hooks/pre-revprop-change
 svnsync init file:///tmp/svn http://larytet-master.googlecode.com/svn
 
 svnsync sync file:///tmp/svn
+
+svnadmin dump file:///tmp/svn  dump_file
