@@ -1,8 +1,8 @@
-#summary One-sentence summary of this page.
+#summary Exporting of the repository from Google Code
 
 = Introduction =
 
-How to dump SVN repository from Google Code
+The commands below will dump the SVN repository from Google Code to a single dump file suitable for further import.
 
 
 = Details =
