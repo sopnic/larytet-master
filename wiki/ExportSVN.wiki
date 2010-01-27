@@ -20,4 +20,4 @@ svnsync init file:///tmp/svn http://larytet-master.googlecode.com/svn
 
 svnsync sync file:///tmp/svn
 
-svnadmin dump /tmp/svn  dump_file
+svnadmin dump /tmp/svn > dump_file
