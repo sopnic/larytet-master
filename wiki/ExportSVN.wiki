@@ -1,4 +1,4 @@
-#summary Exporting of the repository from Google Code
+#summary Export of the repository from Google Code
 
 = Introduction =
 
