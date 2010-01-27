@@ -1,0 +1,19 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+How to dump SVN repository from Google Code
+
+
+= Details =
+
+svnadmin create /tmp/svn
+
+cp /tmp/svn/hooks/pre-revprop-change.tmpl /tmp/svn/hooks/pre-revprop-change
+chmod +x /tmp/svn/hooks/pre-revprop-change
+
+Modify the file /tmp/svn/hooks/pre-revprop-change to exit 0 in all cases
+
+chmod +x /tmp/svn/hooks/pre-revprop-change
+
+svnsync init file:///tmp/svn http://larytet-master.googlecode.com/svn
