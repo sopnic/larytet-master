@@ -1,4 +1,6 @@
-#List of online backups services. I only list here services that have some free option.
+= List of online backups services =
+
+I only list here services that have some free option.
 
 http://mozy.com/  2GB free, scheduled backups, local client (Win, Mac, no Linux), Pro  $3.95 + $0.50/GB per month
 
