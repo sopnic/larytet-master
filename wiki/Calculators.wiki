@@ -7,10 +7,10 @@ Add your content here.
 
 = Details =
 
-* Extcalc  	Multifunctional scientific graphic calculator
-* SpeedCrunch 	High precision and powerful desktop calculator
-* Genius Mathematics Tool 	Desktop calculator, an educational tool in mathematics, and for research
-* Qalculate! 	Powerful and easy to use
-* galculator 	RPN and algebraic calculator
-* rpCalc 	Simple RPN calculator
-* Nonpareil 	
+ * Extcalc  	Multifunctional scientific graphic calculator
+ * SpeedCrunch 	High precision and powerful desktop calculator
+ * Genius Mathematics Tool 	Desktop calculator, an educational tool in mathematics, and for research
+ * Qalculate! 	Powerful and easy to use
+ * galculator 	RPN and algebraic calculator
+ * rpCalc 	Simple RPN calculator
+ * Nonpareil 	
