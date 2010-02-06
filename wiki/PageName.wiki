@@ -1,8 +1,0 @@
-#summary Recent examples of EMA
-
-http://larytet-master.googlecode.com/files/sc.png
-http://larytet-master.googlecode.com/files/sc1.png
-http://larytet-master.googlecode.com/files/sc2.png
-http://larytet-master.googlecode.com/files/sc3.png
-http://larytet-master.googlecode.com/files/sc4.png
-http://larytet-master.googlecode.com/files/sc5.png
