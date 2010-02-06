@@ -13,5 +13,6 @@ http://larytet-master.googlecode.com/files/sc6.png
 http://larytet-master.googlecode.com/files/sc4.png
 http://larytet-master.googlecode.com/files/sc5.png
 
-= Put/Call ratio =
+= Put/Call ratio and SPX500 =
 http://larytet-master.googlecode.com/files/sc7.png
+http://larytet-master.googlecode.com/files/sc8.png
