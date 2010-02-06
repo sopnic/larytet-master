@@ -10,6 +10,12 @@ http://larytet-master.googlecode.com/files/sc3.png
 = iShares Russell 2000 Index (ETF) =
 
 http://larytet-master.googlecode.com/files/sc6.png
+
+
+= Last 5 days zoom in charts =
+Pay attention to the strong divergence in the turn around day (Feb, 5th)
+== GDX ==
 http://larytet-master.googlecode.com/files/sc9.png
+== IWM ==
 http://larytet-master.googlecode.com/files/sc4.png
 http://larytet-master.googlecode.com/files/sc5.png
