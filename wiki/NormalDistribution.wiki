@@ -8,7 +8,14 @@ than assumed mathematical forms. Moreover, it is quite simple to examine the fit
 
 = What worked in 1995-2000 =
 
+== Return to mean (spread between correlating stocks) ==
+
  * When the spread increases (decreases) sufficiently far from the mean (say, k standard deviations) sell (buy) the spread.
  * Unwind the positions when the spread returns to the mean.
  * When the spread increases (decreases) sufficiently far from the mean (say, k standard deviations) sell (buy) the spread.
  * Unwind the positions when the spread returns to the mean.
+
+== Choosing pairs ==
+
+Maximizing correlations was an early filter applied to pair selection: Compute the correlation of each candidate pair (using, for example, two years of daily data) and retain only those pairs having correlations greater than some minimum.
+It is desirable for risk minimization purposes to select pairs that show similar event histories—peaks and troughs close in time with similar sized moves for the two stocks between these events. Such pairs are less likely to react divergently (except, perhaps, in the immediate aftermath) following a disturbance to the market (political, industrial development, etc.).
