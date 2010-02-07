@@ -4,3 +4,9 @@ more observations several standard deviations from the mean, the so-called ‘�
 Most errors are trivially avoided by using the empirical distribution—the data itself—rather
 than assumed mathematical forms. Moreover, it is quite simple to examine the fit of a normal curve to a set of data and judge the accuracy of probability calculations for intervals of interest, be they in the tail or center of the distribution. 
 
+= What worked in 1995-2000 =
+
+ * When the spread increases (decreases) sufficiently far from the mean (say, k standard deviations) sell (buy) the spread.
+ * Unwind the positions when the spread returns to the mean.
+ * When the spread increases (decreases) sufficiently far from the mean (say, k standard deviations) sell (buy) the spread.
+ * Unwind the positions when the spread returns to the mean.
