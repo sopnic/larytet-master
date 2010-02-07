@@ -1,0 +1,1 @@
+The forecast variance guides us as to how much the outcome may reasonably be expected to deviate from the best guess. But that forecast variance is itself a guess. It is not a known quantity. And remember what was stated only two paragraphs ago: Forecast variance characterizes average behaviour; anything is possible on any given instance.
