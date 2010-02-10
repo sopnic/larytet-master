@@ -61,19 +61,21 @@ class CliMain(cmd.Cmd):
     def __init__(self):
         cmd.Cmd.__init__(self)
         use_rawinput = False
+        self.prompt = "$ "
 
     def help_help(self):
         print "Display this help"
 
     def do_quit(self, args):
         self.do_exit(args)
+
     def help_quit(self):
         self.help_exit()
 
     def do_exit(self, args):
-        if (self.serialPort):
-            self.serialPort.close()
+        self._closeserial()
         exit()
+
     def help_exit(self):
         print "Quit application"
 
@@ -94,13 +96,12 @@ class CliMain(cmd.Cmd):
           self.device = args[0];
           self.rate = int(args[1]);
           print "Serial device ", self.device, ", rate ", self.rate
-          if (hasattr(self, "serialPort") and self.serialPort.isconnected()):     #close previous connection
-              self.serialPort.close()
+          self._closeserial()
           self.serialPort = SerialPort(self.device, self.rate);
           if (self.serialPort.isconnected()):
               self.serialPort.start();
           break;
-      
+         
     def help_conn(self):
         print "Connect serial device [device, rate]"
 
@@ -120,7 +121,6 @@ class CliMain(cmd.Cmd):
             argsArray = args.rsplit(" ");
             address = argsArray[0];
             address = address.zfill(8)                           # add zeros until i get 8 characters
-            print "Read address ", address
             self.serialPort.writeLn("rd " + address)
             break;
 
@@ -154,6 +154,11 @@ class CliMain(cmd.Cmd):
     def _notimplemented(self):
         print 'Command not implemented'
 
+    def _closeserial(self):
+        if (hasattr(self, "serialPort") and self.serialPort.isconnected()):     #close previous connection
+            self.serialPort.close()
+
+
 # endof class CliMain
 
 
@@ -170,9 +175,7 @@ class ProcessCli(threading.Thread):
 # endof class ProcessCli
 
 
-print 'Create CLI'
 processCli = ProcessCli()
-print 'Start CLI'
 processCli.start()
 processCli.join()    # Wait for the background task to finish
 
