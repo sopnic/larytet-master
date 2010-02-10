@@ -6,7 +6,7 @@ import threading, time, cmd
 class CliMain(cmd.Cmd):
     def __init__(self):
         cmd.Cmd.__init__(self)
-        use_rawinput = 0
+        use_rawinput = False
 
     def help_help(self):
         print "Display this help"
@@ -25,6 +25,23 @@ class CliMain(cmd.Cmd):
         time.sleep(float(args)/1000)
     def help_sleep(self):
         print "Sleep for specified number of milliseconds"
+
+    def do_set(self, arg):
+       args = arg.rsplit(" ");
+       device = args[0]
+       rate = args[1]
+       while True:
+          if (not rate.isdigit()): 
+              print "Wrong rate ", rate
+              break
+          self.device = args[0];
+          self.rate = int(args[1]);
+          print "Serial device ", self.device, ", rate ", self.rate
+          break;
+      
+
+    def help_set(self):
+        print "Setup connection parameters"
 
     def do_rd(self, args):
         self._notimplemented()
