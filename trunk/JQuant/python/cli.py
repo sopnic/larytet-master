@@ -1,9 +1,15 @@
 #! /usr/bin/env python
 
+
+# This is a simple command line application allowing to send commands
+# to the serial device and read the data from the serial device
+# Read is done in a separate thread
+#
+
 import threading, time, cmd
 import serial
 
-# A thread reading and printing received data out
+# A thread reading and printing received data 
 class SerialPort(threading.Thread):
     def __init__(self, device, rate):
         threading.Thread.__init__(self)
