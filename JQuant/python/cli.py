@@ -12,23 +12,23 @@ class SerialPort(threading.Thread):
         self.exitflag = False
         print 
         try:
-            self.tty = serial.Serial(device, rate, timeout=300, bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0)
+            self.tty = serial.Serial(device, rate, timeout=0.300, bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0)
+            self.tty.open()
+            self.exitflag = not self.tty.isOpen()
         except serial.SerialException:
             print "Could not connect to the serial device ", device
-            self.exitflag = True
+            self.exitflag = True;
 
     def isconnected(self):
         return not self.exitflag;
      
     def run(self):
         while (1):
-            print "Check exit flag"
             if (self.exitflag):
                 break
-            str = self.tty.read()
+            str = self.tty.read(10)
             if (str != ""):
                 print str
-            time.sleep(1)
 
     def close(self):
             if (not self.exitflag):
@@ -68,6 +68,7 @@ class CliMain(cmd.Cmd):
     def help_sleep(self):
         print "Sleep for specified number of milliseconds"
 
+    #Example: conn /dev/ttyUSB4 115200
     def do_conn(self, arg):
        args = arg.rsplit(" ");
        device = args[0]
@@ -79,6 +80,8 @@ class CliMain(cmd.Cmd):
           self.device = args[0];
           self.rate = int(args[1]);
           print "Serial device ", self.device, ", rate ", self.rate
+          if (hasattr(self, "serialPort") and self.serialPort.isconnected()):     #close previous connection
+              self.serialPort.close()
           self.serialPort = SerialPort(self.device, self.rate);
           if (self.serialPort.isconnected()):
               self.serialPort.start();
