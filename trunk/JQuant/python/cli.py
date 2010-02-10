@@ -3,7 +3,7 @@
 import threading, time, cmd
 import serial
 
-
+# A thread reading and printing received data out
 class SerialPort(threading.Thread):
     def __init__(self, device, rate):
         threading.Thread.__init__(self)
@@ -43,6 +43,7 @@ class SerialPort(threading.Thread):
             self.tty.write('\r\n')
 # endof class SerialPort
 
+# all CLI commands are here
 class CliMain(cmd.Cmd):
     def __init__(self):
         cmd.Cmd.__init__(self)
@@ -98,12 +99,37 @@ class CliMain(cmd.Cmd):
 
 
     def do_rd(self, args):
-        self._notimplemented()
+        while (True):
+            if (not hasattr(self, "serialPort") or not self.serialPort.isconnected()):
+                print "Serial device is not connected"
+                break
+
+            argsArray = args.rsplit(" ");
+            address = argsArray[0];
+            address.zfill(8)                           # add zeros until i get 8 characters
+            print "Read address ", address
+            self.serialPort.writeLn("rd " + address)
+            break;
+
     def help_rd(self):
         print "Read register"
 
     def do_wr(self, args):
-        self._notimplemented()
+        while (True):
+            if (not hasattr(self, "serialPort") or not self.serialPort.isconnected()):
+                print "Serial device is not connected"
+                break
+
+            argsArray = args.rsplit(" ");
+            address = argsArray[0]
+            address.zfill(8)
+            value = argsArray[1]
+            value.zfill(8)
+      
+            self.serialPort.writeLn("wr " + address + " " + value)
+            break;
+
+
     def help_wr(self):
         print "Write register"
 
@@ -119,6 +145,7 @@ class CliMain(cmd.Cmd):
 
 
 
+# loop until exit command is not received
 class ProcessCli(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
