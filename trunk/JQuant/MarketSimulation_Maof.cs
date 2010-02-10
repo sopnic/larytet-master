@@ -133,10 +133,6 @@ namespace JQuant
                 md.lastTradeSize = JQuant.Convert.StrToInt(dt.LST_DL_VL);
                 md.dayVolume = JQuant.Convert.StrToInt(dt.DAY_VL);
 				md.tick = JQuant.Convert.StrToLong(dt.UPD_TIME, 0);
-				if (md.lastTradeSize > 200)					
-				{
-					System.Console.WriteLine("bno_num={0} tick={1} tradeSize={2}", dt.BNO_Num, dt.UPD_TIME, dt.LST_DL_VL);
-				}
             }
         }
 
