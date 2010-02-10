@@ -26,6 +26,15 @@ class CliMain(cmd.Cmd):
     def help_sleep(self):
         print "Sleep for specified number of milliseconds"
 
+    def do_rd(self, args):
+        self._notimplemented()
+    def help_rd(self):
+        print "Read register"
+
+    def do_wr(self, args):
+        self._notimplemented()
+    def help_wr(self):
+        print "Write register"
 
     def do_none(self, args):
         self._notimplemented()
