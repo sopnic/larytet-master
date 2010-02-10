@@ -31,8 +31,12 @@ class SerialPort(threading.Thread):
     def run(self):
         while (1):
             if (self.exitflag):
+                print "Disconnected"
                 break
-            str = self.tty.read(10)
+            try:
+                str = self.tty.read(10)
+            except Exception:
+                self.exitflag = True;
             if (str != ""):
                 print str
 
@@ -42,11 +46,14 @@ class SerialPort(threading.Thread):
             self.exitflag = True;
 
     def write(self, str):
-            self.tty.write(str)
+            try:
+                str = self.tty.write(str)
+            except Exception:
+                self.exitflag = True;            
 
     def writeLn(self, str):
-            self.tty.write(str)
-            self.tty.write('\r\n')
+            self.write(str)
+            self.write('\r\n')
 # endof class SerialPort
 
 # all CLI commands are here
