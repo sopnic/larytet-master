@@ -8,6 +8,7 @@
 
 import threading, time, cmd
 import serial
+import re
 
 # A thread reading and printing received data 
 class SerialPort(threading.Thread):
@@ -15,7 +16,7 @@ class SerialPort(threading.Thread):
         threading.Thread.__init__(self)
         self.device = device
         self.rate = rate
-        self.exitflag = False
+        self.exitflag = False      
         print 
         try:
             self.tty = serial.Serial(device, rate, timeout=0.300, bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0)
@@ -62,6 +63,9 @@ class CliMain(cmd.Cmd):
         cmd.Cmd.__init__(self)
         use_rawinput = False
         self.prompt = "$ "
+        self.device = "";
+        self.rate = "";
+ 
 
     def help_help(self):
         print "Display this help"
@@ -86,24 +90,42 @@ class CliMain(cmd.Cmd):
 
     #Example: conn /dev/ttyUSB4 115200
     def do_conn(self, arg):
-       args = arg.rsplit(" ");
-       device = args[0]
-       rate = args[1]
-       while True:
-          if (not rate.isdigit()): 
-              print "Wrong rate ", rate
-              break
-          self.device = args[0];
-          self.rate = int(args[1]);
-          print "Serial device ", self.device, ", rate ", self.rate
-          self._closeserial()
-          self.serialPort = SerialPort(self.device, self.rate);
-          if (self.serialPort.isconnected()):
-              self.serialPort.start();
-          break;
+       if (  re.match('^[a-zA-Z]+([0-9]+) +([0-9]+)$', arg)  ):
+           match = re.search('^([a-zA-Z0-9]+) +([0-9]+)$', arg)
+           device = match.group(0);
+           rate = match.group(1);          
+       elif (  re.match('^[a-zA-Z0-9]+$', arg)  ):
+           match = re.search('^([a-zA-Z0-9]+)$', arg)
+           device = match.group(0);
+           if (self.rate == ""):
+               rate = "115200";
+           else:
+               rate = self.rate;
+       elif (self.device != ""):
+           device = self.device;
+           rate = self.rate
+       else:
+           print "Serial device should be specified"
+           return 
+
+
+       if (  re.match('^(u|U).*([0-9]+)$', device)  ):
+           match = re.search("([0-9]+)", device)
+           device = "/dev/ttyUSB"+match.group(0)
+       if (  re.match('^(c|C).*([0-9]+)$', device)  ):
+           match = re.search("([0-9]+)", device)
+           device = "/dev/tty"+match.group(0)
+
+       self.device = device;
+       self.rate = int(rate);
+       print "Serial device ", self.device, ", rate ", self.rate
+       self._closeserial()
+       self.serialPort = SerialPort(self.device, self.rate);
+       if (self.serialPort.isconnected()):
+           self.serialPort.start();
          
     def help_conn(self):
-        print "Connect serial device [device, rate]"
+        print "Connect serial device [device, rate]. Examples:\nconn /dev/ttyUSB4 115200\nconn usb4 115200\nconn usb4\nconn u4"
 
     def do_disc(self, arg):
         self.serialPort.stop()
