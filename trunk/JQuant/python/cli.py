@@ -106,7 +106,7 @@ class CliMain(cmd.Cmd):
 
             argsArray = args.rsplit(" ");
             address = argsArray[0];
-            address.zfill(8)                           # add zeros until i get 8 characters
+            address = address.zfill(8)                           # add zeros until i get 8 characters
             print "Read address ", address
             self.serialPort.writeLn("rd " + address)
             break;
@@ -122,9 +122,9 @@ class CliMain(cmd.Cmd):
 
             argsArray = args.rsplit(" ");
             address = argsArray[0]
-            address.zfill(8)
+            address = address.zfill(8)
             value = argsArray[1]
-            value.zfill(8)
+            value = value.zfill(8)
       
             self.serialPort.writeLn("wr " + address + " " + value)
             break;
