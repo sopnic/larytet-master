@@ -1,7 +1,47 @@
 #! /usr/bin/env python
 
 import threading, time, cmd
+import serial
 
+
+class SerialPort(threading.Thread):
+    def __init__(self, device, rate):
+        threading.Thread.__init__(self)
+        self.device = device
+        self.rate = rate
+        self.exitflag = False
+        print 
+        try:
+            self.tty = serial.Serial(device, rate, timeout=300, bytesize=8, parity='N', stopbits=1, xonxoff=0, rtscts=0)
+        except serial.SerialException:
+            print "Could not connect to the serial device ", device
+            self.exitflag = True
+
+    def isconnected(self):
+        return not self.exitflag;
+     
+    def run(self):
+        while (1):
+            print "Check exit flag"
+            if (self.exitflag):
+                break
+            str = self.tty.read()
+            if (str != ""):
+                print str
+            time.sleep(1)
+
+    def close(self):
+            if (not self.exitflag):
+                self.tty.close()
+            self.exitflag = True;
+
+    def write(self, str):
+            self.tty.write(str)
+
+    def writeLn(self, str):
+            self.tty.write(str)
+            self.tty.write('\r\n')
+# endof class SerialPort
 
 class CliMain(cmd.Cmd):
     def __init__(self):
@@ -17,6 +57,8 @@ class CliMain(cmd.Cmd):
         self.help_exit()
 
     def do_exit(self, args):
+        if (self.serialPort):
+            self.serialPort.close()
         exit()
     def help_exit(self):
         print "Quit application"
@@ -26,7 +68,7 @@ class CliMain(cmd.Cmd):
     def help_sleep(self):
         print "Sleep for specified number of milliseconds"
 
-    def do_set(self, arg):
+    def do_conn(self, arg):
        args = arg.rsplit(" ");
        device = args[0]
        rate = args[1]
@@ -37,11 +79,20 @@ class CliMain(cmd.Cmd):
           self.device = args[0];
           self.rate = int(args[1]);
           print "Serial device ", self.device, ", rate ", self.rate
+          self.serialPort = SerialPort(self.device, self.rate);
+          if (self.serialPort.isconnected()):
+              self.serialPort.start();
           break;
       
+    def help_conn(self):
+        print "Connect serial device [device, rate]"
 
-    def help_set(self):
-        print "Setup connection parameters"
+    def do_disc(self, arg):
+        self.serialPort.stop()
+
+    def help_disc(self):
+        print "Disconnect serial device"
+
 
     def do_rd(self, args):
         self._notimplemented()
@@ -60,6 +111,7 @@ class CliMain(cmd.Cmd):
 
     def _notimplemented(self):
         print 'Command not implemented'
+
 # endof class CliMain
 
 
