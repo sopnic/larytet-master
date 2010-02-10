@@ -128,7 +128,7 @@ class CliMain(cmd.Cmd):
         print "Connect serial device [device, rate]. Examples:\nconn /dev/ttyUSB4 115200\nconn usb4 115200\nconn usb4\nconn u4"
 
     def do_disc(self, arg):
-        self.serialPort.stop()
+        self._closeserial()
 
     def help_disc(self):
         print "Disconnect serial device"
