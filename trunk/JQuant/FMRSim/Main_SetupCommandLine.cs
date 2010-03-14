@@ -2202,7 +2202,7 @@ namespace JQuant
             menuFeed.AddCommand("gettofile", "Write price/volume series to file",
                                   " Get price/volume daily series for the specified stock symbol and write to file. Args: symbol filename [fromDate[toDate]]", feedGetToFileCallback);
             menuFeed.AddCommand("readfile", "Get price/volume series from file",
-                                  " Get price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
+                                  " Load price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
 
             #endregion;
 
