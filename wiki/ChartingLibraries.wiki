@@ -3,5 +3,5 @@
 
 = Links =
 
-  * [http://www.developertutorials.com/blog/javascript/free-and-open-source-charting-libraries-309/ DeveloperTutorials]
+  * [http://www.developertutorials.com/blog/javascript/free-and-open-source-charting-libraries-309/ Developer Tutorials] - client side JS and Flash frameworks
   * [http://zedgraph.org]
