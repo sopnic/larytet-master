@@ -1,10 +1,7 @@
-#summary One-sentence summary of this page.
-
-= Introduction =
+#summary Links to the general purpose charting/plotting libraries
 
 
-
-= Details =
+= Links =
 
   * [http://www.developertutorials.com/blog/javascript/free-and-open-source-charting-libraries-309/ DeveloperTutorials]
   * [http://zedgraph.org]
