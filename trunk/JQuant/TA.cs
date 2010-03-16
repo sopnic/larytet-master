@@ -297,8 +297,24 @@ namespace TA
 		/// <summary>
 		/// Fisher transform 0.5*ln*[(1+x)/(1-x)] 
 		/// </summary>
-		public void Fisher()
+		public void Fisher(PriceVolumeSeries series)
 		{
+			int count = series.Data.Count;
+            for (int i = 0; i < count; i++)
+            {
+                Candle candle = (Candle)series.Data[i];
+				
+				double close = candle.close;
+				double high = candle.high;
+				double low = candle.low;
+				double open = candle.open;
+				
+				open = 0.5*Math.Log((1+open)/(1-open), 2);
+				close = 0.5*Math.Log((1+close)/(1-close), 2);
+				high = 0.5*Math.Log((1+high)/(1-high), 2);
+				low = 0.5*Math.Log((1+low)/(1-low), 2);
+				series.Data[i] = new Candle(open, close, high, low, candle.volume);
+			}
 		}
 		
 		/// <summary>
