@@ -294,8 +294,36 @@ namespace TA
             }
         }
 		
+		/// <summary>
+		/// Fisher transform 0.5*ln*[(1+x)/(1-x)] 
+		/// </summary>
 		public void Fisher()
 		{
+		}
+		
+		/// <summary>
+		/// Two points EMA
+		/// Perfromace warning: creates set of new candles
+		/// </summary>
+		public static void EMA(PriceVolumeSeries series, double weight)
+		{
+			int count = series.Data.Count;
+			count = count - 1;
+			double weight_1 = 1 - weight;
+            for (int i = 0; i < count; i++)
+            {
+                Candle candle0 = (Candle)series.Data[i];
+                Candle candle1 = (Candle)series.Data[i+1];
+				double close = candle1.close * weight + candle0.close * weight_1;
+				double high = candle1.high * weight + candle0.high * weight_1;
+				double low = candle1.low * weight + candle0.low * weight_1;
+				double open = candle1.open * weight + candle0.open * weight_1;
+				series.Data[i+1] = new Candle(open, close, high, low, candle1.volume);
+			}
+			if (count > 0)
+			{
+				series.Data.RemoveAt(0);
+			}
 		}
 
 		/// <summary>
