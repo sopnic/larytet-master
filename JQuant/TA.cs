@@ -293,6 +293,60 @@ namespace TA
                 paramsCalculated = true;
             }
         }
+		
+		public void Fisher()
+		{
+		}
+
+		/// <summary>
+		/// Method will normalize (bring to range from -1 to 1 the open, high, low, close prices
+		/// </summary>
+		/// <param name="series">
+		/// A <see cref="PriceVolumeSeries"/>
+		/// </param>
+		/// <param name="start">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="count">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="max">
+		/// A <see cref="System.Double"/>
+		/// </param>
+		/// <param name="min">
+		/// A <see cref="System.Double"/>
+		/// </param>
+        public static void Normalize
+            (PriceVolumeSeries series, int start, int count, double max, double min)
+        {
+            int end = start + count - 1;
+            for (int i = start + 1; i <= end; i++)
+            {
+                Candle candle = (Candle)series.Data[i];
+				Normalize(candle, max, min);
+            }
+		}
+		
+        public static Candle Normalize
+            (Candle candle, double max, double min)
+        {
+			double max_min = max - min;
+			
+			double close = candle.close;
+            close = 2*((close - min)/max_min - 0.5);
+			
+			double open = candle.open;
+            open = 2*((open - min)/max_min - 0.5);
+			
+			double high = candle.high;
+            high = 2*((high - min)/max_min - 0.5);
+			
+			double low = candle.low;
+            low = 2*((low - min)/max_min - 0.5);
+			
+			Candle newCandle = new Candle(open, close, high, low, candle.volume);
+			return newCandle;
+		}
 
         public double Average
         {
@@ -588,4 +642,5 @@ namespace TA
 
         public System.Collections.Generic.List<Shape> shapes;
     }
+	
 }//namespace TA
