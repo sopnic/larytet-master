@@ -300,6 +300,8 @@ namespace TA
 
 		/// <summary>
 		/// Method will normalize (bring to range from -1 to 1 the open, high, low, close prices
+		/// Performance warning: created a new candle for every candle in the
+		/// series
 		/// </summary>
 		/// <param name="series">
 		/// A <see cref="PriceVolumeSeries"/>
@@ -317,13 +319,14 @@ namespace TA
 		/// A <see cref="System.Double"/>
 		/// </param>
         public static void Normalize
-            (PriceVolumeSeries series, int start, int count, double max, double min)
+            (PriceVolumeSeries series, double max, double min)
         {
-            int end = start + count - 1;
-            for (int i = start + 1; i <= end; i++)
+            int count = series.Data.Count;
+            for (int i = 0; i < count; i++)
             {
                 Candle candle = (Candle)series.Data[i];
-				Normalize(candle, max, min);
+				candle = Normalize(candle, max, min);
+				series.Data[i] = candle;
             }
 		}
 		
@@ -333,15 +336,13 @@ namespace TA
 			double max_min = max - min;
 			
 			double close = candle.close;
-            close = 2*((close - min)/max_min - 0.5);
-			
 			double open = candle.open;
-            open = 2*((open - min)/max_min - 0.5);
-			
 			double high = candle.high;
-            high = 2*((high - min)/max_min - 0.5);
-			
 			double low = candle.low;
+			
+            close = 2*((close - min)/max_min - 0.5);			
+            open = 2*((open - min)/max_min - 0.5);
+            high = 2*((high - min)/max_min - 0.5);			
             low = 2*((low - min)/max_min - 0.5);
 			
 			Candle newCandle = new Candle(open, close, high, low, candle.volume);
