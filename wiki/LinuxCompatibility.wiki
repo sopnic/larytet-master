@@ -1,0 +1,3 @@
+#summary Linux compatible devices
+
+* http://www.qbik.ch/usb/devices/
