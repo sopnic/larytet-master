@@ -1,4 +1,6 @@
 #summary List of frontends
 
-  * http://advancedstocktracker.org/ (Object C?, charts)
+  * http://advancedstocktracker.org/ (Object C?, charts, requires Apache)
   * http://jstock.sourceforge.net  (Java, includes indicators, charts)
+  * http://mov.sourceforge.net/ (Java)
+  * http://qtstalker.sourceforge.net/  (C++, Qt)
