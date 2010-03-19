@@ -4,3 +4,6 @@
   * http://jstock.sourceforge.net  (Java, includes indicators, charts)
   * http://mov.sourceforge.net/ (Java)
   * http://qtstalker.sourceforge.net/  (C++, Qt)
+  * http://www.marketcetera.com/site/ (Java)
+  * http://www.eclipsetrader.org/  (Java)
+  * http://code.google.com/p/jsystemtrader/ (Java ?)
