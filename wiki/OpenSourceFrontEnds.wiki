@@ -1,0 +1,4 @@
+#summary List of frontends
+
+  * http://advancedstocktracker.org/ (Object C?, charts)
+  * http://jstock.sourceforge.net  (Java, includes indicators, charts)
