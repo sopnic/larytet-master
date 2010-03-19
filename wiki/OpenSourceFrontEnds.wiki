@@ -6,4 +6,22 @@
   * http://qtstalker.sourceforge.net/  (C++, Qt)
   * http://www.marketcetera.com/site/ (Java)
   * http://www.eclipsetrader.org/  (Java)
-  * http://code.google.com/p/jsystemtrader/ (Java ?)
+  * http://code.google.com/p/jsystemtrader/ (Java)
+  * http://www.activestocks.eu/ ActiveQuant (Java)
+  * http://sourceforge.net/projects/humaitrader/  (Java)
+  * http://ojts.sourceforge.net/ (Open Java Trading System)
+  * http://code.google.com/p/truetrade/ (Java, backtesting)
+  * http://jrobotrader.atspace.com/ (JRobotTrader)
+  * http://ta-lib.org/ (has CSharp API)
+
+
+
+
+
+FIX protocol
+  * http://www.quickfixj.org/
+
+Market simulation
+  * http://jessx.ec-lille.fr
+  * http://artstkmkt.sourceforge.net/
+  
