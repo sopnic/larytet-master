@@ -6,7 +6,7 @@
   * http://qtstalker.sourceforge.net/  (C++, Qt)
   * http://www.marketcetera.com/site/ (Java)
   * http://www.eclipsetrader.org/  (Java)
-  * http://code.google.com/p/jsystemtrader/ (Java)
+  * http://code.google.com/p/jsystemtrader/ (Java 130K bars in 15sec)
   * http://www.activestocks.eu/ ActiveQuant (Java)
   * http://sourceforge.net/projects/humaitrader/  (Java)
   * http://ojts.sourceforge.net/ (Open Java Trading System)
