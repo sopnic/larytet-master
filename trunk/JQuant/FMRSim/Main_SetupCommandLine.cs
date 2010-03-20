@@ -1951,7 +1951,8 @@ namespace JQuant
         {
             int argsNum = cmdArguments.Length;
             string[] args = (string[])cmdArguments;
-            string filename = "yahoo_feed_data.csv";
+//            string filename = "yahoo_feed_data.csv";
+            string filename = "yahoo_feed_data_5y.csv";
             switch (argsNum)
             {
                 case 2:
@@ -2047,7 +2048,7 @@ namespace JQuant
             public System.Collections.Generic.List<Trade> trades;
         }
         
-        protected void _signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
+        protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
             double stopLossFrom = 0.02;
             double stopLossTo = 0.04;
@@ -2057,37 +2058,28 @@ namespace JQuant
             double sellSignalFrom = 4;
             double sellSignalTo = 1.4;
             double signalStep = 0.01;
-            int maxDaysFrom = 1000;
-            int maxDaysTo = 1001;
-            int maxDaysStep = 40;
-            long loopsTotal = (long)(((buySignalTo-buySignalFrom)/signalStep) * ((sellSignalFrom-sellSignalTo)/signalStep) * ((stopLossTo-stopLossFrom)/stopLossStep) *                                     
-                                     Math.Max(1,(maxDaysTo-maxDaysFrom)/maxDaysStep) );
+            int maxDays = 1000;
+            long loopsTotal = (long)(((buySignalTo-buySignalFrom)/signalStep) * ((sellSignalFrom-sellSignalTo)/signalStep) * ((stopLossTo-stopLossFrom)/stopLossStep)  );
             
             System.Collections.Generic.List<TradeSession> bestBlocks = new System.Collections.Generic.List<TradeSession>(40);
-
-            int maxDays = maxDaysTo;
-            while (maxDays > maxDaysFrom)
+            
+            double buySignal = buySignalFrom;
+            while (buySignal < buySignalTo)
             {
-                double buySignal = buySignalFrom;
-                while (buySignal < buySignalTo)
+                double sellSignal = sellSignalFrom;
+                while (sellSignal > sellSignalTo)
                 {
-                    double sellSignal = sellSignalFrom;
-                    while (sellSignal > sellSignalTo)
+                    double stopLoss = stopLossFrom;
+                    while (stopLoss < stopLossTo)
                     {
-                        double stopLoss = stopLossFrom;
-                        while (stopLoss < stopLossTo)
-                        {
-                            signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal, maxDays, bestBlocks);
-                            stopLoss += stopLossStep;
-                            loopsTotal--;
-                            if ((loopsTotal & 0xFFFF) == 0) System.Console.Write("."+loopsTotal);
-                        }
-                        sellSignal -= signalStep;
+                        signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal, maxDays, bestBlocks);
+                        stopLoss += stopLossStep;
+                        loopsTotal--;
+                        if ((loopsTotal & 0xFFFF) == 0) System.Console.Write("."+loopsTotal);
                     }
-                    buySignal += signalStep;
-                    
+                    sellSignal -= signalStep;
                 }
-                maxDays -= maxDaysStep;
+                buySignal += signalStep;               
             }
 
             TradeSession bs = findBest(bestBlocks);
@@ -2098,7 +2090,7 @@ namespace JQuant
             signalPerformancePrintTrades(bs.trades);
                 
         }
-        protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
+        protected void _signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
             double stopLossStep = 0.001;
             
@@ -2122,11 +2114,13 @@ namespace JQuant
         {
             TradeSession bestSession = null;
             double p = Double.MinValue;
+            double maxDrawDown = Double.MaxValue;
             foreach (TradeSession s in sessions)
             {
-                if (s.p > p)
+                if ((s.p > 1) && (s.maxDrawDown < maxDrawDown))
                 {
                     p = s.p;
+                    maxDrawDown = s.maxDrawDown;
                     bestSession = s;
                 }
             }
