@@ -2204,7 +2204,7 @@ namespace JQuant
 
             bool res;
             double stopLoss_1 = -stopLoss;
-            double stopLoss_2 = -5*stopLoss;
+            double stopLoss_2 = -2*stopLoss;
             res = (deltaTrade < stopLoss_2) || (deltaCandle < stopLoss_1);
 
             return res;            
