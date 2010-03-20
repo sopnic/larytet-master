@@ -2165,7 +2165,7 @@ namespace JQuant
                     signalPerformance(series, stopLoss, maxDays, idx, false, out trade);
                     if (trades.Count < 200) trades.Add(trade);
                     else break;
-                    i += trade.days;
+                    i += Math.Max(1, trade.days);
 //                        System.Console.Write("\tSell at "+idx+" entry="+trade.entry+" exit="+trade.exit+" "+candle.ToString());
 //                        System.Console.WriteLine(" p="+trade.p+", days="+trade.days+", exit at "+(idx+trade.days));
                 }
@@ -2174,7 +2174,7 @@ namespace JQuant
                     signalPerformance(series, stopLoss, maxDays, idx, true, out trade);
                     if (trades.Count < 200) trades.Add(trade);
                     else break;
-                    i += trade.days;
+                    i += Math.Max(1, trade.days);
 //                        System.Console.Write("\tBuy at "+idx+" entry="+trade.entry+" exit="+trade.exit+" "+candle.ToString());
 //                        System.Console.WriteLine(" p="+trade.p+", days="+trade.days+", exit at "+(idx+trade.days));
                 }
@@ -2255,7 +2255,6 @@ namespace JQuant
                 }
                 close = candle.close;
             }
-//            System.Console.Write("2");
             double delta;
             delta = entryPoint - candle.close;
             if (isBuy) delta = -delta;
