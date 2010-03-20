@@ -1995,7 +1995,7 @@ namespace JQuant
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
             iWrite.WriteLine("Data: count="+data.Length+",max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
 
-            int windowSize = 4;
+            int windowSize = 5;
             // now normalize the data
             data = TA.PriceVolumeSeries.Normalize(data, windowSize);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
@@ -2094,7 +2094,7 @@ namespace JQuant
             System.Console.WriteLine("pTotal="+(int)(100*bs.p)+"%, days="+bs.days+
                                       ", hits="+bs.hits+", maxDrawDown="+(int)(100*bs.maxDrawDown)+""+
                                          ", trades="+bs.trades.Count+", stopLoss="+bs.stopLoss+", maxDays="+bs.maxDays+
-                                         ", sellSig="+bs.sellSignal+", buySig="+bs.buySignal);
+                                         ", sellSig="+bs.sellSignal+", buySig="+bs.buySignal+", wind="+windowSize);
             signalPerformancePrintTrades(bs.trades);
                 
         }
