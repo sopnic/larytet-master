@@ -2037,14 +2037,14 @@ namespace JQuant
             double signalStep = 0.01;
             double stopLossStep = 0.01;
             long loopsTotal = (long)((8/signalStep) * (8/signalStep) * ((0.5-0.005)/stopLossStep));
-            double buySignal = -4;
-            while (buySignal < 4)
+            double buySignal = -1.64;
+            // while (buySignal < 4)
             {
-                double sellSignal = 4;
-                while (sellSignal > -4)
+                double sellSignal = 1.88;
+                // while (sellSignal > -4)
                 {
-                    double stopLoss = 0.005;
-                    while (stopLoss < 0.05)
+                    double stopLoss = 0.028;
+                    // while (stopLoss < 0.05)
                     {
                         signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal);
                         stopLoss += 0.001;
