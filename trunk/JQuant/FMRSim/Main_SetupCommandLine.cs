@@ -2173,7 +2173,7 @@ namespace JQuant
             double maxDrawDown;
             signalPerformanceGetTrades(trades, out daysTotal, out hits, out pTotal, out maxDrawDown);
             int misses = trades.Count-hits;
-            if ((pTotal > 4) && (trades.Count > 5))
+            if ((pTotal > 2) && (trades.Count > 5))
             {
                 TradeSession ts = new TradeSession();
                 ts.trades = trades;
@@ -2189,6 +2189,25 @@ namespace JQuant
 //                System.Console.WriteLine("p="+pTotal);
 //                signalPerformancePrintTrades(trades);
             }
+        }
+
+        protected bool signalStop(bool isBuy, double stopLoss, double entry, double last, double current)
+        {
+            double deltaTrade = (entry-current)/entry;
+            double deltaCandle = (last-current)/last;
+
+            if (isBuy)
+            {
+                deltaTrade = -deltaTrade;
+                deltaCandle = -deltaCandle;
+            }
+
+            bool res;
+            double stopLoss_1 = -stopLoss;
+            double stopLoss_2 = -5*stopLoss;
+            res = (deltaTrade < stopLoss_2) || (deltaCandle < stopLoss_1);
+
+            return res;            
         }
         
         protected void signalPerformance(TA.PriceVolumeSeries series, double stopLoss, int idx, bool isBuy, out Trade trade)
@@ -2207,25 +2226,7 @@ namespace JQuant
             for (i = idx+1;i < count;i++)
             {
                 candle = (TA.Candle)series.Data[i];
-                if (
-                    (isBuy) &&
-                    (  
-                       (entryPoint < candle.close*(1-2*stopLoss))
-                         || 
-                       (close < candle.close*(1-stopLoss))   
-                     )
-                   )
-                {
-                    break;
-                }
-                if (
-                    (isSell) &&
-                    (  
-                       (entryPoint > candle.close*(1+2*stopLoss))
-                         ||   
-                       (close > candle.close*(1+stopLoss))   
-                     )
-                   )
+                if (signalStop(isBuy, stopLoss, entryPoint, close, candle.close))
                 {
                     break;
                 }
@@ -2241,8 +2242,7 @@ namespace JQuant
             trade.entry = entryPoint;
             trade.exit = candle.close;
             trade.p = p;
-            trade.days = days;
-            
+            trade.days = days;            
         }
         
         protected int debugRTClockSleep(Random random)
