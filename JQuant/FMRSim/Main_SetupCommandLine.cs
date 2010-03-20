@@ -2042,16 +2042,16 @@ namespace JQuant
             bool isSell = !isBuy;
             for (int i = idx+1;i < count;i++)
             {
-                candle = (TA.Candle)series.Data[idx];
+                candle = (TA.Candle)series.Data[i];
                 if ((isBuy) && (candle.close < close*(1-stopLoss)))
                 {
                     double p = 100*((candle.close-entryPoint)/entryPoint);
                     System.Console.WriteLine("Exit on day "+(i-idx)+" from "+entryPoint + " to "+candle.close + "("+p+"%)");
                     break;
                 }
-                if ((isSell) && (candle.close > close*(1-stopLoss)))
+                if ((isSell) && (candle.close > close*(1+stopLoss)))
                 {
-                    double p = 100*((candle.close-entryPoint)/entryPoint);
+                    double p = 100*((entryPoint-candle.close)/entryPoint);
                     System.Console.WriteLine("Exit on day "+(i-idx)+" from "+entryPoint + " to "+candle.close + "("+p+"%)");
                     break;
                 }
