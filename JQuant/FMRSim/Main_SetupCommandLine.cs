@@ -2013,50 +2013,70 @@ namespace JQuant
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
             iWrite.WriteLine("EMA(Fisher(EMA(Normalize(data)))): count="+data.Length+",max="+max+", min="+min+", average="+average);
 
-            // buy/sell signals
             int i;
+            for (i = 0;i < data.Length;i++)
+            {
+//                iWrite.WriteLine(""+data[i]);
+            }
+            
+            // buy/sell signals
+            double diff = (1+0.02);
+            double pTotal = 1.0;
+            int daysTotal = 0;
             for (i = 0;i < (data.Length-1);i++)
             {
                 int idx = i + windowSize;
                 TA.Candle candle = (TA.Candle)series.Data[idx];
-                if ((data[i] > 4) && (data[i] > data[i+1]))  // sell condition and trigger
+                double p;
+                int days;
+                if ((data[i] > 4) && (data[i] > data[i+1]*diff))  // sell condition and trigger
                 {
-                    iWrite.WriteLine("Sell at "+idx+" "+candle.ToString());
-                    signalPerformance(series, idx, false);
+                    signalPerformance(series, idx, false, out p, out days);
+                    pTotal = pTotal*(1+p);
+                    daysTotal += days;
+                    iWrite.Write("Sell at "+idx+" "+candle.ToString());
+                    iWrite.WriteLine(" p="+p+", pTotal="+pTotal+", days="+daysTotal);
                 }
-                if ((data[i] < -3) && (data[i] < data[i+1]))  // buy condition and trigger
+                if ((data[i] < -3) && (data[i]*diff < data[i+1]))  // buy condition and trigger
                 {
-                    iWrite.WriteLine("Buy at "+idx+" "+candle.ToString());
+                    signalPerformance(series, idx, true, out p, out days);
+                    pTotal = pTotal*(1+p);
+                    daysTotal += days;
+                    iWrite.Write("Buy at "+idx+" "+candle.ToString());
+                    iWrite.WriteLine(" p="+p+", pTotal="+pTotal+", days="+daysTotal);
                 }
             }
             
         }
         
-        protected void signalPerformance(TA.PriceVolumeSeries series, int idx, bool isBuy)
+        protected void signalPerformance(TA.PriceVolumeSeries series, int idx, bool isBuy, out double p, out int days)
         {
-            double stopLoss = 0.02; // trailing stop loss
+            double stopLoss = 0.01; // trailing stop loss
             int count = series.Data.Count;
             TA.Candle candle = (TA.Candle)series.Data[idx];
             double entryPoint = candle.close;
             double close = entryPoint;
             bool isSell = !isBuy;
-            for (int i = idx+1;i < count;i++)
+            int i;
+            for (i = idx+1;i < count;i++)
             {
                 candle = (TA.Candle)series.Data[i];
                 if ((isBuy) && (candle.close < close*(1-stopLoss)))
                 {
-                    double p = 100*((candle.close-entryPoint)/entryPoint);
-                    System.Console.WriteLine("Exit on day "+(i-idx)+" from "+entryPoint + " to "+candle.close + "("+p+"%)");
                     break;
                 }
                 if ((isSell) && (candle.close > close*(1+stopLoss)))
                 {
-                    double p = 100*((entryPoint-candle.close)/entryPoint);
-                    System.Console.WriteLine("Exit on day "+(i-idx)+" from "+entryPoint + " to "+candle.close + "("+p+"%)");
                     break;
                 }
                 close = candle.close;
             }
+            double delta;
+            if (isBuy) delta = entryPoint - candle.close;
+            if (isSell) delta = candle.close - entryPoint;
+            p = ((candle.close-entryPoint)/entryPoint);
+            days = (i-idx);
+            // System.Console.WriteLine("Exit on day "+days+" from "+entryPoint + " to "+candle.close + "("+100*p+"%)");
         }
         
         protected int debugRTClockSleep(Random random)
