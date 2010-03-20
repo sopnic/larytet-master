@@ -2022,6 +2022,7 @@ namespace JQuant
                 if ((data[i] > 4) && (data[i] > data[i+1]))  // sell condition and trigger
                 {
                     iWrite.WriteLine("Sell at "+idx+" "+candle.ToString());
+                    signalPerformance(series, idx, false);
                 }
                 if ((data[i] < -3) && (data[i] < data[i+1]))  // buy condition and trigger
                 {
@@ -2029,6 +2030,33 @@ namespace JQuant
                 }
             }
             
+        }
+        
+        protected void signalPerformance(TA.PriceVolumeSeries series, int idx, bool isBuy)
+        {
+            double stopLoss = 0.02; // trailing stop loss
+            int count = series.Data.Count;
+            TA.Candle candle = (TA.Candle)series.Data[idx];
+            double entryPoint = candle.close;
+            double close = entryPoint;
+            bool isSell = !isBuy;
+            for (int i = idx+1;i < count;i++)
+            {
+                candle = (TA.Candle)series.Data[idx];
+                if ((isBuy) && (candle.close < close*(1-stopLoss)))
+                {
+                    double p = 100*((candle.close-entryPoint)/entryPoint);
+                    System.Console.WriteLine("Exit on day "+(i-idx)+" from "+entryPoint + " to "+candle.close + "("+p+"%)");
+                    break;
+                }
+                if ((isSell) && (candle.close > close*(1-stopLoss)))
+                {
+                    double p = 100*((candle.close-entryPoint)/entryPoint);
+                    System.Console.WriteLine("Exit on day "+(i-idx)+" from "+entryPoint + " to "+candle.close + "("+p+"%)");
+                    break;
+                }
+                close = candle.close;
+            }
         }
         
         protected int debugRTClockSleep(Random random)
