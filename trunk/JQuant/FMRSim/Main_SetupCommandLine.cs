@@ -2115,13 +2115,15 @@ namespace JQuant
             TradeSession bestSession = null;
             double p = Double.MinValue;
             double maxDrawDown = Double.MaxValue;
+            int hits = Int32.MinValue;
             foreach (TradeSession s in sessions)
             {
-                if ((s.p > 1) && (s.maxDrawDown < maxDrawDown))
+                if ((s.p > 1) && (s.hits > hits))
                 {
                     p = s.p;
                     maxDrawDown = s.maxDrawDown;
                     bestSession = s;
+                    hits = s.hits;
                 }
             }
 
