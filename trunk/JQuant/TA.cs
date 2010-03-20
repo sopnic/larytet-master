@@ -203,8 +203,8 @@ namespace TA
             Candle candle;
             double close;
             average = 0;
-            max = 0;
             min = Int32.MaxValue;
+            max = Int32.MinValue;
             stdDeviation = 0;
 
             double candleSize = 0;
@@ -231,10 +231,6 @@ namespace TA
             {
                 candle = (Candle)series.Data[i];
                 close = candle.close;
-
-                average += close;
-                max = Math.Max(max, close);
-                min = Math.Min(min, close);
 
                 candleSize = Math.Abs(candle.open - close);
                 double d = candleSize - candleSizeAverage;
@@ -277,68 +273,55 @@ namespace TA
             average = average / count;
         }
 
+        /// <summary>
+        /// Initialize Max, Min, Average, StdDev properties
+        /// This method will be called only once. 
+        /// </summary>
         public void CalculateParams()
         {
             if (!paramsCalculated)
             {
                 double average; double max; double min; double stdDeviation;
-
+                
                 CalculateAverageStdDeviation(this, out average, out max, out min, out stdDeviation);
 
-                Average = average;
-                Min = min;
-                Max = max;
-                StdDeviation = stdDeviation;
-
-                paramsCalculated = true;
+                this.Average = average;
+                this.Min = min;
+                this.Max = max;
+                this.StdDeviation = stdDeviation;
+                
+                this.paramsCalculated = true;
             }
         }
 		
 		/// <summary>
 		/// Fisher transform 0.5*ln*[(1+x)/(1-x)] 
 		/// </summary>
-		public void Fisher(PriceVolumeSeries series)
+		public static void Fisher(double[] series)
 		{
-			int count = series.Data.Count;
+			int count = series.Length;
             for (int i = 0; i < count; i++)
             {
-                Candle candle = (Candle)series.Data[i];
-				
-				double close = candle.close;
-				double high = candle.high;
-				double low = candle.low;
-				double open = candle.open;
-				
-				open = 0.5*Math.Log((1+open)/(1-open), 2);
-				close = 0.5*Math.Log((1+close)/(1-close), 2);
-				high = 0.5*Math.Log((1+high)/(1-high), 2);
-				low = 0.5*Math.Log((1+low)/(1-low), 2);
-				series.Data[i] = new Candle(open, close, high, low, candle.volume);
+				double d = series[i];				
+				d = 0.5 * Math.Log((1+d)/(1-d), 2);
+				series[i] = d;
 			}
 		}
 		
 		/// <summary>
 		/// Two points EMA
-		/// Perfromace warning: creates set of new candles
 		/// </summary>
-		public static void EMA(PriceVolumeSeries series, double weight)
+		public static void EMA(double[] series, double weight)
 		{
-			int count = series.Data.Count;
+			int count = series.Length;
 			count = count - 1;
 			double weight_1 = 1 - weight;
             for (int i = 0; i < count; i++)
             {
-                Candle candle0 = (Candle)series.Data[i];
-                Candle candle1 = (Candle)series.Data[i+1];
-				double close = candle1.close * weight + candle0.close * weight_1;
-				double high = candle1.high * weight + candle0.high * weight_1;
-				double low = candle1.low * weight + candle0.low * weight_1;
-				double open = candle1.open * weight + candle0.open * weight_1;
-				series.Data[i+1] = new Candle(open, close, high, low, candle1.volume);
-			}
-			if (count > 0)
-			{
-				series.Data.RemoveAt(0);
+                double data0 = series[i];
+                double data1 = series[i+1];
+				double ema = data0 * weight + data1 * weight_1;
+				series[i+1] = ema;
 			}
 		}
 
@@ -356,94 +339,215 @@ namespace TA
 		/// <param name="count">
 		/// A <see cref="System.Int32"/>
 		/// </param>
+        /// A <see cref="System.Double"/>
 		/// <param name="max">
-		/// A <see cref="System.Double"/>
+
 		/// </param>
 		/// <param name="min">
 		/// A <see cref="System.Double"/>
 		/// </param>
-        public static void Normalize
+        public static double[] Normalize
             (PriceVolumeSeries series, double max, double min)
         {
             int count = series.Data.Count;
+            double[] result = new double[count];
+            double max_min = max - min;
+            
             for (int i = 0; i < count; i++)
             {
                 Candle candle = (Candle)series.Data[i];
-				candle = Normalize(candle, max, min);
-				series.Data[i] = candle;
+                double close = candle.close;
+                close = 2*((close - min)/max_min - 0.5);            
+				result[i] = close;
             }
+
+            return result;
 		}
 		
-        public static Candle Normalize
-            (Candle candle, double max, double min)
+        public static double[] Normalize
+            (PriceVolumeSeries series)
         {
-			double max_min = max - min;
-			
-			double close = candle.close;
-			double open = candle.open;
-			double high = candle.high;
-			double low = candle.low;
-			
-            close = 2*((close - min)/max_min - 0.5);			
-            open = 2*((open - min)/max_min - 0.5);
-            high = 2*((high - min)/max_min - 0.5);			
-            low = 2*((low - min)/max_min - 0.5);
-			
-			Candle newCandle = new Candle(open, close, high, low, candle.volume);
-			return newCandle;
-		}
+            double max = series.Max;
+            double min = series.Min;
+            double[] result = Normalize(series, max, min);
+            return result;
+        }
+
+        /// <summary>
+        /// Normalize the data using rolling 'range' data points
+        /// Results will be in the [-1;1]
+        /// </summary>
+        /// <param name="series">
+        /// A <see cref="PriceVolumeSeries"/>
+        /// </param>
+        /// <param name="range">
+        /// A <see cref="System.Int32"/>
+        /// </param>
+        public static double[] Normalize
+            (double[] series, int range)
+        {
+            int count = series.Length;           
+            // no point to start to do anything
+            if (count < range) return null;
+
+            double[] result = new double[count-range+1];
+            
+            int idx = (range-1);
+            int idxRes = 0;
+            double min;
+            double max;
+            double first = series[0];
+            
+            CalculateMaxMin(series, idxRes, range, out max, out min);
+
+            while (idx < count)
+            {
+                // I do not have to recalculate Max and Min in all cases, but only
+                // when the entry i drop is min or max or ...
+                if (first <= min) CalculateMaxMin(series, idxRes, range, out max, out min);
+                else if (first >= max) CalculateMaxMin(series, idxRes, range, out max, out min);
+                
+                double d = series[idx];
+                first = series[idx-range+1];
+
+                // .. or a new entry is a max or min
+                max = Math.Max(max, d);
+                min = Math.Min(min, d);
+
+                if (max != min) d = 2.0 * ((d - min)/(max - min) - 0.5);
+                else d = 0;
+                
+                // System.Console.WriteLine("max="+max+",min="+min+",d="+series[idx]+",dc="+d+",f="+first);
+                result[idxRes] = d;
+
+                // move to the next point
+                idx++;idxRes++;
+            }
+
+            return result;
+        }
+        
+        private static void CalculateMaxMin(double[] data, int start, int count, out double max, out double min)
+        {
+            min = Double.MaxValue;
+            max = Double.MinValue;
+            int end = start+count;
+            for (int i = start;i < end;i++)
+            {
+                double d = data[i];
+                max = Math.Max(d, max);
+                min = Math.Min(d, min);
+            }                 
+        }
+        
+        public static void CalculateAverage
+            (double[] series, int start, int count, out double average, out double max, out double min)
+        {
+            double close = series[0];
+            average = close;
+            max = close;
+            min = max;
+
+            int end = start + count;
+            for (int i = start + 1; i < end; i++)
+            {
+                close = series[i];
+                if (max < close)
+                {
+                    max = close;
+                }
+                if (min > close)
+                {
+                    min = close;
+                }
+                average += close;
+            }
+
+            average = average / count;
+        }
+
+        public static double[] GetClose(PriceVolumeSeries series)
+        {
+            int count = series.Data.Count;
+            
+            double[] result = new double[count];
+            int idx = 0;
+            foreach (Candle candle in series.Data)
+            {
+                result[idx] = candle.close;
+                idx++;
+            }
+            return result;
+        }
+
 
         public double Average
         {
             get
             {
-                CalculateParams();
-                return Average;
+                if (!paramsCalculated)
+                {
+                    CalculateParams();
+                }
+                return average;
             }
             protected set
             {
-                Average = value;
+                average = value;
             }
         }
+        protected double average;
 
         public double Max
         {
             get
             {
-                CalculateParams();
-                return Max;
+                if (!paramsCalculated)
+                {
+                    CalculateParams();
+                }
+                return max;
             }
             protected set
             {
-                Max = value;
+                max = value;
             }
         }
+        protected double max;
 
         public double Min
         {
             get
             {
-                CalculateParams();
-                return Min;
+                if (!paramsCalculated)
+                {
+                    CalculateParams();
+                }
+                return min;
             }
             protected set
             {
-                Min = value;
+                min = value;
             }
         }
+        protected double min;
 
         public double StdDeviation
         {
             get
             {
-                CalculateParams();
-                return StdDeviation;
+                if (!paramsCalculated)
+                {
+                    CalculateParams();
+                }
+                return stdDeviation;
             }
             protected set
             {
-                StdDeviation = value;
+                stdDeviation = value;
             }
         }
+        protected double stdDeviation;
 
         bool paramsCalculated;
     }

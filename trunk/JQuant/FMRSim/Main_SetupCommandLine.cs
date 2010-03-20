@@ -1821,6 +1821,7 @@ namespace JQuant
             }
         }
 
+        protected TA.PriceVolumeSeries FeedSeries;
         protected void feedGetSeriesCallback(IWrite iWrite, string cmdName, object[] cmdArguments, bool outputToFile)
         {
             int argsNum = cmdArguments.Length;
@@ -1906,8 +1907,8 @@ namespace JQuant
             }
 
             IDataFeed dataFeed = new FeedYahoo();
-            TA.PriceVolumeSeries series;
-            result = dataFeed.GetSeries(from, to, new Equity(symbol), DataFeed.DataType.Daily, out series);
+            result = dataFeed.GetSeries(from, to, new Equity(symbol), DataFeed.DataType.Daily, out FeedSeries);
+            TA.PriceVolumeSeries series = FeedSeries;
             if (result)
             {
                 System.IO.FileStream fileStream = null;
@@ -1948,21 +1949,72 @@ namespace JQuant
 
         protected void feedGetSeriesFromFileCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
+            int argsNum = cmdArguments.Length;
+            string[] args = (string[])cmdArguments;
             string filename = "yahoo_feed_data.csv";
-
-            IDataFeed dataFeed = new FeedYahoo();
-            TA.PriceVolumeSeries series;
-            bool result = dataFeed.GetSeries(filename, out series);
-            if (result)
+            switch (argsNum)
             {
-                iWrite.WriteLine("Parsed " + series.Data.Count + " entries");
+                case 2:
+                    filename = args[1];
+                    break;
+                default:
+                    break;
+            }
+
+            if (filename == null)
+            {
+                iWrite.WriteLine("Filename is not specified");
             }
             else
             {
-                iWrite.WriteLine("Failed to read data from server");
+                IDataFeed dataFeed = new FeedYahoo();
+                bool result = dataFeed.GetSeries(filename, out FeedSeries);
+                TA.PriceVolumeSeries series = FeedSeries;
+                if (result)
+                {
+                    iWrite.WriteLine("Parsed " + series.Data.Count + " entries");
+                }
+                else
+                {
+                    iWrite.WriteLine("Failed to read data from server");
+                }
             }
         }
 
+        protected void feedFisherTransformCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            TA.PriceVolumeSeries series = FeedSeries;
+
+            // first step is to calculate max, min, average etc.
+            series.CalculateParams();
+            iWrite.WriteLine("Series: max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
+
+            double average, max, min;
+            
+            double[] data = TA.PriceVolumeSeries.GetClose(series);
+            TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
+            iWrite.WriteLine("Data: max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
+            
+            // now normalize the data
+            data = TA.PriceVolumeSeries.Normalize(data, 10);
+            TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
+            iWrite.WriteLine("Normalize(data): max="+max+", min="+min+", average="+average);
+            
+            TA.PriceVolumeSeries.EMA(data, 0.5);
+            TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
+            iWrite.WriteLine("EMA(Normalize(data)): max="+max+", min="+min+", average="+average);
+            
+            TA.PriceVolumeSeries.Fisher(data);
+            TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
+            iWrite.WriteLine("Fisher(EMA(Normalize(data))): max="+max+", min="+min+", average="+average);
+
+            foreach (double d in data)
+            {
+                iWrite.WriteLine(""+d);
+            }
+            
+        }
+        
         protected int debugRTClockSleep(Random random)
         {
             int res = 0;
@@ -2197,15 +2249,17 @@ namespace JQuant
             Menu menuFeed = cli.RootMenu.AddMenu("Feed", "Trading data feeds",
                                    " Get data from the data feeds, TA screens");
 
-            menuFeed.AddCommand("getseries", "Get price/volume series",
+            menuFeed.AddCommand("get", "Get price/volume series",
                                   " Get price/volume daily series for the specified stock symbol. Args: symbol [fromDate[toDate]]", feedGetSeriesCallback);
-            menuFeed.AddCommand("gettofile", "Write price/volume series to file",
+            menuFeed.AddCommand("gf", "Write price/volume series to file",
                                   " Get price/volume daily series for the specified stock symbol and write to file. Args: symbol filename [fromDate[toDate]]", feedGetToFileCallback);
-            menuFeed.AddCommand("readfile", "Get price/volume series from file",
+            menuFeed.AddCommand("rf", "Get price/volume series from file",
                                   " Load price/volume daily series for the specified file. Args: filename", feedGetSeriesFromFileCallback);
-
+            menuFeed.AddCommand("fisher", "Fisher transform",
+                                  "Apply Fisher transform to the latest loaded series", feedFisherTransformCallback);
             #endregion;
 
+            
             #region Market Simulation commands;
 
             Menu menuMarketSim = cli.RootMenu.AddMenu("ms", "Market simulation",
