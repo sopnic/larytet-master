@@ -1951,7 +1951,7 @@ namespace JQuant
         {
             int argsNum = cmdArguments.Length;
             string[] args = (string[])cmdArguments;
-            string filename = "yahoo_feed_data_3y.csv";
+            string filename = "yahoo_feed_data_5y.csv";
             switch (argsNum)
             {
                 case 2:
@@ -2152,7 +2152,7 @@ namespace JQuant
         {
             Trade trade;
             System.Collections.Generic.List<Trade> trades = new System.Collections.Generic.List<Trade>(10);
-            double diff = (1+0.002);
+            double diff = (1+0.02);
             int i = 0;
             while (i < (data.Length-1))
             {
