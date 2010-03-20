@@ -71,6 +71,17 @@ namespace TA
             protected set;
         }
 
+        public override string ToString()
+        {
+            String s;
+            s = JQuant.OutputUtils.FormatField(open, 8) +
+                 JQuant.OutputUtils.FormatField(high, 8) +
+                 JQuant.OutputUtils.FormatField(low, 8) +
+                 JQuant.OutputUtils.FormatField(close, 8) +
+                 JQuant.OutputUtils.FormatField(volume, 10);
+
+            return s;
+        }
 
     }
 
@@ -302,7 +313,9 @@ namespace TA
 			int count = series.Length;
             for (int i = 0; i < count; i++)
             {
-				double d = series[i];				
+				double d = series[i];
+                if (d < -0.9999) d = -0.9999;
+                if (d > 0.9999) d = 0.9999;
 				d = 0.5 * Math.Log((1+d)/(1-d), 2);
 				series[i] = d;
 			}

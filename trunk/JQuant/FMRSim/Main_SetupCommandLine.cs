@@ -1987,30 +1987,46 @@ namespace JQuant
 
             // first step is to calculate max, min, average etc.
             series.CalculateParams();
-            iWrite.WriteLine("Series: max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
+            iWrite.WriteLine("Series: count="+series.Data.Count+", max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
 
             double average, max, min;
             
             double[] data = TA.PriceVolumeSeries.GetClose(series);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
-            iWrite.WriteLine("Data: max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
-            
+            iWrite.WriteLine("Data: count="+data.Length+",max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
+
+            int windowSize = 10;
             // now normalize the data
-            data = TA.PriceVolumeSeries.Normalize(data, 10);
+            data = TA.PriceVolumeSeries.Normalize(data, windowSize);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
-            iWrite.WriteLine("Normalize(data): max="+max+", min="+min+", average="+average);
+            iWrite.WriteLine("Normalize(data): count="+data.Length+",max="+max+", min="+min+", average="+average);
             
             TA.PriceVolumeSeries.EMA(data, 0.5);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
-            iWrite.WriteLine("EMA(Normalize(data)): max="+max+", min="+min+", average="+average);
+            iWrite.WriteLine("EMA(Normalize(data)): count="+data.Length+",max="+max+", min="+min+", average="+average);
             
             TA.PriceVolumeSeries.Fisher(data);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
-            iWrite.WriteLine("Fisher(EMA(Normalize(data))): max="+max+", min="+min+", average="+average);
+            iWrite.WriteLine("Fisher(EMA(Normalize(data))): count="+data.Length+",max="+max+", min="+min+", average="+average);
 
-            foreach (double d in data)
+            TA.PriceVolumeSeries.EMA(data, 0.5);
+            TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
+            iWrite.WriteLine("EMA(Fisher(EMA(Normalize(data)))): count="+data.Length+",max="+max+", min="+min+", average="+average);
+
+            // buy/sell signals
+            int i;
+            for (i = 0;i < (data.Length-1);i++)
             {
-                iWrite.WriteLine(""+d);
+                int idx = i + windowSize;
+                TA.Candle candle = (TA.Candle)series.Data[idx];
+                if ((data[i] > 4) && (data[i] > data[i+1]))  // sell condition and trigger
+                {
+                    iWrite.WriteLine("Sell at "+idx+" "+candle.ToString());
+                }
+                if ((data[i] < -3) && (data[i] < data[i+1]))  // buy condition and trigger
+                {
+                    iWrite.WriteLine("Buy at "+idx+" "+candle.ToString());
+                }
             }
             
         }
