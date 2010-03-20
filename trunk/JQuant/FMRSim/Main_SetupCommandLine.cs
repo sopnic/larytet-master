@@ -1995,7 +1995,7 @@ namespace JQuant
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
             iWrite.WriteLine("Data: count="+data.Length+",max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
 
-            int windowSize = 5;
+            int windowSize = 3;
             // now normalize the data
             data = TA.PriceVolumeSeries.Normalize(data, windowSize);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
