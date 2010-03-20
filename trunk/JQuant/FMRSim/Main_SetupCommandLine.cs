@@ -1995,7 +1995,7 @@ namespace JQuant
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
             iWrite.WriteLine("Data: count="+data.Length+",max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
 
-            int windowSize = 10;
+            int windowSize = 5;
             // now normalize the data
             data = TA.PriceVolumeSeries.Normalize(data, windowSize);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
@@ -2035,25 +2035,29 @@ namespace JQuant
         protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
             double signalStep = 0.01;
-            double stopLossStep = 0.01;
-            long loopsTotal = (long)((8/signalStep) * (8/signalStep) * ((0.5-0.005)/stopLossStep));
-            double buySignal = -1.64;
-            // while (buySignal < 4)
+            double stopLossStep = 0.001;
+            double buySignalFrom = -4;;
+            double buySignalTo = -1;
+            double sellSignalFrom = 4;;
+            double sellSignalTo = 1;
+            long loopsTotal = (long)((2.5/signalStep) * (2.5/signalStep) * ((0.08-0.001)/stopLossStep));
+            double buySignal = buySignalFrom;
+            while (buySignal < buySignalTo)
             {
-                double sellSignal = 1.88;
-                // while (sellSignal > -4)
+                double sellSignal = sellSignalFrom;
+                while (sellSignal > sellSignalTo)
                 {
-                    double stopLoss = 0.028;
-                    // while (stopLoss < 0.05)
+                    double stopLoss = 0.001;
+                    while (stopLoss < 0.05)
                     {
                         signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal);
-                        stopLoss += 0.001;
+                        stopLoss += stopLossStep;
                         loopsTotal--;
-                        if ((loopsTotal & 0x3FFF) == 0) System.Console.Write("."+loopsTotal);
+                        if ((loopsTotal & 0xFFFF) == 0) System.Console.Write("."+loopsTotal);
                     }
-                    sellSignal -= 0.01;
+                    sellSignal -= signalStep;
                 }
-                buySignal += 0.01;
+                buySignal += signalStep;
             }
         }
 
@@ -2068,17 +2072,19 @@ namespace JQuant
             }
         }
         
-        protected static void signalPerformanceGetTrades(System.Collections.Generic.List<Trade> trades, out int days, out int hits, out double p)
+        protected static void signalPerformanceGetTrades(System.Collections.Generic.List<Trade> trades, out int days, out int hits, out double p, out double maxDrawDown)
         {
             p = 1.0;
             days = 0;
             hits = 0;
+            maxDrawDown = Double.MaxValue;
             
             foreach (Trade t in trades)
             {
                 days += t.days;
                 p = p * (1+t.p);
                 if (t.p > 0) hits++;
+                if (t.p < maxDrawDown) maxDrawDown = t.p;
             }
         }
         
@@ -2086,7 +2092,7 @@ namespace JQuant
         {
             Trade trade;
             System.Collections.Generic.List<Trade> trades = new System.Collections.Generic.List<Trade>(10);
-            double diff = (1+0.02);
+            double diff = (1+0.002);
             int i = 0;
             while (i < (data.Length-1))
             {
@@ -2116,13 +2122,14 @@ namespace JQuant
             double pTotal;
             int daysTotal;
             int hits;
-            signalPerformanceGetTrades(trades, out daysTotal, out hits, out pTotal);
+            double maxDrawDown;
+            signalPerformanceGetTrades(trades, out daysTotal, out hits, out pTotal, out maxDrawDown);
             int misses = trades.Count-hits;
-            if ((pTotal > 2.10) && (trades.Count > 5))
+            if ((pTotal > 5.0) && (trades.Count > 5))
             {
                 signalPerformancePrintTrades(trades);
                 System.Console.WriteLine("pTotal="+pTotal+", days="+daysTotal+
-                                         ", hits="+hits+", misses="+misses+
+                                         ", hits="+hits+", misses="+misses+", maxDrawDown="+maxDrawDown+
                                          ", trades="+trades.Count+", stopLoss="+stopLoss+
                                          ", sellSig="+sellSignal+", buySig="+buySignal);
             }
@@ -2143,12 +2150,12 @@ namespace JQuant
             for (i = idx+1;i < count;i++)
             {
                 candle = (TA.Candle)series.Data[i];
-                if ((isBuy) && (candle.close < close*(1-stopLoss)))
+                if ((isBuy) && (entryPoint < candle.close*(1-stopLoss)))
                 {
 //                    System.Console.WriteLine("\tExit at "+candle.close);
                     break;
                 }
-                if ((isSell) && (candle.close > close*(1+stopLoss)))
+                if ((isSell) && (entryPoint > candle.close*(1+stopLoss)))
                 {
 //                    System.Console.WriteLine("\tExit at "+candle.close);
                     break;
