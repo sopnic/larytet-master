@@ -1951,7 +1951,7 @@ namespace JQuant
         {
             int argsNum = cmdArguments.Length;
             string[] args = (string[])cmdArguments;
-            string filename = "yahoo_feed_data_5y.csv";
+            string filename = "yahoo_feed_data_3y.csv";
             switch (argsNum)
             {
                 case 2:
@@ -2187,7 +2187,7 @@ namespace JQuant
             double maxDrawDown;
             signalPerformanceGetTrades(trades, out daysTotal, out hits, out pTotal, out maxDrawDown);
             int misses = trades.Count-hits;
-            if ((pTotal > 2) && (trades.Count > 5) && (bestBlocks.Count < 1000))
+            if ((pTotal > 1) && (trades.Count > 5) && (bestBlocks.Count < 1000))
             {
                 TradeSession ts = new TradeSession();
                 ts.trades = trades;
