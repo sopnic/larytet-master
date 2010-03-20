@@ -1951,7 +1951,7 @@ namespace JQuant
         {
             int argsNum = cmdArguments.Length;
             string[] args = (string[])cmdArguments;
-            string filename = "yahoo_feed_data_5y.csv";
+            string filename = "yahoo_feed_data.csv";
             switch (argsNum)
             {
                 case 2:
@@ -2047,7 +2047,7 @@ namespace JQuant
             public System.Collections.Generic.List<Trade> trades;
         }
         
-        protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
+        protected void _signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
             double stopLossFrom = 0.02;
             double stopLossTo = 0.04;
@@ -2089,6 +2089,25 @@ namespace JQuant
                 }
                 maxDays -= maxDaysStep;
             }
+
+            TradeSession bs = findBest(bestBlocks);
+            System.Console.WriteLine("pTotal="+(int)(100*bs.p)+"%, days="+bs.days+
+                                      ", hits="+bs.hits+", maxDrawDown="+(int)(100*bs.maxDrawDown)+""+
+                                         ", trades="+bs.trades.Count+", stopLoss="+bs.stopLoss+", maxDays="+bs.maxDays+
+                                         ", sellSig="+bs.sellSignal+", buySig="+bs.buySignal+", wind="+windowSize);
+            signalPerformancePrintTrades(bs.trades);
+                
+        }
+        protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
+        {
+            double stopLossStep = 0.001;
+            
+            System.Collections.Generic.List<TradeSession> bestBlocks = new System.Collections.Generic.List<TradeSession>(40);
+
+            double buySignal = -1.93;
+            double sellSignal = 1.86;
+            double stopLoss = 0.027;
+            signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal, 1000, bestBlocks);
 
             TradeSession bs = findBest(bestBlocks);
             System.Console.WriteLine("pTotal="+(int)(100*bs.p)+"%, days="+bs.days+
