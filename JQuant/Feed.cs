@@ -157,7 +157,7 @@ namespace JQuant
                 }
 
 
-                Console.WriteLine("Get data from URL " + url);
+                Console.WriteLine("Get data from URL " + url + " between " + start + " and " + end);
 
                 HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(url);
 
