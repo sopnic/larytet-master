@@ -2058,26 +2058,34 @@ namespace JQuant
             double signalStep = 0.01;
             long loopsTotal = (long)(((buySignalTo-buySignalFrom)/signalStep) * ((sellSignalFrom-sellSignalTo)/signalStep) * ((stopLossTo-stopLossFrom)/stopLossStep));
             double buySignal = buySignalFrom;
+            int maxDaysFrom = 1;
+            int maxDaysTo = 70;
+            int maxDaysStep = 2;
             
             System.Collections.Generic.List<TradeSession> bestBlocks = new System.Collections.Generic.List<TradeSession>(40);
-            
-            while (buySignal < buySignalTo)
+
+            int maxDays = maxDaysFrom;
+//            while (maxDays < maxDaysTo)
             {
-                double sellSignal = sellSignalFrom;
-                while (sellSignal > sellSignalTo)
+                while (buySignal < buySignalTo)
                 {
-                    double stopLoss = stopLossFrom;
-                    while (stopLoss < stopLossTo)
+                    double sellSignal = sellSignalFrom;
+                    while (sellSignal > sellSignalTo)
                     {
-                        signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal, bestBlocks);
-                        stopLoss += stopLossStep;
-                        loopsTotal--;
-                        if ((loopsTotal & 0xFFFF) == 0) System.Console.Write("."+loopsTotal);
+                        double stopLoss = stopLossFrom;
+                        while (stopLoss < stopLossTo)
+                        {
+                            signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal, bestBlocks);
+                            stopLoss += stopLossStep;
+                            loopsTotal--;
+                            if ((loopsTotal & 0xFFFF) == 0) System.Console.Write("."+loopsTotal);
+                        }
+                        sellSignal -= signalStep;
                     }
-                    sellSignal -= signalStep;
+                    buySignal += signalStep;
+                    
                 }
-                buySignal += signalStep;
-                
+                maxDays += maxDaysStep;
             }
 
             TradeSession bs = findBest(bestBlocks);
@@ -2202,10 +2210,11 @@ namespace JQuant
                 deltaCandle = -deltaCandle;
             }
 
-            bool res;
+            bool res = false;
             double stopLoss_1 = -stopLoss;
-            double stopLoss_2 = -2*stopLoss;
-            res = (deltaTrade < stopLoss_2) || (deltaCandle < stopLoss_1);
+            double stopLoss_2 = -stopLoss;
+//            res = res || (deltaTrade < stopLoss_2);
+            res = res || (deltaCandle < stopLoss_1);
 
             return res;            
         }
