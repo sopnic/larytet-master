@@ -2081,7 +2081,7 @@ namespace JQuant
             }
 
             TradeSession bs = findBest(bestBlocks);
-            System.Console.WriteLine("pTotal="+bs.p+", days="+bs.days+
+            System.Console.WriteLine("pTotal="+(int)(100*bs.p)+"%, days="+bs.days+
                                       ", hits="+bs.hits+", maxDrawDown="+bs.maxDrawDown+
                                          ", trades="+bs.trades.Count+", stopLoss="+bs.stopLoss+
                                          ", sellSig="+bs.sellSignal+", buySig="+bs.buySignal);
@@ -2112,9 +2112,10 @@ namespace JQuant
                 string buy = "Buy:";
                 if (!t.isBuy) buy = "Sell:";
                 System.Console.WriteLine(buy+" entry="+t.entry+" exit="+t.exit+" days="+t.days+
-                                         " p="+t.p+" idx="+t.idx);
+                                         " p="+(int)(100*t.p)+"%"+" idx="+t.idx);
                 System.Console.WriteLine("\tEntry:"+t.candleEntry.ToString());
                 System.Console.WriteLine("\tExit:"+t.candleExit.ToString());
+                System.Console.WriteLine(" ");
             }
         }
         
