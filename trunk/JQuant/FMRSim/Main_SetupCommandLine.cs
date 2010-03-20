@@ -1951,8 +1951,8 @@ namespace JQuant
         {
             int argsNum = cmdArguments.Length;
             string[] args = (string[])cmdArguments;
-//            string filename = "yahoo_feed_data.csv";
-            string filename = "yahoo_feed_data_5y.csv";
+            string filename = "yahoo_feed_data.csv";
+//            string filename = "yahoo_feed_data_5y.csv";
             switch (argsNum)
             {
                 case 2:
@@ -2048,7 +2048,7 @@ namespace JQuant
             public System.Collections.Generic.List<Trade> trades;
         }
         
-        protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
+        protected void _signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
             double stopLossFrom = 0.02;
             double stopLossTo = 0.04;
@@ -2090,15 +2090,15 @@ namespace JQuant
             signalPerformancePrintTrades(bs.trades);
                 
         }
-        protected void _signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
+        protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
             double stopLossStep = 0.001;
             
             System.Collections.Generic.List<TradeSession> bestBlocks = new System.Collections.Generic.List<TradeSession>(40);
 
-            double buySignal = -1.93;
-            double sellSignal = 1.86;
-            double stopLoss = 0.027;
+            double buySignal = -1.94;
+            double sellSignal = 1.7;
+            double stopLoss = 0.026;
             signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal, 1000, bestBlocks);
 
             TradeSession bs = findBest(bestBlocks);
@@ -2137,7 +2137,7 @@ namespace JQuant
                 string buy = "Buy:";
                 if (!t.isBuy) buy = "Sell:";
                 System.Console.WriteLine(buy+" entry="+t.entry+" exit="+t.exit+" days="+t.days+
-                                         " p="+(int)(100*t.p)+"%"+" idx="+t.idx);
+                                         " p="+(int)(100*t.p)+" idx="+t.idx);
                 System.Console.WriteLine("\tEntry:"+t.candleEntry.ToString());
                 System.Console.WriteLine("\tExit:"+t.candleExit.ToString());
                 System.Console.WriteLine(" ");
