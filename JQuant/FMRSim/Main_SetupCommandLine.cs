@@ -2048,13 +2048,15 @@ namespace JQuant
         
         protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
-            double signalStep = 0.01;
+            double stopLossFrom = 0.001;
+            double stopLossTo = 0.05;
             double stopLossStep = 0.001;
             double buySignalFrom = -4;;
             double buySignalTo = -1;
             double sellSignalFrom = 4;;
             double sellSignalTo = 1;
-            long loopsTotal = (long)((2.5/signalStep) * (2.5/signalStep) * ((0.08-0.001)/stopLossStep));
+            double signalStep = 0.01;
+            long loopsTotal = (long)(((buySignalTo-buySignalFrom)/signalStep) * ((sellSignalFrom-sellSignalTo)/signalStep) * ((stopLossTo-stopLossFrom)/stopLossStep));
             double buySignal = buySignalFrom;
             
             System.Collections.Generic.List<TradeSession> bestBlocks = new System.Collections.Generic.List<TradeSession>(40);
@@ -2064,8 +2066,8 @@ namespace JQuant
                 double sellSignal = sellSignalFrom;
                 while (sellSignal > sellSignalTo)
                 {
-                    double stopLoss = 0.001;
-                    while (stopLoss < 0.05)
+                    double stopLoss = stopLossFrom;
+                    while (stopLoss < stopLossTo)
                     {
                         signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal, bestBlocks);
                         stopLoss += stopLossStep;
@@ -2075,6 +2077,7 @@ namespace JQuant
                     sellSignal -= signalStep;
                 }
                 buySignal += signalStep;
+                
             }
 
             TradeSession bs = findBest(bestBlocks);
@@ -2109,7 +2112,7 @@ namespace JQuant
                 string buy = "Buy:";
                 if (!t.isBuy) buy = "Sell:";
                 System.Console.WriteLine(buy+" entry="+t.entry+" exit="+t.exit+" days="+t.days+
-                                         " p="+t.p+" idx="+t.idx);
+                                         " p="+t.p+" idx="+t.idx+" "+t.candleEntry.ToString());
             }
         }
         
