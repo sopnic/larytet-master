@@ -1995,7 +1995,7 @@ namespace JQuant
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
             iWrite.WriteLine("Data: count="+data.Length+",max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
 
-            int windowSize = 10;
+            int windowSize = 5;
             // now normalize the data
             data = TA.PriceVolumeSeries.Normalize(data, windowSize);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
@@ -2152,7 +2152,7 @@ namespace JQuant
         {
             Trade trade;
             System.Collections.Generic.List<Trade> trades = new System.Collections.Generic.List<Trade>(10);
-            double diff = (1+0.02);
+            double diff = (1+0.002);
             int i = 0;
             while (i < (data.Length-1))
             {
@@ -2187,7 +2187,7 @@ namespace JQuant
             double maxDrawDown;
             signalPerformanceGetTrades(trades, out daysTotal, out hits, out pTotal, out maxDrawDown);
             int misses = trades.Count-hits;
-            if ((pTotal > 1) && (trades.Count > 5) && (bestBlocks.Count < 1000))
+            if ((pTotal > 2) && (trades.Count > 5) && (bestBlocks.Count < 1000))
             {
                 TradeSession ts = new TradeSession();
                 ts.trades = trades;
