@@ -2112,7 +2112,9 @@ namespace JQuant
                 string buy = "Buy:";
                 if (!t.isBuy) buy = "Sell:";
                 System.Console.WriteLine(buy+" entry="+t.entry+" exit="+t.exit+" days="+t.days+
-                                         " p="+t.p+" idx="+t.idx+" "+t.candleEntry.ToString());
+                                         " p="+t.p+" idx="+t.idx);
+                System.Console.WriteLine("\tEntry:"+t.candleEntry.ToString());
+                System.Console.WriteLine("\tExit:"+t.candleExit.ToString());
             }
         }
         
@@ -2170,7 +2172,7 @@ namespace JQuant
             double maxDrawDown;
             signalPerformanceGetTrades(trades, out daysTotal, out hits, out pTotal, out maxDrawDown);
             int misses = trades.Count-hits;
-            if ((pTotal > 6.5) && (trades.Count > 5))
+            if ((pTotal > 2) && (trades.Count > 5))
             {
                 TradeSession ts = new TradeSession();
                 ts.trades = trades;
@@ -2201,17 +2203,28 @@ namespace JQuant
             for (i = idx+1;i < count;i++)
             {
                 candle = (TA.Candle)series.Data[i];
-                if ((isBuy) && (entryPoint < candle.close*(1-stopLoss)))
+                if (
+                    (isBuy) &&
+                    (  
+//                       (entryPoint < candle.close*(1-stopLoss))
+//                         || 
+                       (close < candle.close*(1-stopLoss))   
+                     )
+                   )
                 {
-//                    System.Console.WriteLine("\tExit at "+candle.close);
                     break;
                 }
-                if ((isSell) && (entryPoint > candle.close*(1+stopLoss)))
+                if (
+                    (isSell) &&
+                    (  
+//                       (entryPoint > candle.close*(1+stopLoss))
+//                         ||   
+                       (close > candle.close*(1+stopLoss))   
+                     )
+                   )
                 {
-//                    System.Console.WriteLine("\tExit at "+candle.close);
                     break;
                 }
-//                System.Console.WriteLine("\tKeep at "+candle.close);
                 close = candle.close;
             }
             double delta;
