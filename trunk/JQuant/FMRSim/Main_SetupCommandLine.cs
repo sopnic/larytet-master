@@ -1951,7 +1951,7 @@ namespace JQuant
         {
             int argsNum = cmdArguments.Length;
             string[] args = (string[])cmdArguments;
-            string filename = "yahoo_feed_data.csv";
+            string filename = "yahoo_feed_data_5y.csv";
             switch (argsNum)
             {
                 case 2:
