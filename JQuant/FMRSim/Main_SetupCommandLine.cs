@@ -2172,7 +2172,7 @@ namespace JQuant
             double maxDrawDown;
             signalPerformanceGetTrades(trades, out daysTotal, out hits, out pTotal, out maxDrawDown);
             int misses = trades.Count-hits;
-            if ((pTotal > 2) && (trades.Count > 5))
+            if ((pTotal > 4) && (trades.Count > 5))
             {
                 TradeSession ts = new TradeSession();
                 ts.trades = trades;
@@ -2184,6 +2184,9 @@ namespace JQuant
                 ts.buySignal = buySignal;
                 ts.maxDrawDown = maxDrawDown;
                 bestBlocks.Add(ts);
+                System.Console.Write("+");
+//                System.Console.WriteLine("p="+pTotal);
+//                signalPerformancePrintTrades(trades);
             }
         }
         
