@@ -1,58 +1,66 @@
-pTotal=120%, days=353, hits=9, maxDrawDown=-6, trades=15, stopLoss=0.026, maxDays=1001, sellSig=1.70000000000004, buySig=-4
+pTotal=119%, days=283, hits=8, maxDrawDown=-5, trades=17, stopLoss=0.023, maxDays=1001, sellSig=1.98000000000004, buySig=-4
 Sell: entry=80.3 exit=79.52 days=83 p=0% idx=15
 Entry:   80.87    79.8    80.9    80.3  59019200
 Exit:   77.89   77.82    80.1   79.52 259607000
- 
-Sell: entry=78.61 exit=78.56 days=4 p=0% idx=109
-Entry:   79.95   78.31   80.12   78.61 105471500
-Exit:   76.98   76.77   78.56   78.56  70723200
  
 Sell: entry=83.5 exit=78.5 days=26 p=5% idx=140
 Entry:   83.91   83.25   84.18    83.5  34535400
 Exit:   77.18   77.13   78.74    78.5 105192100
  
-Sell: entry=77.39 exit=69.02 days=17 p=10% idx=196
-Entry:   78.86   76.91   79.08   77.39  71490100
+Sell: entry=76.35 exit=69.02 days=28 p=9% idx=185
+Entry:   79.28   76.25   79.58   76.35 120369300
 Exit:    65.3   65.09   69.98   69.02 183099500
  
-Sell: entry=73.7 exit=68.07 days=33 p=7% idx=295
+Sell: entry=70.97 exit=71.2 days=6 p=0% idx=265
+Entry:   70.48   70.37   71.28   70.97  49572900
+Exit:   69.68   69.68   71.28    71.2  72389400
+ 
+Sell: entry=73.7 exit=76.2 days=11 p=-3% idx=295
 Entry:   73.44    72.8   73.73    73.7  82109000
-Exit:   65.79   65.25   68.14   68.07 131778100
+Exit:   74.43   74.25   76.23    76.2 106082100
  
-Sell: entry=70.11 exit=73.12 days=11 p=-4% idx=340
+Sell: entry=70.11 exit=71.18 days=3 p=-1% idx=340
 Entry:   71.87   69.86   71.93   70.11 112118900
-Exit:   71.24   70.98   73.37   73.12 112771400
+Exit:   69.68   69.61    71.4   71.18 122965400
  
-Sell: entry=75.1 exit=71 days=21 p=5% idx=356
-Entry:   75.74   74.48   76.27    75.1  98174800
+Sell: entry=74.13 exit=71 days=20 p=4% idx=357
+Entry:   75.27   73.56   75.42   74.13  97838400
 Exit:    67.8   67.73      71      71 252238200
- 
-Sell: entry=51.59 exit=49.31 days=6 p=4% idx=413
-Entry:   53.93   51.31   54.44   51.59  73881200
-Exit:    45.7   43.24   49.45   49.31 142362300
  
 Sell: entry=49.74 exit=45.49 days=9 p=8% idx=455
 Entry:   50.27   49.03   51.35   49.74  77662100
 Exit:      44   43.04   45.69   45.49  66088100
  
-Sell: entry=41.41 exit=43.38 days=2 p=-4% idx=504
-Entry:   42.45   41.15    42.5   41.41  64512500
-Exit:   41.34   40.93   43.52   43.38  94771600
+Sell: entry=49.3 exit=51.01 days=1 p=-3% idx=538
+Entry:   51.25   48.89    51.4    49.3  67577300
+Exit:   50.15   49.64   51.16   51.01  63463900
  
 Sell: entry=52.57 exit=51.05 days=13 p=2% idx=559
 Entry:    52.8   52.04   53.28   52.57  46325400
 Exit:   49.15   49.09   51.08   51.05  42339200
  
-Sell: entry=52.45 exit=54.53 days=2 p=-3% idx=589
-Entry:   53.04   51.79   53.07   52.45  40423000
-Exit:   52.88   52.77   54.82   54.53  64531400
- 
-Sell: entry=54.84 exit=58.04 days=70 p=-5% idx=595
+Sell: entry=54.84 exit=57.09 days=7 p=-4% idx=595
 Entry:   54.82   54.54   55.13   54.84  47421300
+Exit:   56.62   56.29   57.84   57.09  49363300
+ 
+Sell: entry=58.05 exit=61.26 days=20 p=-5% idx=617
+Entry:   59.02   57.66   59.18   58.05  39328800
+Exit:   60.22   60.04   61.58   61.26  47925100
+ 
+Sell: entry=61.68 exit=58.04 days=14 p=5% idx=651
+Entry:   61.89   61.14   62.02   61.68  49031800
 Exit:   56.99   56.77   58.17   58.04  67422600
  
-Sell: entry=63.26 exit=67.41 days=56 p=-6% idx=700
+Sell: entry=63.26 exit=63.98 days=4 p=-1% idx=700
 Entry:   63.59   62.97   63.61   63.26  35784500
+Exit:   63.29   63.27   64.04   63.98  42863900
+ 
+Sell: entry=64.26 exit=64.26 days=33 p=0% idx=709
+Entry:   64.78   64.01   64.88   64.26  51638900
+Exit:   63.26   63.26   64.32   64.26  70967800
+ 
+Sell: entry=67.72 exit=67.41 days=5 p=0% idx=751
+Entry:    68.1   67.26   68.13   67.72  61862000
 Exit:    68.5   67.16   68.51   67.41  80545600
  
 Sell: entry=67.41 exit=67.41 days=0 p=0% idx=756
