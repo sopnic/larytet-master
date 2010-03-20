@@ -1,4 +1,4 @@
-0pTotal=309%, days=1886, hits=25, maxDrawDown=-10, trades=200, stopLoss=0.026, maxDays=1001, sellSig=1.83000000000004, buySig=-1.92000000000004
+pTotal=309%, days=1886, hits=25, maxDrawDown=-10, trades=45, stopLoss=0.026, maxDays=1001, sellSig=1.83000000000004, buySig=-1.92000000000004
 Sell: entry=102 exit=104.12 days=81 p=-2% idx=5
 Entry:  102.12  101.87  103.12     102     48400
 Exit:  101.62  101.56  104.31  104.12    121000
@@ -178,5 +178,4 @@ Exit:   68.44   68.14   68.78   68.26  71527500
 Sell: entry=68.26 exit=68.26 days=0 p=0% idx=2465
 Entry:   68.44   68.14   68.78   68.26  71527500
 Exit:   68.44   68.14   68.78   68.26  71527500
- 
 
