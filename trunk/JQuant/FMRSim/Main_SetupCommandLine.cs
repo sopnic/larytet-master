@@ -2082,7 +2082,7 @@ namespace JQuant
 
             TradeSession bs = findBest(bestBlocks);
             System.Console.WriteLine("pTotal="+(int)(100*bs.p)+"%, days="+bs.days+
-                                      ", hits="+bs.hits+", maxDrawDown="+bs.maxDrawDown+
+                                      ", hits="+bs.hits+", maxDrawDown="+(int)(100*bs.maxDrawDown)+""+
                                          ", trades="+bs.trades.Count+", stopLoss="+bs.stopLoss+
                                          ", sellSig="+bs.sellSignal+", buySig="+bs.buySignal);
             signalPerformancePrintTrades(bs.trades);
@@ -2210,8 +2210,8 @@ namespace JQuant
                 if (
                     (isBuy) &&
                     (  
-//                       (entryPoint < candle.close*(1-stopLoss))
-//                         || 
+                       (entryPoint < candle.close*(1-2*stopLoss))
+                         || 
                        (close < candle.close*(1-stopLoss))   
                      )
                    )
@@ -2221,8 +2221,8 @@ namespace JQuant
                 if (
                     (isSell) &&
                     (  
-//                       (entryPoint > candle.close*(1+stopLoss))
-//                         ||   
+                       (entryPoint > candle.close*(1+2*stopLoss))
+                         ||   
                        (close > candle.close*(1+stopLoss))   
                      )
                    )
