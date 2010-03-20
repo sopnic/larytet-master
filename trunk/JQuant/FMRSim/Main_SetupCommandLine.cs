@@ -2033,18 +2033,22 @@ namespace JQuant
         
         protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
-            double buySignal = -1.83;
-            while (buySignal < -1.80)
+            double buySignal = -8;
+            while (buySignal < -7.5)
             {
-                double sellSignal = 0.34;
-                while (sellSignal > 0.29)
+                double sellSignal = 4;
+                while (sellSignal > -4)
                 {
-//                    signalPerformanceOptimization(series, data, windowSize, buySignal, sellSignal);
+                    double stopLoss = 0.05;
+                    while (stopLoss < 0.2)
+                    {
+                        signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal);
+                        stopLoss += 0.01;
+                    }
                     sellSignal -= 0.01;
                 }
-                buySignal += 0.01;
+                buySignal += 0.5;
             }
-            signalPerformanceOptimization(series, data, windowSize, 0.018, -1.84, 0.32);
         }
         
         protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize, double stopLoss, double buySignal, double sellSignal)
@@ -2071,8 +2075,8 @@ namespace JQuant
                     daysTotal += trade.days;
                     i += trade.days;
                     trades++;
-                        System.Console.Write("\tSell at "+idx+" entry="+trade.entry+" exit="+trade.exit+" "+candle.ToString());
-                        System.Console.WriteLine(" p="+trade.p+", pTotal="+pTotal+", days="+trade.days+", exit at "+(idx+trade.days));
+//                        System.Console.Write("\tSell at "+idx+" entry="+trade.entry+" exit="+trade.exit+" "+candle.ToString());
+//                        System.Console.WriteLine(" p="+trade.p+", pTotal="+pTotal+", days="+trade.days+", exit at "+(idx+trade.days));
                 }
                 else if ((data[i] < buySignal) && (data[i]*diff < data[i+1]))  // buy condition and trigger
                 {
@@ -2082,12 +2086,12 @@ namespace JQuant
                     daysTotal += trade.days;
                     i += trade.days;
                     trades++;
-                        System.Console.Write("\tBuy at "+idx+" entry="+trade.entry+" exit="+trade.exit+" "+candle.ToString());
-                        System.Console.WriteLine(" p="+trade.p+", pTotal="+pTotal+", days="+trade.days+", exit at "+(idx+trade.days));
+//                        System.Console.Write("\tBuy at "+idx+" entry="+trade.entry+" exit="+trade.exit+" "+candle.ToString());
+//                        System.Console.WriteLine(" p="+trade.p+", pTotal="+pTotal+", days="+trade.days+", exit at "+(idx+trade.days));
                 }
                 else i++;
             }
-            if (pTotal > 2.2)
+            if ((pTotal > 1.2) && (trades > 20))
             {
                 System.Console.WriteLine("pTotal="+pTotal+", days="+daysTotal+
                                          ", hits="+hits+", misses="+misses+
@@ -2123,9 +2127,10 @@ namespace JQuant
                 close = candle.close;
             }
             double delta;
-            if (isBuy) delta = entryPoint - candle.close;
-            if (isSell) delta = candle.close - entryPoint;
-            double p = ((candle.close-entryPoint)/entryPoint);
+            delta = entryPoint - candle.close;
+            if (isBuy) delta = -delta;
+
+            double p = delta/entryPoint;
             int days = (i-idx);
             // System.Console.WriteLine("Exit on day "+days+" from "+entryPoint + " to "+candle.close + "("+100*p+"%)");
             trade.entry = entryPoint;
