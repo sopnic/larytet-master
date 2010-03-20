@@ -1995,7 +1995,7 @@ namespace JQuant
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
             iWrite.WriteLine("Data: count="+data.Length+",max="+series.Max+", min="+series.Min+", average="+series.Average+", sd="+series.StdDeviation);
 
-            int windowSize = 3;
+            int windowSize = 4;
             // now normalize the data
             data = TA.PriceVolumeSeries.Normalize(data, windowSize);
             TA.PriceVolumeSeries.CalculateAverage(data, 0, data.Length, out average, out max, out min);
@@ -2053,9 +2053,9 @@ namespace JQuant
             double stopLossTo = 0.04;
             double stopLossStep = 0.001;
             double buySignalFrom = -4;;
-            double buySignalTo = -1.6;
+            double buySignalTo = -1.4;
             double sellSignalFrom = 4;
-            double sellSignalTo = 1.6;
+            double sellSignalTo = 1.4;
             double signalStep = 0.01;
             int maxDaysFrom = 1000;
             int maxDaysTo = 1001;
