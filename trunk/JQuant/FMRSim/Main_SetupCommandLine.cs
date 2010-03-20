@@ -1951,8 +1951,8 @@ namespace JQuant
         {
             int argsNum = cmdArguments.Length;
             string[] args = (string[])cmdArguments;
-            string filename = "yahoo_feed_data.csv";
-//            string filename = "yahoo_feed_data_5y.csv";
+//            string filename = "yahoo_feed_data.csv";
+            string filename = "yahoo_feed_data_5y.csv";
             switch (argsNum)
             {
                 case 2:
@@ -2048,7 +2048,7 @@ namespace JQuant
             public System.Collections.Generic.List<Trade> trades;
         }
         
-        protected void _signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
+        protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
             double stopLossFrom = 0.02;
             double stopLossTo = 0.04;
@@ -2083,14 +2083,14 @@ namespace JQuant
             }
 
             TradeSession bs = findBest(bestBlocks);
-            System.Console.WriteLine("pTotal="+(int)(100*bs.p)+"%, days="+bs.days+
+            System.Console.WriteLine("pTotal="+(int)(100*bs.p)+", days="+bs.days+
                                       ", hits="+bs.hits+", maxDrawDown="+(int)(100*bs.maxDrawDown)+""+
                                          ", trades="+bs.trades.Count+", stopLoss="+bs.stopLoss+", maxDays="+bs.maxDays+
                                          ", sellSig="+bs.sellSignal+", buySig="+bs.buySignal+", wind="+windowSize);
             signalPerformancePrintTrades(bs.trades);
                 
         }
-        protected void signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
+        protected void _signalPerformanceOptimization(TA.PriceVolumeSeries series, double[] data, int windowSize)
         {
             double stopLossStep = 0.001;
             
@@ -2102,7 +2102,7 @@ namespace JQuant
             signalPerformanceOptimization(series, data, windowSize, stopLoss, buySignal, sellSignal, 1000, bestBlocks);
 
             TradeSession bs = findBest(bestBlocks);
-            System.Console.WriteLine("pTotal="+(int)(100*bs.p)+"%, days="+bs.days+
+            System.Console.WriteLine("pTotal="+(int)(100*bs.p)+", days="+bs.days+
                                       ", hits="+bs.hits+", maxDrawDown="+(int)(100*bs.maxDrawDown)+""+
                                          ", trades="+bs.trades.Count+", stopLoss="+bs.stopLoss+", maxDays="+bs.maxDays+
                                          ", sellSig="+bs.sellSignal+", buySig="+bs.buySignal+", wind="+windowSize);
@@ -2116,14 +2116,15 @@ namespace JQuant
             double p = Double.MinValue;
             double maxDrawDown = Double.MaxValue;
             int hits = Int32.MinValue;
+            int trades = Int32.MinValue;
             foreach (TradeSession s in sessions)
             {
-                if ((s.p > 1) && (s.hits > hits))
+                if (s.p > p)
                 {
                     p = s.p;
                     maxDrawDown = s.maxDrawDown;
                     bestSession = s;
-                    hits = s.hits;
+                    trades = s.trades.Count;
                 }
             }
 
@@ -2202,7 +2203,7 @@ namespace JQuant
             double maxDrawDown;
             signalPerformanceGetTrades(trades, out daysTotal, out hits, out pTotal, out maxDrawDown);
             int misses = trades.Count-hits;
-            if ((pTotal > 2) && (trades.Count > 5) && (bestBlocks.Count < 1000))
+            if ((pTotal > 1.1) && (trades.Count > 5) && (bestBlocks.Count < 1000))
             {
                 TradeSession ts = new TradeSession();
                 ts.trades = trades;
@@ -2225,9 +2226,9 @@ namespace JQuant
 //            System.Console.Write("1");
         }
 
-        protected bool signalStop(bool isBuy, double stopLoss, int maxDays, double entry, double last, double current, int days)
+        protected bool signalStop(bool isBuy, double stopLoss, int maxDays, double entry, double last, double current, int days, double bestClose)
         {
-            double deltaTrade = (entry-current)/entry;
+            double deltaTrade = (bestClose-current)/bestClose;
             double deltaCandle = (last-current)/last;
 
             if (isBuy)
@@ -2239,9 +2240,9 @@ namespace JQuant
             bool res = false;
             double stopLoss_1 = -stopLoss;
             double stopLoss_2 = -stopLoss;
-//            res = res || (deltaTrade < stopLoss_2);
+            res = res || (deltaTrade < stopLoss_2);
             res = res || (deltaCandle < stopLoss_1);
-            res = res || (days > maxDays);
+//            res = res || (days > maxDays);
 
             return res;            
         }
@@ -2257,6 +2258,7 @@ namespace JQuant
             trade.candleEntry = candle;
             double entryPoint = candle.close;
             double close = entryPoint;
+            double bestClose = close;
             bool isSell = !isBuy;
             int i;
             int days = 0;
@@ -2264,11 +2266,15 @@ namespace JQuant
             {
                 candle = (TA.Candle)series.Data[i];
                 days++;
-                if (signalStop(isBuy, stopLoss, maxDays, entryPoint, close, candle.close, days))
+                if (signalStop(isBuy, stopLoss, maxDays, entryPoint, close, candle.close, days, bestClose))
                 {
                     break;
                 }
                 close = candle.close;
+                if (isBuy)
+                    if (bestClose < close) bestClose = close;
+                else
+                    if (bestClose > close) bestClose = close;
             }
             double delta;
             delta = entryPoint - candle.close;
