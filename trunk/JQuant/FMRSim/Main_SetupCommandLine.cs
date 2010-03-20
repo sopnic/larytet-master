@@ -2053,15 +2053,15 @@ namespace JQuant
             double stopLossTo = 0.04;
             double stopLossStep = 0.001;
             double buySignalFrom = -4;;
-            double buySignalTo = -1;
-            double sellSignalFrom = 4;;
-            double sellSignalTo = 1;
+            double buySignalTo = -1.6;
+            double sellSignalFrom = 4;
+            double sellSignalTo = 1.6;
             double signalStep = 0.01;
-            int maxDaysFrom = 5;
-            int maxDaysTo = 400;
+            int maxDaysFrom = 1000;
+            int maxDaysTo = 1001;
             int maxDaysStep = 40;
             long loopsTotal = (long)(((buySignalTo-buySignalFrom)/signalStep) * ((sellSignalFrom-sellSignalTo)/signalStep) * ((stopLossTo-stopLossFrom)/stopLossStep) *                                     
-                                     (maxDaysTo-maxDaysFrom)/maxDaysStep );
+                                     Math.Max(1,(maxDaysTo-maxDaysFrom)/maxDaysStep) );
             
             System.Collections.Generic.List<TradeSession> bestBlocks = new System.Collections.Generic.List<TradeSession>(40);
 
