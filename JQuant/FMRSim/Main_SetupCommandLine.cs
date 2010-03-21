@@ -4,12 +4,6 @@ using System.Threading;
 using System.IO;
 using System.Collections.Generic;
 
-#if USEFMRSIM
-using TaskBarLibSim;
-#else
-using TaskBarLib;
-#endif
-
 namespace JQuant
 {
 
