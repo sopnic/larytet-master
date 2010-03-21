@@ -15,6 +15,194 @@ namespace JQuant
     partial class Program
     {
 
+        static MarketSimulationMaof marketSimulationMaof;
+        MaofDataGeneratorLogFile dataMaofGenerator;
+
+        protected static void GetMatchGroups(string pattern, string text, out System.Text.RegularExpressions.GroupCollection groups, out int matchesCount)
+        {
+            System.Text.RegularExpressions.Regex regex;
+            groups = null;
+            matchesCount = 0;
+            text = text.ToUpper();
+            
+            regex = new System.Text.RegularExpressions.Regex(pattern);
+            System.Text.RegularExpressions.MatchCollection matches = regex.Matches(text);
+
+            do
+            {
+                matchesCount = matches.Count;
+                if (matchesCount < 1)
+                {
+                    break;
+                }
+                
+                // get groups
+                System.Text.RegularExpressions.Match match = matches[0];
+                groups = match.Groups;
+            }
+            while (false);
+        }
+        
+        protected static bool FindSecurity(System.Collections.Generic.Dictionary<string, int> names, string putcall, string strike, string month, out int id)
+        {
+            id = 0;
+            bool res = false;
+
+            // generate MAOF style name - something like "P01080DEC"
+            strike = JQuant.OutputUtils.FormatField(strike, 5, '0');
+            month = month.ToUpper();
+            putcall = putcall.Substring(0, 1);
+            putcall = putcall.ToUpper();
+            string name = putcall+strike+month;
+            
+            if (names.ContainsKey(name))
+            {
+                id = names[name];
+                res = true;
+            }
+            
+            return res;
+        }
+        
+        /// <summary>
+        /// This is what I get: 'T25 P01080 DEC9'
+        /// This is what I return: 'P01080DEC' or null
+        /// </summary>
+        protected static string convertBnoName(string BNO_NAME_E)
+        {
+            const string patternOption = MarketSimulationMaof.BNO_NAME_PATTERN_OPTION;
+            
+            System.Text.RegularExpressions.GroupCollection groups;
+            int matchesCount;
+            GetMatchGroups(patternOption, BNO_NAME_E, out groups,  out matchesCount);
+            string res = null;
+            
+            if (matchesCount == 1)
+            {
+                string putcall = groups[1].Captures[0].ToString();
+                string strike = groups[2].Captures[0].ToString();
+                string month = groups[3].Captures[0].ToString();
+                
+                res = putcall+strike+month;
+                // System.Console.WriteLine("convertBnoName "+BNO_NAME_E+" to "+res);
+            }
+            else
+            {
+                // System.Console.WriteLine("Failed to parse BNO_NAME_E '"+BNO_NAME_E+"'");
+            }
+            
+            return res;
+        }
+        
+        /// <summary>
+        /// This is a magic (aka Trust the force) method which goes through the 
+        /// CLI command arguments and look for a ticker IDs. The emthod recognize 
+        /// different formats of tickers. For example
+        /// - the unique integer 80613003
+        /// - partial integer 13003 (if unique)
+        /// - description 'Call 1800 Nov'
+        /// - description 'C1800Nov'
+        /// - description 'Put1800 Nov'
+        /// - full name 'TA9Z00960C'
+        /// </summary>
+        protected bool FindSecurity(string text, out int id)
+        {
+            id = 0;
+            bool res = false;
+            
+            // get the list of securities
+            int[] ids = marketSimulationMaof.GetSecurities();   
+            // my key is name of the option and my value is unique option Id (integer)
+            // On TASE ID is an integer
+            System.Collections.Generic.Dictionary<string, int> names = new System.Collections.Generic.Dictionary<string, int>(ids.Length);
+            // i need an array (string) of IDs to look for patial integer IDs
+            System.Text.StringBuilder idNames = new System.Text.StringBuilder(ids.Length*10);           
+            // fill the dictionary and string of all IDs
+            foreach (int i in ids)
+            {
+                MarketSimulationMaof.Option option = marketSimulationMaof.GetOption(i);
+                string name = convertBnoName(option.GetName());
+                if (name != null) 
+                {
+                    names.Add(name, i);
+                }
+                idNames.Append(i);idNames.Append(" ");
+            }
+            string idNamesStr = idNames.ToString();
+            
+            // look in the command for regexp jan|feb)($| +)' first
+            // Other possibilities are: ' +([0-9]+) *([c,p]) *(jan|feb)($| +)'
+            // the final case is any set of digits ' +([0-9]+)($| +)'
+            const string monthPattern = "JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC";            
+            const string putcallPattern = "c|p|C|P|call|put|CALL|PUT|Call|Put]";
+            const string pattern1 = " +("+putcallPattern+") *([0-9]+) *("+monthPattern+")($| +)";
+            const string pattern2 = " +([0-9]+) *("+putcallPattern+") *("+monthPattern+")($| +)";
+            const string pattern3 = " +([0-9]+)($| +)";
+            System.Text.RegularExpressions.GroupCollection groups;
+            int matchesCount;
+            
+            do
+            {
+                GetMatchGroups(pattern1, text, out groups, out matchesCount);
+                if (matchesCount > 1)
+                {
+                    System.Console.WriteLine("I expect one and only one match for '"+pattern1+"' instead of "+matchesCount);
+                    break;
+                }
+                
+                if (matchesCount == 1)
+                {
+                    string putcall = groups[1].Captures[0].ToString(); // group[0] is reserved for the whole match
+                    string strike = groups[2].Captures[0].ToString();
+                    string month = groups[3].Captures[0].ToString();                    
+                    res = FindSecurity(names, putcall, strike, month, out id);
+                    break;
+                }
+                
+                GetMatchGroups(pattern2, text, out groups, out matchesCount);
+                if (matchesCount > 1)
+                {
+                    System.Console.WriteLine("I expect one and only one match for '"+pattern2+"' instead of "+matchesCount);
+                    break;
+                }
+                if (matchesCount == 1)
+                {
+                    string strike = groups[2].Captures[0].ToString();  // group[0] is reserved for the whole match
+                    string putcall = groups[1].Captures[0].ToString();
+                    string month = groups[3].Captures[0].ToString();                    
+                    res = FindSecurity(names, putcall, strike, month, out id);
+                    break;
+                }
+
+                // finally i look just for any sequence of digits
+                GetMatchGroups(pattern3, text, out groups, out matchesCount);
+                if (matchesCount > 0)
+                {
+                    string digits = groups[0].Captures[0].ToString(); // group[0] is reserved for the whole match
+                    int idxFirst = idNamesStr.IndexOf(digits);        // idNamesStr is a string containing all existing Ids followed by blank
+                    int idxSecond = idNamesStr.LastIndexOf(digits);
+                    string firstMatch = idNamesStr.Substring(idxFirst, idNamesStr.IndexOf(" ", idxFirst+1)-idxFirst);
+                    string secondMatch = idNamesStr.Substring(idxSecond, idNamesStr.IndexOf(" ", idxSecond+1)-idxSecond);
+                    if (idxFirst != idxSecond)
+                    {
+                        System.Console.WriteLine("I have at least two matches '"+firstMatch+"' and '"+secondMatch+"'");
+                        break;
+                    }
+                    // System.Console.WriteLine("firstMatch={0},secondMatch={1},digits={2}",firstMatch,secondMatch,digits);
+                    // i got a single match - convert to ID
+                    id = Int32.Parse(firstMatch);
+                    res = true;
+                    break;
+                }
+                
+                res = false;
+            }
+            while (false);
+            
+            
+            return res;
+        }
+        
         protected void debugMarketSimulationMaofCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
         {
             string cmd = "", arg1 = "", arg2 = "";
