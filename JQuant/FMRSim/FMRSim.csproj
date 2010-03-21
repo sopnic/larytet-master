@@ -74,6 +74,11 @@
     <Compile Include="..\DataValidation.cs" />
     <Compile Include="..\MarketSimulation.cs" />
     <Compile Include="..\MarketSimulation_Maof.cs" />
+    <Compile Include="SetupCommandLine_dbg.cs" />
+    <Compile Include="SetupCommandLine_test.cs" />
+    <Compile Include="SetupCommandLine_feed.cs" />
+    <Compile Include="SetupCommandLine_ms.cs" />
+    <Compile Include="SetupCommandLine_oper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
