@@ -431,20 +431,23 @@ namespace JQuant
 
         protected bool signalStop(bool isBuy, double stopLoss, int maxDays, double entry, double last, double current, int days, double bestClose)
         {
-            double deltaTrade = (bestClose-current)/bestClose;
+            double deltaTrade = (entry-current)/entry;
+            double trailing = (bestClose-current)/bestClose;
             double deltaCandle = (last-current)/last;
 
             if (isBuy)
             {
                 deltaTrade = -deltaTrade;
                 deltaCandle = -deltaCandle;
+                trailing = -trailing;
             }
 
             bool res = false;
             double stopLoss_1 = -stopLoss;
             double stopLoss_2 = -2*stopLoss;
-            res = res || (deltaTrade < stopLoss_2);
-            res = res || (deltaCandle < stopLoss_1);
+            double stopLoss_3 = -3*stopLoss;
+            res = res || (deltaTrade < stopLoss_1);
+            res = res || (trailing < stopLoss_1);
 //            res = res || (days > maxDays);
 
             return res;            
