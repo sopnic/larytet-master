@@ -79,6 +79,7 @@
     <Compile Include="SetupCommandLine_feed.cs" />
     <Compile Include="SetupCommandLine_ms.cs" />
     <Compile Include="SetupCommandLine_oper.cs" />
+    <Compile Include="SetupCommandLine_sa.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

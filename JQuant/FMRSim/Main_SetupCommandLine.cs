@@ -22,6 +22,7 @@ namespace JQuant
             cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation",
                            " Condiguration and debug of the FMR simulatoion");
 
+            LoadCommandLineInterface_sa();
             LoadCommandLineInterface_oper();
             LoadCommandLineInterface_dbg();
             LoadCommandLineInterface_test();
