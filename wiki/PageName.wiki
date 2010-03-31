@@ -12,3 +12,7 @@ To revert local changes
 <pre>
 git reset --hard HEAD^
 </pre>
+
+
+Simple tutorial: http://book.git-scm.com/
+  
