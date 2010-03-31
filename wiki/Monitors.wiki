@@ -19,3 +19,4 @@ maximum resolution of 2048x1536 pixels with 32-bit color at 75 Hz.
  * Dell 2709W LCD 27"  1920x1200
  * Sharp 2709W LCD 27" 1920x1200
  * Samsung, T260HD LCD 26  26" 1920x1200
+ * Viewsonic VX2835WM LCD 27.5" 1920x1200
