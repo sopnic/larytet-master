@@ -40,11 +40,15 @@
   * [http://ask.metafilter.com/71462/Im-looking-for-a-secure-reliable-subversion-service-and-hoping-for-recommendations I'm looking for a secure, reliable subversion service ...]
 
 
-= Uptime statistics =
+= Uptime statistics  =
+== Commercial ==
  * http://www.siteuptime.com/
  * http://www.1stwarning.com/
  * http://www.uptrends.com/ , http://www.onestat.com/
  * http://www.periscopeit.co.uk
  * http://www.watchmouse.com/
-
+== Open source ==
+ * http://munin-monitoring.org/
+ * http://www.nagios.org/
+ * http://www.icinga.org/
  
