@@ -6,3 +6,9 @@
 git add .
 git ls-files -deleted | xargs git rm
 </pre>
+
+
+To revert local changes
+<pre>
+git reset --hard HEAD^
+</pre>
