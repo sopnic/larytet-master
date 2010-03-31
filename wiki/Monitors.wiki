@@ -1,3 +1,6 @@
+= 82Q963 GMCH =
+maximum resolution of 2048x1536 pixels with 32-bit color at 75 Hz.
+
 = Non wide screen monitors =
 
  * NEC Display Solutions LCD2190UXp-BK Black 21.3" 16ms LCD Monitor 300 cd 1000:1
