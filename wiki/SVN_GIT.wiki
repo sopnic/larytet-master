@@ -38,3 +38,13 @@
   $4/mon unlimited - Trac or Redmine for project management and issue system
 
   * [http://ask.metafilter.com/71462/Im-looking-for-a-secure-reliable-subversion-service-and-hoping-for-recommendations I'm looking for a secure, reliable subversion service ...]
+
+
+= Uptime statistics =
+ * http://www.siteuptime.com/
+ * http://www.1stwarning.com/
+ * http://www.uptrends.com/ , http://www.onestat.com/
+ * http://www.periscopeit.co.uk
+ * http://www.watchmouse.com/
+
+ 
