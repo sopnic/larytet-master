@@ -13,3 +13,6 @@
  * NEC Display Solutions LCD2690WUXI2-BK Black 25.5" 8ms Widescreen LCD Monitor 320 cd/m2 1000:1 1920x1200
  * NEC Display Solutions LCD2690W2-BK-SV Black 25.5" 8ms(GTG), 16ms Widescreen LCD Monitor with SpectraViewII Color Calibration Solution 320 cd/m2 1000:1 1920x1200
  * SAMSUNG T260HD Rose Black 25.5" 5ms HDMI Widescreen LCD Monitor 300 cd/m2 DC 10000:1(1000:1) 1920x1200
+ * Dell 2709W LCD 27"  1920x1200
+ * Sharp 2709W LCD 27" 1920x1200
+ * Samsung, T260HD LCD 26  26" 1920x1200
