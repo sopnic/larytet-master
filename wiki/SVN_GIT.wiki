@@ -37,4 +37,4 @@
   * http://sourcerepo.com/ 
   $4/mon unlimited - Trac or Redmine for project management and issue system
 
-  * [http://ask.metafilter.com/71462/Im-looking-for-a-secure-reliable-subversion-service-and-hoping-for-recommendations More recommendations]
+  * [http://ask.metafilter.com/71462/Im-looking-for-a-secure-reliable-subversion-service-and-hoping-for-recommendations I'm looking for a secure, reliable subversion service ...]
