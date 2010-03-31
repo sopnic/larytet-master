@@ -49,6 +49,6 @@
  * http://www.watchmouse.com/
 == Open source ==
  * http://munin-monitoring.org/
- * http://www.nagios.org/
+ * http://www.nagios.org/   + Check_Svn plagin
  * http://www.icinga.org/
  
