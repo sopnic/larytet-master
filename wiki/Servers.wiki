@@ -1,0 +1,3 @@
+#summary Mainly multicores
+
+ * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-3328412-241644-3328421.html HP Proliant]
