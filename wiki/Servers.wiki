@@ -5,8 +5,8 @@
  * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-241434-241646-241477.html Proliant ML (Tower)]
 
 
- Lenovo MT-M 8808-WS7  (or M55 8808-WS7)
- Hynix 1GB 2Rx8 PC2-4200U-444-12 HYMP512U64CP8
+   Lenovo MT-M 8808-WS7  (or M55 8808-WS7)
+   Hynix 1GB 2Rx8 PC2-4200U-444-12 HYMP512U64CP8
 
 4 GB (max) - DDR2 SDRAM - non-ECC - 667 MHz - PC2-5300
 
