@@ -27,7 +27,8 @@ DDR2/533/1024MB PC4200 64*8x16
 
 = UPS = 
 Selector http://www.apc.com/template/size/apc/index.cfm
-<br>BR800 BR1200LCDI
+<br>BR800 .cobrapc.co.il 1080
+<br>BR1200LCDI
 
 
 HD2TBAN 1490 2T
