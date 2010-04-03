@@ -24,6 +24,12 @@ DDR2/533/1024MB PC4200 64*8x16
 <br>Ivory: KG2GDDR2667 
 <br>270
 
+
+= UPS = 
+Selector http://www.apc.com/template/size/apc/index.cfm
+<br>BR800 BR1200LCDI
+
+
 HD2TBAN 1490 2T
  
  
