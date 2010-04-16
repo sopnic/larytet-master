@@ -92,6 +92,7 @@
     <Compile Include="..\FMRSim\SetupCommandLine_dbg.cs" />
     <Compile Include="..\FMRSim\SetupCommandLine_feed.cs" />
     <Compile Include="..\FMRSim\SetupCommandLine_ms.cs" />
+    <Compile Include="..\FMRSim\SetupCommandLine_sa.cs" />
     <Compile Include="..\FMRSim\SetupCommandLine_oper.cs" />
     <Compile Include="..\FMRSim\SetupCommandLine_test.cs" />
     <Compile Include="..\FMRSim\TaskBarLibSim_Orders.cs" />
