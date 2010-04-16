@@ -13,6 +13,16 @@ namespace JQuant
 
         public MailboxThread(string name, int mailboxCapacity)
         {
+			Init(name, mailboxCapacity, TIMEOUT_INFINITE);
+        }
+		
+        public MailboxThread(string name, int mailboxCapacity, int timeout)
+        {
+			Init(name, mailboxCapacity, timeout);
+        }
+		
+		protected void Init(string name, int mailboxCapacity, int timeout)
+		{
             _mailbox = new Mailbox<Message>(name, mailboxCapacity);
             _isAlive = false;
             _name = name;
@@ -22,9 +32,10 @@ namespace JQuant
 
             _state = ThreadState.Initialized;
             longestJobTime = 0;
-        }
+			this.Timeout = timeout;
+		}
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (_isAlive)
             {
@@ -67,6 +78,32 @@ namespace JQuant
                     tick = DateTime.Now.Ticks - tick;
                     longestJobTime = Math.Max(longestJobTime, tick);
                 }
+            }
+
+            _state = ThreadState.Stoped;
+            Dispose();
+        }
+		
+        /// <summary>
+        /// loop forever (or until _isAlive is true)
+        /// get messages from the mailbox, call HandleMessage
+        /// </summary>
+        protected virtual void RunTimeout()
+        {
+            _state = ThreadState.Started;
+            _isAlive = true;
+            while (_isAlive)
+            {
+                Message msg;
+                bool result = _mailbox.Receive(out msg, Timeout);
+				
+				if (!_isAlive) break;
+
+                long tick = DateTime.Now.Ticks;
+                HandleMessage(msg);
+                tick = DateTime.Now.Ticks - tick;
+                longestJobTime = Math.Max(longestJobTime, tick);
+
             }
 
             _state = ThreadState.Stoped;
@@ -120,7 +157,14 @@ namespace JQuant
         public void Start()
         {
             _isAlive = true;
-            _thread = new Thread(this.Run);
+			if (Timeout == TIMEOUT_INFINITE)
+			{				
+	            _thread = new Thread(this.Run);
+			}
+			else
+			{
+	            _thread = new Thread(this.RunTimeout);
+			}
             _thread.Priority = Priority;
             _thread.Start();
         }
@@ -157,5 +201,12 @@ namespace JQuant
         protected string _name;
         protected long longestJobTime;
         protected ThreadPriority threadPriority;
+		
+		protected static int TIMEOUT_INFINITE = -1;
+		protected int Timeout
+		{
+			get;
+			set;
+		}
     }
 }//namespace JQuant
