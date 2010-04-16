@@ -137,9 +137,10 @@ namespace JQuant
         /// A <see cref="System.Boolean"/>
         /// True - if a new message arrived
         /// </returns>
-        public bool Receive(Message message, int timeout)
+        public bool Receive(out Message message, int timeout)
         {
             bool result = false;
+            message = default(Message);
 
             result = semaphore.WaitOne(timeout, true);
 
