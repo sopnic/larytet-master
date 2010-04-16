@@ -306,6 +306,14 @@ namespace JQuant
             get;
             set;
         }
+		
+		/// <value>
+		/// return number of free (not running any job) threads
+		/// </value>
+        public int FreeThreads()
+        {
+			return jobThreads.Count;
+        }
 
         public void GetEventCounters(out System.Collections.ArrayList names, out System.Collections.ArrayList values)
         {
