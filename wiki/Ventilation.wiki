@@ -16,5 +16,5 @@ Noise levels (http://en.wikipedia.org/wiki/Sone)
  * 2 sones is noisy 
 
 Examples
- * VORTICE QUADRO 3" and 4" http://www.amperel.co.il/products/125034
+ * VORTICE QUADRO 3" and 4" http://www.amperel.co.il/products/125034  http://www.vortice.ltd.uk/file.aspx?id=226
  * VORTICE PUNTO 6" 
