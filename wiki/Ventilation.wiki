@@ -10,5 +10,5 @@ Recommended:
 
 Noise levels (http://en.wikipedia.org/wiki/Sone)
 
-0.5 SONES - is Ok
-2 SONES is noisy 
+ * 0.5 sones is Ok
+ * 2 sones is noisy 
