@@ -1,0 +1,2 @@
+How to use RAID on multiple USB flash disks
+ * http://cs.joensuu.fi/~mmeri/usbraid/
