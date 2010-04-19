@@ -10,5 +10,5 @@ Recommended:
 
 Noise levels (http://en.wikipedia.org/wiki/Sone)
 
- * 0.5 sones is Ok
+ * 0.5 sones is Ok (20-30dB)
  * 2 sones is noisy 
