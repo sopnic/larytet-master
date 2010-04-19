@@ -21,7 +21,8 @@ Examples
  * http://www.vortice.ltd.uk/file.aspx?id=226
  * VORTICE PUNTO 6" 
  * 4" VORTICE LINEO VO Q (200m)
- * Ruck RS100L   RK150S (6")
+ * Ruck RS100L   
+ * Ruck RK150S (6") + base to fix on the ceilings. 
 
 Installation
  * http://avir.co.il/HTMLs/Home.aspx
