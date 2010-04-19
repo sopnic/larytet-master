@@ -1,4 +1,4 @@
-= How to choose exhaust fan =
+= How to choose exhaust fan (מפוחי תעלה) =
 
  * CFM - http://en.wikipedia.org/wiki/Cubic_feet_per_minute
  * Conversion of air flow units http://www.comairrotron.com/airflow_calc.shtml
