@@ -1,2 +1,3 @@
 How to use RAID on multiple USB flash disks
  * http://cs.joensuu.fi/~mmeri/usbraid/
+ * http://www.bigbruin.com/reviews05/thumbraid_1
