@@ -1,6 +1,8 @@
 = How to choose exhaust fan =
 
  * CFM - http://en.wikipedia.org/wiki/Cubic_feet_per_minute
+ * Conversion of air flow units http://www.comairrotron.com/airflow_calc.shtml
+ * 50CFM is 23l/s or 85 cubicm/h
 
 Recommended:
  * Toilet: 50 CFM
