@@ -40,6 +40,15 @@
   * [http://ask.metafilter.com/71462/Im-looking-for-a-secure-reliable-subversion-service-and-hoping-for-recommendations I'm looking for a secure, reliable subversion service ...]
 
 
+ * http://www.bitbucket.org/
+ * http://www.origo.ethz.ch/
+ * http://www.wush.net/corpsite/landing
+ * http://codesion.com/devjavu.html
+ * http://www.xp-dev.com/
+ * http://firefly.activestate.com/
+ * http://www.fogcreek.com/FogBugz/
+
+
 = Uptime statistics  =
 == Commercial ==
  * http://www.siteuptime.com/
