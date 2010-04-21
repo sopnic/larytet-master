@@ -15,6 +15,10 @@ Noise levels (http://en.wikipedia.org/wiki/Sone)
  * 0.5 sones is Ok (20-30dB)
  * 2 sones is noisy 
 
+Duct:
+1 meter of duct is about 3 CFM
+1 feet of duct is about 10CFM
+
 Examples
  * VORTICE QUADRO 3" and 4" 
  * http://www.amperel.co.il/products/125034  03-5594299 
