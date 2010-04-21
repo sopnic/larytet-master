@@ -18,6 +18,7 @@ Noise levels (http://en.wikipedia.org/wiki/Sone)
 Duct
  * 1 meter of duct is about 3 CFM
  * 1 feet of duct is about 10CFM
+ * Elbow 15 feet (5 meters) or 150CFM
 
 Examples
  * VORTICE QUADRO 3" and 4" 
