@@ -1,3 +1,11 @@
+ * http://www.bitbucket.org/  $12/month Mercury only
+ * http://www.origo.ethz.ch/  Free for close source (SVN, forums) all included
+ * http://www.wush.net/corpsite/landing $15/mon SVN, wiki, Track
+ * http://codesion.com/devjavu.html  $7/mon 5 users/5 projects, SVN, 
+ * http://www.xp-dev.com/   SVN/GIT  $5/mon forum/wiki inlimited users
+ * http://firefly.activestate.com/  $10/mon
+
+
   * Large table comparing the SVN services http://www.svnhostingcomparison.com/
 
   * Services for OSS http://en.wikipedia.org/wiki/Comparison_of_free_software_hosting_facilities
@@ -40,13 +48,6 @@
   * [http://ask.metafilter.com/71462/Im-looking-for-a-secure-reliable-subversion-service-and-hoping-for-recommendations I'm looking for a secure, reliable subversion service ...]
 
 
- * http://www.bitbucket.org/
- * http://www.origo.ethz.ch/
- * http://www.wush.net/corpsite/landing
- * http://codesion.com/devjavu.html
- * http://www.xp-dev.com/
- * http://firefly.activestate.com/
- * http://www.fogcreek.com/FogBugz/
 
 
 = Uptime statistics  =
