@@ -18,6 +18,8 @@ Modify the file /tmp/svn/hooks/pre-revprop-change to exit 0 in all cases
 <pre>
 chmod +x /tmp/svn/hooks/pre-revprop-change
 svnsync init file:///tmp/svn http://larytet-master.googlecode.com/svn
+
 svnsync sync file:///tmp/svn
+
 svnadmin dump /tmp/svn > dump_file
 </pre>
