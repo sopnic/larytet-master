@@ -7,7 +7,7 @@ The commands below will dump the SVN repository from Google Code to a single dum
 
 = Details =
 
-<pre>
+<code>
 
 svnadmin create /tmp/svn
 
@@ -15,7 +15,7 @@ cp /tmp/svn/hooks/pre-revprop-change.tmpl /tmp/svn/hooks/pre-revprop-change
 
 chmod +x /tmp/svn/hooks/pre-revprop-change
 
-</pre>
+</code>
 
 Modify the file /tmp/svn/hooks/pre-revprop-change to exit 0 in all cases
 
