@@ -5,6 +5,8 @@
 The commands below will dump the SVN repository from Google Code to a single dump file suitable for further import.
 
 
+Some options: http://rsvndump.sourceforge.net/manpage.html
+
 = Details =
 
 <code>
