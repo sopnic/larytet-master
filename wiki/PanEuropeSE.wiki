@@ -19,6 +19,8 @@ Data vendors
  * http://www.telekurs-financial.com/  (3 mil instruments)
  * http://www.wmdaten.de/
 
-= Telekurs financial =
+== Telekurs financial ==
 
 Is a normalised real-time feed, which provides consolidated data in one single consistent format, regardless of where in the world the data originates. Data sourced from over 850 global exchanges and contributors
+
+A non-real time tick data service, SIX Telekurs offers an end of day service that delivers every tick for the specified exchanges.
