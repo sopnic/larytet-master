@@ -9,3 +9,12 @@ Thomson Reuters http://www.thefutureforum.info/  $700/month
 
 
 See fees on page 37 (Annex III) http://larytet-master.googlecode.com/files/report-data-availability_en.pdf
+
+Data vendors
+ * http://www.exchange-data.com/
+ * http://www.interactivedata.com/
+ * http://www.markit.com/
+ * http://www.reuters.com/
+ * http://www.standardandpoors.com/
+ * http://www.telekurs-financial.com/  (3 mil instruments)
+ * http://www.wmdaten.de/
