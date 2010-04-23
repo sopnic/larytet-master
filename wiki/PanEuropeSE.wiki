@@ -6,3 +6,6 @@ The London Stock Exchange charges £26.50 (€29.33) a month for UK level 1 data
 NYSE Euronext is one of the few exchange groups in Europe that offers unbundled pre- and post-trade data for its European regulated markets. Its full order book bundled data rate for the Euronext markets is €90 a month, while its Cash Last Price post-trade-only service is €16 a month.
 
 Thomson Reuters http://www.thefutureforum.info/  $700/month
+
+
+See fees on page 37 (Annex III) http://larytet-master.googlecode.com/files/report-data-availability_en.pdf
