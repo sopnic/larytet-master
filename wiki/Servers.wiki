@@ -1,4 +1,11 @@
-#summary Mainly multicores
+
+#summary Hardware
+
+= Routers =
+
+ * E2100L
+ * WRT160NL
+
 = HP =
  * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-3328412-241644-3328421.html HP Proliant DL]
  * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/3709945-3709945-3328410-241641-3328419.html HP Proliant BL]
