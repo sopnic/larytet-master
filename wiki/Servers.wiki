@@ -1,5 +1,9 @@
-
 #summary Hardware
+
+
+= Tablets =
+
+ * Intel Classmate PC 
 
 = Routers =
 
