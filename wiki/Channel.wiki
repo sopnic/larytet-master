@@ -1,9 +1,12 @@
+= Channels =
+
 http://larytet-master.googlecode.com/files/scKDN_2010.png 
 http://larytet-master.googlecode.com/files/scMRK_2010.png 
 http://larytet-master.googlecode.com/files/amn_range.png
 
 
-Breakout 
+= Breakouts =
+
 http://larytet-master.googlecode.com/files/mrk_2010_breakout_of_channel.png
 http://larytet-master.googlecode.com/files/PFE_2010_channel_breakout.png
 http://larytet-master.googlecode.com/files/kdn_2010_channel_breakout.png
