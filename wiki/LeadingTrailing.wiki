@@ -6,3 +6,6 @@ http://larytet-master.googlecode.com/files/tase_2010_leading.png
 http://larytet-master.googlecode.com/files/fxi_2010_leading.png
 http://larytet-master.googlecode.com/files/cs_2010_leading.png
 Measured target in CS is $34
+
+= Copper/Gold ratio aka deflation/inflation bet =
+http://larytet-master.googlecode.com/files/copper_gold_2010_leading.png
