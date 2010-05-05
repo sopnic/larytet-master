@@ -1,3 +1,7 @@
+= SP500 =
 http://larytet-master.googlecode.com/files/spx_2010_trailing.png
+
+= Non confirmations =
 http://larytet-master.googlecode.com/files/tase_2010_leading.png
 http://larytet-master.googlecode.com/files/fxi_2010_leading.png
+http://larytet-master.googlecode.com/files/cs_2010_leading.png
