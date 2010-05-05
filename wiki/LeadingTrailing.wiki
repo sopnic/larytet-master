@@ -5,3 +5,4 @@ http://larytet-master.googlecode.com/files/spx_2010_trailing.png
 http://larytet-master.googlecode.com/files/tase_2010_leading.png
 http://larytet-master.googlecode.com/files/fxi_2010_leading.png
 http://larytet-master.googlecode.com/files/cs_2010_leading.png
+Measured target in CS is $34
