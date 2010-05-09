@@ -1,3 +1,15 @@
+ * The Trading Index (TRIN) is a measure of how much volume it takes to move rising stocks vs. falling stocks on the NYSE. The 30-day moving average of daily closing TRIN readings has been sitting at 0.90, the lowest level since June 2007.
+
+ * The price/earnings ratio, using four-quarter trailing real earnings, has improved tremendously, from 122 to 23. But 23 is in the area of the peak levels of P/E throughout the 20th century. Ratios of 6 or 7 occurred at major stock market bottoms during that time.
+
+ * The Daily Sentiment Index, a poll conducted by Trade-Futures.com, reports the percentage of traders who are bullish on the S&P. The reading has been registering highs in the 86-92% range ever since last September. Prior to recent months, the last time the DSI saw even a single day’s reading at 90% was June 2007. At the March 2009 bottom, only 2% of traders were bullish.
+
+ * The Investors Intelligence poll of advisors reported in December 2009 only 15.6% bears. this reading was the lowest percentage since April 1987.
+
+ * The 10-day moving average of the CBOE Equity Put/Call Ratio has fallen to 0.45, which means that the volume of trading in calls has been more than twice that in puts.
+
+ * The latest report shows only 3.5% cash on average in mutual funds. This figure matches the all-time low, which occurred in July 2007
+
 http://larytet-master.googlecode.com/files/IWM_vertical_drop.png
 http://larytet-master.googlecode.com/files/WallStreet_6_may_2010.png
 http://larytet-master.googlecode.com/files/rxi_6_may_2010.png
