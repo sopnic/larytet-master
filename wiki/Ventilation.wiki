@@ -51,6 +51,7 @@ Motion sensor
  * http://www.sollan.co.il/sale.asp?pid=5820
  * http://www.hobygan.co.il/?page=products&id=204
  * http://www.bigmarket.co.il/site/detail/detail/detailDetail.asp?detail_id=728760
+ * http://www.igreen.co.il/catpage.asp?CategoryID=1
 
 
 Also occupancy sensor wall mount 
