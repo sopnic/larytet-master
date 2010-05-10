@@ -5,3 +5,7 @@ This release includes some components of the ParallelFx framework (http://msdn.m
 Using ParallelFx, you can easily develop software that can automatically take advantage of the parallel potential of today multicore machines. For that purpose, several new constructs like futures, parallel loops or concurrent collections are now available.
 
 To use this code you have to manually enable the .NET 4 profile using the --with-profile4=yes switch at configure stage. 
+
+
+Intel® Threading Building Blocks (TBB) 
+http://www.threadingbuildingblocks.org/
