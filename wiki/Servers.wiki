@@ -15,6 +15,9 @@
  * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/3709945-3709945-3328410-241641-3328419.html HP Proliant BL]
  * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-241434-241646-241477.html Proliant ML (Tower)]
 
+
+"Anti-vibration rack increased random read performance by 56% to 246% and random write [performance] by 34% to 88%."
+
 = Memory upgrades =
 
 crucial.com
