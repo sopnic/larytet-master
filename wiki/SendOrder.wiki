@@ -4,3 +4,8 @@ There are two asmachtot. "Asmachta FMR" is the only thing which is important to 
 
 
 Is there a situation when SendOrderRx does not return? For example, network connection drops - what is the timeout.
+
+
+After we get asmachta we poll the server. 
+
+Update/cancel - another thread. Check fill after the order placed. 
