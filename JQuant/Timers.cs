@@ -141,7 +141,7 @@ namespace JQuant
         /// <summary>
         /// application is free to set ApplicationHook field. TimerList
         /// will not modify the field.
-        /// This field can be use to store reference to the object which keeps
+        /// This field can be used to store reference to the object which keeps
         /// state machine internal state.
         /// </summary>
         object ApplicationHookGet();
@@ -312,6 +312,20 @@ namespace JQuant
 
 
             return (error == Timers.Error.NONE);
+        }
+
+
+        /// <summary>
+        /// use this method if no need to call Stop() will ever arise for the timer
+        /// </summary>
+        public bool Start(bool autorestart)
+        {
+            ITimer timer;
+            long timerId;
+
+            bool result = Start(out timer, out timerId, null, autorestart);
+
+            return result;
         }
 
         /// <summary>

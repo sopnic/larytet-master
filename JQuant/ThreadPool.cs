@@ -199,6 +199,13 @@ namespace JQuant
             return result;
         }
 
+        public bool PlaceJob(Job job)
+        {
+            bool result;
+            result = PlaceJob(job, null, null);
+            return result;
+        }
+
         /// <summary>
         /// start a service thread if there are free service threads 
         /// </summary>

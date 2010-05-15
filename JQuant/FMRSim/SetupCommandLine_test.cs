@@ -4,6 +4,9 @@ using System.Threading;
 using System.IO;
 using System.Collections.Generic;
 
+using System.Reflection;
+using System.Text;
+
 
 namespace JQuant
 {
@@ -399,6 +402,80 @@ namespace JQuant
             }
         }
 
+        /// <summary>
+        /// I can just implement ILogerData (one method) or inherit LoggerDataStructure
+        /// I chose to inherit LoggerDataStructure
+        /// </summary>
+        protected class FileLoggerTestData : LoggerDataStructure
+        {
+            public FileLoggerTestData()
+               : base(",")
+            {
+                // set fields and call InitValue();
+                field1 = counter++;
+                field2 = counter++;
+            }
+            
+            public int field1;
+            public int field2;
+            static int counter = 201;
+        }
+
+        /// <summary>
+        /// I can just implement ILogerData (one method) or inherit LoggerDataStructure
+        /// I chose to implement ILogerData
+        /// </summary>
+        protected class FileLoggerTestDataSimple : ILogerData
+        {
+            public FileLoggerTestDataSimple()
+            {
+                // set fields 
+                field1 = counter++;
+                field2 = counter++;
+            }
+            
+            public string ToLogString()
+            {
+                FieldInfo[] fields = this.GetType().GetFields();
+                StringBuilder sbData = new StringBuilder(fields.Length * 10);
+
+                object o = (object)this;
+
+                foreach (FieldInfo field in fields)
+                {
+                    object val = field.GetValue(o);
+                    sbData.Append(val.ToString());
+                    sbData.Append(","); // add delimiter
+                }
+
+                string values = sbData.ToString();
+                // System.Console.WriteLine("type="+this.GetType()+",fields="+fields.Length);
+                // System.Console.WriteLine("values="+values);
+
+                return values;
+            }
+
+            public int field1;
+            public int field2;
+
+            static int counter = 0;
+        }
+
+        protected void debugFileLoggerTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+        {
+            // I can use FileLoggerTestDataSimple or FileLoggerTestData structures - both work
+            FileLogger<FileLoggerTestData> logger = new FileLogger<FileLoggerTestData>("test", "test.csv", false, "");
+            logger.Start();
+
+            // add an entry to the log
+            logger.AddEntry(new FileLoggerTestData());
+
+            // wait little bit before I tear the logger down - i want to let the logger to finish writing
+            Thread.Sleep(200);
+
+            logger.Stop();
+            logger.Dispose();
+        }
         
         protected void LoadCommandLineInterface_test()
         {
@@ -439,6 +516,10 @@ namespace JQuant
                                   " Calls PreciseTime in tight loop and checks that the returned time is reasonable", debugRTClock1Callback);
             menuTests.AddCommand("rtclock_2", "RT clock test",
                                   " Calls PreciseTime and print out ticks", debugRTClock2Callback);
+
+
+            menuTests.AddCommand("logTest", "File logger test",
+                                  " Create a logger, add a couple of entries and get out", debugFileLoggerTestCallback);
         }
         
     }
