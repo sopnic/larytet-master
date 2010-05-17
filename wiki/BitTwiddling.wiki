@@ -1,11 +1,11 @@
 = Clear least significant non-zero bit in a number =
 
-<pre><code>
+{{{
 x & (x-1)
-</code></pre>
+}}}
 
-= Least significant non-zero bit of a number =
+= Get Least significant non-zero bit of a number =
 
-<pre><code>
+{{{
 ( x & ~(x-1) )
-</code></pre>
+}}}
