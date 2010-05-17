@@ -14,6 +14,7 @@ x & (x-1)
 In GCC there are built in functions like this
 
 {{{
-int __builtin_ctz (unsigned int x)
-    Returns the number of trailing 0-bits in x, starting at the least significant bit position. If x is 0, the result is undefined. 
+// Returns the number of trailing 0-bits in x, starting at the least significant bit 
+// position. If x is 0, the result is undefined. 
+int __builtin_ctz (unsigned int x);
 }}}
