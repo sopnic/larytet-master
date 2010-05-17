@@ -4,7 +4,7 @@
 x & (x-1)
 }}}
 
-= Get Least significant non-zero bit of a number =
+= Get least significant non-zero bit of a number =
 
 {{{
 ( x & ~(x-1) )
