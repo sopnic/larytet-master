@@ -12,7 +12,7 @@ Bus which moves between the words. There are three types of passengers
  * short stay - tourist looking for adventures. Can be rather dangerous.
  * long stay - mainly commerce or business. people do the same route (2 or 3 worlds) frequently. Carry multiple navigation and communication devices with them - one for each world.
 
-Bus is served by a private company. There are two ways to pay - energy for the bus and food for the employees. Food is fairly wide range of organic components. Almost everything carbon based goes.
+Bus is served by a private company. There are two ways to pay - energy for the bus and food for the employees. Food is fairly wide range of organic components. Almost anything carbon based goes.
 
 *Skills*
 
