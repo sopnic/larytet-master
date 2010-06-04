@@ -22,3 +22,7 @@ FPGA
  * http://www.mathworks.com/fpga-design : Matlab to HDL
  * http://www.maxeler.com/content/frontpage : Java
  * http://www.xilinx.com/prs_rls/ip/0535xlnx_accelchip.htm : Matlab to HDL
+ * The Convey systems use FPGA's in a different way than "traditional" approaches (one of the reasons we were funded by both Xilinx and Intel). The Convey coprocessor—where the FPGAs reside—hosts extensions to the x86_64 ISA (called "personalities"). As you might expect, these extended instructions can be anything from classic vector processing (our roots: Convey <== Convex+1) to instructions that are very application-specific (i.e. an instruction that implements the Mersenne twister).
+ * Exergy, Active Financials, Solace, Tervela and the TIBCO Messaging appliance 
+ * Celoxica GMAC
+ * Alma can encode your C++ directly into VHDL
