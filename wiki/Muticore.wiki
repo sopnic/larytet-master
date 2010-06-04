@@ -15,4 +15,10 @@ Appro announced a pair of 1U servers aimed at small- and medium-sized HPC (high 
 
 FPGA 
 
-http://www.wallstreetandtech.com/financial-risk-management/showArticle.jhtml?articleID=223100577&pgno=2
+ * http://www.wallstreetandtech.com/financial-risk-management/showArticle.jhtml?articleID=223100577&pgno=2
+
+ * http://www.concurrenteda.com   x86 assembly
+ * http://www.impulseaccelerated.com C/C++ to HDL
+ * http://www.mathworks.com/fpga-design : Matlab to HDL
+ * http://www.maxeler.com/content/frontpage : Java
+ * http://www.xilinx.com/prs_rls/ip/0535xlnx_accelchip.htm : Matlab to HDL
