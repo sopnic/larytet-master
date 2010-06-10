@@ -67,11 +67,11 @@ One guy asks what they are waiting for? "They show a hobbit" someone answers him
  
 *Carbon is not us*
 
-A friend of mine tells me that his company is looking for a good software guy. He arranges me an interview the same day. On the first technical interview I get the typical embedded systems related questions. One of them goes like this: "Clock period is not stable and variates significantly. What could be a reason?". I ask if the question relates to the hardware clock generator or a periodic hardware interrupt and get answer interrupt. I say that there are plenty of possible reasons and I would like to focus on most probable and ask if the interrupt latency varies or the time to completion. The guy answers, that both.
+A friend of mine tells me that his company is looking for a good software person. He arranges me the interview the same day. On the first technical interview I get the typical embedded systems related questions. One of them goes like this: "Clock period is not stable and variates significantly. What could be a reason?". I ask if the question relates to the hardware clock generator or a periodic hardware interrupt and get answer that this is an interrupt. I say that there are plenty of possible reasons and I would like to focus on most probable and ask if the interrupt latency varies or the time to completion. The guy answers, that both.
 I start to list the possible reasons
  * Another interrupt in the higher priority.
  * Interrupt disable in the different context.
  * Missing interrupt enable (a bug) in one of the disable-enable pairs.
  * Nested interrupt.
  * Problems in the OS interrupt wrappers - handling of the pending system calls consumes CPU cycles both before and after the interrupt.
-I see that this is still not the answer. The guy waits for something specific. He thinks, that he is smart. I drop another one - code cache. Apparently this is answer. He goes out to invite another guy. I start to think what to answer when they ask me what compensation i expect. 
+I see that this is still not the answer. The guy waits for something specific. He thinks, that he is smart. I drop another one - code cache. Apparently this is the answer. He goes out to invite another guy. I start to think what to answer when they ask me what compensation i expect. 
