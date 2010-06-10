@@ -75,5 +75,3 @@ I start to list the possible reasons
  * Nested interrupt.
  * Problems in the OS interrupt wrappers - handling of the pending system calls consumes CPU cycles both before and after the interrupt.
 I see that this is still not the answer. The guy waits for something specific. He thinks, that he is smart. I drop another one - code cache. Apparently this is answer. He goes out to invite another guy. I start to think what to answer when they ask me what compensation i expect. 
-The next moment my body is part of the concrete balcony in my apartment and only the head sticks out. Ambulance arrives and their suggestion is to cut the head and attach to the bionic body. I do not feel much. But I did not like the whole thing and I want to punish those who did that to me. 
-Apparently the company is headquarters of bionics company on Tesla. 
