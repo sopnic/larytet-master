@@ -65,3 +65,15 @@ Rather long queue of people from the dorms to the benches waiting for something.
 One guy asks what they are waiting for? "They show a hobbit" someone answers him. The guy decides to stay and see by himself. After a minute or two the person first in the queue loosing patience or unable to wait for the show anymore asks to run the demonstration. The firs of the sitting on the benches turn his head to the next one and says "hey you, show them the f..g hobbit". They do not remember names of each other.  The second on the bench turns his head and says something similar to the third and so on until the wave comes slowly to a solidly built below average height guy in rather expensive clothes. He tiredly looks around but for apparent lack of choice stands up and starts to get out of his pants. This is cold and snowy. The crowd starts to laugh. Under the pants there are very hairy stout legs.
 
  
+*Carbon is not us*
+
+A friend of mine tells me that his company is looking for a good software guy. He arranges me an interview the same day. On the first technical interview I get the typical embedded systems related questions. One of them goes like this: "Clock period is not stable and variates significantly. What could be a reason?". I ask if the question relates to the hardware clock generator or a periodic hardware interrupt and get answer interrupt. I say that there are plenty of possible reasons and I would like to focus on most probable and ask if the interrupt latency varies or the time to completion. The guy answers, that both.
+I start to list the possible reasons
+ * Another interrupt in the higher priority.
+ * Interrupt disable in the different context.
+ * Missing interrupt enable (a bug) in one of the disable-enable pairs.
+ * Nested interrupt.
+ * Problems in the OS interrupt wrappers - handling of the pending system calls consumes CPU cycles both before and after the interrupt.
+I see that this is still not the answer. The guy waits for something specific. He thinks, that he is smart. I drop another one - code cache. Apparently this is answer. He goes out to invite another guy. I start to think what to answer when they ask me what compensation i expect. 
+The next moment my body is part of the concrete balcony in my apartment and only the head sticks out. Ambulance arrives and their suggestion is to cut the head and attach to the bionic body. I do not feel much. But I did not like the whole thing and I want to punish those who did that to me. 
+Apparently the company is headquarters of bionics company on Tesla. 
