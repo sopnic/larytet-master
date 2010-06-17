@@ -13,10 +13,9 @@ Back to the RTOS kernels - FreeRTOS kernel does the trick of threads with separa
 
 Pros of code running at user level (thread, task) instead of interrupt level (SWI, etc)
 
-- unlimited number of tasks. I can keep a separate task for every system resource or data unit and avoid disable interrupts in many cases
-- disable thread scheduler is a cheaper operation than disable an interrupt or a group of interrupts. No interrupt latency impact.
-- threads are cheap to create and invoke and interrupts are expensive
-- thread invocation can be done faster than interrupt invocation, because in the simplest case we do not need to switch stack
-- unlimited number of priorities and not depending on the hardware
-- round robin, priority strict, cooperative scheduler are possible at the system level and between groups of tasks
-- 
+  * unlimited number of tasks. I can keep a separate task for every system resource or data unit and avoid disable interrupts in many cases
+  * disable thread scheduler is a cheaper operation than disable an interrupt or a group of interrupts. No interrupt latency impact.
+  * threads are cheap to create and invoke and interrupts are expensive
+  * thread invocation can be done faster than interrupt invocation, because in the simplest case we do not need to switch stack
+  * unlimited number of priorities and not depending on the hardware
+  * round robin, priority strict, cooperative scheduler are possible at the system level and between groups of tasks
