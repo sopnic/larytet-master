@@ -7,30 +7,25 @@ using System.Collections.Generic;
 namespace JQuant
 {
 
-    partial class Program
-    {
+	partial class Program
+	{
 
 
-        protected void LoadCommandLineInterface()
-        {
-            cli.SystemMenu.AddCommand("exit", "Exit from the program",
-                "Cleanup and exit", this.CleanupAndExit);
-            // Menu menuFMRLib = 
-            cli.RootMenu.AddMenu("FMRLib", "Access to  FMRLib API",
-                          " Allows to access the FMRLib API directly");
-            // Menu menuFMRLibSim = 
-            cli.RootMenu.AddMenu("FMRLibSim", "Configure FMR simulation",
-                           " Condiguration and debug of the FMR simulatoion");
+		protected void LoadCommandLineInterface()
+		{
+			cli.SystemMenu.AddCommand("exit", "Exit from the program",
+				"Cleanup and exit", this.CleanupAndExit);
 
-            LoadCommandLineInterface_sa();
-            LoadCommandLineInterface_oper();
-            LoadCommandLineInterface_dbg();
-            LoadCommandLineInterface_test();
-            LoadCommandLineInterface_ms();
-            LoadCommandLineInterface_feed();
-        }
+			LoadCommandLineInterface_dbg();
+			LoadCommandLineInterface_feed();
+#if USEFMRSIM
+			LoadCommandLineInterface_ms();
+#endif
 
+			LoadCommandLineInterface_oper();
+			LoadCommandLineInterface_sa();
+			LoadCommandLineInterface_test();
+		}
 
-
-    }//partial class Program
+	}//partial class Program
 }//namespace JQuant
