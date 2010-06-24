@@ -19,3 +19,11 @@ Pros of code running at user level (thread, task) instead of interrupt level (SW
   * thread invocation can be done faster than interrupt invocation, because in the simplest case we do not need to switch stack
   * unlimited number of priorities and not depending on the hardware
   * round robin, priority strict, cooperative scheduler are possible at the system level and between groups of tasks
+
+
+Books
+  * "MicroC OS II: The Real Time Kernel (With CD-ROM)"
+  * Concurrent Euclid, the Unix* System, and Tunis (Addison-Wesley series in computer science) [Paperback] R.C. Holt
+  * Structured Concurrent Programming With Operating Systems Applications (Addison-Wesley series in computer science) [Paperback]
+R. C. Holt
+
