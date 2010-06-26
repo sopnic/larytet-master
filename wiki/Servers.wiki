@@ -84,6 +84,5 @@ Robert J. Sawyer
 
 = Storage =
 
-THECUS miniNAS N0204 Pocket RAID Storage
-NSA-323
-http://www.wellcom.co.il/
+  * THECUS miniNAS N0204 Pocket RAID Storage
+  * D-Link DNS-323 http://www.wellcom.co.il/
