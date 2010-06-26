@@ -85,4 +85,4 @@ Robert J. Sawyer
 = Storage =
 
   * THECUS miniNAS N0204 Pocket RAID Storage
-  * D-Link DNS-323 http://www.wellcom.co.il/
+  * D-Link DNS-323 http://www.wellcom.co.il/  and hack http://wiki.dns323.info/howto:1st_steps
