@@ -1,0 +1,4 @@
+
+  * http://www.rietta.com/firefox/Tutorial/overview.html
+  * http://roachfiend.com/archives/2004/12/08/how-to-create-firefox-extensions/
+  * http://blog.mozilla.com/addons/2009/01/28/how-to-develop-a-firefox-extension/
