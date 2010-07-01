@@ -2,3 +2,4 @@
   * http://roachfiend.com/archives/2004/12/08/how-to-create-firefox-extensions/
   * http://blog.mozilla.com/addons/2009/01/28/how-to-develop-a-firefox-extension/
   * https://developer.mozilla.org/en/building_an_extension
+  * https://developer.mozilla.org/en/extensions
