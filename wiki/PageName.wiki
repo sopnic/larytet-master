@@ -1,18 +1,14 @@
-#summary GIT tips
+#summary C++ tips
 
-<pre>
-#!/usr/bin/env bash
-# git-addremove
-git add .
-git ls-files -deleted | xargs git rm
-</pre>
+= Ubuntu =
 
+ * Install developers tools
+{{{
+sudo apt-get install build-essential
+}}}
+ * Install eclipse: 
+{{{
+sudo apt-get install eclipse
+}}}
 
-To revert local changes
-<pre>
-git reset --hard HEAD^
-</pre>
-
-
-Simple tutorial: http://book.git-scm.com/
-  
+ * install CDT: in eclipse: Help->Install New Software
