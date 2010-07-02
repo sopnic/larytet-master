@@ -7,7 +7,7 @@
     <em:version>0.0.1</em:version>
     <em:creator>larytet</em:creator>
     <em:contributor></em:contributor>
-    <em:description>Automatic trading</em:description>
+    <em:description>Automatic trader</em:description>
     <em:optionsURL>chrome://jquant/content/options.xul</em:optionsURL>
     <em:targetApplication>
       <Description>

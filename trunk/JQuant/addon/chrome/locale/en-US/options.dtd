@@ -1,5 +1,5 @@
-<!ENTITY prefwindow.title "trader preferences">
-<!ENTITY pane1.title "trader preferences">
+<!ENTITY prefwindow.title "JQuant preferences">
+<!ENTITY pane1.title "JQuant preferences">
 <!ENTITY checkboolpref.label "A Boolean Preference">
 <!ENTITY checkboolpref.accesskey "B">
 <!ENTITY intpref.label "An Integer Preference">
