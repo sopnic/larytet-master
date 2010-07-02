@@ -27,19 +27,6 @@
     oncommand="jquant.onToolbarButtonCommand()"/>
   </toolbarpalette>
 
-  <toolbox id="navigator-toolbox">
-    <toolbar class="chromeclass-toolbar" toolbarname="&jquantToolbar.name;" customizable="true" id="jquant-toolbar">
-      <label value="&jquantToolbar.label;"/>
-    </toolbar>
-  </toolbox>
-
-  <menupopup id="viewSidebarMenu">
-    <menuitem key="key_openSidebar_jquant" observes="viewSidebar_jquant" />
-  </menupopup>
-
-  <keyset id="mainKeyset">
-    <key id="key_openSidebar_jquant" command="viewSidebar_jquant" />
-  </keyset>
 
 
 </overlay>
