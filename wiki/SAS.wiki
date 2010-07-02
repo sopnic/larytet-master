@@ -1,0 +1,4 @@
+#summary SAS tips, helpful links.
+
+* http://statcomp.ats.ucla.edu/sas/
+* http://www.pauldickman.com/teaching/sas/index.php
