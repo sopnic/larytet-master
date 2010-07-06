@@ -6,4 +6,5 @@
   * http://library.gnome.org/devel/glib/stable/glib-Testing.html
   * http://rcunit.sourceforge.net/
   * http://sourceforge.net/apps/trac/embunity/wiki
+  * http://sourceforge.net/apps/trac/cmock/wiki (auto generation of mock functions)
  
