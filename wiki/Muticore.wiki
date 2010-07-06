@@ -7,9 +7,9 @@ Using ParallelFx, you can easily develop software that can automatically take ad
 To use this code you have to manually enable the .NET 4 profile using the --with-profile4=yes switch at configure stage. 
 
 
-Intel® Threading Building Blocks (TBB) 
-http://www.threadingbuildingblocks.org/
-
+  * Intel® Threading Building Blocks (TBB) http://www.threadingbuildingblocks.org/
+  * Intel Parallel Studio
+  * Kai's C++ (owned by Intel?)
 
 Appro announced a pair of 1U servers aimed at small- and medium-sized HPC (high performance computing) deployments. The Tetra 1326G4 and 1426G4 combine Intel or AMD processors with Nvidia Tesla M2050 GPU (graphics processing unit) cards, offering up to 24 CPU cores and 1,792 GPU cores plus as much as 3TB of storage
 
