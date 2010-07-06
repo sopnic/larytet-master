@@ -1,0 +1,3 @@
+  * http://www.netbsd.org/~jmmv/atf/about.html
+  * http://www.agilerules.com/projects/catsrunner/
+  * http://code.google.com/p/cmockery/wiki/Cmockery_Unit_Testing_Framework  (mock functions)
