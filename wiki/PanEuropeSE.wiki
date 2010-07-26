@@ -19,6 +19,9 @@ Data vendors
  * http://www.telekurs-financial.com/  (3 mil instruments)
  * http://www.wmdaten.de/
 
+ מדד ת"א 25
+http://www.bizportal.co.il/shukhahon/bizmadad.shtml?p_id=198
+
 == Telekurs financial ==
 
 Is a normalised real-time feed, which provides consolidated data in one single consistent format, regardless of where in the world the data originates. Data sourced from over 850 global exchanges and contributors
