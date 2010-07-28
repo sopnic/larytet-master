@@ -91,12 +91,13 @@ Projectors
   * projectorcentral.com/projectors.cfm
 
 Fridge
-  * www.f-f.co.il
+  * f-f.co.il
   * a-designer.co.il
   * cell-tec.co.il
   * bestelectric.co.il
   * electroshop.co.il
   * lastprice.co.il
+  * pompa.co.il
 
   * Haier 21TNNB       (‏585L)
   * Liebherr CNES6256  (496L)
