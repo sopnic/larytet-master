@@ -95,6 +95,8 @@ Fridge
   * a-designer.co.il
   * cell-tec.co.il
   * bestelectric.co.il
+  * electroshop.co.il
+  * lastprice.co.il
 
   * Haier 21TNNB       (‏585L)
   * Liebherr CNES6256  (496L)
