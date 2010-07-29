@@ -46,3 +46,9 @@ Risk metrics
 == List of money managers ==
   * iimagazine.com/rankings/rankingsMoMaRankAmerica09.aspx
   * pionline.com/section/GlobalManagerDirectoryArchive
+
+== Brokers ==
+  * TradeKing
+  * thinkorswim
+  * scottrade
+  * Interactive Brokers
