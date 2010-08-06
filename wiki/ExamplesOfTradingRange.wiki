@@ -6,3 +6,7 @@ http://larytet-master.googlecode.com/files/intraday_range_twm_aug_6_2010.png
 On hour later IWM Aug 6th 2010
 
 http://larytet-master.googlecode.com/files/intraday_range_iwm_aug_6_2010.png 
+
+And IWM on the daily chart - this is a larger range between 63.5 and 63.7
+
+http://larytet-master.googlecode.com/files/daily_range_iwm_aug_6_2010.png
