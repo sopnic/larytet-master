@@ -2,6 +2,9 @@
 
 http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=5475901
 
+More on Qemu 
+http://old.lugatgt.org/articles/qemu_internals/downloads/slides.pdf
+
 
 
 "over 90% of the embedded software verification can be done at the Instruction Accurate (IA) level of software virtual platforms, with simulations running 100s of MIPS. The timing/cycle accurate simulations should be done after IA verification has been finished. This is quite similar to the hardware development methodology, where gate level simulations are done only after RTL simulations are completed."
