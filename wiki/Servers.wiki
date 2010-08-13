@@ -95,3 +95,5 @@ Robert J. Sawyer
   * Nexcom NISE 3500
   * BIS-6620III Norc (1080p playback)
   * BVM ECK-161B 
+  * Portwell WEBS-1010
+  * Zotac Zbox HD-ID11 (1080, WiFi b/g/n)
