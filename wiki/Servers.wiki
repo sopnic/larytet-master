@@ -92,3 +92,4 @@ Robert J. Sawyer
 
   * VIA AMOS 3001 
   * VIA ARTiGO A1100
+  * Nexcom NISE 3500
