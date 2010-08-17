@@ -1,0 +1,6 @@
+#summary Base assets info - how to get Maof (TA25 Index) data.
+
+Code:
+{{{
+public virtual int GetBaseAssets2(out System.Array psaRecords, int BaseAssetCode)
+}}}
