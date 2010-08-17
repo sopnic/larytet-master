@@ -4,3 +4,6 @@ Code:
 {{{
 public virtual int GetBaseAssets2(out System.Array psaRecords, int BaseAssetCode)
 }}}
+
+Parse psaRecords using BaseAssetType struct.
+BaseAssetCode - is the same as bno for madad (? - need to check this).
