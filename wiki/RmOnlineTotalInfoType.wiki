@@ -1,4 +1,4 @@
-#summary Use it to parse the records returned from GetOnlineRM.
+#summary Use it to parse the records returned from GetOnlineRM. this one is for cash balance.
 
 Code:
 {{{
