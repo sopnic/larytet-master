@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary used to parse the records returned from User.GetOnlineRM. this one is for any security except cash.
 
 Code:
 {{{
