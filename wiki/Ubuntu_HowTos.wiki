@@ -2,6 +2,6 @@
 
 = Monodevelop =
 
-  * Add <code>deb http://badgerports.org lucid main<code> to the repositories 
+  * Add <code>deb http://badgerports.org lucid main</code> to the repositories 
   * Add http://badgerports.org/directhex.ppa.asc to the Authorization keys and you are set
 See also http://badgerports.org/help.html
