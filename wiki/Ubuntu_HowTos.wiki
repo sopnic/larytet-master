@@ -1,0 +1,6 @@
+#summary One-sentence summary of this page.
+
+= Monodevelop =
+
+  * Add 'deb http://badgerports.org lucid main' to the repositories 
+  * Add http://badgerports.org/directhex.ppa.asc to the Authorization keys and you are set
