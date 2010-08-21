@@ -606,9 +606,5 @@ namespace JQuant
 		string legend;
 		StreamWriter streamWriter;
 		bool first;
-
 	}
-
-
-
 }//namespace JQuant

@@ -16,15 +16,17 @@ namespace JQuant
 			cli.SystemMenu.AddCommand("exit", "Exit from the program",
 				"Cleanup and exit", this.CleanupAndExit);
 
-			LoadCommandLineInterface_dbg();
-			LoadCommandLineInterface_feed();
-#if USEFMRSIM
-			LoadCommandLineInterface_ms();
-#endif
-
 			LoadCommandLineInterface_oper();
-			LoadCommandLineInterface_sa();
+			LoadCommandLineInterface_dbg();
+//			LoadCommandLineInterface_box();
 			LoadCommandLineInterface_test();
+
+			//LoadCommandLineInterface_sa();
+			//LoadCommandLineInterface_feed();
+
+#if USEFMRSIM
+			//LoadCommandLineInterface_ms();
+#endif
 		}
 
 	}//partial class Program

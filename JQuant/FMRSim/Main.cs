@@ -225,8 +225,8 @@ namespace JQuant
 			string osVersion = Environment.OSVersion.ToString();
 			Console.WriteLine("Running under "+osVersion);
 			osVersion = osVersion.ToLower();
-			bool isUinix = (osVersion.Contains("unix") || (osVersion.Contains("linux")));
-			if (!isUinix)
+			Resources.isUnix = (osVersion.Contains("unix") || (osVersion.Contains("linux")));
+			if (!Resources.isUnix)
 			{
 				Console.ForegroundColor = ConsoleColor.Green;
 			}

@@ -164,6 +164,13 @@ namespace JQuant
 		}
 
 		/// <summary>
+		/// default constructor
+		/// </summary>
+		public Option()
+		{
+		}
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="X"><see cref="System.Double"/> strike price</param>
@@ -184,7 +191,6 @@ namespace JQuant
 				+ ExDate.Date.ToLongDateString().Split(',', ' ')[2].Substring(0, 3).ToUpper();  //3-letter month
 
 			Description = EnumUtils.GetDescription(ot) + " " + X.ToString() + " " + ExDate.Date.ToString();
-
 		}
 
 		//Methods

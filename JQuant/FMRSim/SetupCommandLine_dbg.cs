@@ -778,10 +778,10 @@ namespace JQuant
 				case OrderProcessorEvent.InitOrder:
 					Console.WriteLine("Order FSM informed the Algo about Init event.");
 					break;
-				case OrderProcessorEvent.Send:
+				case OrderProcessorEvent.OrderSent:
 					Console.WriteLine("Order FSM informed the Algo about Send event.");
 					break;
-				case OrderProcessorEvent.ApproveTrading:
+				case OrderProcessorEvent.TradingApproved:
 					Console.WriteLine("Order FSM informed the Algo about ApproveTrading event.");
 					break;
 				case OrderProcessorEvent.PartialFill:
@@ -793,7 +793,7 @@ namespace JQuant
 					_rzFSM.Remove(ref _orderCookie);
 					_orderCookie = null;
 					break;
-				case OrderProcessorEvent.SendCancel:
+				case OrderProcessorEvent.CancelSent:
 					Console.WriteLine("Order FSM informed the Algo about SendCancel event");
 					break;
 				case OrderProcessorEvent.Canceled:
@@ -802,7 +802,7 @@ namespace JQuant
 					_rzFSM.Remove(ref _orderCookie);
 					_orderCookie = null;
 					break;
-				case OrderProcessorEvent.SendUpdate:
+				case OrderProcessorEvent.UpdateSent:
 					Console.WriteLine("Order FSM informed the Algo about SendUpdate event");
 					break;
 				case OrderProcessorEvent.Updated:

@@ -260,7 +260,7 @@ namespace TaskBarLibSim
 		public int BaseAssetCode;   //base asset code
 		public int BNO;             //base asset bno
 		public int nCurr;           //currency code  
-		public string BaseAssetKind;// base asset type 
+		public string BaseAssetKind;//base asset type 
 		public string TradeMethod;  //trade method
 		public double Value;        //morning value  
 		public double Interest;     //interest

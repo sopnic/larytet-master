@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -30,14 +30,13 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <RootNamespace>FMRSim</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG USEFMRSIM NOTFMRSHELLMAIN WITHGUI_</DefineConstants>
+    <DefineConstants>WITHGUI_ USEFMRSIM</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
@@ -47,14 +46,12 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <DefineConstants>USEFMRSIM</DefineConstants>
+    <DefineConstants>WITHGUI_ USEFMRSIM</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
@@ -63,26 +60,28 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Management" />
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
-    <Reference Include="System.Web.DynamicData">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Web.Abstractions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Abstractions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\FMR\FMRShell_OrdersFSM.cs">
+      <Link>FMRShell_OrdersFSM.cs</Link>
+    </Compile>
+    <Compile Include="..\BoxArb.cs">
+      <Link>BoxArb.cs</Link>
+    </Compile>
+    <Compile Include="..\FMR\FMRShell_OrdersFSM_MF.cs">
+      <Link>FMRShell_OrdersFSM_MF.cs</Link>
+    </Compile>
+    <Compile Include="..\FMR\FMRShell_OrdersFSM_RZ.cs">
+      <Link>FMRShell_OrdersFSM_RZ.cs</Link>
+    </Compile>
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="..\CommadLineInterface.cs" />
@@ -93,6 +92,7 @@
     <Compile Include="..\Utils.cs" />
     <Compile Include="..\IProducer.cs" />
     <Compile Include="..\Logger.cs" />
+    <Compile Include="SetupCommandline_box.cs" />
     <Compile Include="TaskBarLibSim.cs" />
     <Compile Include="..\FMR\FMRShell.cs" />
     <Compile Include="..\Forms.cs">
@@ -106,6 +106,7 @@
     <Compile Include="..\TA.cs" />
     <Compile Include="..\Feed.cs" />
     <Compile Include="..\Security.cs" />
+    <Compile Include="..\AlgorithmMachine.cs" />
     <Compile Include="..\CyclicBuffer.cs" />
     <Compile Include="..\PerformanceMonitor.cs" />
     <Compile Include="..\Locks.cs" />
@@ -117,34 +118,56 @@
     <Compile Include="SetupCommandLine_feed.cs" />
     <Compile Include="SetupCommandLine_ms.cs" />
     <Compile Include="SetupCommandLine_oper.cs" />
-    <Compile Include="Setupcommandline_sa.cs" />
+    <Compile Include="SetupCommandLine_sa.cs" />
     <Compile Include="..\Http.cs" />
-    <Compile Include="..\FMR\FMRShell_OrdersFSM.cs" />
-    <Compile Include="..\FMR\FMRShell_OrdersFSM_RZ.cs" />
-    <Compile Include="..\FMR\FMRShell_OrdersFSM_MF.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
       <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
       <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
       <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="TaskBarLib">
+      <Guid>{48C77DB1-D9E0-45B8-9992-C92B047CC700}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
+    <MonoDevelop>
+      <Properties InternalTargetFrameworkVersion="3.5" />
+    </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
 </Project>

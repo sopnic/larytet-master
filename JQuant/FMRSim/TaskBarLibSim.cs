@@ -332,6 +332,52 @@ namespace TaskBarLibSim
 	}
 
 	/// <summary>
+	/// used to parse the records returned from User.GetOnlineRM
+	/// this one is for cash balance
+	/// </summary>
+	public struct RmOnlineTotalInfoType
+	{
+		string sBaseCash;	//מזומן בוקר = מזומן בפתיחה
+		string sLastCash;	//מזומן נוכחי = מזומן אחרון
+		string sCashChange;	//שינוי מזומן
+		string sBaseVL;		//שווי בוקר =  שווי בפתיחה
+		string sLastVL;		//שווי נוכחי - שווי אחרון
+		string sProfitLoss;	//רווח/הפסד = רווח והפסד יומי
+		string sDate;		//תאריך + שעה
+		string sCngCost;	//שינוי עלות
+	}
+
+	/// <summary>
+	/// used to parse the records returned from User.GetOnlineRM
+	/// this one is for any security except cash
+	/// </summary>
+	public struct RmOnlineRecordType
+	{
+		string sBnoName;	//שם נייר
+		string sBnoNum;		//מספר נייר
+		string sSugBno;		//סוג נייר
+		string sBasePrice;	//שער בסיס = מחיר בפתיחה
+		string sBaseNV;		//יתרת בוקר = כמות בפתיחה
+		string sBaseVL;		//שווי בוקר = ערך בפתיחה
+		string sLastPrice;	//שער אחרון
+		string sLastNV;		//כמות נוכחית = כמות אחרונה
+		string sLastVL;		//שווי נוכחי = ערך אחרון
+		string sVLChange;	//שינוי בשווי = שינוי ערך
+		string sMoneyMoved;	//תזרים  = תנועה כספית
+		string sProfitLoss;	//רווח/הפסד = רווח והפסד יומי
+		string sTotalCost;	//עלות
+		string sCngCost;	//הפרש/שינוי מעלות
+		string sAverageCost;//עלות ממוצעת
+		string sCngCostPcnt;//שינוי מעלות באחוזים
+		string lvl1;		//קב.סכימה נכס פינ
+		string lvl2;		//קב.סכימה סוג ני''ע
+		string lvl3;		//קב.סכימה ש.מסחר                              
+		string lvl4;		//קב.סכימה סקטורים                              
+		string lvl5;		//קב.סכימה מנפיקים                              
+		string lvl6;		//קב.סכימה תקנות  
+	}
+
+	/// <summary>
 	/// User Password Structure
 	/// </summary>
 	public struct UserPasswordType
@@ -564,8 +610,85 @@ namespace TaskBarLibSim
 		/// number of SH161Type records retrieved into the vecRecords array. 0 if no records were found. </returns>
 		public virtual int GetSH161(ref System.Array vecRecords, MadadTypes madadSymbol)
 		{
-			vecRecords = null;
-			return 0;
+			int result = -1;
+			vecRecords = System.Array.CreateInstance(typeof(SH161Type), 25);
+
+			//this is a patch - will need to fix it some day
+			string filename = Environment.GetEnvironmentVariable("JQUANT_ROOT") + "sh161.csv";
+			FileStream fileStream;
+			StreamReader streamReader;
+
+			try
+			{
+				fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+				streamReader = new StreamReader(fileStream, System.Text.Encoding.UTF7, false, 1024);
+
+				string str;
+
+				do
+				{
+					try
+					{
+						str = streamReader.ReadLine();
+
+						if (result >= 0)
+						{
+							SH161Type data = new SH161Type();
+
+							int from = 0;
+							int to = str.IndexOf(",", from);
+
+							data.BNO = System.Convert.ToInt64(str.Substring(from, (to - from)));
+							from = to + 1; to = str.IndexOf(",", from);
+
+							data.BNO_NAME = str.Substring(from, (to - from));
+							from = to + 1; to = str.IndexOf(",", from);
+
+							data.PRC = System.Convert.ToDouble(str.Substring(from, (to - from)));
+							from = to + 1; to = str.IndexOf(",", from);
+
+							data.HON_RASHUM = System.Convert.ToDouble(str.Substring(from, (to - from)));
+							from = to + 1; to = str.IndexOf(",", from);
+
+							data.PCNT = System.Convert.ToDouble(str.Substring(from, (to - from)));
+							from = to + 1; to = str.IndexOf(",", from);
+
+							data.MIN_NV = System.Convert.ToInt64(str.Substring(from, (to - from)));
+							from = to + 1; to = str.IndexOf(",", from);
+
+							data.BNO_IN_MDD = System.Convert.ToDouble(str.Substring(from, (to - from)));
+							from = to + 1; to = str.IndexOf(",", from);
+
+							data.PUBLIC_PRCNT = System.Convert.ToDouble(str.Substring(from, (to - from)));
+							from = to + 1; to = str.Length;
+
+							data.NV_TZAFA = System.Convert.ToDouble(str.Substring(from, (to - from)));
+
+							vecRecords.SetValue(data, result);
+						}
+						result++;
+					}
+					catch (IOException e)
+					{
+						System.Console.WriteLine("Failed to read file " + filename);
+						System.Console.WriteLine(e.ToString());
+						break;
+					}
+
+				}
+				while (result < 25);
+
+				fileStream.Close();
+				fileStream = default(FileStream);
+				streamReader = default(StreamReader);
+			}
+			catch (IOException e)
+			{
+				System.Console.WriteLine("Failed to open file " + filename);
+				System.Console.WriteLine(e.ToString());
+			}
+
+			return result;
 		}
 
 
@@ -993,7 +1116,7 @@ namespace TaskBarLibSim
 				try
 				{
 					fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-					streamReader = new StreamReader(fileStream,System.Text.Encoding.UTF7,false,1024*5);
+					streamReader = new StreamReader(fileStream, System.Text.Encoding.UTF7, false, 1024 * 5);
 				}
 				catch (IOException e)
 				{
@@ -1158,8 +1281,8 @@ namespace TaskBarLibSim
 					res = false;
 					break;
 				}
-//				Console.WriteLine(str);
-//				Console.WriteLine("-----------");
+				//				Console.WriteLine(str);
+				//				Console.WriteLine("-----------");
 
 				// parse the string
 				// if i failed to parse read next line until eof or read error
@@ -1180,7 +1303,7 @@ namespace TaskBarLibSim
 
 			return res;
 		}
-		
+
 		/// <summary>
 		/// Look the two consecutive time stamps. Calculate time span - time elapsed from the previous
 		/// log entry. Sleep for some time if i am playing the log too fast
@@ -1225,7 +1348,7 @@ namespace TaskBarLibSim
 			}
 
 		}
-		
+
 		public override void Start()
 		{
 			if (speedup != 1.0)
@@ -1515,7 +1638,7 @@ namespace TaskBarLibSim
 				// i handle last two fields of the K300RzfType separately
 				int fieldsCount = fields.Length - 2;
 				// set all fields in the object
-				for (int fieldIdx = 0;fieldIdx < fieldsCount;fieldIdx++)
+				for (int fieldIdx = 0; fieldIdx < fieldsCount; fieldIdx++)
 				{
 					FieldInfo fi = fields[fieldIdx];
 					string fieldValue;
@@ -1568,25 +1691,25 @@ namespace TaskBarLibSim
 
 				// Application expects that the data log contains generated internally timestamp
 				// Parse the fields and add to the data strcuture
- 				try 
+				try
 				{
 					data.Ticks = JQuant.Convert.StrToLong(ticksStr);
 				}
 				catch (Exception e)
 				{
-						System.Console.WriteLine("Failed to parse ticks"+ticksStr);
-						res = false;
-						break;
+					System.Console.WriteLine("Failed to parse ticks" + ticksStr);
+					res = false;
+					break;
 				}
- 				try 
+				try
 				{
 					data.TimeStamp = DateTime.Parse(timeStampStr);
 				}
 				catch (Exception e)
 				{
-						System.Console.WriteLine("Failed to parse time stamp:"+timeStampStr);
-						res = false;
-						break;
+					System.Console.WriteLine("Failed to parse time stamp:" + timeStampStr);
+					res = false;
+					break;
 				}
 
 

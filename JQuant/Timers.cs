@@ -10,7 +10,7 @@ using System.ComponentModel;
 /// In the CSharp there is System.Threading.Timer. The service comes at cost - a separate thread
 /// for every timer. There are more problems assotiated with the general timer system.
 /// In some (most) of the applications number of simultaneously running timers can be significant,
-/// but there are only limited (and small) number of differetnt timeouts (different types of timers). 
+/// but there are only limited (and small) number of different timeouts (different types of timers). 
 /// Some of the timers are short and require precision (handle high priority events) and some
 /// timers are long and do not require high priority threads for handling.
 /// In the typical modern timer system there is an array where each entry is a linked list of
