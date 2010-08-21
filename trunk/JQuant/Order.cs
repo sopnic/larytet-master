@@ -169,7 +169,7 @@ namespace JQuant
 	/// contains price and size. can represent either a single order or limit book level
 	/// TODO: we have a similar object in MarketSimulation, probably we can merge the two?
 	/// </summary>
-	class LimitOrderPair : ICloneable
+	public class LimitOrderPair : ICloneable
 	{
 		public LimitOrderPair(int price, int size)
 		{
@@ -198,7 +198,7 @@ namespace JQuant
 
 			foreach (LimitOrderPair op in src)
 			{
-				res = res+ op.size + " @ " + op.price  + "\t\t";
+				res = res + op.price + " : " + op.size + "\t\t";
 			}
 
 			return res;
@@ -208,7 +208,7 @@ namespace JQuant
 	/// <summary>
 	/// Limit order book - an array of order pairs
 	/// </summary>
-	class LimitOrderBook
+	public class LimitOrderBook
 	{
 		/// <summary>
 		/// On TASE order book has depth 3
@@ -245,12 +245,11 @@ namespace JQuant
 				Environment.NewLine + 
 				Environment.NewLine + 
 				"\t id= " + id + 
-				"\t\t name= " + name +
+				"\t\t name= " + name + 
 				Environment.NewLine + 
 				Environment.NewLine +
 				"\t BID: " + LimitOrderPair.ToString(bid) + Environment.NewLine +
-				"\t ASK: " + LimitOrderPair.ToString(ask) +
-				Environment.NewLine +
+				"\t ASK: " + LimitOrderPair.ToString(ask) + Environment.NewLine +
 				Environment.NewLine +
 				"\t LAST: \t" + lastTradeSize + " @ " + lastTradePrice +
 				"\t time= " + this.lastTradeTime.ToString("hh:mm:ss.fff") + 
@@ -296,15 +295,15 @@ namespace JQuant
 		[Description("New order initialized by Order Processor")]
 		InitOrder,
 		[Description("Order Processor submitted the order for trading")]
-		Send,
+		OrderSent,
 		[Description("Error - the current operation can't be completed")]
 		Error,
 		[Description("Order was approved for trading by the exchange")]
-		ApproveTrading,
+		TradingApproved,
 		[Description("Order Processor have sent Cancel request for the order")]
-		SendCancel,
+		CancelSent,
 		[Description("Order Processor have sent Update request for the order")]
-		SendUpdate,
+		UpdateSent,
 		[Description("Order update was successfully accomplished")]
 		Updated,
 		[Description("Order cancelation was successfully accomplished")]
@@ -313,7 +312,7 @@ namespace JQuant
 		PartialFill,
 		[Description("Order fill fully completed")]
 		CompleteFill,
-		[Description("Order cleaned and discarded form the processor")]
+		[Description("Order cleaned and discarded from the processor")]
 		Cleanup,
 	};
 

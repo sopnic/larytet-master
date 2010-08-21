@@ -404,5 +404,14 @@ namespace JQuant
 			return (jquantRoot != null);
 		}
 
+		/// <summary>
+		/// Tells if the app runs under *NIX or not (that is, WIN)
+		/// </summary>
+		public static bool isUnix
+		{
+			get;
+			set;
+		}
+
 	}
 }//namespace JQuant

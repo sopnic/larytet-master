@@ -44,7 +44,7 @@ namespace JQuant
 			Resources.Producers.Add(this);
 		}
 
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			Resources.Producers.Remove(this);
 		}
@@ -57,6 +57,7 @@ namespace JQuant
 
 		public abstract bool AddConsumer(IConsumer<DataType> consumer);
 		public abstract bool RemoveConsumer(IConsumer<DataType> consumer);
+
 
 		public abstract void GetEventCounters(out System.Collections.ArrayList names,
 										 out System.Collections.ArrayList values);

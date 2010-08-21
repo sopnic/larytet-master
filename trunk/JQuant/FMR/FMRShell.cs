@@ -142,16 +142,17 @@ namespace FMRShell
 				}
 
 				// something is broken in the XML file
-				if (result)
-				{
-					parameters = new ConnectionParameters(username, password, account);
-				}
-				else
+				if (!result)
 				{
 					break;
 				}
 			}
 
+			// if parsing worked - create new object
+			if (result)
+			{
+				parameters = new ConnectionParameters(username, password, account);
+			}
 
 			return result;
 		}
@@ -857,6 +858,14 @@ namespace FMRShell
 				return true;
 			}
 
+			public override void Dispose()
+			{
+				if (Listeners.Count == 0)
+				{
+					base.Dispose();
+				}
+			}
+
 			public override void GetEventCounters(out System.Collections.ArrayList names,
 												 out System.Collections.ArrayList values)
 			{
@@ -1114,6 +1123,33 @@ namespace FMRShell
 			return r;
 		}
 
+		/// <summary>
+		/// Get all the SH161 data and keep them in array for further processing.
+		/// </summary>
+		/// <param name="k300"></param>
+		/// <returns></returns>
+		public SH161Type[] TA25Weights()
+		{
+			Array x = null;
+			int rc = this.k300Class.GetSH161(ref x, MadadTypes.TLV25);
+			if (rc > 0)
+			{
+				SH161Type[] result = new SH161Type[rc];
+				int i = 0;
+				foreach (object o in x)
+				{
+					result[i] = (SH161Type)x.GetValue(i);
+					i++;
+				}
+
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		
 		public MaofProducer maofProducer;
 		public RezefProducer rezefProducer;
 		public MadadProducer madadProducer;

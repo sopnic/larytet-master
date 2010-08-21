@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Timers;
 using System.Reflection;
 using System.ComponentModel;
@@ -143,6 +144,18 @@ namespace JQuant
 		}
 
 		/// <summary>
+		/// Removes all the leading and trailing blanks and
+		/// replaces multiple blanks inside the string 
+		/// with a single blank
+		/// </summary>
+		/// <param name="s"></param>
+		/// <returns></returns>
+		public static string CleanBlanks(string s)
+		{
+			return Regex.Replace(s.Trim(), @"\s+", " ");
+		}
+
+		/// <summary>
 		/// Create string like this
 		/// "{
 		///    "Weight": 40.0,
@@ -233,6 +246,12 @@ namespace JQuant
 
 	public class Convert
 	{
+		public static int BoolToInt(bool b)
+		{
+			if (b) return 1;
+			else return 0;
+		}
+
 		public static double StrToDouble(string s, double defaultValue)
 		{
 			double result = defaultValue;
@@ -294,6 +313,28 @@ namespace JQuant
 		{
 			double result = StrToDouble(s, 0.0);
 			return result;
+		}
+
+		public static DateTime StrExDateToDateTime(string s, DateTime defaultValue)
+		{
+			int year = defaultValue.Year;
+			int month = defaultValue.Month;
+			int day = defaultValue.Day;
+
+			string t = s.Trim();
+
+			year = StrToInt(t.Substring(0, 4));
+			month = StrToInt(t.Substring(4, 2));
+			day = StrToInt(t.Substring(6, 2));
+
+			DateTime result = new DateTime(year, month, day);
+
+			return result;
+		}
+
+		public static DateTime StrExDateToDateTime(string s)
+		{
+			return StrExDateToDateTime(s, new DateTime(1900, 1, 1));
 		}
 	}
 
@@ -1264,7 +1305,7 @@ namespace JQuant
 			{
 
 				if (direction == true)
-				{		
+				{
 					// True = up tick
 					switch ((int)price)
 					{
@@ -1280,7 +1321,7 @@ namespace JQuant
 					}
 				}
 				else
-				{	
+				{
 					// False = down tick
 					switch ((int)price)
 					{
