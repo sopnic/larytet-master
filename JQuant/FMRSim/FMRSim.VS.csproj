@@ -73,9 +73,6 @@
     <Compile Include="..\FMR\FMRShell_OrdersFSM.cs">
       <Link>FMRShell_OrdersFSM.cs</Link>
     </Compile>
-    <Compile Include="..\BoxArb.cs">
-      <Link>BoxArb.cs</Link>
-    </Compile>
     <Compile Include="..\FMR\FMRShell_OrdersFSM_MF.cs">
       <Link>FMRShell_OrdersFSM_MF.cs</Link>
     </Compile>
@@ -92,7 +89,6 @@
     <Compile Include="..\Utils.cs" />
     <Compile Include="..\IProducer.cs" />
     <Compile Include="..\Logger.cs" />
-    <Compile Include="SetupCommandline_box.cs" />
     <Compile Include="TaskBarLibSim.cs" />
     <Compile Include="..\FMR\FMRShell.cs" />
     <Compile Include="..\Forms.cs">
@@ -106,7 +102,6 @@
     <Compile Include="..\TA.cs" />
     <Compile Include="..\Feed.cs" />
     <Compile Include="..\Security.cs" />
-    <Compile Include="..\AlgorithmMachine.cs" />
     <Compile Include="..\CyclicBuffer.cs" />
     <Compile Include="..\PerformanceMonitor.cs" />
     <Compile Include="..\Locks.cs" />
