@@ -99,7 +99,7 @@ Fridge
   * lastprice.co.il
   * pompa.co.il
 
-  * Haier 21TNNB       (‏585L)
+  * Haier 21TNNB       (‏557L)
   * Liebherr CNES6256  (496L)
   * Hitachi RS700E8H  (‏605L)
 
