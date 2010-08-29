@@ -30,3 +30,5 @@ ec-H20™ electrically activates plain tap water, making it behave like a powerf
   * LG Roboking 
   * Dyson's Robot Vacuum Cleaner DC06
   * Asus EC01
+  * Neato XV-11
+  * irobot
