@@ -7,7 +7,7 @@ http://larytet-master.googlecode.com/files/amn_range.png
 http://larytet-master.googlecode.com/files/amn_range_2010_july.png
 http://larytet-master.googlecode.com/files/maof_range.png
 http://larytet-master.googlecode.com/files/ibm_range_aug_26_2010.png
-
+http://larytet-master.googlecode.com/files/spx_1040.png
 
 = Breakouts =
 
