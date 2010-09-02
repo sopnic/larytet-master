@@ -75,3 +75,9 @@ I start to list the possible reasons
  * Nested interrupt.
  * Problems in the OS interrupt wrappers - handling of the pending system calls consumes CPU cycles both before and after the interrupt.
 I see that this is still not the answer. The guy waits for something specific. He thinks, that he is smart. I drop another one - code cache. Apparently this is the answer. He goes out to invite another guy. I start to think what to answer when they ask me what compensation i expect. 
+
+*Guard*
+
+- Before you kill me, how did you enter here with the gun?
+- It is plastic.
+- It is not. You are a guard, right? You did one mistake. This is not even a mistake, because you could not know. I document every my step. In this specific case I could not use my camera and the only option I have had is a phone call. So just before entering I have called my friend and put the phone in my pocket. Feel free to pull the phone out and say 'Hello'.
