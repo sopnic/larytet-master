@@ -6,7 +6,7 @@
 
 = Playback =
 
-Playback is done by MaofDataGeneratorLogFile in the file TaskBalibSim. The object opens specified log file (currently only CVS format is supported), parses the fields, feeds the TaskBarSim. TaskBarSim generates the data feed and forwards to the application via FMR Stream API. 
+Playback is done by MaofDataGeneratorLogFile in the file [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/FMRSim/TaskBarLibSim.cs TaskBalibSim]. The object opens specified log file (currently only CVS format is supported), parses the fields, feeds the TaskBarSim. TaskBarSim generates the data feed and forwards to the application via FMR Stream API. 
 
 The playback follows carefully the timestamps in the log file. Playback API supports arbitrary acceleration. Playback of one trading day takes about 10 minutes on the low end Windows machine.
 
