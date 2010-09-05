@@ -53,7 +53,7 @@ sessionId=1
 Login status is LoginSessionActive
 
 SIM:$ startlog mf
-Maof log file /home/arkady/JQuantAssembla/DataLogs/MaofLog_9_5_2010_6_26_41_PM.csv
+Maof log file JQuantGoogle/DataLogs/MaofLog_9_5_2010_6_26_41_PM.csv
 DT= Maof (0)
       Name Triggered    Logged   Dropped  Log type                  Latest                  Oldest   Stamped
 -----------------------------------------------------------------------------------------------------------------------
