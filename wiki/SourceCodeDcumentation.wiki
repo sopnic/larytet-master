@@ -2,3 +2,5 @@
 
   * In the root JQuant/ you will find code responsible for the infrastructure - Mailbox, Pool, CyclicBuffer.
   * In the folder FMR there is a thin shell above TaskBarLib. Most of the calls to the FRM API are done here.
+  * FMRSim - this is application which contains CLI. Also TaskBar simulation is in this folder
+  * Playback is done from by MaofDataGeneratorLogFile in the file TaskBalibSim
