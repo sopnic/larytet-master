@@ -1,8 +1,8 @@
 = Source Tree =
 
   * In the root JQuant/ you will find code responsible for the infrastructure - Mailbox, Pool, CyclicBuffer.
-  * In the folder FMR there is a thin shell above TaskBarLib. Most of the calls to the FRM API are done here.
-  * FMRSim - this is application which contains all CLI commands, class Main. Also TaskBar simulation is in this folder
+  * In the folder JQuant/FMR there is a thin shell above TaskBarLib. Most of the calls to the FRM API are done here.
+  * Folder JQuant/FMRSim is an application which contains all CLI commands, class Main. Also TaskBarLib simulation is in this folder.
 
 = Playback =
 
