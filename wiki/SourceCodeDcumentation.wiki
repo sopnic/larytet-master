@@ -55,3 +55,38 @@ MaofLogger     88129     88128         0       CSV     9/5/2010 6:26:47 PM     9
 
 SIM:$ 
 </pre>
+
+= Example of test =
+<pre>
+SIM:$ tst
+JQuant - tst
+=====================================
+help, exit, one level up - .., main menu - ~
+
+GC - Run garbage collector
+mbxTest - Run simple mailbox tests
+mbxShow - Show mailboxes
+threadTest - Run simple thread
+threadShow - Show threads
+poolTest - Run simple pool tests
+poolShow - Show pools
+timerTest - Run simple timer tests
+timerShow - Show timers
+threadPoolTest - Run simple thread pool tests
+threadPoolShow - Show thread pools
+cbtest - Cyclic buffer class test
+rtclock - RT clock test
+rtclock_1 - RT clock test
+rtclock_2 - RT clock test
+logTest - File logger test
+
+SIM:$ mbxTest
+TestMbx created
+Mailbox.Send message sent
+Mailbox.Send message received
+
+    Name    Size MaxCoun Pending Timeout Receive    Sent Dropped
+                       t                       d                
+----------------------------------------------------------------
+ TestMbx       2       1       0       0       1       1       0
+</pre>
