@@ -41,5 +41,17 @@ Connection opened for aryeh
 sessionId=1
 Login status is LoginSessionActive
 
+SIM:$ startlog mf
+Maof log file /home/arkady/JQuantAssembla/DataLogs/MaofLog_9_5_2010_6_26_41_PM.csv
+DT= Maof (0)
+      Name Triggered    Logged   Dropped  Log type                  Latest                  Oldest   Stamped
+-----------------------------------------------------------------------------------------------------------------------
+MaofLogger         0         0         0       CSV    1/1/0001 12:00:00 AM    1/1/0001 12:00:00 AM     False
+
+SIM:$ showlog
+      Name Triggered    Logged   Dropped  Log type                  Latest                  Oldest   Stamped
+-----------------------------------------------------------------------------------------------------------------------
+MaofLogger     88129     88128         0       CSV     9/5/2010 6:26:47 PM     9/5/2010 6:26:41 PM     False
+
 SIM:$ 
 </pre>
