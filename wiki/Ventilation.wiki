@@ -114,7 +114,7 @@ Kitchen
   * www.mistriel.co.il
 
 
-FM Transceiver
+FM Transmitter
   * Linex USB FM Transmitter
   * Eznex ENA7000 EzCube 
   * Sonnet PodFreq
