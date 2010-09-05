@@ -89,4 +89,31 @@ Mailbox.Send message received
                        t                       d                
 ----------------------------------------------------------------
  TestMbx       2       1       0       0       1       1       0
+
+SIM:$ threadPoolTest
+
+    Name Threads    Jobs MinThre MaxJobs   Start    Done Running PlacedJ Pending Running FailedP FailedR
+                         adsFree                         Threads     obs    Jobs    Jobs laceJob efreshQ
+                                                                                                    ueue
+--------------------------------------------------------------------------------------------------------
+    test       1       5       0       2       5       5       0       5       0       0       0       4
+ThreadPoolJob done  idx =0, time = 15 micros
+ThreadPoolJob done  idx =1, time = 17 micros
+ThreadPoolJob done  idx =2, time = 1074 micros
+ThreadPoolJob done  idx =3, time = 2133 micros
+ThreadPoolJob done  idx =4, time = 3192 micros
+
+SIM:$ ThreadPool test destroyed
+
+SIM:$ ..
+JQuant - Main menu
+=====================================
+help, exit, one level up - .., main menu - ~
+
+oper - Operations
+dbg - System debug info
+tst - Short tests
+
+SIM:$ exit
+
 </pre>
