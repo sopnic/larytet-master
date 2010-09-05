@@ -1,6 +1,6 @@
 = Source Tree =
 
-  * In the root [http://code.google.com/p/larytet-master/source/browse/#svn/trunk/JQuant JQuant/] you will find code responsible for the infrastructure - [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/Mailbox.cs Mailbox], Pool, CyclicBuffer.
+  * In the root [http://code.google.com/p/larytet-master/source/browse/#svn/trunk/JQuant JQuant/] you will find code responsible for the infrastructure - [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/Mailbox.cs Mailbox], Pool, [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/CyclicBuffer.cs CyclicBuffer].
   * In the folder JQuant/FMR there is a thin shell above TaskBarLib. Most of the calls to the FRM API are done here.
   * Folder JQuant/FMRSim is an application which contains all CLI commands, class Main. Also TaskBarLib simulation is in this folder.
 
