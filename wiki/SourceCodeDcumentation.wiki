@@ -4,3 +4,42 @@
   * In the folder FMR there is a thin shell above TaskBarLib. Most of the calls to the FRM API are done here.
   * FMRSim - this is application which contains all CLI commands, class Main. Also TaskBar simulation is in this folder
   * Playback is done by MaofDataGeneratorLogFile in the file TaskBalibSim
+
+
+= Example of the CLI session =
+<pre><code>
+arkady@submarine:~/JQuantGoog$ FMRSim/bin/Debug/FMRSim.exe 
+Running under Unix 2.6.31.21
+JQuant - Main menu
+=====================================
+help, exit, one level up - .., main menu - ~
+
+oper - Operations
+dbg - System debug info
+tst - Short tests
+SIM:$ oper
+JQuant - oper
+=====================================
+help, exit, one level up - .., main menu - ~
+
+Login - Login to the remote server
+Logout - Perform the logout process
+StartLog - Log data stream - choose MF|RZ|MDD.
+StopLog - Stop log - MF|MDD|RZ, to stop stream type Y
+StopStream - Stop the data stream - MF | MDD | RZ
+ShowLog - Show existing loggers
+AS400TimeTest - Ping the server
+
+SIM:$ login
+SessionId is 1
+
+
+0    10   20   30   40   50   60   70   80   90  100
+|----+----+----+----+----+----+----+----+----+----|
+..................................................
+Connection opened for aryeh
+sessionId=1
+Login status is LoginSessionActive
+
+SIM:$ 
+</code></pre>
