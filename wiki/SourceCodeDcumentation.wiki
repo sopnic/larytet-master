@@ -1,0 +1,3 @@
+= What is in the sources =
+
+In the root JQuant/ you will find code responsible for the infrastructure - Mailbox, Pool, CyclicBuffer.
