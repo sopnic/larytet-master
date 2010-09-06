@@ -174,25 +174,4 @@ stat - Show HTTP server traffic counters
 SIM:$ start
 HTTP server started on port 8183
 
-SIM:$ stat
- Connect ConnPos jobsPla BytesIn BytesOu   Files NotFoun HttpReq HttpReq
-    ions   tpone     ced               t               d   uests uestNot
-                                                                   Found
-------------------------------------------------------------------------
-       0       0       0       0       0       0       0       0       0
-
-SIM:$ stat
- Connect ConnPos jobsPla BytesIn BytesOu   Files NotFoun HttpReq HttpReq
-    ions   tpone     ced               t               d   uests uestNot
-                                                                   Found
-------------------------------------------------------------------------
-       6       0       6    3110    1889       1       0       5       0
-
-SIM:$ stat
- Connect ConnPos jobsPla BytesIn BytesOu   Files NotFoun HttpReq HttpReq
-    ions   tpone     ced               t               d   uests uestNot
-                                                                   Found
-------------------------------------------------------------------------
-       9       0       9    4729    3139       1       0       8       0
-
-SIM:$ }}}
+}}
