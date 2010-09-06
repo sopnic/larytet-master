@@ -130,7 +130,7 @@ SIM:$ exit
 </pre>
 
 = Example of HTTP =
-<pre>{{{$ FMRSim/bin/Debug/FMRSim.exe 
+{{{$ FMRSim/bin/Debug/FMRSim.exe 
 Running under Unix 2.6.31.21
 JQuant - Main menu
 =====================================
@@ -195,4 +195,4 @@ SIM:$ stat
 ------------------------------------------------------------------------
        9       0       9    4729    3139       1       0       8       0
 
-SIM:$ }}}</pre>
+SIM:$ }}}
