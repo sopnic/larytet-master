@@ -128,3 +128,73 @@ tst - Short tests
 SIM:$ exit
 
 </pre>
+
+= Example of HTTP =
+<code>
+arkady@submarine:~/JQuantAssembla$ FMRSim/bin/Debug/FMRSim.exe 
+Running under Unix 2.6.31.21
+JQuant - Main menu
+=====================================
+help, exit, one level up - .., main menu - ~
+
+oper - Operations
+dbg - System debug info
+box - Box arb algo
+tst - Short tests
+SIM:$ dbg
+JQuant - dbg
+=====================================
+help, exit, one level up - .., main menu - ~
+
+OFSM - Test RZ Orders FSM
+dbgUF - Test vatious UserClass functions
+OrderStream - Test orders Stream
+http - HTTP server
+sh161 - Get TA25 Index weights
+AS400TimeTest - ping the server
+fmrPing - Start FMR ping thread
+threadPoolShow - Show thread pools
+timerShow - Show timers
+threadShow - Show threads
+mbxShow - Show mailboxes
+poolShow - Show pools
+loggerTest - Run simple test of the logger
+loggerShow - Show existing loggers
+prodShow - Show producers
+veriShow - Show data verifiers
+
+SIM:$ http
+JQuant - http
+=====================================
+help, exit, one level up - .., main menu - ~
+
+start - Start HTTP server
+stop - Stop HTTP server
+stat - Show HTTP server traffic counters
+
+SIM:$ start
+HTTP server started on port 8183
+
+SIM:$ stat
+ Connect ConnPos jobsPla BytesIn BytesOu   Files NotFoun HttpReq HttpReq
+    ions   tpone     ced               t               d   uests uestNot
+                                                                   Found
+------------------------------------------------------------------------
+       0       0       0       0       0       0       0       0       0
+
+SIM:$ stat
+ Connect ConnPos jobsPla BytesIn BytesOu   Files NotFoun HttpReq HttpReq
+    ions   tpone     ced               t               d   uests uestNot
+                                                                   Found
+------------------------------------------------------------------------
+       6       0       6    3110    1889       1       0       5       0
+
+SIM:$ stat
+ Connect ConnPos jobsPla BytesIn BytesOu   Files NotFoun HttpReq HttpReq
+    ions   tpone     ced               t               d   uests uestNot
+                                                                   Found
+------------------------------------------------------------------------
+       9       0       9    4729    3139       1       0       8       0
+
+SIM:$ 
+</code>
