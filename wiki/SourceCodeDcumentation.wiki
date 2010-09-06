@@ -130,7 +130,7 @@ SIM:$ exit
 </pre>
 
 = Example of HTTP =
-<pre>
+<code><pre>
 $ FMRSim/bin/Debug/FMRSim.exe 
 Running under Unix 2.6.31.21
 JQuant - Main menu
@@ -198,4 +198,4 @@ SIM:$ stat
 
 SIM:$ 
 
-</pre>
+</pre></code>
