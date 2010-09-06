@@ -175,3 +175,4 @@ stat - Show HTTP server traffic counters
 SIM:$ start
 HTTP server started on port 8183
 </pre>
+You can access HTTP interface (the system GUI so to say) [http://localhost:8183/]
