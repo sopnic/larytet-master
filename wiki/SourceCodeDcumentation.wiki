@@ -6,7 +6,7 @@ svn checkout http://larytet-master.googlecode.com/svn/trunk/JQuant JQuantGoogleC
 </pre>
 where JQuantGoogleCode is a name of the folder in the local file system.
 
-  * In the root [http://code.google.com/p/larytet-master/source/browse/#svn/trunk/JQuant JQuant/] you will find code responsible for the infrastructure - [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/Mailbox.cs Mailbox], Pool, [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/CyclicBuffer.cs CyclicBuffer].
+  * In the root [http://code.google.com/p/larytet-master/source/browse/#svn/trunk/JQuant JQuant/] you will find code responsible for the infrastructure - [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/Mailbox.cs Mailbox], Pool, [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/CyclicBuffer.cs CyclicBuffer], HTTP server support.
   * In the folder [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/#JQuant/FMR JQuant/FMR] there is a thin shell above TaskBarLib. Most of the calls to the FRM API are done here.
   * Folder [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/#JQuant/FMRSim JQuant/FMRSim] is an application which contains all CLI commands, class Main. Also TaskBarLib simulation is in this folder.
 
