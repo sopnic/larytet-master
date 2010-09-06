@@ -130,7 +130,8 @@ SIM:$ exit
 </pre>
 
 = Example of HTTP =
-{{{$ FMRSim/bin/Debug/FMRSim.exe 
+<pre>
+$ FMRSim/bin/Debug/FMRSim.exe 
 Running under Unix 2.6.31.21
 JQuant - Main menu
 =====================================
@@ -173,5 +174,4 @@ stat - Show HTTP server traffic counters
 
 SIM:$ start
 HTTP server started on port 8183
-
-}}}
+</pre>
