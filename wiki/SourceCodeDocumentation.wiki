@@ -176,3 +176,19 @@ SIM:$ start
 HTTP server started on port 8183
 </pre>
 You can access HTTP interface (the system GUI so to say) [http://localhost:8183/]
+
+= Q&A =
+Q. What StartLog command does? 
+A. In the simple case start log just starts log - opens a file and logs the specified data feed into the log (see http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/FMRSim/SetupCommandLine_oper.cs#101).
+
+Q. How do I run the playback?
+A. See method OpenStreamAndLog (http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/FMRSim/SetupCommandLine_oper.cs#319) - this is a  method which initiates playback, connects to the (simulated) data stream and logs the data. Spend some time reading the comments and code carefully, check classes DataCollector and TaskBarLibSim. This is one of the core elements of the system. Everything else is built around DataCollectors and Producer/Consumer pattern.
+
+In the help you see
+<pre>
+StartLog - Log data stream - choose MF|RZ|MDD.
+Start market data stream and run logger. In sim mode playback file can
+be specified
+</pre>
+See also, http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/FMRSim/SetupCommandLine_oper.cs#417
+"Sim" mode means simulation mode. In the simulation mode you proved name of the log file for playback OpenStreamAndLog() will initiate playback.
