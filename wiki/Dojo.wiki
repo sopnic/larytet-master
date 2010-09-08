@@ -1,0 +1,54 @@
+#summary Dojo Toolkit code examples
+
+= Menu =
+
+<code>
+function InitMenu() {
+    pMenuBar = new dijit.MenuBar({});
+
+    var pSubMenu = new dijit.Menu({});
+    pSubMenu.addChild(new dijit.MenuItem({
+        label: "Status"
+    }));
+    pSubMenu.addChild(new dijit.MenuItem({
+        label: "Counters"
+    }));
+    pMenuBar.addChild(new dijit.PopupMenuBarItem({
+        label: "Info",
+        popup: pSubMenu
+    }));
+
+    var pSubMenu2 = new dijit.Menu({});
+    pSubMenu2.addChild(new dijit.MenuItem({
+        label: "Connection"
+    }));
+    pSubMenu2.addChild(new dijit.MenuItem({
+        label: "Semiautomatic"
+    }));
+    pMenuBar.addChild(new dijit.PopupMenuBarItem({
+        label: "Trade",
+        popup: pSubMenu2
+    }));
+
+    // add the menu to the top "panel"
+    pMenuBar.placeAt("toppanel");
+    // and start the whole thing
+    pMenuBar.startup();
+};
+</code>
+
+<code>
+function InitMenu() {
+    pMenuBar = new dijit.MenuBar({});
+
+    pMenuBar.addChild(new dijit.MenuBarItem({
+        label: "Info",
+    }));
+
+
+    // add the menu to the top "panel"
+    pMenuBar.placeAt("toppanel");
+    // and start the whole thing
+    pMenuBar.startup();
+};
+</code>
