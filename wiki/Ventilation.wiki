@@ -135,4 +135,5 @@ MP3 players
   * נגן MP3 + רמקול מובנה
   *  נגן MP3/MP4 בנפח 512MB כולל רמקול מובנה דגם UC94
   * מערכת רמקולים T-620 ניידת עם נגן MP3 מובנה לניגון 
-  * 
+  * http://www.alltech.co.il/Products.asp?Cat2Cat1ID=6&Cat2ID=64
+  *
