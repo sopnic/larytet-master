@@ -2,9 +2,9 @@
 
 Some examples are here [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/www/index_local.html JQuant/www/index_local.html]
 
-  * Dialog box
-  * Dynamic data in the Grid
-  * Change background color of the row in the dojox.grid
+  * Dialog box with HTML table 
+  * Dynamic data in the dojox.drid
+  * Background color of the row in the dojox.grid
 
 = Menu =
 
