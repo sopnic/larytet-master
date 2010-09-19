@@ -21,9 +21,9 @@ The playback follows carefully the timestamps in the log file. Playback API supp
 The application contains embedded HTTP server (class [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/Http.cs JQuantHttp.Http]). The HTTP index files points to file www/index_local.html. Start of the HTTP server is conditional - compilation flag WITHHTTP.
 
 Dojo JavaScript framework is employed to display dynamic content in the browser. The protocol works like this
-  - Client (browser) periodically (approximately every 1s) sends _getTime?_ request to the server. 
-  - Server responds with the current time and what-is-changed-flags.
-  - Client compares what-is-changed-flags with the previous value and if any changes does subsequent calls to get updates. Example of such call is _getOptions?_
+  * Client (browser) periodically (approximately every 1s) sends _getTime?_ request to the server. 
+  * Server responds with the current time and what-is-changed-flags.
+  * Client compares what-is-changed-flags with the previous value and if any changes does subsequent calls to get updates. Example of such call is _getOptions?_
 
 All responses are JSON formated strings.
 = Example of the CLI session =
