@@ -1,5 +1,11 @@
 #summary Dojo Toolkit code examples
 
+Some examples are here [http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/www/index_local.html JQuant/www/index_local.html]
+
+  * Dialog box
+  * Dynamic data in the Grid
+  * Change background color of the row in the dojox.grid
+
 = Menu =
 
 <code>
