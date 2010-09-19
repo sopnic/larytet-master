@@ -5,6 +5,7 @@ Some examples are here [http://code.google.com/p/larytet-master/source/browse/tr
   * Dialog box with HTML table 
   * Dynamic data in the dojox.drid
   * Background color of the row in the dojox.grid
+  * Lot of examples of work with JSON
 
 = Menu =
 
