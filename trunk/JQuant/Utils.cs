@@ -188,41 +188,116 @@ namespace JQuant
 		/// Build JSON formated string for an arbitrary object
 		/// no arrays are processes in the phase
 		/// 
-		/// In the future i can use o.GetType().IsArray property field to handle 
-		/// case of Array. In the .NET3.5 there is support for JSON serialization
+		/// In the .NET3.5 there is support for JSON serialization
 		/// </summary>
-		public string GetJSON(object o)
+		public static string GetJSON(object o, string name)
 		{
 			FieldInfo[] fields = o.GetType().GetFields();
 
 			System.Text.StringBuilder sb = new System.Text.StringBuilder(fields.Length * 20);
 
-			foreach (FieldInfo field in fields)
-			{
-				string name = field.Name;
-				object val = field.GetValue(o);
 
-				JSONAddField(sb, name, val);
-			}
+			GetJSON(sb, name, o);
+
 
 			string json = sb.ToString();
 			return json;
 		}
 
+		protected static void GetJSON(System.Text.StringBuilder sb, string name, object o)
+		{
+			if (o.GetType().IsArray)
+			{
+				JSONAddArray(sb, name, o);
+			}
+			else 
+			{
+				JSONAddFields(sb, name, o);
+			}
+
+			sb.Remove(sb.Length-1, 1);  // remove last comma
+		}
+
+		protected static void JSONAddFields(StringBuilder sb, object name, object data)
+		{
+			if (data.GetType().IsPrimitive)
+			{
+				JSONAddField(sb, data);
+			}
+			else
+			{
+				FieldInfo[] fields = data.GetType().GetFields();
+	
+				sb.Append("{");
+				foreach (FieldInfo field in fields)
+				{
+					string fieldName = field.Name;
+					object val = field.GetValue(data);
+	
+					if (val.GetType().IsArray)
+					{
+						sb.Append(fieldName);
+						sb.Append(":");
+						JSONAddArray(sb, fieldName, val);
+					}
+					else 
+					{
+						JSONAddField(sb, fieldName, val);
+					}
+				}
+				sb.Remove(sb.Length-1, 1);  // remove last comma
+				sb.Append("},");
+			}
+		}
+
+		/// <summary>
+		///Array in JSON looks like this
+		///   { identifier: 'name',
+ 		///       items: [
+		///             { name: 'Adobo', aisle: 'Mexican', price: 3.01 },
+		///             { name: 'Balsamic vinegar', aisle: 'Condiments', price: 4.01 }
+		///             ]
+		///   }
+		/// More examles
+		/// {identifier:'els',label:'els',items: [{d1:'1',d2:'2'},{d1:'3',d2:'4'}]}
+		/// {identifier:'els',label:'els',items: [{d1:'1',d2:'2',items:[1,2,3]},{d1:'3',d2:'4',items:[1,2,3]}]}
+		/// {identifier:'els',label:'els',items: [{d1:'1',d2:'2',bid:{items:[1,2,3]}},{d1:'3',d2:'4',bid:{items:[1,2,3]}}]}
+		/// {identifier:'options',label:'options',items:[{strike:'100',id:'0',options:{identifier:'ask',label:'ask',items:[{price:'727',size:'21'},{price:'893',size:'41'},{price:'675',size:'46'}]},options:{identifier:'bid',label:'bid',items:[{price:'856',size:'44'},{price:'649',size:'37'},{price:'891',size:'17'}]},isPut:'1'},{strike:'200',id:'1',options:{identifier:'ask',label:'ask',items:[{price:'631',size:'24'},{price:'558',size:'20'},{price:'841',size:'6'}]},options:{identifier:'bid',label:'bid',items:[{price:'945',size:'17'},{price:'708',size:'43'},{price:'713',size:'23'}]},isPut:'0'}]}
+		/// </summary>
+		protected static void JSONAddArray(StringBuilder sb, object name, object data)
+		{
+			sb.Append("{identifier:'");
+			sb.Append(name);
+			sb.Append("',label:'");
+			sb.Append(name);
+			sb.Append("',items:[");
+			foreach (object el in (System.Collections.IEnumerable)data)
+			{
+				JSONAddFields(sb, name, el);
+			}
+			sb.Remove(sb.Length-1, 1);  // remove last comma
+			sb.Append("]},");
+		}
 
 		protected static void JSONAddField(StringBuilder sb, object name, object data)
 		{
-			sb.Append("\"");
+			//sb.Append("'");
 			sb.Append(name);
-			sb.Append("\":");
+			//sb.Append("'");
+			sb.Append(":");
 
-			// i can ask here if (JSONIsString(data)), but i will saeve CPU cycles
+			// i can ask here if (JSONIsString(data)), but i will save CPU cycles
 			// i am going to add '"' around the value in all cases
-			sb.Append("\"");
+			sb.Append("'");
 			sb.Append(data);
-			sb.Append("\",");
+			sb.Append("',");
 		}
 
+		protected static void JSONAddField(StringBuilder sb, object data)
+		{
+			sb.Append(data);
+			sb.Append(",");
+		}
 
 		protected static bool JSONIsString(object data)
 		{
