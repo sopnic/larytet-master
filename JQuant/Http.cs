@@ -363,6 +363,8 @@ namespace JQuantHttp
 				}
 				catch (Exception e)
 				{
+					System.Console.WriteLine(e.Message);
+					System.Console.WriteLine(e.StackTrace);
 				}
 			}
 
@@ -373,6 +375,8 @@ namespace JQuantHttp
 			{
 				System.Text.RegularExpressions.MatchCollection matches = regexPatternGet.Matches(clientRequest);
 				int matchesCount = matches.Count;
+				string filenameFull;
+				bool useCache = true;
 
 				if (matchesCount == 1)
 				{
@@ -381,12 +385,18 @@ namespace JQuantHttp
 					System.Text.RegularExpressions.GroupCollection groups = match.Groups;
 
 					string filename = groups[1].Captures[0].ToString(); // group[0] is reserved for the whole match
+					filenameFull = filename;
 
 					// server does not care about subdirectories. Send only files in the root directory 
 					filename = System.IO.Path.GetFileName(filename);
 
 					// no file means index.html file
-					if (filename.Length == 0) filename = "index.html";
+					if (filename.Length == 0) 
+					{
+						filenameFull = "index_local.html";
+						useCache = false;
+						// else System.Console.WriteLine(filename);
+					}
 
 
 					// i have to figure out if this is a file or CGI script (management request)
@@ -398,6 +408,7 @@ namespace JQuantHttp
 						string name = filename.Substring(0, indexQuestionMark);
 						// look in the list of all CGI scripts and if found - call the delegate method
 						HttpRequestHandler handler = Http.FindRequestHandler(name);
+						// System.Console.WriteLine(name);
 						if (handler != default(HttpRequestHandler))
 						{
 							handler(clientRequest, networkStream, out stream);
@@ -414,10 +425,11 @@ namespace JQuantHttp
 						Http.statistics.files++;
 
 						// add root
-						filename = rootPath + filename;
+						filename = rootPath + filenameFull;
+
 
 						// send the file
-						Http.SendFile(networkStream, filename);
+						Http.SendFile(networkStream, filename, useCache);
 					}
 				}
 			}
@@ -442,7 +454,7 @@ namespace JQuantHttp
 			protected System.Text.RegularExpressions.Regex regexPatternGet;
 		}
 
-		public static void SendFile(System.Net.Sockets.NetworkStream networkStream, string filename)
+		public static void SendFile(System.Net.Sockets.NetworkStream networkStream, string filename, bool cache)
 		{
 			do
 			{
@@ -472,7 +484,7 @@ namespace JQuantHttp
 				string mimeType = Http.GetMimeType(fileNameExtension);
 
 				// I can read from the file. Send first part of the server response - header
-				SendHeader(networkStream, fileModified, fileSize, mimeType);
+				SendHeader(networkStream, fileModified, cache, fileSize, mimeType);
 
 				// send the data
 				SendOctets(networkStream, fileStream, fileSize);

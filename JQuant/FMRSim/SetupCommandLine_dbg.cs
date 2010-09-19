@@ -340,6 +340,37 @@ namespace JQuant
 
 		}
 
+		protected class HttpRegGetTimeData
+		{
+			public HttpRegGetTimeData(double maof)
+			{
+				System.DateTime dtNow = System.DateTime.Now;
+				hour = dtNow.Hour;
+				minute = dtNow.Minute;
+				second = dtNow.Second;
+				year = dtNow.Year;
+				month = dtNow.Month;
+				day = dtNow.Day;
+
+				this.maof = maof+randomGenerator.Next(0,300);
+
+				// modify optionsChanged - make the client (browser) to call GetOptions()
+				optionsChanged = CHANGES;
+				CHANGES++;
+			}
+
+			public double maof;
+			public int hour;
+			public int minute;
+			public int second;
+			public int year;
+			public int month;
+			public int day;
+			public long optionsChanged;
+			protected static long CHANGES = 0;
+			static System.Random randomGenerator = new System.Random();
+		}
+
 		private void httpReqGetTime(string request, System.Net.Sockets.NetworkStream networkStream, out bool stream)
 		{
 			// this is not a stream - let HTTP server close the connection when I am done
@@ -347,9 +378,13 @@ namespace JQuant
 
 			// i ignore the request itself - no arguments
 
+			HttpRegGetTimeData timedate = new HttpRegGetTimeData(500.0);
+
+			// i have to create a packet containing JSON formated data 
+			string s = JQuant.OutputUtils.GetJSON(timedate, "timedate");
+			// System.Console.WriteLine(s);
 			System.DateTime dtNow = System.DateTime.Now;
-			string strNow = dtNow.ToString();
-			byte[] data = System.Text.Encoding.ASCII.GetBytes(strNow);
+			byte[] data = System.Text.Encoding.ASCII.GetBytes(s);
 			JQuantHttp.Http.SendHeader(networkStream, dtNow, false, data.Length, JQuantHttp.Http.GetMimeType(".html"));
 			JQuantHttp.Http.SendOctets(networkStream, data);
 
@@ -376,16 +411,146 @@ namespace JQuant
 			return;
 		}
 
-		private JQuantHttp.Http httpServer = default(JQuantHttp.Http);
+		protected class HttpRegGetOptionData
+		{
+			public HttpRegGetOptionData(Algo.MaofOption maofOption)
+			{
+				optionStrike = maofOption.Strike;
+				ask = maofOption.latestTick.ask;
+				bid = maofOption.latestTick.bid;
+				optionId = maofOption.latestTick.id;
+				isPut = 0;
+				if (maofOption.Type == OptionType.PUT)
+					isPut = 1;
+				pendingOrder = 0;
+			}
+
+			/// <summary>
+			/// This constructor is used only for generation of random data 
+			/// </summary>
+			public HttpRegGetOptionData(double strike, int id, bool isPut)
+			{
+				this.optionStrike = strike;
+				ask = new LimitOrderPair[3];
+				bid = new LimitOrderPair[3];
+				FillOrderPairs(ask);
+				FillOrderPairs(bid);
+				// for this specific case I am buying options - thus minus
+				this.pendingOrder = GetPendingOrder(ask, bid);
+				this.optionId = id;
+				this.isPut = 0;
+				if (isPut)
+					this.isPut = 1;
+			}
+
+			/// <summary>
+			/// Fill order pairs (size, price) with random data 
+			/// </summary>
+			private static void FillOrderPairs(LimitOrderPair[] orderPairs)
+			{
+				int idx;
+				int count = orderPairs.Length;
+				for (idx = 0;idx < count;idx++)
+				{
+					int price = randomGenerator.Next(500, 1000);
+					int size = randomGenerator.Next(3, 50);
+					orderPairs[idx] = new LimitOrderPair(price, size);
+				}
+				
+			}
+
+			/// <summary>
+			/// Set random pending order 
+			/// </summary>
+			private static double GetPendingOrder(LimitOrderPair[] asks, LimitOrderPair[] bids)
+			{
+				double result = 0;
+
+				int choice = randomGenerator.Next(0, 20);
+
+				if (choice == 1) result = -asks[0].price;
+				if (choice == 2) result = bids[0].price;
+
+				return result;
+			}
+
+			public double optionStrike;
+			public double pendingOrder;
+			public int optionId;
+			public LimitOrderPair[] ask;
+			public LimitOrderPair[] bid;
+			public int isPut;  // non zero if put
+			static System.Random randomGenerator = new System.Random();
+
+		}
+
+		/// <summary>
+		/// Generate random options
+		/// </summary>
+		/// <param name="count">
+		/// A <see cref="System.Int32"/>
+		/// Number of options to generate
+		/// </param>
+		/// <returns>
+		/// A <see cref="HttpRegGetOptionData[]"/>
+		/// </returns>
+		protected static HttpRegGetOptionData[] GenerateRadomOptions(int count)
+		{
+			int idx;
+			HttpRegGetOptionData[] options = new HttpRegGetOptionData[count];
+
+			for (idx = 0;idx < count;idx++)
+			{
+				options[idx] = new Program.HttpRegGetOptionData((12-idx/2)*100, idx, ((idx & 1) == 0));
+			}
+
+			return options;
+		}
+
+		private void httpReqGetOptions(string request, System.Net.Sockets.NetworkStream networkStream, out bool stream)
+		{
+			HttpRegGetOptionData[] options;
+			// this is not a stream - let HTTP server close the connection when I am done
+			stream = false;
+
+			// get list of options and order book from the Algo
+			// copy the options from the list to the local array suitable for JSON conversion
+			// If no algo created so far I am going to generate a random options list
+			if (boxArbBase == default(Algo.BoxArbBase))
+			{
+				options = GenerateRadomOptions(20);
+			}
+			else 
+			{
+				int idx = 0;
+				Dictionary<Algo.OptionsChainKey, Algo.MaofOption> optionsList = boxArbBase.GetOptionsList();
+				lock (optionsList)
+				{
+					options = new HttpRegGetOptionData[optionsList.Count];
+					System.Collections.Generic.Dictionary<Algo.OptionsChainKey,Algo.MaofOption>.ValueCollection values = optionsList.Values;
+					foreach (Algo.MaofOption option in values)
+					{
+						options[idx] = new HttpRegGetOptionData(option);
+						idx++;
+					}
+				}
+				
+			}
+			// i ignore the request itself - no arguments
+
+			// i have to create a packet containing JSON formated data 
+			string s = JQuant.OutputUtils.GetJSON(options, "options");
+			// System.Console.WriteLine(s);
+			System.DateTime dtNow = System.DateTime.Now;
+			byte[] data = System.Text.Encoding.ASCII.GetBytes(s);
+			JQuantHttp.Http.SendHeader(networkStream, dtNow, false, data.Length, JQuantHttp.Http.GetMimeType(".html"));
+			JQuantHttp.Http.SendOctets(networkStream, data);
+
+			return;
+		}
 
 		protected void debugHttpStart(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
-			if (httpServer == default(JQuantHttp.Http))
-			{
-				// port 8183, up to 5 simultaneous connections
-				httpServer = new JQuantHttp.Http(8183, 5, Resources.GetWwwFolder());
-				httpServer.Start();
-			}
 			// i want to add a couple of HTTP request handlers in case they are not there already
 			JQuantHttp.Http.AddRequestHandler("getTime", httpReqGetTime);
 			JQuantHttp.Http.AddRequestHandler("getHttpStat", httpReqGetHttpStat);
@@ -393,10 +558,10 @@ namespace JQuant
 
 		protected void debugHttpStop(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
+			JQuantHttp.Http httpServer = Program.httpServer;
 			if (httpServer != default(JQuantHttp.Http))
 			{
 				httpServer.Stop();
-				httpServer = default(JQuantHttp.Http);
 			}
 		}
 
