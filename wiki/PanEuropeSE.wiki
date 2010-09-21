@@ -52,7 +52,7 @@ Risk metrics
   * thinkorswim
   * scottrade
   * Interactive Brokers
-  * TickZoom
+  * TickZoom (Open source, CSharp)
   * Rina Financial
   * elitetrader.com
 
