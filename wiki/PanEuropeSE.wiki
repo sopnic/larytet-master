@@ -55,6 +55,7 @@ Risk metrics
   * TickZoom (Open source, CSharp)
   * Rina Financial
   * elitetrader.com
+  * NinjaTrader
 
 
   
