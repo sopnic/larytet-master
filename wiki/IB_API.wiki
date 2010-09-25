@@ -1,5 +1,7 @@
 #summary Interactive Brokers API
 
+= General =
+
   * http://www.dinosaurtech.com/utilities/
   * http://ibcsharp.codeplex.com/
   * Java http://www.interactivebrokers.com/en/p.php?f=programInterface
@@ -24,4 +26,47 @@ Demo client
 
 <code>
 java -jar jtsclient.jar
+</code>
+
+
+= Docs =
+
+Protocol:
+  * Similar to FIX field delimiter is a zero byte. 
+  * All arguments are ASCII sytrings
+  * First argument is always message identifier, for example REQ_MKT_DATA (1)
+  * Second argument is version (always 1?)
+  * Rest of the arguments is message specific - tickerId, etc
+
+In the file EReader.java read looks like this
+<code>
+    protected String readStr() throws IOException {
+        StringBuffer buf = new StringBuffer();
+        while( true) {
+            byte c = m_dis.readByte();
+            if( c == 0) {
+                break;
+            }
+            buf.append( (char)c);
+        }
+
+        String str = buf.toString();
+        return str.length() == 0 ? null : str;
+    }
+</code>
+
+Send looks like this
+<code>
+    protected void send( String str) throws IOException {
+        // write string to data buffer; writer thread will
+        // write it to socket
+        if( !IsEmpty(str)) {
+            m_dos.write( str.getBytes() );
+        }
+        sendEOL();
+    }
+
+    private void sendEOL() throws IOException {
+        m_dos.write( EOL);
+    }
 </code>
