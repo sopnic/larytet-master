@@ -2,9 +2,8 @@
 
   * http://www.dinosaurtech.com/utilities/
   * http://ibcsharp.codeplex.com/
-
-
-
+  * Java http://www.interactivebrokers.com/en/p.php?f=programInterface
+  * Java getting started http://www.interactivebrokers.com/download/JavaAPIGettingStarted.pdf 
 TWS
 <code>
 java -cp jts.jar:hsqldb.jar:jcommon-1.0.12.jar:jfreechart-1.0.9.jar:jhall.jar:other.jar:rss.jar -Xmx512M jclient.LoginFrame .
