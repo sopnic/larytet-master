@@ -6,6 +6,8 @@
   * http://ibcsharp.codeplex.com/
   * Java http://www.interactivebrokers.com/en/p.php?f=programInterface
   * Java getting started http://www.interactivebrokers.com/download/JavaAPIGettingStarted.pdf 
+  * http://www.bearcave.com/software/market_trading/resources_and_notes/ - documentation
+
 TWS (default port 7496)
 <code>
 java -cp jts.jar:hsqldb.jar:jcommon-1.0.12.jar:jfreechart-1.0.9.jar:jhall.jar:other.jar:rss.jar -Xmx512M jclient.LoginFrame .
