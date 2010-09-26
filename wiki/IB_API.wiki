@@ -5,7 +5,7 @@
   * http://www.dinosaurtech.com/utilities/
   * http://ibcsharp.codeplex.com/
   * Java http://www.interactivebrokers.com/en/p.php?f=programInterface
-  * Java getting started http://www.interactivebrokers.com/download/JavaAPIGettingStarted.pdf 
+  * http://www.interactivebrokers.com/download/JavaAPIGettingStarted.pdf Java getting started
   * http://www.interactivebrokers.com/download/newMark/PDFs/APIprintable.pdf  Reference guide
   * http://www.bearcave.com/software/market_trading/resources_and_notes/ - documentation
 
