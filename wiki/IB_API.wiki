@@ -35,7 +35,7 @@ java -jar jtsclient.jar
 
 Protocol:
   * Similar to FIX field delimiter is a zero byte. 
-  * All arguments are ASCII sytrings
+  * All arguments are ASCII strings
   * First argument is always message identifier, for example REQ_MKT_DATA (1)
   * Second argument is version (always 1?)
   * Rest of the arguments is message specific - tickerId, etc
@@ -72,3 +72,5 @@ Send looks like this
         m_dos.write( EOL);
     }
 </code>
+
+There is apparently a limitation of ~50 message/seconds. There is no immediate reason to make the code more efficient. However we have this rather inefficient implementation. 
