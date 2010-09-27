@@ -1,0 +1,1 @@
+  * Cross platform python http://us.pycon.org/2010/conference/schedule/event/38/
