@@ -103,3 +103,7 @@ Robert J. Sawyer
 
   * projectorpoint.co.uk
   * projectorpoint.co.uk
+
+= Deduplication =
+
+  * http://code.google.com/p/fs-c/
