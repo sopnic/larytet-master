@@ -87,6 +87,8 @@ Robert J. Sawyer
   * THECUS miniNAS N0204 Pocket RAID Storage
   * D-Link DNS-323 http://www.wellcom.co.il/  and hack http://wiki.dns323.info/howto:1st_steps
   * Cisco NSS 322 2-Bay Smart Storage 
+  * Synology USB Station 2
+  * DroboPro FS
 
 = Media players =
 
