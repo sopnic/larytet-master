@@ -145,9 +145,9 @@ I see that this is still not the answer. The guy waits for something specific. H
 
 
 	Тихо в лесу,
-	Только не спит  -
-
-	Вот и не спит ...
+	Только не спит buryak -
+	u buryaka strashnyi sushnyak         
+	Вот и не спит buryak ...
 
 
 
