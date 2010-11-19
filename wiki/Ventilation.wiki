@@ -173,8 +173,8 @@ knobs
 Wireless Network 
   * המודם הסלולרי, במסלול משולם מראש (Prepaid), מאפשר לכם לגלוש באינטרנט, ע"ג הרשת הסלולרית, בכל מקום בארץ מבלי להזדקק לרשת אלחוטית חיצונית.  http://www.israelpost.co.il/mall.nsf/prodsbycode/408?opendocument
 
-
-
+Snapdragon
+http://www.linuxfordevices.com/c/a/News/Qualcomm-Snapdragon-MSM8960/?kc=rss
 
   * 27260   Precision Stainless Steel Thrum Scissors (Assorted Color)
   * 19921 	Professional Stainless Steel Telecom Phone Cable Punch Tool
@@ -199,3 +199,5 @@ Wireless Network
   * 21743 	Steel Butane Jet Torch Lighter
   * 10635 	1300'C Metal Melting Butane Jet Torch (Large)
   * 45525 	H1080 2.4GHz Wireless Headphone with Microphone 
+
+
