@@ -47,5 +47,29 @@ SYMBOLGEN:  && resolves to &.
 SYMBOLGEN:  Macro variable CRSID resolves to C005
 SYMBOLGEN:  Macro variable C005 resolves to Artificial Intelligence
 Artificial Intelligence
+}}}
 
+===Use SYMGET function to obtain macro variable values:===
+
+Code:
+{{{
+%let x=100;
+
+data _null_;
+	y = symget('x');
+	put 'y value is: ' y;
+run;
+}}}
+Log:
+{{{
+34
+35   data _null_;
+36       y = symget('x');
+37       put 'y value is: ' y;
+38   run;
+
+y value is: 100
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 }}}
