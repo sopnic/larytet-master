@@ -9,8 +9,14 @@
 
 =Code snippets=
 ==SAS Macros==
-Resolving "macro'ed macro".
-Code:
+===Indirect reference to a macro variable - The Forward Re-Scan rule:===
+ * When multiple ampersands or percent signs precede a name token, the macro processor resolves two ampersands (&&) to one ampersand (&), and re-scans the
+reference.
+ * To re-scan a reference, the macro processor scans and resolves tokens from left to right from the point where multiple ampersands or percent signs are coded, until no more triggers can be resolved.
+According to the Forward Re-Scan rule, you need to use three ampersands in front of
+a macro variable name when its value matches the name of a second macro variable.
+
+Example Code:
 {{{
 options symbolgen;
 %let C005=Artificial Intelligence;
