@@ -5,3 +5,4 @@
  * http://www.amadeus.co.uk/sas-technical-services/tips-and-techniques/
  * http://blog.saasinct.com/
  * http://support.sas.com/events/sasglobalforum/previous/online.html
+ * http://www.sascommunity.org/wiki/Main_Page
