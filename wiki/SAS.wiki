@@ -6,3 +6,39 @@
  * http://blog.saasinct.com/
  * http://support.sas.com/events/sasglobalforum/previous/online.html
  * http://www.sascommunity.org/wiki/Main_Page
+
+=Code snippets=
+==SAS Macros==
+Resolving "macro'ed macro".
+Code:
+{{{
+options symbolgen;
+%let C005=Artificial Intelligence;
+%let crsid=C005;
+%put &C005;
+%put &crsid;
+%put &&crsid;
+%put &&&crsid;
+}}}
+Log output:
+{{{
+5    options symbolgen;
+6    %let C005=Artificial Intelligence;
+7    %let crsid=C005;
+8    %put &C005;
+SYMBOLGEN:  Macro variable C005 resolves to Artificial Intelligence
+Artificial Intelligence
+9    %put &crsid;
+SYMBOLGEN:  Macro variable CRSID resolves to C005
+C005
+10   %put &&crsid;
+SYMBOLGEN:  && resolves to &.
+SYMBOLGEN:  Macro variable CRSID resolves to C005
+C005
+11   %put &&&crsid;
+SYMBOLGEN:  && resolves to &.
+SYMBOLGEN:  Macro variable CRSID resolves to C005
+SYMBOLGEN:  Macro variable C005 resolves to Artificial Intelligence
+Artificial Intelligence
+
+}}}
