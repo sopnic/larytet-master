@@ -10,6 +10,49 @@
 
 =Code snippets=
 ==SAS Macros==
+===Macro Functions:===
+{{{
+%STR (argument) - quote tokens during compilation in order to mask them from the macro processor.
+%NRSTR (argument) - quote tokens that include macro triggers from the macro processor
+%BQUOTE (argument) - quote a character string or resolved value of a text expression during execution
+of a macro or macro language statement
+%UPCASE (argument)
+%QUPCASE (argument)
+%SUBSTR (argument, position <,n>)
+%QSUBSTR (argument, position <,n>)
+%INDEX (source,string)
+%SCAN (argument, n <,delimiters>)
+%QSCAN (argument, n <,delimiters>)
+%SYSFUNC (function(argument(s))<,format>)
+%QSYSFUNC (function(argument(s))<,format>)
+}}}
+
+A %QFOO function is the same as %FOO, but masks special characters and mnemonic operators
+
+Example:
+{{{
+%let a=begin;
+%let b=%nrstr(&a);
+%put UPCASE produces: %upcase(&b);
+%put QUPCASE produces: %qupcase(&b);
+}}}
+LOG:
+{{{
+39   %let a=begin;
+40   %let b=%nrstr(&a);
+41   %put UPCASE produces: %upcase(&b);
+SYMBOLGEN:  Macro variable B resolves to &a
+SYMBOLGEN:  Some characters in the above value which were subject to macro quoting have been
+            unquoted for printing.
+SYMBOLGEN:  Macro variable A resolves to begin
+UPCASE produces: begin
+42   %put QUPCASE produces: %qupcase(&b);
+SYMBOLGEN:  Macro variable B resolves to &a
+SYMBOLGEN:  Some characters in the above value which were subject to macro quoting have been
+            unquoted for printing.
+QUPCASE produces: &A
+}}}
+
 ===Indirect reference to a macro variable - The Forward Re-Scan rule:===
  * When multiple ampersands or percent signs precede a name token, the macro processor resolves two ampersands (&&) to one ampersand (&), and re-scans the
 reference.
