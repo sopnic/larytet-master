@@ -53,6 +53,39 @@ SYMBOLGEN:  Some characters in the above value which were subject to macro quoti
 QUPCASE produces: &A
 }}}
 
+===The %EVAL function===
+ * translates integer strings and hexadecimal strings to integers
+ * translates tokens representing arithmetic, comparison, and logical operators to macro-level operators
+ * performs arithmetic and logical operations.
+For arithmetic expressions, if an operation results in a non-integer value, %EVAL truncates the value to an integer. Also, %EVAL returns a null value and issues an error
+message when non-integer values are used in arithmetic expressions. %EVAL evaluates  logical expressions and returns a numeric value to indicate if the expression is false (0) or true (1 or any other numeric).
+The %EVAL function does not convert the following to numeric values:
+ * numeric strings that contain a period or E-notation
+ * SAS date and time constants.
+The %SYSEVALF function evaluates arithmetic and logical expressions using floating-point arithmetic and returns a value that is formatted using the BEST32. format. The result of the evaluation is always text.
+
+Example:
+{{{
+%macro figureit(a,b);
+	%let y=%sysevalf(&a+&b);
+	%put The result with SYSEVALF is: &y;
+	%put BOOLEAN conversion: %sysevalf(&a +&b, boolean);
+	%put CEIL conversion: %sysevalf(&a +&b, ceil);
+	%put FLOOR conversion: %sysevalf(&a +&b, floor);
+	%put INTEGER conversion: %sysevalf(&a +&b, integer);
+%mend figureit;
+%figureit(100,1.59)
+}}}
+
+LOG:
+{{{
+The result with SYSEVALF is: 101.59
+BOOLEAN conversion: 1
+CEIL conversion: 102
+FLOOR conversion: 101
+INTEGER conversion: 101
+}}}
+
 ===Indirect reference to a macro variable - The Forward Re-Scan rule:===
  * When multiple ampersands or percent signs precede a name token, the macro processor resolves two ampersands (&&) to one ampersand (&), and re-scans the
 reference.
