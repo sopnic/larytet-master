@@ -170,8 +170,17 @@ options mautosource sasautos=(’c:\mysasfiles’,sasautos);
 
 *Stored Compiled Macros*
 {{{
-General form, macro definition with STORE option:
-%MACRO macro-name <(parameter-list)> /STORE <DES=‘description’>;
+%macro macro-name<(parameter list)> /STORE <SOURCE> <DES=‘description’>;
     ...
 %MEND <macro-name>;
+}}}
+
+To access stored macro:
+{{{
+options mstored sasmstore=_libname-ref_;
+}}}
+
+To view the source code (given the SOURCE option was specified:
+{{{
+%COPY macro-name / SOURCE <OUTFILE=_output-file_>;
 }}}
