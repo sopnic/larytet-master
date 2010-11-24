@@ -157,10 +157,6 @@ NOTE: DATA statement used (Total process time):
  # autocall macro facility
  # compiled macros
 
-*Storing macro definitions in catalog SOURCE entries*
- * store each macro program in a separate SOURCE entry (File->Save as object)
- * give each SOURCE entry the same name as the macro program that is stored within it (recommended)
-
 *Creating an Autocall Library*
  * OPTIONS MAUTOSOURCE SASAUTOS=_libref-specification_;
 Example:
@@ -180,7 +176,7 @@ To access stored macro:
 options mstored sasmstore=_libname-ref_;
 }}}
 
-To view the source code (given the SOURCE option was specified in macro definition):
+To access the source code (given the SOURCE option was specified in macro definition):
 {{{
 %COPY macro-name / SOURCE <OUTFILE=_output-file_>;
 }}}
