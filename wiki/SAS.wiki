@@ -167,3 +167,11 @@ Example:
 {{{
 options mautosource sasautos=(’c:\mysasfiles’,sasautos);
 }}}
+
+*Stored Compiled Macros*
+{{{
+General form, macro definition with STORE option:
+%MACRO macro-name <(parameter-list)> /STORE <DES=‘description’>;
+    ...
+%MEND <macro-name>;
+}}}
