@@ -9,6 +9,27 @@
  * http://www.sascommunity.org/wiki/Main_Page
 
 =Code snippets=
+==Using environment variables to define paths in SAS==
+
+Example code (windows):
+{{{
+filename pipeset pipe "set JQUANT_ROOT";
+
+data _null_;
+	infile pipeset dsd;
+	informat line $150.;
+	format line $150.;
+	input line $ ;
+	call symput("JQUANT_ROOT", trim(scan(line,2,"=")));
+	call symput("CleanLogsPath", trim(scan(line,2,"="))!!"DataLogs\Clean\");
+run;
+
+%put &CleanLogsPath &JQUANT_ROOT;
+}}}
+
+The 'set _env_name_' command displays the environment variable _env_name_.
+
+
 ==SAS Macros==
 ===Macro Functions:===
 {{{
