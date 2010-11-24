@@ -62,7 +62,7 @@ message when non-integer values are used in arithmetic expressions. %EVAL evalua
 The %EVAL function does not convert the following to numeric values:
  * numeric strings that contain a period or E-notation
  * SAS date and time constants.
-The %SYSEVALF function evaluates arithmetic and logical expressions using floating-point arithmetic and returns a value that is formatted using the BEST32. format. The result of the evaluation is always text.
+The *%SYSEVALF* function evaluates arithmetic and logical expressions using floating-point arithmetic and returns a value that is formatted using the BEST32. format. The result of the evaluation is always text.
 
 Example:
 {{{
@@ -85,6 +85,8 @@ CEIL conversion: 102
 FLOOR conversion: 101
 INTEGER conversion: 101
 }}}
+
+Any macro language function or statement that requires a numeric or logical expression automatically invokes the %EVAL function (like %SUBSTR, %IF - %THEN - %ELSE or %SCAN). %SYSEVALF is the only macro function that can evaluate logical expressions that contain floating point or missing values. Specifying a conversion type can prevent problems when %SYSEVALF returns missing or floating point values to macro expressions or macro variables that are used in other macro expressions that require an integer value.
 
 ===Indirect reference to a macro variable - The Forward Re-Scan rule:===
  * When multiple ampersands or percent signs precede a name token, the macro processor resolves two ampersands (&&) to one ampersand (&), and re-scans the
