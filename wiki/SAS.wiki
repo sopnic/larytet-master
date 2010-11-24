@@ -9,7 +9,7 @@
  * http://www.sascommunity.org/wiki/Main_Page
 
 =Code snippets=
-==Using environment variables to define paths in SAS==
+==Using unnamed pipe (environment variable) to define paths in SAS==
 
 Example code (windows):
 {{{
