@@ -9,6 +9,13 @@
  * http://www.sascommunity.org/wiki/Main_Page
 
 =Code snippets=
+
+==proc SQL==
+===Accessing SAS System Information by Using DICTIONARY Tables===
+{{{
+proc sql;
+   describe table dictionary.tables;
+}}}
 ==Using unnamed pipe (environment variable) to define paths in SAS==
 
 Example code (windows):
