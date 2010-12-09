@@ -208,3 +208,23 @@ To access the source code (given the SOURCE option was specified in macro defini
 {{{
 %COPY macro-name / SOURCE <OUTFILE=_output-file_>;
 }}}
+
+===To send an email from SAS===
+{{{
+FILENAME fileref EMAIL ‘address’ <e-mail-options> EMAILSYS=<e-mail interface to use> EMAILPW=<password of user> EMAILID=<userid>;
+
+DATA _null_;
+    FILE fileref
+    TO='recipient@somemail.com'
+    SUBJECT= ‘Data for review’
+    ATTACH= ‘Path/to/the/attachment.ext’;
+
+    PUT ‘Good Afternoon,’;
+    PUT ‘ ‘;
+    PUT ‘Attached please find the updated file for your review.’;
+    PUT ‘ ‘;
+    PUT ‘Have a nice day,’;
+RUN;
+}}}
+
+*Note:* Use a &syserr auto macro var to conditionally send messages.
