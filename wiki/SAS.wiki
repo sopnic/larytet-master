@@ -7,6 +7,7 @@
  * http://blog.saasinct.com/
  * http://support.sas.com/events/sasglobalforum/previous/online.html
  * http://www.sascommunity.org/wiki/Main_Page
+ * http://www.softscapesolutions.com.au/tips.htm
 
 =Code snippets=
 
