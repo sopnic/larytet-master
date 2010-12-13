@@ -57,6 +57,34 @@ proc sql;
         ;
     quit;
 }}}
+
+*Re-merging summary statistics with original data:*
+The following code:
+{{{
+proc sql;
+	select 
+            x, 
+            x/sum(x) as pct format=percent8.1
+	from aa
+	;
+quit;
+}}}
+will yield the following note:
+
+{{{
+NOTE: The query requires remerging summary statistics back with the original data.
+}}}
+In order to avoid it, modify the code as follows:
+{{{
+proc sql;
+	select 
+            x, 
+            x/(select sum(x) from aa) as pct format=percent8.1
+	from aa
+	;
+quit;
+}}}
+Note: sometimes re-merging is unavoidable and can save extra data processing.
 ===Combining Tables Vertically===
 
 ==Using unnamed pipe (environment variable) to define paths in SAS==
