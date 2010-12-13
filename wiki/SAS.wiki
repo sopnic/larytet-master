@@ -10,6 +10,25 @@
  * http://www.softscapesolutions.com.au/tips.htm
 
 =Code snippets=
+==using call execute in order to perform an action in a loop==
+{{{
+%macro loadtrdta(filenm);
+    ...
+    ...
+    ...
+%mend;
+
+data _null_;
+    length stock $6.;
+    do stock="bezeq","icl","leumi","poalim","teva";
+        do num=13, 42, 69, 111, 113;
+            name = compress(stock!!num);
+            call execute('%loadtrdta('!!name!!')');
+        end;
+    end;
+run;
+
+}}}
 ==Interesting functions==
 *COALESCE / COALESCEC* - return the first non-missing value from a list of numeric / character arguments. 
 ==proc SQL==
@@ -28,6 +47,8 @@ proc sql;
         ;
     quit;
 }}}
+===Combining Tables Vertically===
+
 ==Using unnamed pipe (environment variable) to define paths in SAS==
 
 Example code (windows):
