@@ -96,10 +96,21 @@ proc sql;
 }}}
 
 EXCEPT - selects _unique_ rows from the first table that are not found in the second table.
+
 INTERSECT - selects _unique_ rows that are common to both tables.
+
 UNION - selects _unique_ rows from one or both tables.
+
 OUTER UNION - selects _all_ rows from both tables.
-**
+
+ * By default, the set operators EXCEPT, INTERSECT, and UNION overlay columns based on the relative position of the columns in the SELECT clause.
+
+ * In order to be overlaid, columns in the same relative position in the two SELECT clauses must have _the same data type_.
+
+ALL - makes only one pass through the data and does not remove duplicate rows. Cannot be used with OUTER UNION.
+
+CORR - Compares and overlays columns by name instead of by position. With EXCEPT, INTERSECT, and UNION, removes any columns that do not have the same name in both tables. with OUTER UNION, overlays same-named columns and displays columns that have nonmatching names without overlaying.
+
 ==Using unnamed pipe (environment variable) to define paths in SAS==
 
 Example code (windows):
