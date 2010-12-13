@@ -32,6 +32,16 @@ run;
 ==Interesting functions==
 *COALESCE / COALESCEC* - return the first non-missing value from a list of numeric / character arguments. 
 ==proc SQL==
+===Testing SQL code===
+{{{
+    proc sql feedback;
+
+    proc sql noexec;
+
+    proc sql;
+        validate
+        <other sql statements>
+}}}
 ===Accessing SAS System Information by Using DICTIONARY Tables===
 {{{
 proc sql;
