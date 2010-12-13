@@ -10,12 +10,23 @@
  * http://www.softscapesolutions.com.au/tips.htm
 
 =Code snippets=
-
+==Interesting functions==
+*COALESCE / COALESCEC* - return the first non-missing value from a list of numeric / character arguments. 
 ==proc SQL==
 ===Accessing SAS System Information by Using DICTIONARY Tables===
 {{{
 proc sql;
    describe table dictionary.tables;
+}}}
+===SAS enhancements to the ANSI SQL===
+*calculated* keyword:
+{{{
+    proc sql;
+        select *, sum(a, b, c) as total
+        from ttt
+        where calculated total>750
+        ;
+    quit;
 }}}
 ==Using unnamed pipe (environment variable) to define paths in SAS==
 
