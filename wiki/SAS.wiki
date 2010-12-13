@@ -87,7 +87,19 @@ quit;
 }}}
 Note: sometimes re-merging is unavoidable and can save extra data processing.
 ===Combining Tables Vertically===
+*Set operators*: EXCEPT, INTERSECT, UNION, OUTER UNION
+{{{
+proc sql;
+    select * from a
+    _set-operator_ <ALL> <CORR>
+    select * from b;
+}}}
 
+EXCEPT - selects _unique_ rows from the first table that are not found in the second table.
+INTERSECT - selects _unique_ rows that are common to both tables.
+UNION - selects _unique_ rows from one or both tables.
+OUTER UNION - selects _all_ rows from both tables.
+**
 ==Using unnamed pipe (environment variable) to define paths in SAS==
 
 Example code (windows):
