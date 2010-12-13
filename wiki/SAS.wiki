@@ -59,6 +59,7 @@ proc sql;
 }}}
 
 *Re-merging summary statistics with original data:*
+
 The following code:
 {{{
 proc sql;
