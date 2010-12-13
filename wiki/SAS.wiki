@@ -10,7 +10,13 @@
  * http://www.softscapesolutions.com.au/tips.htm
 
 =Code snippets=
-==using call execute in order to perform an action in a loop==
+==Options msglevel = N | I;==
+
+N - displays notes, warnings, and error messages only. This is the default.
+
+I - displays additional notes pertaining to index usage, merge processing, and sort utilities along with standard notes, warnings, and error messages.
+
+==Using _call execute_ in order to perform an action in a loop==
 {{{
 %macro loadtrdta(filenm);
     ...
