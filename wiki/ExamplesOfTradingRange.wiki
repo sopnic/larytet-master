@@ -29,7 +29,10 @@ http://larytet-master.googlecode.com/files/maof_range.png
 http://larytet-master.googlecode.com/files/ibm_range_aug_26_2010.png
 http://larytet-master.googlecode.com/files/spx_1040.png
 http://larytet-master.googlecode.com/files/teva_50_aug_2010.png 
-http://larytet-master.googlecode.com/files/abt_2010_trading_range.png 
+http://larytet-master.googlecode.com/files/abt_2010_trading_range.png
+
+5-days channel part of the bullish flag
+http://larytet-master.googlecode.com/files/uwm_chanel_bullish_flag.png  
 
 = Breakouts =
 
