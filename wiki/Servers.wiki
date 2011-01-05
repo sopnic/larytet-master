@@ -112,3 +112,4 @@ Robert J. Sawyer
 
 = Fanless = 
   * Axiomtek
+  * Zotac 
