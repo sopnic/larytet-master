@@ -18,6 +18,9 @@ http://larytet-master.googlecode.com/files/teva_range.png
 8 days of tight trading range in IWM
 http://larytet-master.googlecode.com/files/iwm_8_days_range.png 
 
+3 weeks of trading range IWM
+http://larytet-master.googlecode.com/files/iwm_range.png 
+
 = Channels =
 
 http://larytet-master.googlecode.com/files/scKDN_2010.png 
