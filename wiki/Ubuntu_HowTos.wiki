@@ -1,5 +1,20 @@
 #summary Ubuntu related tips
 
+= Restoring Grub 2.0 =
+ * boot with Ubuntu Live CD, mount HDD Ubuntu partition 
+{{{
+    sudo grub-setup -d /media/xxxx/boot/grub -m /media/yyyy/boot/grub/device.map /dev/sda
+}}}
+    where 
+{{{
+    xxxx = UUID of the Ubuntu install partition
+    yyyy = xxxxx
+}}}
+ * reboot 
+{{{
+    sudo update-grub
+}}}
+
 = Monodevelop =
 
   * Add <code>deb http://badgerports.org lucid main</code> to the repositories 
