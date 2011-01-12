@@ -1,6 +1,7 @@
 #summary Ubuntu related tips
 
-= Restoring Grub 2.0 =
+= Multi-OS system =
+== Restoring Grub 2.0 ==
  * boot with Ubuntu Live CD, mount HDD Ubuntu partition 
 {{{
     sudo grub-setup -d /media/xxxx/boot/grub -m /media/yyyy/boot/grub/device.map /dev/sda
@@ -14,6 +15,10 @@
 {{{
     sudo update-grub
 }}}
+
+== Change the default boot order in GRUB ==
+
+edit <code>/etc/default/grub</code>
 
 = Monodevelop =
 
