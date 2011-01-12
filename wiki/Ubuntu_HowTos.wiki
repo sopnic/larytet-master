@@ -7,7 +7,7 @@
 }}}
     where 
 {{{
-    xxxx = UUID of the Ubuntu install partition
+    xxxx = UUID of the Ubuntu install partition (sudo blkid)
     yyyy = xxxxx
 }}}
  * reboot 
