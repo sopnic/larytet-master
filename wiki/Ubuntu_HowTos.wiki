@@ -33,5 +33,5 @@ Check remaining disk space <code>df -ah</code>
 
 = Scientific calculators =
 
-  * [[http://www.numberempire.com|NumberEmpire.com]] - lot of calculators and LaTeX editor
-  * [[http://www.codecogs.com/components/eqneditor/editor.php|CodeCogs.com]] - open source math library and LaTeX editor
+  * numberempire.com - lot of calculators and LaTeX editor
+  * codecogs.com/components/eqneditor/editor.php - open source math library and LaTeX editor
