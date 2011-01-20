@@ -113,3 +113,4 @@ Robert J. Sawyer
 = Fanless = 
   * Axiomtek
   * Zotac 
+  * Compulab fitpc
