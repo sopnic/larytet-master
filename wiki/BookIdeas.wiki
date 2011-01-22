@@ -167,6 +167,11 @@ They say that there was a hero once who has visited all closed zones. There used
 	Только не спит лиса -
 	В жопе ее застряла оса,
 	Вот и не спит лиса...
+
+	Тихо в лесу,
+	Только не спит osa -
+	V gope lisy zastryala one
+	Вот и не спит lisa ...
 	
 	Тихо в лесу,
 	Только не спит олень -
@@ -188,22 +193,31 @@ They say that there was a hero once who has visited all closed zones. There used
 	Muchit sovu ee gluhota         
 	Вот и не спит sova ...
 
+	Тихо в лесу,
+	Только не спит gashih -
+	Kurit gashish malchish kibalchish
+	Вот и не спит gashih ...
+
+	Тихо в лесу,
+	Только не спит p-z -
+	Znaet p-z chto prixodit konize
+	Вот и не спит p-z ...
 
 	Тихо в лесу,
 	Только не спит morkov' -
-	Gizn' morkovi razbila svekrov
+	Jizn' morkovi razbila svekrov
 	Вот и не спит morkov ...
 
 
 	Тихо в лесу,
 	Только не спит baran -
-	S'el baran plova kazan
+	Gdyot barana plova kazan
 	Вот и не спит baran ...
 
 
 	Тихо в лесу,
 	Только не спит buryak -
-	u buryaka strashnyi sushnyak         
+	v sosednem kolhoze strashnyi sushnyak         
 	Вот и не спит buryak ...
 
 
