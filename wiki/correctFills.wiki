@@ -1,5 +1,5 @@
 Leumi, RezefLog_09_06_2010_09_30_58.csv
-<pre>
+<pre><code>
  StocksIn PaperTra ClosePos ClosePos   Winers   Losers AverageP NotifyCa OrderFSM NotifyCa TradesPl   Trades DataUpda DataUpda    Fills DataUpda DataUpda DataUpda CheckTri CheckTri CheckTri CheckTri
  Hashtabl desPlace itionTri itionSto                      rofit      lls   Events llsParse     aced          teIdleNo   teIdle          teIdleSt teIdleEn teIdleSt     gger ggerNoHi ggerCalc ggerNoSt
         e        d     gger    pLoss                                               rFailed                    Trigger                   ockIgnor   dOfDay ockNoTra             story    ulate     dDev
@@ -7,4 +7,4 @@ Leumi, RezefLog_09_06_2010_09_30_58.csv
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
        98        7        3        0        1        2  -0.0654   402765        0        0        0        0      613   397175        9        0      635   395923     1955      121     1834        0
 
-</pre>
+</code></pre>
