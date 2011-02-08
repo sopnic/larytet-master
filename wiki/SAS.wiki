@@ -38,6 +38,16 @@ run;
 
 }}}
 ==Interesting functions==
+*CONSTANT* - Computes machine and mathematical constants. Example:
+{{{
+    data _null_;
+        pi = constant('pi');    *PI;
+        e = constant('e');    *The natural base;
+        put pi= e= ;
+    run;
+
+pi=3.1415926536 e=2.7182818285
+}}}
 *COALESCE / COALESCEC* - return the first non-missing value from a list of numeric / character arguments. 
 ==proc SQL==
 ===Testing SQL code===
