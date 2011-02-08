@@ -43,10 +43,12 @@ run;
     data _null_;
         pi = constant('pi');    *PI;
         e = constant('e');    *The natural base;
-        put pi= e= ;
+        big = constant('BIG');    *The largest double-precision number;
+        small = constant('SMALL');    *The smallest double-precision number;
+        put pi= e= big= small= ;
     run;
 
-pi=3.1415926536 e=2.7182818285
+pi=3.1415926536 e=2.7182818285 big=1.797693E308 small=2.22507E-308
 }}}
 *COALESCE / COALESCEC* - return the first non-missing value from a list of numeric / character arguments. 
 ==proc SQL==
