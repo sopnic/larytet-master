@@ -89,6 +89,7 @@ Robert J. Sawyer
   * Cisco NSS 322 2-Bay Smart Storage 
   * Synology USB Station 2
   * DroboPro FS
+  * Qnap Systems
 
 = Media players =
 
@@ -114,3 +115,4 @@ Robert J. Sawyer
   * Axiomtek
   * Zotac 
   * Compulab fitpc
+  * Globalscale Technologies, DreamPlug
