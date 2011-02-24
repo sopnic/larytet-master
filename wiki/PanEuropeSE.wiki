@@ -20,6 +20,16 @@ Data vendors
  * http://www.wmdaten.de/
  * http://www.bizportal.co.il/shukhahon/bizmadad.shtml?p_id=198   מדד ת"א 25
 
+
+Historical data 
+  * livevol.com
+  * www.atlantex.biz 
+  * https://data.nasdaq.com/mr.aspx
+  * Bloomberg
+  * Reuters
+  * crsp.com/products/stocks.htm
+  * 
+
 == Telekurs financial ==
 
 Is a normalised real-time feed, which provides consolidated data in one single consistent format, regardless of where in the world the data originates. Data sourced from over 850 global exchanges and contributors
