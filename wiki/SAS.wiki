@@ -10,6 +10,7 @@
   ** http://www.sascommunity.org/wiki/Supporting_a_SAS_Server_Architecture
  * http://www.softscapesolutions.com.au/tips.htm
  * http://platformadmin.com/blogs/paul/
+ * http://blog.saasinct.com/
 
 =Code snippets=
 ==Options msglevel = N | I;==
