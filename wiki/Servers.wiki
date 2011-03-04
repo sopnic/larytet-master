@@ -116,3 +116,4 @@ Robert J. Sawyer
   * Zotac 
   * Compulab fitpc
   * Globalscale Technologies, DreamPlug
+  * Efika MX Smarttop
