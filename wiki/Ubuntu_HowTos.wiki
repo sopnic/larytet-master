@@ -1,5 +1,22 @@
 #summary Ubuntu related tips
 
+= How to remove old kernels =
+{{{
+dpkg --get-selections | grep linux-headers
+}}}
+to list all the kernels currently installed
+{{{
+uname -r 
+}}}
+will display the current kernel used
+{{{
+sudo apt-get remove --purge 2.6.XX-X-*
+}}}
+to remove the obsolete kernel, where XX-X is the exact version, for example:
+{{{
+sudo apt-get remove --purge 2.6.27-7-*
+}}}
+
 = Multi-OS system =
 == Restoring Grub 2.0 ==
  * boot with Ubuntu Live CD, mount HDD Ubuntu partition 
