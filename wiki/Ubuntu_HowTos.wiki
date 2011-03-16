@@ -1,4 +1,21 @@
 #summary Ubuntu related tips
+= An Internet connection is very slow on 10.10 64-bit =
+Solution - disable IPV6 at boot level:
+{{{
+gksu gedit /etc/default/grub
+}}}
+Change:
+{{{
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+}}}
+To:
+{{{
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash ipv6.disable=1"
+}}}
+{{{
+sudo update-grub
+}}}
+Reboot.
 
 = How to remove old kernels =
 {{{
