@@ -68,6 +68,18 @@ pi=3.1415926536 e=2.7182818285 big=1.797693E308 small=2.22507E-308
 proc sql;
    describe table dictionary.tables;
 }}}
+Some tables:
+
+||TABLES||Currently defined tables info||
+||COLUMNS||Columns in tables||
+||VIEWS||||
+||TITLES||||
+||OPTIONS||Currently defined options info||
+||INDEXES||||
+||LIBNAMES||||
+||FORMATS||Info on defined formats and informats||
+||EXTFILES||Defined external files||
+
 ===SAS enhancements to the ANSI SQL===
 *calculated* keyword:
 {{{
