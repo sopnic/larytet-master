@@ -13,16 +13,16 @@ Indefero is a WEB based (PHP) front end for the existing GIT repositories. Indef
 
 ===== Installation of required packages =====
 
-<code bash>
+<code>
 sudo aptitude -o Acquire::http::Proxy={proxy_url}:80 install php-pear git-core 
 </code>
 
 Setup PROXY for the PEAR
-<code bash>
+<code>
 sudo pear config-set http_proxy {proxy_url}:80
 </code>
 
-<code bash>
+<code>
 sudo pear upgrade-all
 sudo pear install --alldeps Mail
 sudo pear install --alldeps Mail_mime
@@ -32,7 +32,7 @@ sudo pear install --alldeps Mail_mime
 Create data base with name //indefero// using [[http://localhost/phpmyadmin|PHP Admin]]. 
 
 Create folder for the installation
-<code bash>
+<code>
 sudo mkdir /home/www
 sudo chown wiki:wiki /home/www
 
@@ -52,7 +52,7 @@ cp indefero/src/IDF/conf/path.php-dist indefero/src/IDF/conf/path.php
 ===== Configuration =====
 
 Fix constants in the file //indefero/src/IDF/conf/idf.php//. You need at least
-<code php>
+<code>
 $cfg['git_repositories'] = '/home/git/repositories/%s/.git';
 $cfg['git_remote_url'] = '<server_url>/%s.git';
 $cfg['git_write_remote_url'] = 'git@<server_url>:%s.git';
@@ -70,7 +70,7 @@ $cfg['db_database'] = 'indefero';
 </code>
 
 Create file //www/bootstrap.php// containing code below and do **not forget** change password
-<code PHP>
+<code>
 <?php
 require '/home/www/indefero/src/IDF/conf/path.php';
 require 'Pluf.php';
@@ -92,7 +92,7 @@ print "Bootstrap ok\n";
 </code>
 
 Follow official instructions or do 
-<code bash>
+<code>
 cd /home/www/indefero/src
 php /home/www/pluf/src/migrate.php --conf=IDF/conf/idf.php -a -i -d 
 php ../www/bootstrap.php
@@ -107,7 +107,7 @@ This link should work [[http://localhost/indefero/index.php]].
 ===== Add projects =====
 
 Create a new project which name is the same as an existing folder in the path specified in the file //src/IDF/conf/idf.php//. The existing folder should be GIT repository and will contain folder //.git//. For example if you did 
-<code bash>
+<code>
 ln -s /<path>/user_name /home/git/repositories/wl8
 </code>
 the new project name is going to be //wl8//.
