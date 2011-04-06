@@ -14,12 +14,12 @@ Indefero is a WEB based (PHP) front end for the existing GIT repositories. Indef
 ===== Installation of required packages =====
 
 <code bash>
-sudo aptitude -o Acquire::http::Proxy=<proxy_url>:80 install php-pear git-core 
+sudo aptitude -o Acquire::http::Proxy={proxy_url}:80 install php-pear git-core 
 </code>
 
 Setup PROXY for the PEAR
 <code bash>
-sudo pear config-set http_proxy <proxy_url>:80
+sudo pear config-set http_proxy {proxy_url}:80
 </code>
 
 <code bash>
