@@ -11,7 +11,8 @@
 
 = Matlab =
 
-mathworks.com/matlabcentral/fileexchange/29434
+  * mathworks.com/matlabcentral/fileexchange/29434
+  * matlab-trading.blogspot.com/2010/11/howto-wrap-interactive-brokers-tws-api.html
 
 
 TWS (default port 7496)
