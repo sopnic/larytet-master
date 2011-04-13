@@ -315,7 +315,7 @@ NOTE: DATA statement used (Total process time):
 
 *Creating an Autocall Library*
 
-Store all the macros in a separate directory, a single sas program file per macro. Each macro file in the directory must contain a macro definition with a macro name the same as the filename. 
+Store all the macros in a separate directory, a single sas program file per macro, each program named the same as the macro it contains.
 This directory is defined as a SAS autocall library using the SASAUTOS system option. Note that by default SAS installation there is sasautos already defined. In order to add your own autocall macros library, add to the autoexec the lines that look like:
   * OPTIONS MAUTOSOURCE SASAUTOS=_libref-specification_;
 
