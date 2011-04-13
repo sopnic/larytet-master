@@ -318,10 +318,11 @@ NOTE: DATA statement used (Total process time):
 Store all the macros in a separate directory, a single sas program file per macro, each program named the same as the macro it contains.
 This directory is defined as a SAS autocall library using the SASAUTOS system option. Note that by default SAS installation there is sasautos already defined. In order to add your own autocall macros library, add to the autoexec the lines that look like:
   * OPTIONS MAUTOSOURCE SASAUTOS=_libref-specification_;
-
+Be sure to use fileref, not libref. Although the specifying the direct path instead of fileref is possible, this is less flexible and not 'clean'.
 Example:
 {{{
-options mautosource sasautos=(’c:\mysasfiles’,sasautos);
+filename mymacros "c:\mymacros";
+options mautosource sasautos=(mymacros,sasautos);
 }}}
 
 *Stored Compiled Macros*
