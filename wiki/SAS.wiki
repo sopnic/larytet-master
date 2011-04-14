@@ -11,6 +11,7 @@
  * http://www.softscapesolutions.com.au/tips.htm
  * http://platformadmin.com/blogs/paul/
  * http://blog.saasinct.com/
+ * http://www.lexjansen.com/
 
 =Code snippets=
 ==Options msglevel = N | I;==
