@@ -201,3 +201,6 @@ be specified
 </pre>
 See also, http://code.google.com/p/larytet-master/source/browse/trunk/JQuant/FMRSim/SetupCommandLine_oper.cs#417
 "Sim" mode means simulation mode. In the simulation mode you proved name of the log file for playback OpenStreamAndLog() will initiate playback.
+
+*Q. Why there is a missing BoxArb implementation?*<br>
+A. File BoxArb is a working algo and is not a part of open source repository. Only a stub provided to allow to compile the project.
