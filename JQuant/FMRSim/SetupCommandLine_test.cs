@@ -13,6 +13,12 @@ namespace JQuant
 	partial class Program
 	{
 
+		// This function is called from Main before entering main loop
+		protected void SelfTests()
+		{
+		}
+
+
 		protected void debugGcCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
 		{
 			System.GC.Collect();
@@ -477,6 +483,40 @@ namespace JQuant
 			logger.Dispose();
 		}
 
+		protected class TestJsonElement
+		{
+			public TestJsonElement(int d1, int d2)
+			{
+				this.d1 = d1;
+				this.d2 = d2;
+				da = new int[2];
+				da[0] = d1;
+				da[1] = d2;
+			}
+
+			public int d1;
+			public int d2;
+			public int[] da;
+		}
+
+		protected string debugJsonTest()
+		{
+			TestJsonElement[] els = new TestJsonElement[2];
+
+			els[0] = new TestJsonElement(1, 2);
+			els[1] = new TestJsonElement(3, 4);
+
+			string json = OutputUtils.GetJSON(els, "els");
+			return json;
+		}
+
+		protected void debugJsonTestCallback(IWrite iWrite, string cmdName, object[] cmdArguments)
+		{
+			string json = debugJsonTest();
+			iWrite.WriteLine(json);
+		}
+
+
 		protected void LoadCommandLineInterface_test()
 		{
 			Menu menuTests = cli.RootMenu.AddMenu("tst", "Short tests",
@@ -520,6 +560,9 @@ namespace JQuant
 
 			menuTests.AddCommand("logTest", "File logger test",
 								  " Create a logger, add a couple of entries and get out", debugFileLoggerTestCallback);
+
+			menuTests.AddCommand("jsonTest", "Test JSON support",
+								  " Create set of objects, call Utils.GetJSON(), print the output", debugJsonTestCallback);
 		}
 
 	}

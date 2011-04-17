@@ -921,6 +921,12 @@ namespace FMRShell
 
 			protected void OnMaof(ref K300MaofType data)
 			{
+#if USEFMRSIM
+				// In the simulation mode data comes from the recorded data log and the data contains 
+				// time stamp and tick
+				marketData.TimeStamp = data.TimeStamp;
+				marketData.Ticks = data.Ticks;
+#endif
 				// boxing from struct to object - memcpy
 				OnEvent(data);
 			}
@@ -1080,6 +1086,17 @@ namespace FMRShell
 					break;
 			}
 		}
+
+        public double GetTA25BasePrice(IWrite iWrite)
+        {
+            System.Array psaRecs;
+            int baseAssetCode = 0;  //0 stands for TA25
+            this.k300Class.GetBaseAssets2(out psaRecs, baseAssetCode);
+
+            double result = (double) psaRecs.GetValue(0);
+
+            return result;
+        }
 
 		/// <summary>
 		/// SH161 Data contains weights of securities in TASE indices

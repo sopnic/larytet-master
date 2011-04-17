@@ -833,7 +833,7 @@ namespace JQuant
 
 
 		private const long TICKS_FREQ = 10000000;
-		private const long TICKS_IN_MS = TICKS_FREQ / 1000;
+		public const long TICKS_IN_MS = TICKS_FREQ / 1000;
 
 		// i am not going to jump too fast - 5ms shift is max
 		private const long MAX_SHIFT = (TICKS_FREQ / 200);
@@ -1502,6 +1502,17 @@ namespace JQuant
 					mean = summ / Count;
 				}
 				return mean;
+			}
+			protected set
+			{
+			}
+		}
+
+		public int Summ
+		{
+			get
+			{
+				return summ;
 			}
 			protected set
 			{

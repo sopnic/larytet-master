@@ -396,7 +396,8 @@ namespace JQuant
 		/// To check use 'set' w/o parameters from cmd.
 		/// note: set from cmd doesn't work (it's for temporary EVs only)
 		/// === *NIX:
-		/// [ please add short instructions here ]
+		/// on Ubuntu add it to /etc/environment file, logout and login
+		/// to check use 'env' commnad w/o parameters
 		/// </summary>
 		public static bool RootDirectoryDefined()
 		{
