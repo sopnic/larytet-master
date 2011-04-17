@@ -170,6 +170,17 @@ namespace FMRShell
 				set;
 			}
 
+			/// <summary>
+			/// At what price order get FILL
+			/// </summary>
+			public double PriceFill { get; set; }
+
+			/// <summary>
+			/// Size of the position
+			/// </summary>
+			public int QuantityFill { get; set; }
+
+
 			//the following are fields, not properties, since they are used as 'out' params by the API
 
 			/// <summary>
@@ -235,6 +246,32 @@ namespace FMRShell
 
 			return result;
 		}
+		
+		public double GetOrderPrice(object orderId)
+		{
+			MaofOrder order = (MaofOrder)orderId;
+			return order.Price;
+		}
+
+		public int GetOrderSize (object orderId)
+		{
+			MaofOrder order = (MaofOrder)orderId;
+			return order.Quantity;
+		}
+
+
+		public double GetOrderPriceFill (object orderId)
+		{
+			MaofOrder order = (MaofOrder)orderId;
+			return order.PriceFill;
+		}
+
+		public TransactionType GetTransactionType (object orderId)
+		{
+			MaofOrder order = (MaofOrder)orderId;
+			return order.TransactionType;
+		}
+
 
 		/// <summary>
 		/// User will call this method to cancel a pending order
@@ -1376,6 +1413,8 @@ namespace FMRShell
 				order.lastEvent = OrderFSMEvent.CompleteFill;
 				order.lastPoll = record;
 				order.AsmachtaRezef = JQuant.Convert.StrToInt(record.RZF_ORD_PIC);
+				order.PriceFill = JQuant.Convert.StrToDouble(record.DIL_PRC_PIC);
+				order.QuantityFill = JQuant.Convert.StrToInt(record.DIL_NV_PIC);
 				fileLoggerMaof.AddEntry(order);
 
 				switch (order.OrderState)

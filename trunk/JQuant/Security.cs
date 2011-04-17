@@ -19,7 +19,6 @@ namespace JQuant
 		PUT,
 	}
 
-	#region Security;
 	/// <summary>
 	/// Security class implements generic security
 	/// serving base for all instruments traded on TASE
@@ -71,9 +70,7 @@ namespace JQuant
 		}
 
 	}   //class Security 
-	#endregion;
 
-	#region Option;
 	/// <summary>
 	/// Generic option type - Currently used for MAOF index options.
 	/// </summary>
@@ -193,8 +190,7 @@ namespace JQuant
 			Description = EnumUtils.GetDescription(ot) + " " + X.ToString() + " " + ExDate.Date.ToString();
 		}
 
-		//Methods
-		#region Methods - Greeks
+
 		//Greeks
 		/// <summary>
 		/// Computes option's delta, given the market conditions:
@@ -261,13 +257,11 @@ namespace JQuant
 			else return StatUtils.CalcTheta(Type, vol, rate, Strike, S, T) * Multiplier;
 		}
 
-		#endregion;
+
 
 	}//class Option
 
-	#endregion;
 
-	#region Stock;
 	public class Stock : Security
 	{
 		public Stock()
@@ -276,5 +270,5 @@ namespace JQuant
 			this.SecType = SecurityType.Stock;
 		}
 	}
-	#endregion;
+
 }   //namespace JQuant

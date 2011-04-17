@@ -18,7 +18,7 @@ namespace JQuant
 
 			LoadCommandLineInterface_oper();
 			LoadCommandLineInterface_dbg();
-//			LoadCommandLineInterface_box();
+			LoadCommandLineInterface_box();
 			LoadCommandLineInterface_test();
 
 			//LoadCommandLineInterface_sa();

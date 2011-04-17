@@ -413,17 +413,6 @@ namespace JQuant
 
 		protected class HttpRegGetOptionData
 		{
-			public HttpRegGetOptionData(Algo.MaofOption maofOption)
-			{
-				optionStrike = maofOption.Strike;
-				ask = maofOption.latestTick.ask;
-				bid = maofOption.latestTick.bid;
-				optionId = maofOption.latestTick.id;
-				isPut = 0;
-				if (maofOption.Type == OptionType.PUT)
-					isPut = 1;
-				pendingOrder = 0;
-			}
 
 			/// <summary>
 			/// This constructor is used only for generation of random data 
@@ -509,44 +498,7 @@ namespace JQuant
 
 		private void httpReqGetOptions(string request, System.Net.Sockets.NetworkStream networkStream, out bool stream)
 		{
-			HttpRegGetOptionData[] options;
-			// this is not a stream - let HTTP server close the connection when I am done
 			stream = false;
-
-			// get list of options and order book from the Algo
-			// copy the options from the list to the local array suitable for JSON conversion
-			// If no algo created so far I am going to generate a random options list
-			if (boxArbBase == default(Algo.BoxArbBase))
-			{
-				options = GenerateRadomOptions(20);
-			}
-			else 
-			{
-				int idx = 0;
-				Dictionary<Algo.OptionsChainKey, Algo.MaofOption> optionsList = boxArbBase.GetOptionsList();
-				lock (optionsList)
-				{
-					options = new HttpRegGetOptionData[optionsList.Count];
-					System.Collections.Generic.Dictionary<Algo.OptionsChainKey,Algo.MaofOption>.ValueCollection values = optionsList.Values;
-					foreach (Algo.MaofOption option in values)
-					{
-						options[idx] = new HttpRegGetOptionData(option);
-						idx++;
-					}
-				}
-				
-			}
-			// i ignore the request itself - no arguments
-
-			// i have to create a packet containing JSON formated data 
-			string s = JQuant.OutputUtils.GetJSON(options, "options");
-			// System.Console.WriteLine(s);
-			System.DateTime dtNow = System.DateTime.Now;
-			byte[] data = System.Text.Encoding.ASCII.GetBytes(s);
-			JQuantHttp.Http.SendHeader(networkStream, dtNow, false, data.Length, JQuantHttp.Http.GetMimeType(".html"));
-			JQuantHttp.Http.SendOctets(networkStream, data);
-
-			return;
 		}
 
 		protected void debugHttpStart(IWrite iWrite, string cmdName, object[] cmdArguments)

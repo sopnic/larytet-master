@@ -73,6 +73,10 @@ namespace JQuant
             guiThread.Priority = ThreadPriority.Lowest;
             guiThread.Start();
 #endif
+#if WITHHTTP
+			StartHttp();
+#endif
+
 		}
 
 		private CommandLineInterface cli;
@@ -122,7 +126,9 @@ namespace JQuant
 						WriteLine("");
 					}
 			}
-
+#if WITHHTTP
+			httpServer.Stop();
+#endif
 
 			// last chance for the cleanup - close streams and so on
 #if WITHGUI
@@ -203,6 +209,18 @@ namespace JQuant
 			Application.Run(mainForm);
 		}
 
+		protected void StartHttp()
+		{
+			// port 8183, up to 50 simultaneous connections
+			httpServer = new JQuantHttp.Http(8183, 50, Resources.GetWwwFolder());
+			httpServer.Start();
+
+			// i want to add HTTP request handlers 
+			JQuantHttp.Http.AddRequestHandler("getTime", httpReqGetTime);
+			JQuantHttp.Http.AddRequestHandler("getHttpStat", httpReqGetHttpStat);
+			JQuantHttp.Http.AddRequestHandler("getOptions", httpReqGetOptions);
+		}
+
 		static void Main(string[] args)
 		{
 			//check whether JQUANT_ROOT environment variable is set on the system
@@ -219,6 +237,8 @@ namespace JQuant
 			// timers subsystem
 			Timers.Init();
 
+
+			
 			instance = new Program();
 
 			// run console
@@ -237,6 +257,7 @@ namespace JQuant
 #endif
 			Console.OutputEncoding = System.Text.Encoding.UTF8;
 
+			instance.SelfTests();
 			instance.Run();
 		}
 
@@ -247,6 +268,9 @@ namespace JQuant
 		protected TableLayoutPanel tlp;
 
 		protected FMRShell.Connection fmrConection;
+
+
+		public static JQuantHttp.Http httpServer;
 
 		public static Program instance
 		{
