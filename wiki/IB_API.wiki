@@ -38,7 +38,9 @@ java -jar jtsclient.jar
 </code>
 
 
-= Docs =
+= Protocol =
+
+== Where to start ==
 
 Protocol:
   * Similar to FIX field delimiter is a zero byte. 
@@ -84,3 +86,17 @@ There is apparently a limitation of ~50 message/seconds. There is no immediate r
 
 
 API is asynchronous. See interface EWrapper for required methods. See EClientSocket for outgoing message types.
+
+== Initial handshake ==
+  * Open client socket and connect to the server (file EClientSocket, method eConnect)
+  * Send clientVersion - send string representing integer (46d) in decimal form terminated by zero.
+  * Read integer - this is going to be ServerVersion (38d) 
+  * Send clientId. clientId starts from zero 
+
+== Request/Response model ==
+
+  * Enter loop which reads the incoming data (EReader.run()). 
+  * In the loop read first integer first, switch by message type
+  * Client's requests contain an unique request ID (tickerId). 
+  * Server response contains version of the server software, tickerId and optional data.
+
