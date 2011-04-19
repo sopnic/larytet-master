@@ -25,3 +25,4 @@ Books
   * "MicroC OS II: The Real Time Kernel (With CD-ROM)"
   * Concurrent Euclid, the Unix System, and Tunis (Addison-Wesley series in computer science) [Paperback] R.C. Holt
   * Structured Concurrent Programming With Operating Systems Applications (Addison-Wesley series in computer science) [Paperback] R. C. Holt
+  * Power consumption and RTOS rtos.com/PDFs/PDCE2008.pdf slide 20-21
