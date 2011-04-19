@@ -6,13 +6,28 @@
 
 namespace IB
 {
-	public class Processor
+	public enum MessageType
+	{
+		Connect
+	}
+	
+	/// <summary>
+	/// Objects of this type can be sent to the Processot thread
+	/// </summary>
+	public class Message
+	{
+		MessageType id;
+	
+	}
+	
+	public class Processor : JQuant.MailboxThread<Message>
 	{
 		/// <summary>
 		/// Initialize the class. This is a simpleton - only one object of this 
 		/// type exists in the system
 		/// </summary>
-		protected Processor()
+		protected Processor() 
+			:base("Processor", 100)
 		{
 		
 		}
