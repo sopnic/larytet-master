@@ -83,4 +83,4 @@ Send looks like this
 There is apparently a limitation of ~50 message/seconds. There is no immediate reason to make the code more efficient. However we have this rather inefficient implementation. 
 
 
-API is asynchronous. See interface EWrapper for required methods.
+API is asynchronous. See interface EWrapper for required methods. See EClientSocket for outgoing message types.
