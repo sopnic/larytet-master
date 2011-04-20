@@ -1,6 +1,8 @@
 /// <summary>
 /// Contains wrapper for the InteractiveBrokers API and simulation 
 /// This is a rather large file
+/// IB supportrs paper trading. I do not need to support paper trading option in the FSM
+/// like I did in all algos so far.
 /// </summary>
 
 
