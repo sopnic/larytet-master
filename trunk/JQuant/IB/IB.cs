@@ -21,7 +21,8 @@ namespace IB
 	/// </summary>
 	public enum MessageType
 	{
-		Connect
+		Connect,
+		DataIn
 	}
 
 	/// <summary>
@@ -169,28 +170,116 @@ namespace IB
 			}
 			if (clientSocket != null)
 			{
-				bool res = writeToSocket(clientSocket, CLIENT_VERSION);
+				socketReader = new SocketReader(this, clientSocket);
+				socketReader.Start();
+				bool res = WriteToSocket(clientSocket, CLIENT_VERSION);
 				if (res)
 				{
 					this.state = State.Connecting;
 				}
 				else
 				{
+					SocketCleanup();
 				}
 			}
 		
 		}
-
-		protected static bool writeToSocket(System.Net.Sockets.TcpClient clientSocket, int data)
+		
+		protected void SocketCleanup()
 		{
-			return false;
+			clientSocket.Close();
+			socketReader.Stop();
 		}
+
+		protected static bool WriteToSocket(System.Net.Sockets.TcpClient clientSocket, int data)
+		{
+			string s = data.ToString();
+			bool res = WriteToSocket(clientSocket, s);
+
+			return res;
+		}
+		
+		protected static bool WriteToSocket(System.Net.Sockets.TcpClient clientSocket, string s)
+		{
+			System.Net.Sockets.NetworkStream networkStream;
+			networkStream = clientSocket.GetStream();
+			
+			bool res;
+			byte[] data = System.Text.Encoding.ASCII.GetBytes(s);
+			try 
+			{
+				networkStream.Write(data, 0, data.Length);
+				res = true;
+			}	
+			catch (Exception e)
+			{
+				res = false;
+			}
+
+			return res;
+		}
+		
 
 		protected State state;
 		protected System.Net.Sockets.TcpClient clientSocket;
 		private static int CLIENT_VERSION = 46;
 		private static int SERVER_VERSION = 38;
+		SocketReader socketReader;
 		
+	}
+	
+	class SocketReader
+	{
+		public SocketReader(Processor processor, System.Net.Sockets.TcpClient clientSocket)
+		{
+			this.networkStream = clientSocket.GetStream();
+			this.processor = processor;
+			exitFlag = false;
+			thread = new System.Threading.Thread(this.Run);
+			thread.Priority = System.Threading.ThreadPriority.Highest;
+		}
+		
+		public void Start()
+		{
+			thread.Start();
+		}
+		
+		public void Stop()
+		{
+			exitFlag = true;
+		}
+		
+		public void Run()
+		{
+			const int BUFFER_SIZE = 16*1024;
+			byte[] buffer = new byte[BUFFER_SIZE];
+			while (!exitFlag)
+			{
+				int bytes = 0;
+				
+				try
+				{
+					bytes = networkStream.Read(buffer, 0, buffer.Length);
+				}
+				catch (Exception e)
+				{
+				}
+				if (bytes != 0)
+				{
+					processor.Send(new Message(MessageType.DataIn, bytes));
+					buffer = new byte[BUFFER_SIZE];
+				}
+				else
+				{
+					System.Threading.Thread.Sleep(200);
+				}
+			}
+		}
+		
+		bool exitFlag;
+		System.Net.Sockets.NetworkStream networkStream;
+		Processor processor;
+		System.Threading.Thread thread;
 	}
 
 } // namespace IB
