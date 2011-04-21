@@ -151,6 +151,12 @@ namespace IB
 
 		protected void HandleMessage_Connecting (Message message)
 		{
+			switch (message.id)
+			{
+				case MessageType.DataIn:
+				HandleMessage_ConnectingDataIn(message);
+				break;
+			}
 			
 		}
 		
@@ -183,6 +189,17 @@ namespace IB
 				}
 			}
 		
+		}
+		
+		/// <summary>
+		/// In the connecting state I am ready only for one message - server version
+		/// </summary>
+		/// <param name="message">
+		/// A <see cref="Message"/>
+		/// </param>
+		protected void HandleMessage_ConnectingDataIn(Message message)
+		{
+			
 		}
 		
 		protected void SocketCleanup()
@@ -251,7 +268,7 @@ namespace IB
 		
 		public void Run()
 		{
-			const int BUFFER_SIZE = 16*1024;
+			const int BUFFER_SIZE = 1*1024;
 			byte[] buffer = new byte[BUFFER_SIZE];
 			while (!exitFlag)
 			{
@@ -266,7 +283,7 @@ namespace IB
 				}
 				if (bytes != 0)
 				{
-					processor.Send(new Message(MessageType.DataIn, bytes));
+					HandleData(buffer, bytes);
 					buffer = new byte[BUFFER_SIZE];
 				}
 				else
@@ -274,6 +291,11 @@ namespace IB
 					System.Threading.Thread.Sleep(200);
 				}
 			}
+		}
+		
+		protected void HandleData(byte[] data, int size)
+		{
+			processor.Send(new Message(MessageType.DataIn, data, size));
 		}
 		
 		bool exitFlag;
