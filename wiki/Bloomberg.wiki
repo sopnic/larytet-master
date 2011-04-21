@@ -1,2 +1,3 @@
   * bloomberg.com/professional/software_support/
   * stackoverflow.com/questions/2005234/asynchronous-data-through-bloombergs-new-data-api-com-v3-with-python
+ * www.bloombergtradebook.com/pdfs/tradebook_portal_api_review.pdf
