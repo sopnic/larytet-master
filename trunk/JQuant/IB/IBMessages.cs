@@ -365,23 +365,16 @@ namespace IB
 			return res;
 		}
 		
+		public struct IEIndex
+		{
+			public int firstByte;
+			public int lastByte;
+		};
 		
 		/// <summary>
-		/// Splits zero delimitered array of bytes into ASCII strings
+		/// Splits zero delimitered array of bytes into map of information elements
 		/// </summary>
-		/// <param name="data">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
-		/// <param name="offset">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <param name="size">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.String[]"/>
-		/// </returns>
-		public static bool SplitArray(byte[] data, int offset, int size, out string[] list, out int length)
+		public static bool SplitArray(byte[] data, int offset, int size, out System.Collections.Generic.List<IEIndex> list, out int length)
 		{
 			list = null;
 			length = 0;
