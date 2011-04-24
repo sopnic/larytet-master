@@ -53,7 +53,7 @@ namespace IB
 		/// Method will parse the array of bytes and generate an array of information elements
 		/// Return trut if success
 		/// </summary>
-		public delegate bool Parser(byte[] data, int offset, out string[] ies);
+		public delegate bool Parser(byte[] data, int size, int offset, out string[] ies, out int length);
 		
 		public static readonly Message[] list = new[] {
 			new Message(Message.TICK_PRICE, 1, Parser_TICK_PRICE),
@@ -109,11 +109,50 @@ namespace IB
 			}
 			return null;
 		}
+
+		/// <summary>
+		/// Methos assumes that at offset array data contains message ID. The method will call 
+		/// appropriate parser and return array of information elements
+		/// </summary>
+		/// <param name="data">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
+		/// <param name="offset">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="messageId">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="ies">
+		/// A <see cref="System.String[]"/>
+		/// </param>
+		/// <param name="length">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Boolean"/>
+		/// </returns>
+		public static bool Parse(byte[] data, int size, int offset, out string[] ies, out int length)
+		{
+			int firstByte;
+			int lastByte;
+			bool res = false;
+			do
+			{
+				Message message = Find(0);
+				res = message.parser(data, size, offset, out ies, out length);
+			}
+			while (false);
+			
+			
+			return res;
+		}
 		
-		public static bool Parser_TICK_PRICE (byte[] data, int offset, out string[] ies)
+		public static bool Parser_TICK_PRICE (byte[] data, int size, int offset, out string[] ies, out int length)
 		{
 			bool res = false;
 			ies = null;
+			length = 0;
 			
 			return res;
 		}
@@ -216,29 +255,6 @@ namespace IB
 					break;
 				}
 
-				// try to fetch first IE - message ID
-				bool getIEResult = GetIE(shiftRegister, size, offset, out firstByte, out lastByte);
-				if (!getIEResult)
-				{
-					state = RxHandler.State.Processing;
-					break;
-				}
-				int ieValue;
-				// I have got first IE - message ID. Try to convert to string and after that to integer
-				getIEResult = GetIEValue(data, firstByte, lastByte, out ieValue);
-				if (!getIEResult)
-				{
-					state = RxHandler.State.Idle;
-					// I failed to parse the IE, drop the data from the shift register
-					RemoveIEValue(firstByte, lastByte);
-				}
-				Message message = Message.Find(ieValue);
-				if (message == null)
-				{
-					state = RxHandler.State.Idle;
-					// I failed to parse the IE, drop the data from the shift register
-					RemoveIEValue(firstByte, lastByte);
-				}
 			}
 		}
 		
@@ -257,8 +273,24 @@ namespace IB
 		
 		}
 		
+
+		protected void RemoveIEValue(int firstByte, int lastByte)
+		{
+			int ieSize = lastByte - firstByte + 1;
+			shiftRegisterSize -= ieSize;
+			Array.Copy(shiftRegister, lastByte+1, shiftRegister, 0, shiftRegisterSize);
+		}
+								
+		protected RxHandlerCallback rxHandlerCallback;
+		protected RxHandler.State state;
+		protected byte[] shiftRegister;
+		protected int shiftRegisterSize;
+	}
+
+	public class Utils
+	{
 		/// <summary>
-		/// Returns first and last byte of the word started at the specified offset
+		/// Returns first and last byte of the information element started at the specified offset
 		/// </summary>
 		/// <param name="data">
 		/// A <see cref="System.Byte[]"/>
@@ -272,25 +304,20 @@ namespace IB
 		/// <returns>
 		/// A <see cref="System.Boolean"/>
 		/// </returns>
-		protected bool GetIE(byte[] data, int size, int offset, out int firstByte, out int lastByte)
+		public static bool GetIE (byte[] data, int size, int offset, out int firstByte, out int lastByte)
 		{
 			bool res;
 			
 			// this is a delimiter at offset. I am going to find position of the next delimiter
-			if (data[offset] == 0)
-			{
-				firstByte = offset+1;
-			}
-			else
-			{
-				firstByte = offset;			
+			if (data[offset] == 0) {
+				firstByte = offset + 1;
+			} else {
+				firstByte = offset;
 			}
 			
 			lastByte = 0;
-			while (offset < size)
-			{
-				if (data[offset] == 0)
-				{
+			while (offset < size) {
+				if (data[offset] == 0) {
 					lastByte = offset - 1;
 					break;
 				}
@@ -301,36 +328,76 @@ namespace IB
 			
 			return res;
 		}
-		
-		protected bool GetIEValue(byte[] data, int firstByte, int lastByte, out int ieValue)
+
+		/// <summary>
+		/// Return integer value of the information element
+		/// </summary>
+		/// <param name="data">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
+		/// <param name="offset">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="firstByte">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="lastByte">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="ieValue">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Boolean"/>
+		/// </returns>
+		public static bool GetIEValue (byte[] data, int offset, int firstByte, int lastByte, out int ieValue)
 		{
 			bool res = true;
 			ieValue = 0;
 			
-			string ieStr = Encoding.ASCII.GetString(shiftRegister, 0, lastByte - firstByte + 1);
-			try
-			{
-				ieValue = Int32.Parse(ieStr);
-			}
-			catch (Exception e)
-			{
+			string ieStr = Encoding.ASCII.GetString (data, offset, lastByte - firstByte + 1);
+			try {
+				ieValue = Int32.Parse (ieStr);
+			} catch (Exception e) {
 				res = false;
 			}
-		
+			
 			return res;
 		}
-
-		protected void RemoveIEValue(int firstByte, int lastByte)
+		
+		
+		/// <summary>
+		/// Splits zero delimitered array of bytes into ASCII strings
+		/// </summary>
+		/// <param name="data">
+		/// A <see cref="System.Byte[]"/>
+		/// </param>
+		/// <param name="offset">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <param name="size">
+		/// A <see cref="System.Int32"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.String[]"/>
+		/// </returns>
+		public static bool SplitArray(byte[] data, int offset, int size, out string[] list, out int length)
 		{
-			int ieSize = lastByte - firstByte + 1;
-			shiftRegisterSize -= ieSize;
-			Array.Copy(shiftRegister, lastByte+1, shiftRegister, 0, shiftRegisterSize);
+			list = null;
+			length = 0;
+			
+			if (data[offset] == 0)
+			{
+				offset++;
+			}
+			while (offset < size)
+			{
+				
+			}
+			
+			return false;
 		}
-								
-		protected RxHandlerCallback rxHandlerCallback;
-		protected RxHandler.State state;
-		protected byte[] shiftRegister;
-		protected int shiftRegisterSize;
+	
 	}
 
 } // namespace IB
