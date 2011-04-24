@@ -17,9 +17,9 @@ using System.Text;
 namespace IB
 {
 	/// <summary>
-	/// Message types to be sent to Processor
+	/// ProcessorMessage types to be sent to Processor
 	/// </summary>
-	public enum MessageType
+	public enum ProcessorMessageType
 	{
 		Connect,
 		DataIn
@@ -38,23 +38,23 @@ namespace IB
 	/// <summary>
 	/// Objects of this type can be sent to the Processot thread
 	/// </summary>
-	public class Message
+	public class ProcessorMessage
 	{
-		public Message(MessageType id, object data, object data1)
+		public ProcessorMessage(ProcessorMessageType id, object data, object data1)
 		{
 			this.data = data;
 			this.data1 = data1;
 			this.id = id;
 		}
 		
-		public Message(MessageType id, object data)
+		public ProcessorMessage(ProcessorMessageType id, object data)
 		{
 			this.data = data;
 			this.data1 = null;
 			this.id = id;
 		}
 
-		public MessageType id;
+		public ProcessorMessageType id;
 		public object data;
 		public object data1;
 	}
@@ -63,7 +63,7 @@ namespace IB
 	/// Do all Rx/Tx with IB. At this point I expect that only one connection should be
 	/// handled at time. 
 	/// </summary>
-	public class Processor : JQuant.MailboxThread<Message>
+	public class Processor : JQuant.MailboxThread<ProcessorMessage>
 	{
 		/// <summary>
 		/// Initialize the class. Use method CreateProcessor() to create an instance of the class
@@ -104,7 +104,7 @@ namespace IB
 		/// </returns>
 		public bool Connect(string host, int port)
 		{
-			this.Send(new Message(MessageType.Connect, host, port));
+			this.Send(new ProcessorMessage(ProcessorMessageType.Connect, host, port));
 			return true;
 		}
 		
@@ -120,7 +120,7 @@ namespace IB
 			return (state == State.Connected);
 		}
 		
-		protected override void HandleMessage (Message message)
+		protected override void HandleMessage (ProcessorMessage message)
 		{
 			switch (state)
 			{
@@ -136,34 +136,34 @@ namespace IB
 			}
 		}
 
-		protected void HandleMessage_Idle (Message message)
+		protected void HandleMessage_Idle (ProcessorMessage message)
 		{
 			switch (message.id)
 			{
-				case MessageType.Connect:
+				case ProcessorMessageType.Connect:
 				HandleMessage_IdleConnect (message);
 				break;
 			}
 		
 		}
 		
-		protected void HandleMessage_Connected (Message message)
+		protected void HandleMessage_Connected (ProcessorMessage message)
 		{
 			
 		}
 
-		protected void HandleMessage_Connecting (Message message)
+		protected void HandleMessage_Connecting (ProcessorMessage message)
 		{
 			switch (message.id)
 			{
-				case MessageType.DataIn:
+				case ProcessorMessageType.DataIn:
 				HandleMessage_ConnectingDataIn(message);
 				break;
 			}
 			
 		}
 		
-		protected void HandleMessage_IdleConnect (Message message)
+		protected void HandleMessage_IdleConnect (ProcessorMessage message)
 		{
 			string host = (string)message.data;
 			int port = (int)(message.data1);
@@ -198,9 +198,9 @@ namespace IB
 		/// In the connecting state I am ready only for one message - server version
 		/// </summary>
 		/// <param name="message">
-		/// A <see cref="Message"/>
+		/// A <see cref="ProcessorMessage"/>
 		/// </param>
-		protected void HandleMessage_ConnectingDataIn(Message message)
+		protected void HandleMessage_ConnectingDataIn(ProcessorMessage message)
 		{
 			
 		}
@@ -297,7 +297,7 @@ namespace IB
 		
 		protected void HandleData(byte[] data, int size)
 		{
-			processor.Send(new Message(MessageType.DataIn, data, size));
+			processor.Send(new ProcessorMessage(ProcessorMessageType.DataIn, data, size));
 		}
 		
 		bool exitFlag;

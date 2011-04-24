@@ -13,41 +13,99 @@ using System.Text;
 
 namespace IB
 {
-	public class Messages
+	public class Message
 	{
-		public int TICK_PRICE = 1;
-		public int TICK_SIZE = 2;
-		public int ORDER_STATUS = 3;
-		public int ERR_MSG = 4;
-		public int OPEN_ORDER = 5;
-		public int ACCT_VALUE = 6;
-		public int PORTFOLIO_VALUE = 7;
-		public int ACCT_UPDATE_TIME = 8;
-		public int NEXT_VALID_ID = 9;
-		public int CONTRACT_DATA = 10;
-		public int EXECUTION_DATA = 11;
-		public int MARKET_DEPTH = 12;
-		public int MARKET_DEPTH_L2 = 13;
-		public int NEWS_BULLETINS = 14;
-		public int MANAGED_ACCTS = 15;
-		public int RECEIVE_FA = 16;
-		public int HISTORICAL_DATA = 17;
-		public int BOND_CONTRACT_DATA = 18;
-		public int SCANNER_PARAMETERS = 19;
-		public int SCANNER_DATA = 20;
-		public int TICK_OPTION_COMPUTATION = 21;
-		public int TICK_GENERIC = 45;
-		public int TICK_STRING = 46;
-		public int TICK_EFP = 47;
-		public int CURRENT_TIME = 49;
-		public int REAL_TIME_BARS = 50;
-		public int FUNDAMENTAL_DATA = 51;
-		public int CONTRACT_DATA_END = 52;
-		public int OPEN_ORDER_END = 53;
-		public int ACCT_DOWNLOAD_END = 54;
-		public int EXECUTION_DATA_END = 55;
-		public int DELTA_NEUTRAL_VALIDATION = 56;
-		public int TICK_SNAPSHOT_END = 57;
+		public const int TICK_PRICE = 1;
+		public const int TICK_SIZE = 2;
+		public const int ORDER_STATUS = 3;
+		public const int ERR_MSG = 4;
+		public const int OPEN_ORDER = 5;
+		public const int ACCT_VALUE = 6;
+		public const int PORTFOLIO_VALUE = 7;
+		public const int ACCT_UPDATE_TIME = 8;
+		public const int NEXT_VALID_ID = 9;
+		public const int CONTRACT_DATA = 10;
+		public const int EXECUTION_DATA = 11;
+		public const int MARKET_DEPTH = 12;
+		public const int MARKET_DEPTH_L2 = 13;
+		public const int NEWS_BULLETINS = 14;
+		public const int MANAGED_ACCTS = 15;
+		public const int RECEIVE_FA = 16;
+		public const int HISTORICAL_DATA = 17;
+		public const int BOND_CONTRACT_DATA = 18;
+		public const int SCANNER_PARAMETERS = 19;
+		public const int SCANNER_DATA = 20;
+		public const int TICK_OPTION_COMPUTATION = 21;
+		public const int TICK_GENERIC = 45;
+		public const int TICK_STRING = 46;
+		public const int TICK_EFP = 47;
+		public const int CURRENT_TIME = 49;
+		public const int REAL_TIME_BARS = 50;
+		public const int FUNDAMENTAL_DATA = 51;
+		public const int CONTRACT_DATA_END = 52;
+		public const int OPEN_ORDER_END = 53;
+		public const int ACCT_DOWNLOAD_END = 54;
+		public const int EXECUTION_DATA_END = 55;
+		public const int DELTA_NEUTRAL_VALIDATION = 56;
+		public const int TICK_SNAPSHOT_END = 57;
+		
+
+		public static readonly Message[] list = new[] {
+			new Message(Message.TICK_PRICE, 1),
+			new Message(Message.TICK_SIZE, 1),
+			new Message(Message.ORDER_STATUS, 1),
+			new Message(Message.ERR_MSG, 1),
+			new Message(Message.OPEN_ORDER, 1),
+			new Message(Message.ACCT_VALUE, 1),
+			new Message(Message.PORTFOLIO_VALUE, 1),
+			new Message(Message.ACCT_UPDATE_TIME, 1),
+			new Message(Message.NEXT_VALID_ID, 1),
+			new Message(Message.CONTRACT_DATA, 1),
+			new Message(Message.EXECUTION_DATA, 1),
+			new Message(Message.MARKET_DEPTH, 1),
+			new Message(Message.MARKET_DEPTH_L2, 1),
+			new Message(Message.NEWS_BULLETINS, 1),
+			new Message(Message.MANAGED_ACCTS, 1),
+			new Message(Message.RECEIVE_FA, 1),
+			new Message(Message.HISTORICAL_DATA, 1),
+			new Message(Message.BOND_CONTRACT_DATA, 1),
+			new Message(Message.SCANNER_PARAMETERS, 1),
+			new Message(Message.SCANNER_DATA, 1),
+			new Message(Message.TICK_OPTION_COMPUTATION, 1),
+			new Message(Message.TICK_GENERIC, 1),
+			new Message(Message.TICK_STRING, 1),
+			new Message(Message.TICK_EFP, 1),
+			new Message(Message.CURRENT_TIME, 1),
+			new Message(Message.REAL_TIME_BARS, 1),
+			new Message(Message.FUNDAMENTAL_DATA, 1),
+			new Message(Message.CONTRACT_DATA_END, 1),
+			new Message(Message.OPEN_ORDER_END, 1),
+			new Message(Message.ACCT_DOWNLOAD_END, 1),
+			new Message(Message.EXECUTION_DATA_END, 1),
+			new Message(Message.DELTA_NEUTRAL_VALIDATION, 1),
+			new Message(Message.TICK_SNAPSHOT_END, 1)
+		};
+				
+		public Message(int id, int fields)
+		{
+			this.id = id;
+			this.fields = fields;
+		}
+		
+		public static Message Find(int id)
+		{
+			foreach (Message msg in list)
+			{
+				if (msg.id == id)
+				{
+					return msg;
+				}
+			}
+			return null;
+		}
+		
+		public readonly int id;
+		public readonly int fields;		
 	}
     
   
@@ -69,6 +127,7 @@ namespace IB
 			Idle,
 			Processing
 		};
+		
 	
 		/// <summary>
 		/// Create a parser. 
@@ -153,6 +212,13 @@ namespace IB
 				// I have got first IE - message ID. Try to convert to string and after that to integer
 				getIEResult = GetIEValue(data, firstByte, lastByte, out ieValue);
 				if (!getIEResult)
+				{
+					state = RxHandler.State.Idle;
+					// I failed to parse the IE, drop the data from the shift register
+					RemoveIEValue(firstByte, lastByte);
+				}
+				Message message = Message.Find(ieValue);
+				if (message == null)
 				{
 					state = RxHandler.State.Idle;
 					// I failed to parse the IE, drop the data from the shift register
