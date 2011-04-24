@@ -99,6 +99,9 @@
       <Link>BoxArb.cs</Link>
     </Compile>
     <Compile Include="..\IB\IB.cs" />
+    <Compile Include="..\IB\IBMessages.cs">
+      <Link>IBMessages.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
