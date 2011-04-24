@@ -257,6 +257,7 @@ namespace IB
 			exitFlag = false;
 			thread = new System.Threading.Thread(this.Run);
 			thread.Priority = System.Threading.ThreadPriority.Highest;
+			rxHandler = new RxHandler(null, BUFFER_SIZE);
 		}
 		
 		public void Start()
@@ -271,7 +272,6 @@ namespace IB
 		
 		public void Run()
 		{
-			const int BUFFER_SIZE = 1*1024;
 			byte[] buffer = new byte[BUFFER_SIZE];
 			while (!exitFlag)
 			{
@@ -287,7 +287,6 @@ namespace IB
 				if (bytes != 0)
 				{
 					HandleData(buffer, bytes);
-					buffer = new byte[BUFFER_SIZE];
 				}
 				else
 				{
@@ -305,6 +304,8 @@ namespace IB
 		System.Net.Sockets.NetworkStream networkStream;
 		Processor processor;
 		System.Threading.Thread thread;
+		RxHandler rxHandler;
+		const int BUFFER_SIZE = 1 * 1024;
 	}
 
 } // namespace IB
