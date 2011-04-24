@@ -13,6 +13,45 @@ using System.Text;
 
 namespace IB
 {
+	public class Messages
+	{
+		public int TICK_PRICE = 1;
+		public int TICK_SIZE = 2;
+		public int ORDER_STATUS = 3;
+		public int ERR_MSG = 4;
+		public int OPEN_ORDER = 5;
+		public int ACCT_VALUE = 6;
+		public int PORTFOLIO_VALUE = 7;
+		public int ACCT_UPDATE_TIME = 8;
+		public int NEXT_VALID_ID = 9;
+		public int CONTRACT_DATA = 10;
+		public int EXECUTION_DATA = 11;
+		public int MARKET_DEPTH = 12;
+		public int MARKET_DEPTH_L2 = 13;
+		public int NEWS_BULLETINS = 14;
+		public int MANAGED_ACCTS = 15;
+		public int RECEIVE_FA = 16;
+		public int HISTORICAL_DATA = 17;
+		public int BOND_CONTRACT_DATA = 18;
+		public int SCANNER_PARAMETERS = 19;
+		public int SCANNER_DATA = 20;
+		public int TICK_OPTION_COMPUTATION = 21;
+		public int TICK_GENERIC = 45;
+		public int TICK_STRING = 46;
+		public int TICK_EFP = 47;
+		public int CURRENT_TIME = 49;
+		public int REAL_TIME_BARS = 50;
+		public int FUNDAMENTAL_DATA = 51;
+		public int CONTRACT_DATA_END = 52;
+		public int OPEN_ORDER_END = 53;
+		public int ACCT_DOWNLOAD_END = 54;
+		public int EXECUTION_DATA_END = 55;
+		public int DELTA_NEUTRAL_VALIDATION = 56;
+		public int TICK_SNAPSHOT_END = 57;
+	}
+    
+  
+  
 	/// <summary>
 	/// RxHandler will call the method for all incoming messages
 	/// </summary>
@@ -98,6 +137,11 @@ namespace IB
 			
 			while (true)
 			{
+				if (shiftRegisterSize <= 0)
+				{
+					break;
+				}
+
 				// try to fetch first IE - message ID
 				bool getIEResult = GetIE(shiftRegister, size, offset, out firstByte, out lastByte);
 				if (!getIEResult)
@@ -112,10 +156,7 @@ namespace IB
 				{
 					state = RxHandler.State.Idle;
 					// I failed to parse the IE, drop the data from the shift register
-					int ieSize = lastByte - firstByte + 1;
-					shiftRegisterSize -= ieSize;
-					Array.Copy(shiftRegister, lastByte+1, shiftRegister, 0, shiftRegisterSize);
-					break;
+					RemoveIEValue(firstByte, lastByte);
 				}
 			}
 		}
@@ -197,7 +238,14 @@ namespace IB
 		
 			return res;
 		}
-				
+
+		protected void RemoveIEValue(int firstByte, int lastByte)
+		{
+			int ieSize = lastByte - firstByte + 1;
+			shiftRegisterSize -= ieSize;
+			Array.Copy(shiftRegister, lastByte+1, shiftRegister, 0, shiftRegisterSize);
+		}
+								
 		protected RxHandlerCallback rxHandlerCallback;
 		protected RxHandler.State state;
 		protected byte[] shiftRegister;
