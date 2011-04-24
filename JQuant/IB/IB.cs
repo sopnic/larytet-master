@@ -59,11 +59,14 @@ namespace IB
 		public object data1;
 	}
 	
+	/// <summary>
+	/// Do all Rx/Tx with IB. At this point I expect that only one connection should be
+	/// handled at time. 
+	/// </summary>
 	public class Processor : JQuant.MailboxThread<Message>
 	{
 		/// <summary>
-		/// Initialize the class. This is a simpleton - only one object of this 
-		/// type exists in the system
+		/// Initialize the class. Use method CreateProcessor() to create an instance of the class
 		/// </summary>
 		protected Processor() 
 			:base("Processor", 100)
@@ -80,7 +83,7 @@ namespace IB
 		/// </returns>
 		public Processor CreateProcessor ()
 		{
-			return null;
+			return new Processor();
 		}
 		
 		/// <summary>
