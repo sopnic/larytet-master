@@ -49,47 +49,53 @@ namespace IB
 		public const int DELTA_NEUTRAL_VALIDATION = 56;
 		public const int TICK_SNAPSHOT_END = 57;
 		
-
+		/// <summary>
+		/// Method will parse the array of bytes and generate an array of information elements
+		/// Return trut if success
+		/// </summary>
+		public delegate bool Parser(byte[] data, int offset, out string[] ies);
+		
 		public static readonly Message[] list = new[] {
-			new Message(Message.TICK_PRICE, 1),
-			new Message(Message.TICK_SIZE, 1),
-			new Message(Message.ORDER_STATUS, 1),
-			new Message(Message.ERR_MSG, 1),
-			new Message(Message.OPEN_ORDER, 1),
-			new Message(Message.ACCT_VALUE, 1),
-			new Message(Message.PORTFOLIO_VALUE, 1),
-			new Message(Message.ACCT_UPDATE_TIME, 1),
-			new Message(Message.NEXT_VALID_ID, 1),
-			new Message(Message.CONTRACT_DATA, 1),
-			new Message(Message.EXECUTION_DATA, 1),
-			new Message(Message.MARKET_DEPTH, 1),
-			new Message(Message.MARKET_DEPTH_L2, 1),
-			new Message(Message.NEWS_BULLETINS, 1),
-			new Message(Message.MANAGED_ACCTS, 1),
-			new Message(Message.RECEIVE_FA, 1),
-			new Message(Message.HISTORICAL_DATA, 1),
-			new Message(Message.BOND_CONTRACT_DATA, 1),
-			new Message(Message.SCANNER_PARAMETERS, 1),
-			new Message(Message.SCANNER_DATA, 1),
-			new Message(Message.TICK_OPTION_COMPUTATION, 1),
-			new Message(Message.TICK_GENERIC, 1),
-			new Message(Message.TICK_STRING, 1),
-			new Message(Message.TICK_EFP, 1),
-			new Message(Message.CURRENT_TIME, 1),
-			new Message(Message.REAL_TIME_BARS, 1),
-			new Message(Message.FUNDAMENTAL_DATA, 1),
-			new Message(Message.CONTRACT_DATA_END, 1),
-			new Message(Message.OPEN_ORDER_END, 1),
-			new Message(Message.ACCT_DOWNLOAD_END, 1),
-			new Message(Message.EXECUTION_DATA_END, 1),
-			new Message(Message.DELTA_NEUTRAL_VALIDATION, 1),
-			new Message(Message.TICK_SNAPSHOT_END, 1)
+			new Message(Message.TICK_PRICE, 1, Parser_TICK_PRICE),
+			new Message(Message.TICK_SIZE, 1, null),
+			new Message(Message.ORDER_STATUS, 1, null),
+			new Message(Message.ERR_MSG, 1, null),
+			new Message(Message.OPEN_ORDER, 1, null),
+			new Message(Message.ACCT_VALUE, 1, null),
+			new Message(Message.PORTFOLIO_VALUE, 1, null),
+			new Message(Message.ACCT_UPDATE_TIME, 1, null),
+			new Message(Message.NEXT_VALID_ID, 1, null),
+			new Message(Message.CONTRACT_DATA, 1, null),
+			new Message(Message.EXECUTION_DATA, 1, null),
+			new Message(Message.MARKET_DEPTH, 1, null),
+			new Message(Message.MARKET_DEPTH_L2, 1, null),
+			new Message(Message.NEWS_BULLETINS, 1, null),
+			new Message(Message.MANAGED_ACCTS, 1, null),
+			new Message(Message.RECEIVE_FA, 1, null),
+			new Message(Message.HISTORICAL_DATA, 1, null),
+			new Message(Message.BOND_CONTRACT_DATA, 1, null),
+			new Message(Message.SCANNER_PARAMETERS, 1, null),
+			new Message(Message.SCANNER_DATA, 1, null),
+			new Message(Message.TICK_OPTION_COMPUTATION, 1, null),
+			new Message(Message.TICK_GENERIC, 1, null),
+			new Message(Message.TICK_STRING, 1, null),
+			new Message(Message.TICK_EFP, 1, null),
+			new Message(Message.CURRENT_TIME, 1, null),
+			new Message(Message.REAL_TIME_BARS, 1, null),
+			new Message(Message.FUNDAMENTAL_DATA, 1, null),
+			new Message(Message.CONTRACT_DATA_END, 1, null),
+			new Message(Message.OPEN_ORDER_END, 1, null),
+			new Message(Message.ACCT_DOWNLOAD_END, 1, null),
+			new Message(Message.EXECUTION_DATA_END, 1, null),
+			new Message(Message.DELTA_NEUTRAL_VALIDATION, 1, null),
+			new Message(Message.TICK_SNAPSHOT_END, 1, null)
 		};
 				
-		public Message(int id, int fields)
+		public Message(int id, int fields, Parser parser)
 		{
 			this.id = id;
 			this.fields = fields;
+			this.parser = parser;
 		}
 		
 		public static Message Find(int id)
@@ -104,8 +110,17 @@ namespace IB
 			return null;
 		}
 		
+		public static bool Parser_TICK_PRICE (byte[] data, int offset, out string[] ies)
+		{
+			bool res = false;
+			ies = null;
+			
+			return res;
+		}
+		
 		public readonly int id;
 		public readonly int fields;		
+		public readonly Parser parser;
 	}
     
   
