@@ -51,9 +51,9 @@ namespace IB
 		
 		/// <summary>
 		/// Method will parse the array of bytes and generate an array of information elements
-		/// Return trut if success
+		/// Return true if success
 		/// </summary>
-		public delegate bool Parser(byte[] data, int size, int offset, out string[] ies, out int length);
+		public delegate bool Parser(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out string[] ies);
 		
 		public static readonly Message[] list = new[] {
 			new Message(Message.TICK_PRICE, 1, Parser_TICK_PRICE),
@@ -111,48 +111,49 @@ namespace IB
 		}
 
 		/// <summary>
-		/// Methos assumes that at offset array data contains message ID. The method will call 
+		/// Methos assumes that array data contains message ID. The method will call 
 		/// appropriate parser and return array of information elements
 		/// </summary>
-		/// <param name="data">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
-		/// <param name="offset">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <param name="messageId">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <param name="ies">
-		/// A <see cref="System.String[]"/>
-		/// </param>
-		/// <param name="length">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.Boolean"/>
-		/// </returns>
-		public static bool Parse(byte[] data, int size, int offset, out string[] ies, out int length)
+		public static bool Parse(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out string[] ies)
 		{
-			int firstByte;
-			int lastByte;
-			bool res = false;
+			bool res = true;
+			ies = null;
 			do
 			{
-				Message message = Find(0);
-				res = message.parser(data, size, offset, out ies, out length);
+				// get first IE - message ID
+				int ieMessageId;
+				string ieMessageIdStr;
+				Utils.IEIndex ieIndex = ieMap[0];
+				res = Utils.GetIEValue (data, 0, ieIndex.firstByte, ieIndex.lastByte, out ieMessageId, out ieMessageIdStr);
+				if (!res)
+				{
+					System.Console.Out.WriteLine("Failed to parse message ID ("+ieMessageIdStr+")");
+					break;
+				}
+				
+				Message message = Message.Find(ieMessageId);
+				res = (message != null);
+				if (!res)
+				{
+					System.Console.Out.WriteLine("Failed to find message ID ("+ieMessageId+")");
+					break;
+				}
+				
+				res = message.parser(data, ieMap, out ies);
+				if (!res)
+				{
+					break;
+				}
 			}
 			while (false);
-			
 			
 			return res;
 		}
 		
-		public static bool Parser_TICK_PRICE (byte[] data, int size, int offset, out string[] ies, out int length)
+		public static bool Parser_TICK_PRICE (byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out string[] ies)
 		{
 			bool res = false;
 			ies = null;
-			length = 0;
 			
 			return res;
 		}
@@ -243,20 +244,33 @@ namespace IB
 			int lastByte;
 			
 			// copy the data to the shift register
-			int copySize = Math.Min(size, shiftRegister.Length);
+			int copySize = size;
 			Array.Copy(data, offset, shiftRegister, 0, copySize);
 			size -= copySize;
 			shiftRegisterSize = copySize;
 			
-			while (true)
+			System.Collections.Generic.List<Utils.IEIndex> ieMap;
+			int ieMapLength;
+			do
 			{
-				if (shiftRegisterSize <= 0)
+				bool res = Utils.SplitArray(shiftRegister, 0, size, out ieMap, out ieMapLength);
+				if (!res)
 				{
 					break;
 				}
-
+				string[] ies;
+				res = Message.Parse(shiftRegister, ieMap, out ies);
+				if (!res)
+				{
+					break;
+				}
+				
+				// remove parsed elements
+				Utils.RemoveLeadingBytes(shiftRegister, shiftRegisterSize, ieMapLength);
 			}
+			while (false);
 		}
+		
 		
 		/// <summary>
 		/// I am in the middle of processing of a message and this is new chunk of data. I 
@@ -274,12 +288,7 @@ namespace IB
 		}
 		
 
-		protected void RemoveIEValue(int firstByte, int lastByte)
-		{
-			int ieSize = lastByte - firstByte + 1;
-			shiftRegisterSize -= ieSize;
-			Array.Copy(shiftRegister, lastByte+1, shiftRegister, 0, shiftRegisterSize);
-		}
+		
 								
 		protected RxHandlerCallback rxHandlerCallback;
 		protected RxHandler.State state;
@@ -292,18 +301,6 @@ namespace IB
 		/// <summary>
 		/// Returns first and last byte of the information element started at the specified offset
 		/// </summary>
-		/// <param name="data">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
-		/// <param name="size">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <param name="offset">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.Boolean"/>
-		/// </returns>
 		public static bool GetIE (byte[] data, int size, int offset, out int firstByte, out int lastByte)
 		{
 			bool res;
@@ -332,32 +329,14 @@ namespace IB
 		/// <summary>
 		/// Return integer value of the information element
 		/// </summary>
-		/// <param name="data">
-		/// A <see cref="System.Byte[]"/>
-		/// </param>
-		/// <param name="offset">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <param name="firstByte">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <param name="lastByte">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <param name="ieValue">
-		/// A <see cref="System.Int32"/>
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.Boolean"/>
-		/// </returns>
-		public static bool GetIEValue (byte[] data, int offset, int firstByte, int lastByte, out int ieValue)
+		public static bool GetIEValue (byte[] data, int offset, int firstByte, int lastByte, out int ieValue, out string str)
 		{
 			bool res = true;
 			ieValue = 0;
 			
-			string ieStr = Encoding.ASCII.GetString (data, offset, lastByte - firstByte + 1);
+			str = Encoding.ASCII.GetString (data, offset, lastByte - firstByte + 1);
 			try {
-				ieValue = Int32.Parse (ieStr);
+				ieValue = Int32.Parse (str);
 			} catch (Exception e) {
 				res = false;
 			}
@@ -365,32 +344,61 @@ namespace IB
 			return res;
 		}
 		
-		public struct IEIndex
+		public class IEIndex
 		{
+			public IEIndex(int firstByte, int lastByte)
+			{
+				this.firstByte = firstByte;
+				this.lastByte = lastByte;
+			}
+			
 			public int firstByte;
 			public int lastByte;
 		};
 		
 		/// <summary>
-		/// Splits zero delimitered array of bytes into map of information elements
+		/// Splits zero delimitered array of bytes into map of information elements. 
+		/// An information element is described by first and last byte in the array
 		/// </summary>
-		public static bool SplitArray(byte[] data, int offset, int size, out System.Collections.Generic.List<IEIndex> list, out int length)
+		public static bool SplitArray(byte[] data, int offset, int size, out System.Collections.Generic.List<Utils.IEIndex> list, out int length)
 		{
-			list = null;
+			list = new System.Collections.Generic.List<Utils.IEIndex>(10);
 			length = 0;
 			
 			if (data[offset] == 0)
 			{
 				offset++;
 			}
+			int firstByte = 0;
+			int lastByte;
 			while (offset < size)
 			{
-				
+				if (data[offset] == 0)
+				{
+					lastByte = offset;
+					length = offset+1;
+					IEIndex ieIndex = new IEIndex(firstByte, lastByte);
+					list.Add(ieIndex);
+					firstByte = lastByte + 1;
+				}
+				offset++;
 			}
 			
-			return false;
+			
+			return (length != 0);
 		}
 	
+		public static void RemoveIEValue(byte[] data, int size, int firstByte, int lastByte)
+		{
+			int ieSize = lastByte - firstByte + 1;
+			size -= ieSize;
+			Array.Copy(data, lastByte+1, data, 0, size);
+		}
+		
+		public static void RemoveLeadingBytes(byte[] data, int size, int firstByte)
+		{
+			Array.Copy(data, firstByte, data, 0, size-firstByte);
+		}
 	}
 
 } // namespace IB
