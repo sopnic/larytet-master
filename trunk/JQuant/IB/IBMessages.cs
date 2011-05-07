@@ -49,6 +49,11 @@ namespace IB
 		public const int DELTA_NEUTRAL_VALIDATION = 56;
 		public const int TICK_SNAPSHOT_END = 57;
 		
+		public class TickPrice
+		{
+			
+		}
+		
 		/// <summary>
 		/// Method will parse the array of bytes and generate an array of information elements
 		/// Return true if success
@@ -149,11 +154,58 @@ namespace IB
 			
 			return res;
 		}
-		
+/*		
+		                int version = readInt();
+                int tickerId = readInt();
+                int tickType = readInt();
+                double price = readDouble();
+                int size = 0;
+                if( version >= 2) {
+                    size = readInt();
+                }
+                int canAutoExecute = 0;
+                if (version >= 3) {
+                    canAutoExecute = readInt();
+                }
+                eWrapper().tickPrice( tickerId, tickType, price, canAutoExecute);
+
+                if( version >= 2) {
+                    int sizeTickType = -1 ; // not a tick
+                    switch (tickType) {
+                        case 1: // BID
+                            sizeTickType = 0 ; // BID_SIZE
+                            break ;
+                        case 2: // ASK
+                            sizeTickType = 3 ; // ASK_SIZE
+                            break ;
+                        case 4: // LAST
+                            sizeTickType = 5 ; // LAST_SIZE
+                            break ;
+                    }
+                    if (sizeTickType != -1) {
+                        eWrapper().tickSize( tickerId, sizeTickType, size);
+                    }
+                }
+*/
 		public static bool Parser_TICK_PRICE (byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out string[] ies)
 		{
 			bool res = false;
 			ies = null;
+			Utils.IEIndex ieIndex;
+			do
+			{
+				// get version
+				ieIndex = ieMap[1];
+				string ieStr;
+				int ieVal;
+				res = Utils.GetIEValue (data, 0, ieIndex.firstByte, ieIndex.lastByte, out ieVal, out ieStr);
+				if (!res) {
+					System.Console.Out.WriteLine ("Failed to IE (" + ieStr + ")");
+					break;
+				}
+			
+			}
+			while (false);
 			
 			return res;
 		}
