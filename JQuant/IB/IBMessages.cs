@@ -92,7 +92,7 @@ namespace IB
 		/// Method will parse the array of bytes and generate an array of information elements
 		/// Return true if success
 		/// </summary>
-		public delegate bool Parser(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message);
+		public delegate bool Parser(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message, out int ieCount);
 		
 		public static readonly MessageParser[] list = new[] {
 			new MessageParser(MessageParser.TICK_PRICE, 1, Parser_TICK_PRICE),
@@ -153,10 +153,11 @@ namespace IB
 		/// Methos assumes that array data contains message ID. The method will call 
 		/// appropriate parser and return array of information elements
 		/// </summary>
-		public static bool Parse(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message)
+		public static bool Parse(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message, out int ieCount)
 		{
 			bool res = true;
 			message = null;
+			ieCount = 0;
 			do
 			{
 				// get first IE - message ID
@@ -178,7 +179,7 @@ namespace IB
 					break;
 				}
 				
-				res = messageParser.parser(data, ieMap, out message);
+				res = messageParser.parser(data, ieMap, out message, out ieCount);
 				if (!res)
 				{
 					break;
@@ -235,13 +236,20 @@ namespace IB
 		/// <summary>
 		/// ieMap[0] is TICK_PRICE (1)
 		/// </summary>
-		public static bool Parser_TICK_PRICE (byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message)
+		public static bool Parser_TICK_PRICE (byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message, out int ieCount)
 		{
 			bool res = false;
 			message = null;
 			Utils.IEIndex ieIndex;
+			ieCount = 6;
 			do
 			{
+				if (ieMap.Count < ieCount)
+				{
+					System.Console.Out.WriteLine ("Not enough ies. Expected "+ieCount+", actual "+ieMap.Count);
+					break;
+				}
+				
 				// get version
 				string ieStr;
 				int version; 
@@ -288,7 +296,8 @@ namespace IB
 				}
 				
 				message = new Message_TickPrice(id, tickType, price, size);
-			
+				
+				res = true;
 			}
 			while (false);
 			
@@ -396,16 +405,18 @@ namespace IB
 					break;
 				}
 				MessageIfc message;
-				res = MessageParser.Parse(shiftRegister, ieMap, out message);
+				int ieCount;
+				res = MessageParser.Parse(shiftRegister, ieMap, out message, out ieCount);
 				if (!res)
 				{
 					break;
 				}
 				
+				int charsToRemove = ieMap[ieCount-1].lastByte+1;
 				// remove parsed elements
-				Utils.RemoveLeadingBytes(shiftRegister, shiftRegisterSize, ieMapLength);
+				Utils.RemoveLeadingBytes(shiftRegister, shiftRegisterSize, charsToRemove);
 			}
-			while (false);
+			while (shiftRegister.Length > 0);
 		}
 		
 		
