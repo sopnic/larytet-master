@@ -13,7 +13,40 @@ using System.Text;
 
 namespace IB
 {
-	public class Message
+	public interface MessageIfc
+	{
+		/// <summary>
+		/// In Java code this is tickerId. It can be called also request ID
+		/// </summary>
+		int GetId();
+	}
+	
+	public enum TickType
+	{
+		BID_SIZE,
+		ASK_SIZE,
+		LAST_SIZE
+	};
+
+	public class Message_TickPrice : MessageIfc
+	{
+		public Message_TickPrice()
+		{
+		}
+	
+		public int GetId()
+		{
+			return id;
+		}
+		
+		protected int id;
+		public TickType tickType;
+		public double price;
+		public int size;
+	}
+	
+
+	public class MessageParser
 	{
 		public const int TICK_PRICE = 1;
 		public const int TICK_SIZE = 2;
@@ -48,112 +81,8 @@ namespace IB
 		public const int EXECUTION_DATA_END = 55;
 		public const int DELTA_NEUTRAL_VALIDATION = 56;
 		public const int TICK_SNAPSHOT_END = 57;
-		
-		public class TickPrice
-		{
-			
-		}
-		
-		/// <summary>
-		/// Method will parse the array of bytes and generate an array of information elements
-		/// Return true if success
-		/// </summary>
-		public delegate bool Parser(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out string[] ies);
-		
-		public static readonly Message[] list = new[] {
-			new Message(Message.TICK_PRICE, 1, Parser_TICK_PRICE),
-			new Message(Message.TICK_SIZE, 1, null),
-			new Message(Message.ORDER_STATUS, 1, null),
-			new Message(Message.ERR_MSG, 1, null),
-			new Message(Message.OPEN_ORDER, 1, null),
-			new Message(Message.ACCT_VALUE, 1, null),
-			new Message(Message.PORTFOLIO_VALUE, 1, null),
-			new Message(Message.ACCT_UPDATE_TIME, 1, null),
-			new Message(Message.NEXT_VALID_ID, 1, null),
-			new Message(Message.CONTRACT_DATA, 1, null),
-			new Message(Message.EXECUTION_DATA, 1, null),
-			new Message(Message.MARKET_DEPTH, 1, null),
-			new Message(Message.MARKET_DEPTH_L2, 1, null),
-			new Message(Message.NEWS_BULLETINS, 1, null),
-			new Message(Message.MANAGED_ACCTS, 1, null),
-			new Message(Message.RECEIVE_FA, 1, null),
-			new Message(Message.HISTORICAL_DATA, 1, null),
-			new Message(Message.BOND_CONTRACT_DATA, 1, null),
-			new Message(Message.SCANNER_PARAMETERS, 1, null),
-			new Message(Message.SCANNER_DATA, 1, null),
-			new Message(Message.TICK_OPTION_COMPUTATION, 1, null),
-			new Message(Message.TICK_GENERIC, 1, null),
-			new Message(Message.TICK_STRING, 1, null),
-			new Message(Message.TICK_EFP, 1, null),
-			new Message(Message.CURRENT_TIME, 1, null),
-			new Message(Message.REAL_TIME_BARS, 1, null),
-			new Message(Message.FUNDAMENTAL_DATA, 1, null),
-			new Message(Message.CONTRACT_DATA_END, 1, null),
-			new Message(Message.OPEN_ORDER_END, 1, null),
-			new Message(Message.ACCT_DOWNLOAD_END, 1, null),
-			new Message(Message.EXECUTION_DATA_END, 1, null),
-			new Message(Message.DELTA_NEUTRAL_VALIDATION, 1, null),
-			new Message(Message.TICK_SNAPSHOT_END, 1, null)
-		};
-				
-		public Message(int id, int fields, Parser parser)
-		{
-			this.id = id;
-			this.fields = fields;
-			this.parser = parser;
-		}
-		
-		public static Message Find(int id)
-		{
-			foreach (Message msg in list)
-			{
-				if (msg.id == id)
-				{
-					return msg;
-				}
-			}
-			return null;
-		}
 
-		/// <summary>
-		/// Methos assumes that array data contains message ID. The method will call 
-		/// appropriate parser and return array of information elements
-		/// </summary>
-		public static bool Parse(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out string[] ies)
-		{
-			bool res = true;
-			ies = null;
-			do
-			{
-				// get first IE - message ID
-				int ieMessageId;
-				string ieMessageIdStr;
-				Utils.IEIndex ieIndex = ieMap[0];
-				res = Utils.GetIEValue (data, 0, ieIndex.firstByte, ieIndex.lastByte, out ieMessageId, out ieMessageIdStr);
-				if (!res)
-				{
-					System.Console.Out.WriteLine("Failed to parse message ID ("+ieMessageIdStr+")");
-					break;
-				}
-				
-				Message message = Message.Find(ieMessageId);
-				res = (message != null);
-				if (!res)
-				{
-					System.Console.Out.WriteLine("Failed to find message ID ("+ieMessageId+")");
-					break;
-				}
-				
-				res = message.parser(data, ieMap, out ies);
-				if (!res)
-				{
-					break;
-				}
-			}
-			while (false);
-			
-			return res;
-		}
+		
 /*		
 		                int version = readInt();
                 int tickerId = readInt();
@@ -187,10 +116,115 @@ namespace IB
                     }
                 }
 */
-		public static bool Parser_TICK_PRICE (byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out string[] ies)
+		
+		
+		/// <summary>
+		/// Method will parse the array of bytes and generate an array of information elements
+		/// Return true if success
+		/// </summary>
+		public delegate bool Parser(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message);
+		
+		public static readonly MessageParser[] list = new[] {
+			new MessageParser(MessageParser.TICK_PRICE, 1, Parser_TICK_PRICE),
+			new MessageParser(MessageParser.TICK_SIZE, 1, null),
+			new MessageParser(MessageParser.ORDER_STATUS, 1, null),
+			new MessageParser(MessageParser.ERR_MSG, 1, null),
+			new MessageParser(MessageParser.OPEN_ORDER, 1, null),
+			new MessageParser(MessageParser.ACCT_VALUE, 1, null),
+			new MessageParser(MessageParser.PORTFOLIO_VALUE, 1, null),
+			new MessageParser(MessageParser.ACCT_UPDATE_TIME, 1, null),
+			new MessageParser(MessageParser.NEXT_VALID_ID, 1, null),
+			new MessageParser(MessageParser.CONTRACT_DATA, 1, null),
+			new MessageParser(MessageParser.EXECUTION_DATA, 1, null),
+			new MessageParser(MessageParser.MARKET_DEPTH, 1, null),
+			new MessageParser(MessageParser.MARKET_DEPTH_L2, 1, null),
+			new MessageParser(MessageParser.NEWS_BULLETINS, 1, null),
+			new MessageParser(MessageParser.MANAGED_ACCTS, 1, null),
+			new MessageParser(MessageParser.RECEIVE_FA, 1, null),
+			new MessageParser(MessageParser.HISTORICAL_DATA, 1, null),
+			new MessageParser(MessageParser.BOND_CONTRACT_DATA, 1, null),
+			new MessageParser(MessageParser.SCANNER_PARAMETERS, 1, null),
+			new MessageParser(MessageParser.SCANNER_DATA, 1, null),
+			new MessageParser(MessageParser.TICK_OPTION_COMPUTATION, 1, null),
+			new MessageParser(MessageParser.TICK_GENERIC, 1, null),
+			new MessageParser(MessageParser.TICK_STRING, 1, null),
+			new MessageParser(MessageParser.TICK_EFP, 1, null),
+			new MessageParser(MessageParser.CURRENT_TIME, 1, null),
+			new MessageParser(MessageParser.REAL_TIME_BARS, 1, null),
+			new MessageParser(MessageParser.FUNDAMENTAL_DATA, 1, null),
+			new MessageParser(MessageParser.CONTRACT_DATA_END, 1, null),
+			new MessageParser(MessageParser.OPEN_ORDER_END, 1, null),
+			new MessageParser(MessageParser.ACCT_DOWNLOAD_END, 1, null),
+			new MessageParser(MessageParser.EXECUTION_DATA_END, 1, null),
+			new MessageParser(MessageParser.DELTA_NEUTRAL_VALIDATION, 1, null),
+			new MessageParser(MessageParser.TICK_SNAPSHOT_END, 1, null)
+		};
+				
+		public MessageParser(int id, int fields, Parser parser)
+		{
+			this.id = id;
+			this.fields = fields;
+			this.parser = parser;
+		}
+		
+		public static MessageParser Find(int id)
+		{
+			foreach (MessageParser msg in list)
+			{
+				if (msg.id == id)
+				{
+					return msg;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Methos assumes that array data contains message ID. The method will call 
+		/// appropriate parser and return array of information elements
+		/// </summary>
+		public static bool Parse(byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message)
+		{
+			bool res = true;
+			message = null;
+			do
+			{
+				// get first IE - message ID
+				int ieMessageId;
+				string ieMessageIdStr;
+				Utils.IEIndex ieIndex = ieMap[0];
+				res = Utils.GetIEValue (data, 0, ieIndex.firstByte, ieIndex.lastByte, out ieMessageId, out ieMessageIdStr);
+				if (!res)
+				{
+					System.Console.Out.WriteLine("Failed to parse message ID ("+ieMessageIdStr+")");
+					break;
+				}
+				
+				MessageParser messageParser = MessageParser.Find(ieMessageId);
+				res = (messageParser != null);
+				if (!res)
+				{
+					System.Console.Out.WriteLine("Failed to find message ID ("+ieMessageId+")");
+					break;
+				}
+				
+				res = messageParser.parser(data, ieMap, out message);
+				if (!res)
+				{
+					break;
+				}
+			}
+			while (false);
+			
+			return res;
+		}
+		/// <summary>
+		/// ieMap[0] is TICK_PRICE (1)
+		/// </summary>
+		public static bool Parser_TICK_PRICE (byte[] data, System.Collections.Generic.List<Utils.IEIndex> ieMap, out MessageIfc message)
 		{
 			bool res = false;
-			ies = null;
+			message = null;
 			Utils.IEIndex ieIndex;
 			do
 			{
@@ -310,8 +344,8 @@ namespace IB
 				{
 					break;
 				}
-				string[] ies;
-				res = Message.Parse(shiftRegister, ieMap, out ies);
+				MessageIfc message;
+				res = MessageParser.Parse(shiftRegister, ieMap, out message);
 				if (!res)
 				{
 					break;
