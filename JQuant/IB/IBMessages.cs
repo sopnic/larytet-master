@@ -25,13 +25,18 @@ namespace IB
 	{
 		BID_SIZE,
 		ASK_SIZE,
-		LAST_SIZE
+		LAST_SIZE,
+		UNKNOWN
 	};
 
 	public class Message_TickPrice : MessageIfc
 	{
-		public Message_TickPrice()
+		public Message_TickPrice(int id, TickType tickType, double price, int size)
 		{
+			this.id = id;
+			this.tickType = tickType;
+			this.price = price;
+			this.size = size;
 		}
 	
 		public int GetId()
@@ -82,41 +87,6 @@ namespace IB
 		public const int DELTA_NEUTRAL_VALIDATION = 56;
 		public const int TICK_SNAPSHOT_END = 57;
 
-		
-/*		
-		                int version = readInt();
-                int tickerId = readInt();
-                int tickType = readInt();
-                double price = readDouble();
-                int size = 0;
-                if( version >= 2) {
-                    size = readInt();
-                }
-                int canAutoExecute = 0;
-                if (version >= 3) {
-                    canAutoExecute = readInt();
-                }
-                eWrapper().tickPrice( tickerId, tickType, price, canAutoExecute);
-
-                if( version >= 2) {
-                    int sizeTickType = -1 ; // not a tick
-                    switch (tickType) {
-                        case 1: // BID
-                            sizeTickType = 0 ; // BID_SIZE
-                            break ;
-                        case 2: // ASK
-                            sizeTickType = 3 ; // ASK_SIZE
-                            break ;
-                        case 4: // LAST
-                            sizeTickType = 5 ; // LAST_SIZE
-                            break ;
-                    }
-                    if (sizeTickType != -1) {
-                        eWrapper().tickSize( tickerId, sizeTickType, size);
-                    }
-                }
-*/
-		
 		
 		/// <summary>
 		/// Method will parse the array of bytes and generate an array of information elements
@@ -193,7 +163,7 @@ namespace IB
 				int ieMessageId;
 				string ieMessageIdStr;
 				Utils.IEIndex ieIndex = ieMap[0];
-				res = Utils.GetIEValue (data, 0, ieIndex.firstByte, ieIndex.lastByte, out ieMessageId, out ieMessageIdStr);
+				res = Utils.GetIEValueInt (data, 0, ieIndex.firstByte, ieIndex.lastByte, out ieMessageId, out ieMessageIdStr);
 				if (!res)
 				{
 					System.Console.Out.WriteLine("Failed to parse message ID ("+ieMessageIdStr+")");
@@ -218,6 +188,50 @@ namespace IB
 			
 			return res;
 		}
+/*		
+		                int version = readInt();
+                int tickerId = readInt();
+                int tickType = readInt();
+                double price = readDouble();
+                int size = 0;
+                if( version >= 2) {
+                    size = readInt();
+                }
+                int canAutoExecute = 0;
+                if (version >= 3) {
+                    canAutoExecute = readInt();
+                }
+                eWrapper().tickPrice( tickerId, tickType, price, canAutoExecute);
+
+                if( version >= 2) {
+                    int sizeTickType = -1 ; // not a tick
+                    switch (tickType) {
+                        case 1: // BID
+                            sizeTickType = 0 ; // BID_SIZE
+                            break ;
+                        case 2: // ASK
+                            sizeTickType = 3 ; // ASK_SIZE
+                            break ;
+                        case 4: // LAST
+                            sizeTickType = 5 ; // LAST_SIZE
+                            break ;
+                    }
+                    if (sizeTickType != -1) {
+                        eWrapper().tickSize( tickerId, sizeTickType, size);
+                    }
+                }
+*/
+		protected static TickType getTickType(int tickTypeValue)
+		{
+			switch (tickTypeValue)
+			{
+			case 1: return TickType.BID_SIZE;
+			case 2: return TickType.ASK_SIZE;
+			case 4: return TickType.LAST_SIZE;
+			}
+			return TickType.UNKNOWN;
+		}
+		
 		/// <summary>
 		/// ieMap[0] is TICK_PRICE (1)
 		/// </summary>
@@ -229,14 +243,51 @@ namespace IB
 			do
 			{
 				// get version
-				ieIndex = ieMap[1];
 				string ieStr;
-				int ieVal;
-				res = Utils.GetIEValue (data, 0, ieIndex.firstByte, ieIndex.lastByte, out ieVal, out ieStr);
+				int version; 
+				int id; 
+				TickType tickType;
+				double price;
+				int size;
+				
+				ieIndex = ieMap[1];
+				res = Utils.GetIEValueInt (data, 0, ieIndex.firstByte, ieIndex.lastByte, out version, out ieStr);
 				if (!res) {
-					System.Console.Out.WriteLine ("Failed to IE (" + ieStr + ")");
+					System.Console.Out.WriteLine ("Failed to parse version (" + ieStr + ")");
 					break;
 				}
+				
+				ieIndex = ieMap[2];
+				res = Utils.GetIEValueInt (data, 0, ieIndex.firstByte, ieIndex.lastByte, out id, out ieStr);
+				if (!res) {
+					System.Console.Out.WriteLine ("Failed to parse id (" + ieStr + ")");
+					break;
+				}
+				
+				ieIndex = ieMap[3];
+				int tickTypeValue;
+				res = Utils.GetIEValueInt (data, 0, ieIndex.firstByte, ieIndex.lastByte, out tickTypeValue, out ieStr);
+				if (!res) {
+					System.Console.Out.WriteLine ("Failed to parse tickType (" + ieStr + ")");
+					break;
+				}
+				tickType = getTickType(tickTypeValue);
+				
+				ieIndex = ieMap[4];
+				res = Utils.GetIEValueDouble (data, 0, ieIndex.firstByte, ieIndex.lastByte, out price, out ieStr);
+				if (!res) {
+					System.Console.Out.WriteLine ("Failed to parse price (" + ieStr + ")");
+					break;
+				}
+				
+				ieIndex = ieMap[5];
+				res = Utils.GetIEValueInt (data, 0, ieIndex.firstByte, ieIndex.lastByte, out size, out ieStr);
+				if (!res) {
+					System.Console.Out.WriteLine ("Failed to parse tickType (" + ieStr + ")");
+					break;
+				}
+				
+				message = new Message_TickPrice(id, tickType, price, size);
 			
 			}
 			while (false);
@@ -415,7 +466,7 @@ namespace IB
 		/// <summary>
 		/// Return integer value of the information element
 		/// </summary>
-		public static bool GetIEValue (byte[] data, int offset, int firstByte, int lastByte, out int ieValue, out string str)
+		public static bool GetIEValueInt (byte[] data, int offset, int firstByte, int lastByte, out int ieValue, out string str)
 		{
 			bool res = true;
 			ieValue = 0;
@@ -423,6 +474,21 @@ namespace IB
 			str = Encoding.ASCII.GetString (data, offset, lastByte - firstByte + 1);
 			try {
 				ieValue = Int32.Parse (str);
+			} catch (Exception e) {
+				res = false;
+			}
+			
+			return res;
+		}
+		
+		public static bool GetIEValueDouble (byte[] data, int offset, int firstByte, int lastByte, out double ieValue, out string str)
+		{
+			bool res = true;
+			ieValue = 0;
+			
+			str = Encoding.ASCII.GetString (data, offset, lastByte - firstByte + 1);
+			try {
+				ieValue = Double.Parse (str);
 			} catch (Exception e) {
 				res = false;
 			}
