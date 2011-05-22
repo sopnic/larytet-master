@@ -314,7 +314,7 @@ namespace IB
 	/// <summary>
 	/// RxHandler will call the method for all incoming messages
 	/// </summary>
-	public delegate void RxHandlerCallback();
+	public delegate void RxHandlerCallback(MessageIfc message);
 
 	/// <summary>
 	/// This class handles a parser of messages from the IB. The parser is a simple state machine. Application
@@ -383,7 +383,7 @@ namespace IB
 		/// <param name="size">
 		/// A <see cref="System.Int32"/>
 		/// </param>
-		public void HandleData_Idle (byte[] data, int size)
+		protected void HandleData_Idle (byte[] data, int size)
 		{
 			int offset = 0;
 			int firstByte;
@@ -430,7 +430,7 @@ namespace IB
 		/// <param name="size">
 		/// A <see cref="System.Int32"/>
 		/// </param>
-		public void HandleData_Processing (byte[] data, int size)
+		protected void HandleData_Processing (byte[] data, int size)
 		{
 		
 		}
