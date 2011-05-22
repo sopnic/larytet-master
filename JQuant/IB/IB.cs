@@ -22,7 +22,8 @@ namespace IB
 	public enum ProcessorMessageType
 	{
 		Connect,
-		DataIn
+		DataIn,
+		Request
 	}
 
 	/// <summary>
@@ -108,6 +109,50 @@ namespace IB
 		public bool Connect(string host, int port)
 		{
 			this.Send(new ProcessorMessage(ProcessorMessageType.Connect, host, port));
+			return true;
+		}
+		
+		
+		protected static int requestId = 0;
+		/// <summary>
+		/// Application will call this method to get next unique request ID 
+		/// </summary>
+		public int GetUniqueRequestId()
+		{
+			lock(this)
+			{
+				return (requestId++);
+			}
+		}
+		
+		/// <summary>
+		/// Application provides a callback to be called for all responses from the server
+		/// </summary>
+		public delegate void ResponseHandler(MessageIfc message);
+		
+		/// <summary>
+		/// Send a request to the server. Application provides a callback which handles asynchronous 
+		/// responses
+		/// </summary>
+		public bool SendRequest(RequestIfc request, ResponseHandler responseHandler)
+		{
+			bool res = false;
+			do
+			{
+				this.Send(new ProcessorMessage(ProcessorMessageType.Request, request, responseHandler));
+				res = true;
+			}
+			while (false);
+			
+			return res;
+		}
+
+		/// <summary>
+		/// Remove request specified by the request ID. For example, application will call the method 
+		/// after it tears the feed stream down
+		/// </summary>
+		public bool RemoveRequest(int id)
+		{
 			return true;
 		}
 		
