@@ -50,9 +50,76 @@ namespace IB
 		public int size;
 	}
 	
+	public enum ResponseType
+	{
+		NoResponse,
+		SingleResponse, 
+		Stream
+	}
+	
+	public interface RequestIfc
+	{
+		int GetId();
+		byte[] GetData();
+		int GetSize();
+		ResponseType getResponseType();
+	}
+	
+	public class Request
+	{
+		// Outgoing messages
+		public const int REQ_MKT_DATA = 1;
+		public const int CANCEL_MKT_DATA = 2;
+		public const int PLACE_ORDER = 3;
+		public const int CANCEL_ORDER = 4;
+		public const int REQ_OPEN_ORDERS = 5;
+		public const int REQ_ACCOUNT_DATA = 6;
+		public const int REQ_EXECUTIONS = 7;
+		public const int REQ_IDS = 8;
+		public const int REQ_CONTRACT_DATA = 9;
+		public const int REQ_MKT_DEPTH = 10;
+		public const int CANCEL_MKT_DEPTH = 11;
+		public const int REQ_NEWS_BULLETINS = 12;
+		public const int CANCEL_NEWS_BULLETINS = 13;
+		public const int SET_SERVER_LOGLEVEL = 14;
+		public const int REQ_AUTO_OPEN_ORDERS = 15;
+		public const int REQ_ALL_OPEN_ORDERS = 16;
+		public const int REQ_MANAGED_ACCTS = 17;
+		public const int REQ_FA = 18;
+		public const int REPLACE_FA = 19;
+		public const int REQ_HISTORICAL_DATA = 20;
+		public const int EXERCISE_OPTIONS = 21;
+		public const int REQ_SCANNER_SUBSCRIPTION = 22;
+		public const int CANCEL_SCANNER_SUBSCRIPTION = 23;
+		public const int REQ_SCANNER_PARAMETERS = 24;
+		public const int CANCEL_HISTORICAL_DATA = 25;
+		public const int REQ_CURRENT_TIME = 49;
+		public const int REQ_REAL_TIME_BARS = 50;
+		public const int CANCEL_REAL_TIME_BARS = 51;
+		public const int REQ_FUNDAMENTAL_DATA = 52;
+		public const int CANCEL_FUNDAMENTAL_DATA = 53;
+		
+		public const int MIN_SERVER_VER_REAL_TIME_BARS = 34;
+		public const int MIN_SERVER_VER_SCALE_ORDERS = 35;
+		public const int MIN_SERVER_VER_SNAPSHOT_MKT_DATA = 35;
+		public const int MIN_SERVER_VER_SSHORT_COMBO_LEGS = 35;
+		public const int MIN_SERVER_VER_WHAT_IF_ORDERS = 36;
+		public const int MIN_SERVER_VER_CONTRACT_CONID = 37;
+		public const int MIN_SERVER_VER_PTA_ORDERS = 39;
+		public const int MIN_SERVER_VER_FUNDAMENTAL_DATA = 40;
+		public const int MIN_SERVER_VER_UNDER_COMP = 40;
+		public const int MIN_SERVER_VER_CONTRACT_DATA_CHAIN = 40;
+		public const int MIN_SERVER_VER_SCALE_ORDERS2 = 40;
+		public const int MIN_SERVER_VER_ALGO_ORDERS = 41;
+		public const int MIN_SERVER_VER_EXECUTION_DATA_CHAIN = 42;
+		public const int MIN_SERVER_VER_NOT_HELD = 44;
+		public const int MIN_SERVER_VER_SEC_ID_TYPE = 45;
+	}
+	
 
 	public class MessageParser
 	{
+		// Incoming messages
 		public const int TICK_PRICE = 1;
 		public const int TICK_SIZE = 2;
 		public const int ORDER_STATUS = 3;
@@ -86,6 +153,8 @@ namespace IB
 		public const int EXECUTION_DATA_END = 55;
 		public const int DELTA_NEUTRAL_VALIDATION = 56;
 		public const int TICK_SNAPSHOT_END = 57;
+		
+    
 
 		
 		/// <summary>
