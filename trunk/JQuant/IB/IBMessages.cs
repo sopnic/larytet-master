@@ -57,6 +57,11 @@ namespace IB
 		Stream
 	}
 	
+	/// <summary>
+	/// Application provides a callback to be called for all responses from the server
+	/// </summary>
+	public delegate void ResponseHandler(MessageIfc message);
+	
 	public interface RequestIfc
 	{
 		int GetId();

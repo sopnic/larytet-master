@@ -208,6 +208,13 @@ namespace IB
 				case ProcessorMessageType.DataIn:
 				rxHandler.HandleData((byte[])message.data, (int)message.data1);
 				break;
+				
+				case ProcessorMessageType.Request:
+				// add Request and application callback (response handler) to the hash table of pending requests 
+				// and send request to the socket. At this point I send the request in the context of the 
+				// Processor and  I let the OS to do the buffering. In the future I can run a separate WriteSocket
+				// thread to avoid blocking call to the socket API.
+				break;
 			}
 			
 		}
