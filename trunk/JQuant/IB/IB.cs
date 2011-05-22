@@ -40,6 +40,7 @@ namespace IB
 	/// </summary>
 	public class ProcessorMessage
 	{
+		
 		public ProcessorMessage(ProcessorMessageType id, object data, object data1)
 		{
 			this.data = data;
@@ -65,6 +66,8 @@ namespace IB
 	/// </summary>
 	public class Processor : JQuant.MailboxThread<ProcessorMessage>
 	{
+		public const int BUFFER_SIZE = 1 * 1024;
+
 		/// <summary>
 		/// Initialize the class. Use method CreateProcessor() to create an instance of the class
 		/// </summary>
@@ -72,7 +75,7 @@ namespace IB
 			:base("Processor", 100)
 		{
 			state = State.Idle;
-		
+		 	rxHandler = new RxHandler(RxCallback, BUFFER_SIZE);
 		}
 		
 		/// <summary>
@@ -120,6 +123,12 @@ namespace IB
 			return (state == State.Connected);
 		}
 		
+		protected void RxCallback(MessageIfc messsage)
+		{
+			// new data in the connected state. Find the request handler by message ID
+			// and forward the data
+		}
+		
 		protected override void HandleMessage (ProcessorMessage message)
 		{
 			switch (state)
@@ -149,6 +158,12 @@ namespace IB
 		
 		protected void HandleMessage_Connected (ProcessorMessage message)
 		{
+			switch (message.id)
+			{
+				case ProcessorMessageType.DataIn:
+				rxHandler.HandleData((byte[])message.data, (int)message.data1);
+				break;
+			}
 			
 		}
 
@@ -245,6 +260,7 @@ namespace IB
 		private static int CLIENT_VERSION = 46;
 		private static int SERVER_VERSION = 38;
 		SocketReader socketReader;
+		RxHandler rxHandler;
 		
 	}
 	
@@ -257,12 +273,13 @@ namespace IB
 			exitFlag = false;
 			thread = new System.Threading.Thread(this.Run);
 			thread.Priority = System.Threading.ThreadPriority.Highest;
-			rxHandler = new RxHandler(null, BUFFER_SIZE);
+			rxHandler = new RxHandler(null, Processor.BUFFER_SIZE);
 		}
 		
 		public void Start()
 		{
 			thread.Start();
+			
 		}
 		
 		public void Stop()
@@ -272,7 +289,7 @@ namespace IB
 		
 		public void Run()
 		{
-			byte[] buffer = new byte[BUFFER_SIZE];
+			byte[] buffer = new byte[Processor.BUFFER_SIZE];
 			while (!exitFlag)
 			{
 				int bytes = 0;
@@ -305,7 +322,6 @@ namespace IB
 		Processor processor;
 		System.Threading.Thread thread;
 		RxHandler rxHandler;
-		const int BUFFER_SIZE = 1 * 1024;
 	}
 
 
