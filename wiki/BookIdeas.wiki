@@ -203,6 +203,21 @@ Two things happen - the closest to us militia guy said something to his wrist wa
 	Вот и не спит gashih ...
 
 	Тихо в лесу,
+	Только не спит dikoobraz -
+	Uznal dikoobraz chto on pidaras
+	Вот и не спит dikoobraz ...
+
+	Тихо в лесу,
+	Только не спит sverchok -
+	V hate sverchka zabilsya tolchok
+	Вот и не спит sverchok ...
+
+	Тихо в лесу,
+	Только не спит osyol -
+	Uslesay osyol na osinovyi kol
+	Вот и не спит osyol ...
+
+	Тихо в лесу,
 	Только не спит p-z -
 	Znaet p-z chto prixodit konize
 	Вот и не спит p-z ...
