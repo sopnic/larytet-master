@@ -124,3 +124,5 @@ Robert J. Sawyer
   * Asus
   * Samsung Galaxy
 
+ = Fix up = 
+דניאל חסון 
