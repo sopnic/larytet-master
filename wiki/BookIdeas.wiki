@@ -219,8 +219,13 @@ Two things happen - the closest to us militia guy said something to his wrist wa
 
 	Тихо в лесу,
 	Только не спит p-z -
-	Znaet p-z chto prixodit konize
+	Znaet p-z chto prixodit konez
 	Вот и не спит p-z ...
+
+	Тихо в лесу,
+	Только не спит tarakan -
+	Zdyot tarakan samolyot v Amsterdam
+	Вот и не спит tarakan ...
 
 	Тихо в лесу,
 	Только не спит morkov' -
