@@ -1,5 +1,3 @@
-Redmine is a flexible project management web application written using  Ruby on Rails framework.
-
 [http://www.redmine.org Redmine] is a flexible project management web application written using [http://rubyonrails.org Ruby on Rails] framework.
 
 1-minute installation guide - http://www.richardnichols.net/2009/09/1-minute-guide-installing-redmine-on-windows/.
