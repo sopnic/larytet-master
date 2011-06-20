@@ -8,14 +8,14 @@
   * http://www.interactivebrokers.com/download/JavaAPIGettingStarted.pdf Java getting started
   * http://www.interactivebrokers.com/download/newMark/PDFs/APIprintable.pdf  Reference guide
   * http://www.bearcave.com/software/market_trading/resources_and_notes/ - documentation
-  * http://www.maxdama.com/?p=127
-  * http://www.tradingwithmatlab.com/home
-  * http://www.maxdama.com/
 
 = Matlab =
 
-  * mathworks.com/matlabcentral/fileexchange/29434
-  * matlab-trading.blogspot.com/2010/11/howto-wrap-interactive-brokers-tws-api.html
+  * http://mathworks.com/matlabcentral/fileexchange/29434
+  * http://matlab-trading.blogspot.com/2010/11/howto-wrap-interactive-brokers-tws-api.html
+  * http://www.maxdama.com/?p=127
+  * http://www.tradingwithmatlab.com/home
+  * http://www.maxdama.com/
 
 
 TWS (default port 7496)
