@@ -34,6 +34,11 @@ to remove the obsolete kernel, where XX-X is the exact version, for example:
 sudo apt-get remove --purge 2.6.27-7-*
 }}}
 
+Another way:
+{{{
+$ aptitude purge $(aptitude search ~ilinuximage -F %p|egrep -v "$(uname -r)|linux-imagegeneric")
+}}}
+
 = Multi-OS system =
 == Restoring Grub 2.0 ==
  * boot with Ubuntu Live CD, mount HDD Ubuntu partition 
