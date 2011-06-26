@@ -76,7 +76,7 @@ Installing RDoc documentation for mongrel-1.1.5-x86-mingw32...
 }}}
 
 ===Tips===
-# Skip rdoc and ri documentation installation while installing gem:
+ # Skip RDoc and ri documentation installation while installing gem:
 {{{
 gem install rails --no-ri --no-rdoc 
 }}}
