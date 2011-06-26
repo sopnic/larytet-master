@@ -74,3 +74,9 @@ Installing RDoc documentation for gem_plugin-0.2.3...
 Installing RDoc documentation for cgi_multipart_eof_fix-2.5.0...
 Installing RDoc documentation for mongrel-1.1.5-x86-mingw32...
 }}}
+
+===Tips===
+# Skip rdoc and ri documentation installation while installing gem:
+{{{
+gem install rails --no-ri --no-rdoc 
+}}}
