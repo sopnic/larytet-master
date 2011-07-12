@@ -4,15 +4,6 @@
 = Tablets =
 
   * Intel Classmate PC http://www.classmatepc.com/where-to-buy/
-  * Asus EeePad 
-  * ASUS Eee Pad Transformer 
-  * Asus EeePC 1005HA
-  * Asus 1005PE
-  * Motorola Xoom
-  * Dell Inspiron Duo 10.1
-  * Sony Vaio P19WNQ
-  * Sony Vaio P11ZG
-  * Sony Vaio P11ZR
 
 
 = Routers =
@@ -133,6 +124,15 @@ Robert J. Sawyer
 = Tablets = 
   * Asus
   * Samsung Galaxy
+  * Asus EeePad 
+  * ASUS Eee Pad Transformer 
+  * Asus EeePC 1005HA
+  * Asus 1005PE
+  * Motorola Xoom
+  * Dell Inspiron Duo 10.1
+  * Sony Vaio P19WNQ
+  * Sony Vaio P11ZG
+  * Sony Vaio P11ZR
 
  = Fix up = 
 דניאל חסון  * 
