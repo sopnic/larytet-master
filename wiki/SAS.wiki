@@ -362,3 +362,6 @@ RUN;
 }}}
 
 *Note:* Use a &syserr auto macro var to conditionally send messages.
+
+===Encoding passwords in SAS===
+The *PWENCODE* procedure enables to encode passwords to be used to access various servers or database systems from SAS code, instead of plain text passwords.
