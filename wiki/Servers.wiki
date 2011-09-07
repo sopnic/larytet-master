@@ -121,6 +121,7 @@ Robert J. Sawyer
   * Hercules eCAFÉ 
   * Logic Supply: Extreme Environment PT Series 
   * Zotac Zbox Nano AD10
+  * Habey, BIS-6564
 
 = Tablets = 
   * Asus
