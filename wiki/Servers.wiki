@@ -120,6 +120,7 @@ Robert J. Sawyer
   * Efika MX Smarttop
   * Hercules eCAFÉ 
   * Logic Supply: Extreme Environment PT Series 
+  * Zotac Zbox Nano AD10
 
 = Tablets = 
   * Asus
