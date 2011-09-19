@@ -10,6 +10,7 @@
 
  * E2100L
  * WRT160NL
+ * WiFi ask.slashdot.org/story/11/09/19/0315258/Ask-Slashdot-Good-Gigabit-80211N-Home-Router
 
 = HP =
  * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-3328412-241644-3328421.html HP Proliant DL]
