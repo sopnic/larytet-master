@@ -16,3 +16,12 @@ Links to the trade stations front ends, resources
 
 
 List of Java based platforms http://www.elitetrader.com/vb/showthread.php?threadid=85659
+
+More frameworks
+  * agoratron.com
+  * Marketcetera
+  * AlgoTrader
+  * TradingBlox 
+  * MetaTrader4
+  * tradelink
+  * ActivantQuant
