@@ -1,6 +1,6 @@
 #summary Real Estate Prices in Israel
 
-=== Ask prices statistics collected from *YAD2* www.yad2.co.il ===
+=== Ask prices statistics collected from *YAD2* [www.yad2.co.il] ===
 
 || *DATE* ||AUG-24||OCT-12||
 || || || ||
