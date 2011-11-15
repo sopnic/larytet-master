@@ -125,7 +125,8 @@ Robert J. Sawyer
   * Logic Supply: Extreme Environment PT Series 
   * Zotac Zbox Nano AD10
   * Habey, BIS-6564
-  * Contec, BX-956
+  * Contec, BX-9565
+  * Aaeon
 
 = Tablets = 
   * Asus
