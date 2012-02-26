@@ -232,12 +232,25 @@ Two things happen - the closest to us militia guy said something to his wrist wa
 	Jizn' morkovi razbila svekrov
 	Вот и не спит morkov ...
 
+	Тихо в лесу,
+	Только не спит svekrov' -
+	U neye nevestka morkov'
+	Вот и не спит svekrov' ...
 
 	Тихо в лесу,
 	Только не спит baran -
 	Gdyot barana plova kazan
 	Вот и не спит baran ...
 
+	Тихо в лесу,
+	Только не спит barsuk -
+	On amoral'mo porvodit dosug
+	Вот и не спит barsuk ...
+
+	Тихо в лесу,
+	Только не спит pauk -
+	On s barsukom porvodit dosug
+	Вот и не спит pauk ...
 
 	Тихо в лесу,
 	Только не спит buryak -
@@ -249,11 +262,30 @@ Two things happen - the closest to us militia guy said something to his wrist wa
 	Muchot kolhoz gutkij ponos
 	Вот и не спит kolhoz ...
 
+	Тихо в лесу,
+	Только не спит trava -
+	Kurit travu udarnik truda
+	Вот и не спит trava ...
+
+	Тихо в лесу,
+	Только не спит golubok -
+	U nego na lapke gribok
+	Вот и не спит golubok ...
+
+	Тихо в лесу,
+	Только не спит ogurez -
+	U nego gelteet konez
+	Вот и не спит ogurez ...
+
+	Тихо в лесу,
+	Только не спyat drozdy -
+	Dogdalis drozdy prihoda lubvi
+	Вот и не spyat drozdy
 
 	Тихо в лесу,
 	Только не спит весь лес -
-	В каждом дупле, в каждом кусте
-	Идет половой процесс...
+	В каждом дупле, в каждоj nore
+	Идет neprostoj процесс...
 
 
  * thisrecording.com/today/2010/1/18/in-which-we-count-down-the-100-greatest-science-fiction-or-f.html
