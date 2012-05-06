@@ -3,7 +3,7 @@
 
 = Tablets =
 
-  * Intel Classmate PC http://www.classmatepc.com/where-to-buy/
+  * Intel Classmate PC www.classmatepc.com/where-to-buy/
 
 
 = Routers =
@@ -14,9 +14,9 @@
  * WiFi ask.slashdot.org/story/11/10/25/1429235/ask-slashdot-dd-wrt-upgrade-to-80211n
 
 = HP =
- * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-3328412-241644-3328421.html HP Proliant DL]
- * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/3709945-3709945-3328410-241641-3328419.html HP Proliant BL]
- * [http://h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-241434-241646-241477.html Proliant ML (Tower)]
+ * h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-3328412-241644-3328421.html HP Proliant DL
+ * h10010.www1.hp.com/wwpc/us/en/sm/WF04a/3709945-3709945-3328410-241641-3328419.html HP Proliant BL
+ * h10010.www1.hp.com/wwpc/us/en/sm/WF04a/15351-15351-241434-241646-241477.html Proliant ML (Tower)
 
 
 "Anti-vibration rack increased random read performance by 56% to 246% and random write [performance] by 34% to 88%."
@@ -46,7 +46,7 @@ DDR2/533/1024MB PC4200 64*8x16
 
 
 = UPS = 
-Selector http://www.apc.com/template/size/apc/index.cfm
+Selector www.apc.com/template/size/apc/index.cfm
 <br>BR800 .cobrapc.co.il 1080
 <br>BR1200LCDI
 
@@ -54,23 +54,23 @@ Selector http://www.apc.com/template/size/apc/index.cfm
 HD2TBAN 1490 2T
 
 = Ink =
-http://www.needyo.co.il/ProductInfo.asp?ProdId=752&catId=
+www.needyo.co.il/ProductInfo.asp?ProdId=752&catId=
 
 
 
-http://www.mediashop.co.il/pl_product~214398~2~54.htm
+www.mediashop.co.il/pl_product~214398~2~54.htm
 
 
  
 03-6005907  8589
 Zibotinsky 91, Ramat-Gan
-http://www.dioisrael.co.il/ProductInfo.asp?ProdId=1392&catId=
+www.dioisrael.co.il/ProductInfo.asp?ProdId=1392&catId=
 
-http://www.dioisrael.co.il/ProductInfo.asp?ProdId=1391&catId=
+www.dioisrael.co.il/ProductInfo.asp?ProdId=1391&catId=
 
-http://www.dioisrael.co.il/ProductInfo.asp?ProdId=1390&catId=
+www.dioisrael.co.il/ProductInfo.asp?ProdId=1390&catId=
 
-http://www.dioisrael.co.il/ProductInfo.asp?ProdId=1235&catId=
+www.dioisrael.co.il/ProductInfo.asp?ProdId=1235&catId=
 
 
 Ra'anana
@@ -159,3 +159,6 @@ Electric kits
   * "אדנית דמוי אבן"  "עציץ דמוי אבן" www.t-p-y.co.il/contact.asp 09-8947633
 
 www.tapuz.co.il/blog/net/viewentry.aspx?entryId=1384233
+
+
+[http://www.ebay.com/sch/markady2012/m.html?_nkw=&_armrs=1&_from=&_ipg=25&_trksid=p3686|Shopping trolley and dishwasher mesh]
