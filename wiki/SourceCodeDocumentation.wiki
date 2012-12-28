@@ -110,6 +110,7 @@ Mailbox.Send message received
     Name    Size MaxCoun Pending Timeout Receive    Sent Dropped
                        t                       d                
 ----------------------------------------------------------------
+
  TestMbx       2       1       0       0       1       1       0
 
 SIM:$ threadPoolTest
@@ -118,6 +119,7 @@ SIM:$ threadPoolTest
                          adsFree                         Threads     obs    Jobs    Jobs laceJob efreshQ
                                                                                                     ueue
 --------------------------------------------------------------------------------------------------------
+
     test       1       5       0       2       5       5       0       5       0       0       0       4
 ThreadPoolJob done  idx =0, time = 15 micros
 ThreadPoolJob done  idx =1, time = 17 micros
