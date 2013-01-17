@@ -23,3 +23,7 @@ Discs Grain
 ||P280-P360||Sanding between coatings||
 ||P400-P600||Fine finishing, Start wood polishing||
 ||P800-P1000||Extra fine finishing||
+
+==Paints==
+
+* Zinsser Bulls Eye 1-2-3 Primer/Sealer
