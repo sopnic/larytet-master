@@ -1,4 +1,4 @@
-#Hardware Tools
+=Hardware Tools=
 
 ==Makita==
 
@@ -17,7 +17,7 @@ BO5030
 
 Discs Grain
 
-||*Grain*||*Application*||
+|| *Grain* || *Application* ||
 ||P80||Initial coarse sanding, damaged color removal||
 ||P120||Fine sanding, preparation for primering||
 ||P280-P360||Sanding between coatings||
