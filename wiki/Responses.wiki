@@ -1,3 +1,6 @@
+Human mind tends to overestimate the expected volatility. While spikes of volatility happen they are extremely rare. Selling of covered puts and covered calls against the existing position makes sense in almost any market conditions. This includes usually rather long periods of waiting for the next volatility spike or periods of doldrum. Periods of doldrum drive the volatility premium lower and make selling options less profitable. Lower profitability is not a viable reason not to do the option writing. In the normal circumstances the premium will far exceed long term interest rates and average dividend rate. 
+
+
 http://www.hussmanfunds.com/wmc/wmc130805.htm
  
 This is must read.
