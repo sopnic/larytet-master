@@ -18,7 +18,7 @@ Yesterday (Apr 9, 2014) near the money call option with strike $91+7.47%  = $97 
 Let's assume for the moment that the margin is unlimited or that the
 position is negligibly small comparing to the account total. I sell
 FAS call for $0.75 which nets me $75 and locks some margin away at my
-brokerage. I wait a month (actually about 2 weeks). In the expiration
+brokerage. I wait a month (actually in this specific case I shall wait about 2 weeks). In the expiration
 FRYday there are two outcomes - my call is in money (probability of
 such outcome is under 20%) or my call is out of money.
 
