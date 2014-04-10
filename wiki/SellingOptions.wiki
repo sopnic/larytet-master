@@ -13,7 +13,7 @@ annual or 7.47% monthly compound. One would say that FAS is a money
 making machine for those who long the stock. Such rate IS something to
 write home about.
 
-Yesterday near the money call option with strike $97 (Apr, 2014) -
+Yesterday (Apr 9, 2014) near the money call option with strike $97 (Apr, 2014) -
 $91+7.47% could be sold for $0.75 or 0.8% of asset value.
 
 Let's assume for the moment that the margin is unlimited or that the
