@@ -9,4 +9,4 @@ Add your content here.
 
  *   Wirelesse thermostat to check temperature insides of the solar/electric water heater
  *   Docking station which turns a smart phone into a hig performance desktop
- *   
+ *   HeadsUp device for the motorcycle helmet/car windshield - remote terminal to a smart phone. 
