@@ -8,3 +8,11 @@ August - 1738
 September - 1492/1508 
 
 December - 1776
+
+
+My setup is a hammer candle (defined as a candle with a close in the upper half of the range with a lower shadow at least 2x the real body) and the next bar a break of the high. I place my stop at the low of that candle (daily). My exit rules are at 1.2R (risk) I move stop to breakeven, at 2R I trail a 25% trailing stop, and at 4R I exit on a limit. If I get 3 consecutive closers outside the bollinger I exit on close. If the upper bollinger is flat or fallingI exit at the upper bollinger. 
+ 
+I had 2 positions on because the first one was at breakeven by the time the second setup came around, and exited like this
+
+http://snag.gy/GrIJS.jpg
+http://cdn.socialtrade.com/comsys/media/71395_s.jpg
