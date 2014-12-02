@@ -1,0 +1,11 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Script which modifies settings in Sharx camera
+
+
+= Details =
+
+# Get cookie
+curl -s -D lccookie -d "login=LOGIN&password=PASSWORD" http://CAMERA_IP/default.asp
