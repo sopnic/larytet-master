@@ -11,6 +11,6 @@ Script which modifies settings in Sharx camera
 <code>
 curl -s -D lccookie -d "login=$login&password=$password" http://$CAMERA_IP/default.asp
 
-curl -s -b lccookie -e  http://$CAMERA_IP/default.asp  --data-urlencode "MODE%3A=software" --data-urlencode "NVCTL_EXPOSURE%3A=40" --data-urlencode "NVCTL_GAIN%3A=40" --data-urlencode "NVCTL_U%3A=40" --data-urlencode "IRLED%3A=off" -d "Submit=Submit" http://$CAMERA_IP/en/nvctl.asp
+curl -s -b lccookie -e  http://$CAMERA_IP/default.asp  --data-urlencode "MODE%3A=software" --data-urlencode "NVCTL_EXPOSURE%3A=40" --data-urlencode "NVCTL_GAIN%3A=40" --data-urlencode "NVCTL_U%3A=40" --data-urlencode "IRLED%3A=off" --data-urlencode "BWMODE%3A=off" --data-urlencode "IRCUT%3A=off" -d "Submit=Submit" http://$CAMERA_IP/en/nvctl.asp
 
 </code>
