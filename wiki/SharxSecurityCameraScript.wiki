@@ -18,7 +18,7 @@ curl -u $username:$password --data-urlencode "MODE%3A=software" --data-urlencode
 
 Foscam camera 
 
-<pre><code>
+<code>
 #!/bin/bash
 
 cleanup ()
@@ -35,4 +35,4 @@ while [ 1 ] ;do
 	/usr/bin/cvlc --run-time $2  --sout="#transcode{vcodec=theo,vb=256}:standard{access=file,mux=ogg,dst=$DATE.ogg}"  http://admin:admin@192.168.18.15/videostream.cgi  vlc://quit
 done
 
-</code></pre>
+</code>
