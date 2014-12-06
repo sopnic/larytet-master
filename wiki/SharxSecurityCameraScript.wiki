@@ -19,7 +19,5 @@ curl -u $username:$password --data-urlencode "MODE%3A=software" --data-urlencode
 Foscam camera 
 
 <code>
-/usr/bin/cvlc --run-time 2 --sout file/ts:test.ts http://admin:admin@192.168.18.15/videostream.cgi  vlc://quit
-
-/usr/bin/cvlc --run-time 2  --sout="#standard{access=file,mux=ts,dst=test.mpg}"  http://admin:admin@192.168.18.15/videostream.cgi  vlc://quit
+/usr/bin/cvlc --run-time 10  --sout="#transcode{vcodec=theo,vb=256}:standard{access=file,mux=ogg,dst=test.ogg}"  http://admin:admin@192.168.18.15/videostream.cgi  vlc://quit
 </code>
