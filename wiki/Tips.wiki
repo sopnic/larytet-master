@@ -1,3 +1,11 @@
+How to prevent the InteractiveBrokers application from closing
+
+Configure the some time you are not going to trade, for example 2AM. Just before 2AM pause the java application until after 2AM. In Linux you can pause an application by
+kill -STOP <java process ID>
+and resume by
+kill -CONT 26206 <java process ID>
+
+
 HDMI1 "3840x2160_13.80"
 http://www.amazon.com/review/R3R4Y6PPZ1QN29/ref=cm_cr_pr_perm?ie=UTF8&ASIN=B00BXF7I9M&linkCode=&nodeID=&tag=
 
