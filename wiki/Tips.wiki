@@ -7,6 +7,8 @@ or, if there are no other java applications running
 and resume by
       killall -CONT java
 
+Update your cron script accordingly to do this automatically.
+
 
 HDMI1 "3840x2160_13.80"
 http://www.amazon.com/review/R3R4Y6PPZ1QN29/ref=cm_cr_pr_perm?ie=UTF8&ASIN=B00BXF7I9M&linkCode=&nodeID=&tag=
