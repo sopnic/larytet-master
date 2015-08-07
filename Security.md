@@ -1,0 +1,1 @@
+  * [Bootable CDs for online banking:Long discussion thread with all kinds of ideas](http://linux.slashdot.org/story/10/03/25/2350236/Can-Ubuntu-Save-Online-Banking)
